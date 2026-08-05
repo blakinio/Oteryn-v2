@@ -1,0 +1,57 @@
+name: Retry Game Intelligence architecture repairs
+
+on:
+  push:
+    branches:
+      - docs/game-intelligence-architecture-20260805
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    if: "${{ github.event.head_commit.message == 'chore retry game intelligence architecture repairs' }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out package branch
+        uses: actions/checkout@v4
+        with:
+          ref: docs/game-intelligence-architecture-20260805
+          fetch-depth: 0
+
+      - name: Execute corrected repair
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          source = Path('.github/workflows/_repair-game-intelligence-architecture.yml').read_text(encoding='utf-8')
+          start_marker = "          python - <<'PY'\n"
+          end_marker = "\n          PY\n\n          python tools/agents/validate_governance.py"
+          if source.count(start_marker) != 1 or source.count(end_marker) != 1:
+              raise SystemExit('unable to locate repair script markers')
+          body = source.split(start_marker, 1)[1].split(end_marker, 1)[0]
+          code = '\n'.join(line[10:] if line.startswith('          ') else line for line in body.splitlines()) + '\n'
+
+          needle = 'replace_once(task, "pr: null\\n", "pr: \\\"#17\\\"\\n")'
+          if code.count(needle) != 2:
+              raise SystemExit(f'expected two PR replacements, found {code.count(needle)}')
+          scoped = '''p = Path(task)
+text = p.read_text(encoding="utf-8")
+if text.count("pr: null\\n") != 2:
+    raise SystemExit(f"task: expected two null PR fields, found {text.count('pr: null' + chr(10))}")
+p.write_text(text.replace("pr: null\\n", "pr: \\\"#17\\\"\\n"), encoding="utf-8")'''
+          code = code.replace(needle, scoped, 1)
+          code = code.replace(needle, '', 1)
+          Path('/tmp/repair_game_intelligence.py').write_text(code, encoding='utf-8')
+          PY
+
+          python /tmp/repair_game_intelligence.py
+          python tools/agents/validate_governance.py
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/architecture docs/contracts docs/agents
+          git commit -m "docs(architecture): close game intelligence audit gaps"
+          git push origin HEAD:docs/game-intelligence-architecture-20260805
