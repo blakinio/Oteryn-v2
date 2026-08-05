@@ -1,0 +1,48 @@
+name: Run extracted Game Intelligence patch
+
+on:
+  push:
+    branches:
+      - docs/game-intelligence-architecture-20260805
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.event.head_commit.message == 'chore: run extracted game intelligence patch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out package branch
+        uses: actions/checkout@v4
+        with:
+          ref: docs/game-intelligence-architecture-20260805
+          fetch-depth: 0
+
+      - name: Extract and execute patch
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          source = Path('.github/workflows/_apply-game-intelligence-architecture.yml').read_text(encoding='utf-8')
+          start_marker = "          python - <<'PY'\n"
+          end_marker = "\n          PY\n\n          python tools/agents/validate_governance.py"
+          if source.count(start_marker) != 1 or source.count(end_marker) != 1:
+              raise SystemExit('unable to locate embedded patch markers')
+          body = source.split(start_marker, 1)[1].split(end_marker, 1)[0]
+          lines = []
+          for line in body.splitlines():
+              lines.append(line[10:] if line.startswith('          ') else line)
+          Path('/tmp/apply_game_intelligence.py').write_text('\n'.join(lines) + '\n', encoding='utf-8')
+          PY
+
+          python /tmp/apply_game_intelligence.py
+          python tools/agents/validate_governance.py
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/architecture docs/agents
+          git commit -m "docs(architecture): add game intelligence and audit model"
+          git push origin HEAD:docs/game-intelligence-architecture-20260805
