@@ -13,7 +13,7 @@ base_sha: bd87792c92e26835d44c633a6064808f487a58a2
 head_sha: null
 owner: unassigned
 created_at: 2026-08-05T08:49:00+02:00
-updated_at: 2026-08-05T12:42:00+02:00
+updated_at: 2026-08-05T13:25:00+02:00
 execution_budget_minutes: 120
 large_budget_reason: The programme checkpoint spans repository ownership, protocol, runtime, persistence, content, Platform integration, client migration and the global product architecture horizon, while each executable package remains separately bounded.
 owned_paths: []
@@ -32,6 +32,7 @@ depends_on:
   - ADR-0001 through ADR-0005 accepted foundation
 blocks:
   - canonical root Cargo workspace bootstrap until FND-01 is accepted
+  - protocol and Game Session identifier meanings until FND-ID-01 is accepted
   - canonical protocol implementation until FND-02 is accepted
   - authoritative runtime implementation until FND-03 is accepted
   - production admission and character lease implementation until FND-04 is accepted
@@ -103,7 +104,8 @@ Canonical evidence: ADR-0001 through ADR-0005.
 
 ## Stable gate IDs
 
-- `FND-01` — Workspace and Dependency Contract.
+- `FND-01` — Workspace, Dependency and Existing-Rust Migration Contract.
+- `FND-ID-01` — Foundation Identifier Vocabulary.
 - `FND-02` — `protocol-oteryn` v1 Contract.
 - `FND-03` — Runtime Execution Contract.
 - `FND-04` — Identity, Game Session, Admission and Character Lease Contract.
@@ -130,6 +132,7 @@ This bootstrap does not authorize canonical protocol, authoritative runtime, pro
 
 ### Layer gates
 
+- `FND-ID-01` gates freezing identifier meanings in protocol and admission schemas.
 - `FND-02` gates canonical protocol schemas/codecs and production compatibility claims.
 - `FND-03` gates authoritative runtime ordering, lifecycle and recovery.
 - `FND-04` gates production Game Session validation, admission and character lease behavior.
@@ -140,20 +143,28 @@ This bootstrap does not authorize canonical protocol, authoritative runtime, pro
 
 ## Remaining foundation contracts
 
-### `FND-01` — Workspace and Dependency Contract
+### `FND-01` — Workspace, Dependency and Existing-Rust Migration Contract
 
 - exact minimal initial applications, services and crates;
+- pinned existing-Rust workspace inventory and migrate/rename/merge/split/rewrite/reference/drop disposition;
 - immediate consumer and observable acceptance for every member;
 - legal dependency directions and forbidden edges;
 - canonical ownership of identifiers, domain types, protocol schemas, world/content schemas and fixtures;
-- Rust edition/toolchain, feature and dependency policy;
-- initial target platforms and CI matrix;
-- executable dependency-graph enforcement;
+- Rust edition/resolver/toolchain/`rust-version`/lockfile, workspace inheritance, feature and dependency policy;
+- exact target triples and product-realistic target/feature CI matrix;
+- retained machine-readable workspace-boundary contract and executable dependency-graph enforcement;
 - criteria for later adding, splitting or merging crates.
+
+### `FND-ID-01` — Foundation Identifier Vocabulary
+
+- semantic ownership, scope, uniqueness, reuse, durability and visibility of the minimum cross-boundary IDs;
+- canonical wire/Game Session encoding constraints;
+- no premature PostgreSQL layout selection; full durable representation remains in `DUR-01`.
 
 ### `FND-02` — `protocol-oteryn` v1 Contract
 
-- reconcile, revise or explicitly supersede the exact current Platform native contract;
+- reconcile, revise or explicitly supersede the exact latest merged Platform native contract;
+- populate the machine-readable cross-repository contract lock and reject mutable PR heads as canonical;
 - transport, TLS/ALPN, framing, stable schema/IDL and hard limits;
 - revisions, capabilities and downgrade prevention;
 - sequencing, command IDs, replay/idempotency;
@@ -162,7 +173,7 @@ This bootstrap does not authorize canonical protocol, authoritative runtime, pro
 ### `FND-03` — Runtime Execution Contract
 
 - node/world/channel/instance responsibilities;
-- tick and timer model;
+- tick, monotonic/wall-clock and deterministic test-clock model;
 - command ordering and bounded queues;
 - overload/backpressure;
 - parallel work and safe return to the channel writer;
@@ -240,8 +251,10 @@ These do not block initial workspace bootstrap or the foundation vertical slice 
 - [ ] `FND-01` Workspace and Dependency Contract accepted.
 - [ ] A separate minimal workspace-bootstrap task is authorized after `FND-01`; no other foundation contract blocks bootstrap.
 - [ ] Initial workspace members require an immediate consumer and observable acceptance; no empty layering crates.
+- [ ] FND-01 classifies every existing Rust client crate/subsystem and preserves its exact evidence or explicitly rejects it.
 - [ ] Dependency directions become machine-enforced after bootstrap.
-- [ ] `FND-02` accepted and reconciled with Platform before canonical protocol implementation.
+- [ ] `FND-ID-01` accepted before protocol or admission freezes identifier meanings.
+- [ ] `FND-02` accepted and reconciled with a merged, machine-locked Platform revision before canonical protocol implementation.
 - [ ] `FND-03` accepted before authoritative runtime implementation.
 - [ ] `FND-04` accepted before production admission/lease implementation.
 - [x] PostgreSQL and separate Platform/game ownership accepted in ADR-0004.
@@ -337,5 +350,5 @@ counters:
   repair_cycles_for_current_gate: 0
   stall_warnings: 0
 blocker: null
-next_action: Execute the global architecture coordinator prompt and draft, audit, accept, merge and archive FND-01 — the Workspace and Dependency Contract.
+next_action: Execute the global architecture coordinator prompt and draft, audit, accept, merge and archive FND-01 — the Workspace, Dependency and Existing-Rust Migration Contract.
 ```
