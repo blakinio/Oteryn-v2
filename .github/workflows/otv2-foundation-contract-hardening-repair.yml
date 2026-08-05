@@ -1,0 +1,50 @@
+name: OTV2 foundation contract hardening repair
+
+on:
+  push:
+    branches:
+      - docs/foundation-contract-hardening-20260805
+    paths:
+      - .github/workflows/otv2-foundation-contract-hardening-repair.yml
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: docs/foundation-contract-hardening-20260805
+          fetch-depth: 0
+
+      - name: Repair exact task anchor
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          workflow = Path('.github/workflows/otv2-foundation-contract-hardening.yml')
+          text = workflow.read_text(encoding='utf-8')
+          old = "          replace_once(task, 'pr: null', 'pr: 15')\n"
+          new = """          replace_once(task,
+              'branch: docs/foundation-contract-hardening-20260805\\npr: null\\nbase_sha:',
+              'branch: docs/foundation-contract-hardening-20260805\\npr: 15\\nbase_sha:')
+"""
+          if text.count(old) != 1:
+              raise SystemExit(f'expected one repair anchor, found {text.count(old)}')
+          workflow.write_text(text.replace(old, new, 1), encoding='utf-8', newline='\n')
+          Path('.github/workflows/otv2-foundation-contract-hardening-repair.yml').unlink()
+          PY
+          git diff --check
+
+      - name: Persist repair
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "fix(ci): target foundation task PR anchor"
+          git push origin HEAD:docs/foundation-contract-hardening-20260805
