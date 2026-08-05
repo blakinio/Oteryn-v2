@@ -29,10 +29,11 @@ jobs:
           workflow = Path('.github/workflows/otv2-foundation-contract-hardening.yml')
           text = workflow.read_text(encoding='utf-8')
           old = "          replace_once(task, 'pr: null', 'pr: 15')\n"
-          new = """          replace_once(task,
-              'branch: docs/foundation-contract-hardening-20260805\\npr: null\\nbase_sha:',
-              'branch: docs/foundation-contract-hardening-20260805\\npr: 15\\nbase_sha:')
-"""
+          new = (
+              "          replace_once(task,\n"
+              "              'branch: docs/foundation-contract-hardening-20260805\\npr: null\\nbase_sha:',\n"
+              "              'branch: docs/foundation-contract-hardening-20260805\\npr: 15\\nbase_sha:')\n"
+          )
           if text.count(old) != 1:
               raise SystemExit(f'expected one repair anchor, found {text.count(old)}')
           workflow.write_text(text.replace(old, new, 1), encoding='utf-8', newline='\n')
