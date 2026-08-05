@@ -8,7 +8,7 @@ status: implementing
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/foundation-contract-hardening-20260805
-pr: null
+pr: 15
 base_sha: 5c074ad76c52168efede31824d7f28f482f844ce
 head_sha: null
 owner: architecture coordinator
