@@ -49,6 +49,8 @@ These names describe required concepts, not accepted schema or wire identifiers.
 
 A product-profile revision may be upgraded only through an explicit compatibility, migration, validation and rollback process. A world must never silently switch from reference parity to evolved behavior or vice versa.
 
+Reference and evolved profiles are separate logical worlds with distinct `WorldId` values. Every channel of one logical world inherits the same product-profile, ruleset and compatible content revision. Channel switching cannot change profile family, and an instance cannot be used as a hidden bridge between differently balanced worlds or economies.
+
 ## Reference world profile
 
 The reference profile is intended to reproduce Global Tibia closely enough that a knowledgeable player can identify the same fundamental rules and system behavior, and every material deviation can be documented.
@@ -260,7 +262,7 @@ This baseline leaves the following decisions open:
 1. exact definition and measurement of Global Tibia parity;
 2. pinned versus continuously tracking reference-world policy;
 3. first launch profile and whether both profiles launch together;
-4. exact product-profile/ruleset/content revision contract;
+4. exact product-profile/ruleset/content revision contract and its World Registry/Game Gateway admission binding;
 5. initial list of intentional Oteryn improvements;
 6. world naming, branding and player-facing disclosure;
 7. transfer, shared-entitlement and shared-cosmetic policy;
@@ -275,6 +277,7 @@ These belong to `GAME-VISION-01`, `ALPHA-RULESET-01`, `PROD-COMPAT-01`, `GAME-WO
 - `FND-01` remains the immediate programme action.
 - This baseline does not block workspace/client migration because both profiles require the same canonical foundation.
 - `FND-02` must preserve one `protocol-oteryn` family with profile/ruleset capability references rather than protocol forks.
+- `FND-04` and the Platform World Registry/Game Gateway contract must prevent admission to a world/profile revision different from the one selected and authorized.
 - `DUR-02`, `DUR-03` and `DUR-04` must preserve world/profile isolation and versioned migration.
 - `ALPHA-RULESET-01` must define how reference and evolved behavior are selected without engine forks.
 - `GAME-VISION-01` must refine this baseline into measurable product pillars and parity scope.

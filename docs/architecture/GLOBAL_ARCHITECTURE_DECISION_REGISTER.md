@@ -67,6 +67,7 @@ Stable IDs are canonical across tasks, prompts and PRs. Stage labels are descrip
 - Decide whether reference worlds track a pinned release, dated behavior baseline or continuously updated target.
 - Define the first-launch profile strategy, initial intentional Oteryn differences and player-facing profile disclosure.
 - Preserve one engine, client and `protocol-oteryn`; differences remain versioned ruleset/content/product profiles.
+- Require distinct `WorldId` values for reference and evolved worlds; every channel of one logical world inherits one profile family and compatible revision.
 - Preserve default world-scoped character/economy isolation until a dedicated transfer contract proves safety.
 - Link parity evidence, legal/provenance substitutions, profile-specific acceptance and cross-profile isolation scenarios.
 

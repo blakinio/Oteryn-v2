@@ -65,6 +65,7 @@ Must preserve:
 
 - one canonical engine, client and `protocol-oteryn`;
 - explicit versioned product/ruleset/content profiles rather than forks;
+- distinct `WorldId` values across profile families, with one inherited profile family for every channel of a logical world;
 - default world-scoped character and economy isolation;
 - no proprietary code, protocol or asset copying under a parity claim.
 

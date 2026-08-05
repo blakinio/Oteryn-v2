@@ -126,6 +126,7 @@ The following are no longer open questions:
    - Global Tibia behavioral parity is the initial reference target; controlled Oteryn improvements and original expansion may follow.
    - reference and evolved worlds are versioned product/ruleset/content profiles over one canonical engine, native client and `protocol-oteryn`; they are not forks.
    - reusable Platform identity may be shared, while characters, progression, items, currency, houses, market, guilds and rankings remain world-scoped by default.
+   - reference and evolved profiles use distinct logical worlds; every channel of one `WorldId` inherits the same profile family and compatible revision.
    - cross-profile gameplay-value transfer is forbidden until a dedicated contract proves conservation, balance and migration safety.
    - `GAME-VISION-01` must define measurable parity scope, first-launch strategy and initial intentional differences before broad gameplay/content production.
 

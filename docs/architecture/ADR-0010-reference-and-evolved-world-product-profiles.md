@@ -67,9 +67,11 @@ These are semantic requirements, not accepted Rust type names, schemas or wire f
 
 A world may not silently switch between reference and evolved behavior. Profile upgrades require compatibility analysis, migration, validation and rollback.
 
+Reference and evolved profiles use distinct logical `WorldId` values. Every channel belonging to one logical world inherits the same product-profile, ruleset and compatible content revision; changing channel cannot change the product-profile family. An instance may apply explicitly bounded encounter modifiers, but it may not become a hidden cross-profile bridge or a differently balanced economy.
+
 ### 4. Reference parity is measured and explicit
 
-A reference world targets player-observable behavioral and product parity with a named, dated or otherwise immutable Global Tibia baseline.
+A reference world targets player-observable behavioral and product parity with a named, versioned Global Tibia target definition. A continuously tracking policy, if later selected, must still materialize immutable reference revisions so every parity claim names the exact observed target.
 
 Every evaluated behavior must eventually be classified as one of:
 
@@ -191,6 +193,7 @@ Rejected because foundational abstractions, content tooling and client UX would 
 - `GAME-VISION-01` — define measurable product pillars, parity scope and first-launch strategy;
 - `FND-ID-01` — define profile/ruleset/revision identity semantics where needed across boundaries;
 - `FND-02` — carry profile/ruleset/content compatibility through one `protocol-oteryn` family;
+- `FND-04` and the Platform World Registry/Game Gateway contract — expose and bind the selected `WorldId` and compatible profile revision so admission cannot cross profile families;
 - `DUR-02` and `DUR-03` — enforce world/profile-scoped durable character and economy state;
 - `DUR-04` — define versioned content/ruleset source and runtime bundle relationships;
 - `ALPHA-RULESET-01` — define typed policy boundaries without engine forks;
