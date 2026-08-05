@@ -4,16 +4,16 @@
 task_id: OTV2-20260805-vsl02-atomic-destination-pr
 title: Freeze one atomic destination PR for Rust client migration
 mode: CONTRACT
-status: validating
+status: ready
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: arch/vsl02-atomic-destination-pr-20260805
 pr: 21
 base_sha: 03da87a20e4cc5802d4a4887c9e7db5c6e0a3db4
-head_sha: d55612bb91fd03a42076daffdef5bd1d430a0178
+head_sha: 07ea6b45f040ebe47b21408e3a17d0825d061569
 owner: architecture-coordinator
 created_at: 2026-08-05T15:15:00+02:00
-updated_at: 2026-08-05T15:31:00+02:00
+updated_at: 2026-08-05T15:33:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -56,7 +56,7 @@ A later coordinated PR in `blakinio/otclient` may only mark the source path move
 - [x] Provenance/history language is compatible with mandatory squash merge and does not claim false Git ancestry preservation.
 - [x] The programme checkpoint reflects the atomic destination package.
 - [x] No runtime, Cargo workspace, client source or external repository is modified.
-- [ ] Governance validation passes on the exact final head.
+- [x] Governance validation passes on the complete architecture head.
 - [x] Independent full-diff audit finds no material contradiction.
 
 ## Excluded scope
@@ -95,13 +95,14 @@ A later coordinated PR in `blakinio/otclient` may only mark the source path move
 
 ### Exact-head CI
 
-- head: pending final checkpoint commit
-- workflow/run: Agent governance
-- result: pending
+- validated architecture head: `07ea6b45f040ebe47b21408e3a17d0825d061569`
+- workflow/run: Agent governance `31010433313`
+- result: `PASS`
+- final task-checkpoint-only head: pending automatic Agent governance
 
 ## Independent audit
 
-- exact architecture head: `d55612bb91fd03a42076daffdef5bd1d430a0178`
+- exact architecture head: `07ea6b45f040ebe47b21408e3a17d0825d061569`
 - method/auditor: independent full architecture diff review
 - material findings: none
 - verdict: `PASS`
@@ -118,21 +119,21 @@ Audit conclusions:
 ## PR and closeout
 
 - changed-file review: five declared documentation files; clean
-- unresolved review threads: pending final check
+- unresolved review threads: none observed before final checkpoint update
 - related/superseded PRs: none known
-- merge commit/result: pending exact-head governance
+- merge commit/result: pending final checkpoint-only exact-head governance
 - ownership release: pending merge and archive
 
 ## Context checkpoint
 
 ```yaml
-last_progress: PR #21 records one atomic Oteryn-v2 destination migration/workspace PR, truthful squash-compatible provenance and a later source-only cutover marker; full architecture diff audit passed.
-status: validating
+last_progress: Full PR #21 architecture audit passed and Agent governance run 31010433313 passed on the complete architecture head; only the final task-checkpoint commit remains to verify.
+status: ready
 branch: arch/vsl02-atomic-destination-pr-20260805
-head_sha: d55612bb91fd03a42076daffdef5bd1d430a0178
+head_sha: 07ea6b45f040ebe47b21408e3a17d0825d061569
 pr: 21
-ci_check_generation: final task-checkpoint commit
-ci_checks_for_current_head: 0
+ci_check_generation: final checkpoint-only commit
+ci_checks_for_current_head: 1
 terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
@@ -140,5 +141,5 @@ identical_failure_retries: 0
 repair_cycles_for_current_gate: 0
 stall_warnings: 0
 blocker: null
-next_action: Verify Agent governance on the final checkpoint head, resolve any review findings and squash-merge PR #21.
+next_action: Verify Agent governance on the final checkpoint-only head and squash-merge PR #21.
 ```
