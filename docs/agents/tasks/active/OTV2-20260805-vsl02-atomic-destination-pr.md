@@ -4,16 +4,16 @@
 task_id: OTV2-20260805-vsl02-atomic-destination-pr
 title: Freeze one atomic destination PR for Rust client migration
 mode: CONTRACT
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: arch/vsl02-atomic-destination-pr-20260805
-pr: null
+pr: 21
 base_sha: 03da87a20e4cc5802d4a4887c9e7db5c6e0a3db4
-head_sha: null
+head_sha: d55612bb91fd03a42076daffdef5bd1d430a0178
 owner: architecture-coordinator
 created_at: 2026-08-05T15:15:00+02:00
-updated_at: 2026-08-05T15:15:00+02:00
+updated_at: 2026-08-05T15:31:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -51,13 +51,13 @@ A later coordinated PR in `blakinio/otclient` may only mark the source path move
 
 ## Acceptance criteria
 
-- [ ] ADR-0002 requires one atomic destination PR and defines the separate source-marker rollout.
-- [ ] The backlog and global register remove the option for a separate post-migration workspace-bootstrap PR.
-- [ ] Provenance/history language is compatible with mandatory squash merge and does not claim false Git ancestry preservation.
-- [ ] The programme checkpoint reflects the atomic destination package.
-- [ ] No runtime, Cargo workspace, client source or external repository is modified.
+- [x] ADR-0002 requires one atomic destination PR and defines the separate source-marker rollout.
+- [x] The backlog and global register remove the option for a separate post-migration workspace-bootstrap PR.
+- [x] Provenance/history language is compatible with mandatory squash merge and does not claim false Git ancestry preservation.
+- [x] The programme checkpoint reflects the atomic destination package.
+- [x] No runtime, Cargo workspace, client source or external repository is modified.
 - [ ] Governance validation passes on the exact final head.
-- [ ] Independent full-diff audit finds no material contradiction.
+- [x] Independent full-diff audit finds no material contradiction.
 
 ## Excluded scope
 
@@ -70,15 +70,18 @@ A later coordinated PR in `blakinio/otclient` may only mark the source path move
 ## Implementation / findings
 
 - Owner selected one destination PR rather than separate import and workspace-consolidation PRs.
+- ADR-0002 now requires the import, FND-01 dispositions, root workspace, dependency enforcement, `protocol-canary` isolation, provenance, validation and rollback evidence on one destination head.
 - The source repository remains immutable history/provenance evidence after cutover.
+- Mandatory squash merge is reconciled with truthful provenance through exact source SHA/range and machine-readable source-to-destination mapping, not a false ancestry claim.
 - The later source-marker PR is cross-repository closeout and cannot carry destination architecture or runtime changes.
+- Until that source marker is terminal, a cutover hold prevents two independently developed canonical clients.
 
 ## Validation
 
 ### Focused
 
-- command/run: pending full changed-file review
-- result: pending
+- command/run: full PR #21 diff review against base `03da87a20e4cc5802d4a4887c9e7db5c6e0a3db4`
+- result: exactly five declared documentation files changed; temporary workflow removed; no runtime, Cargo or external-repository paths changed
 
 ### Component/integration
 
@@ -92,34 +95,43 @@ A later coordinated PR in `blakinio/otclient` may only mark the source path move
 
 ### Exact-head CI
 
-- head: pending
+- head: pending final checkpoint commit
 - workflow/run: Agent governance
 - result: pending
 
 ## Independent audit
 
-- exact head: pending
-- method/auditor: full architecture diff review
-- material findings: pending
-- verdict: pending
+- exact architecture head: `d55612bb91fd03a42076daffdef5bd1d430a0178`
+- method/auditor: independent full architecture diff review
+- material findings: none
+- verdict: `PASS`
+
+Audit conclusions:
+
+- one destination PR is compatible with the accepted early VSL-02 sequencing;
+- source freeze plus the later marker prevents simultaneous active canonical development;
+- mandatory squash merge is described truthfully and does not claim imported source ancestry;
+- rollback authority remains with VSL-02 and source remains canonical if the destination does not merge;
+- no Platform, protocol, runtime, persistence, content, multichannel or Game Intelligence boundary changed;
+- no runtime capability or migration completion is claimed.
 
 ## PR and closeout
 
-- changed-file review: pending
-- unresolved review threads: pending
+- changed-file review: five declared documentation files; clean
+- unresolved review threads: pending final check
 - related/superseded PRs: none known
-- merge commit/result: pending
-- ownership release: pending
+- merge commit/result: pending exact-head governance
+- ownership release: pending merge and archive
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner selected one atomic Oteryn-v2 destination PR for migration plus workspace consolidation, with a later source-only marker PR.
-status: implementing
+last_progress: PR #21 records one atomic Oteryn-v2 destination migration/workspace PR, truthful squash-compatible provenance and a later source-only cutover marker; full architecture diff audit passed.
+status: validating
 branch: arch/vsl02-atomic-destination-pr-20260805
-head_sha: null
-pr: null
-ci_check_generation: null
+head_sha: d55612bb91fd03a42076daffdef5bd1d430a0178
+pr: 21
+ci_check_generation: final task-checkpoint commit
 ci_checks_for_current_head: 0
 terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
@@ -128,5 +140,5 @@ identical_failure_retries: 0
 repair_cycles_for_current_gate: 0
 stall_warnings: 0
 blocker: null
-next_action: Update ADR-0002, the foundation backlog, global register and programme checkpoint with the atomic destination PR decision.
+next_action: Verify Agent governance on the final checkpoint head, resolve any review findings and squash-merge PR #21.
 ```
