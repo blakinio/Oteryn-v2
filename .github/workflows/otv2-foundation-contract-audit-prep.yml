@@ -1,0 +1,50 @@
+name: OTV2 foundation contract audit preparation
+
+on:
+  push:
+    branches:
+      - docs/foundation-contract-hardening-20260805
+    paths:
+      - .github/workflows/otv2-foundation-contract-audit-prep.yml
+
+permissions:
+  contents: write
+
+jobs:
+  normalize-prompt-labels:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: docs/foundation-contract-hardening-20260805
+          fetch-depth: 0
+
+      - name: Normalize exact prompt labels
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('docs/agents/prompts/OTV2_GLOBAL_ARCHITECTURE_DECISION_COORDINATOR.md')
+          text = path.read_text(encoding='utf-8')
+          replacements = {
+              '- `DUR-01` — Identifiers;': '- `DUR-01` — Identifier Contract;',
+              '- `VSL-02` — Exact Rust Client Migration.': '- `VSL-02` — Exact Rust Client Migration Contract.',
+          }
+          for old, new in replacements.items():
+              if text.count(old) != 1:
+                  raise SystemExit(f'expected one prompt label, found {text.count(old)}: {old}')
+              text = text.replace(old, new, 1)
+          path.write_text(text, encoding='utf-8', newline='\n')
+          PY
+          git diff --check
+
+      - name: Persist prompt normalization
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/agents/prompts/OTV2_GLOBAL_ARCHITECTURE_DECISION_COORDINATOR.md
+          git commit -m "docs(agents): normalize foundation gate labels"
+          git push origin HEAD:docs/foundation-contract-hardening-20260805
