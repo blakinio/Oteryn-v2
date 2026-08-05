@@ -4,16 +4,16 @@
 task_id: OTV2-20260805-foundation-contract-hardening
 title: Harden foundation ordering, migration evidence and cross-repository contracts
 mode: CONTRACT
-status: implementing
+status: ready
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/foundation-contract-hardening-20260805
 pr: 15
 base_sha: 5c074ad76c52168efede31824d7f28f482f844ce
-head_sha: null
+head_sha: 2d35599e4465d70c17bcb2877503499b8c6f2717
 owner: architecture coordinator
 created_at: 2026-08-05T13:15:00+02:00
-updated_at: 2026-08-05T13:38:00+02:00
+updated_at: 2026-08-05T13:49:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -42,7 +42,7 @@ depends_on:
   - ADR-0001 through ADR-0005
   - merged foundation execution guardrails PRs 13 and 14
 blocks:
-  - FND-01 launch until ordering and evidence requirements are reconciled
+  - FND-01 launch until this package is merged and archived
 cross_repository_coordination_id: OTV2-NATIVE-FOUNDATION
 external_repositories:
   - blakinio/Oteryn-Platform
@@ -59,9 +59,9 @@ Persist the owner-approved architecture hardening discovered during the final pr
 ### PROVEN
 
 - The canonical Oteryn v2 repository has no root Cargo workspace at base SHA `5c074ad76c52168efede31824d7f28f482f844ce`.
-- `blakinio/otclient/oteryn-client` already contains merged Tokio transport, deterministic simulation/snapshot, architecture checks and other reusable Rust contracts.
-- The current Platform native protocol contract is being corrected under `OTS-20260804-native-protocol-selection`; unmerged PR heads are not canonical contract revisions.
-- The existing order places the full identifier contract after protocol and admission contracts even though those contracts already require stable identifier semantics.
+- `blakinio/otclient/oteryn-client` already contains merged Tokio transport, deterministic simulation/snapshot, architecture checks and other reusable Rust contracts that FND-01 must classify at an exact source SHA.
+- Platform PR #540 merged as `c0b8703d326a04b43ae8e06f6192b0cb91c859b7`; canonical contract revision `2`, schema revision `2` and schema SHA-256 `9c67f19525400fb9890d2a3541ceb6d02eb955061540ad39ca1c1d891c06eba9` are now locked without claiming Oteryn-v2 FND-02 acceptance or runtime completion.
+- The previous order placed the full durable identifier contract after protocol and admission contracts even though those contracts require stable identifier meanings first.
 
 ### DERIVED
 
@@ -70,81 +70,96 @@ Persist the owner-approved architecture hardening discovered during the final pr
 
 ## Acceptance criteria
 
-- [ ] Introduce stable gate `FND-ID-01` before `FND-02` and `FND-04`, while retaining `DUR-01` for full durable/database identity decisions.
-- [ ] Expand FND-01 to require exact existing-Rust migration classification and evidence, Cargo/toolchain/feature/target policy, and a machine-readable dependency-boundary model.
-- [ ] Require a machine-readable cross-repository contract lock that accepts only merged canonical revisions and represents pending corrections as unresolved.
-- [ ] Add initial machine-readable resource-limit registry and normative foundation error/failure scenario catalogues without inventing runtime values.
-- [ ] Add clock semantics, world-format spike and exact client cutover requirements to the correct later gates.
-- [ ] Reconcile backlog, global register, programme checkpoint, coordinator prompt and agent cross-repository/build/repository maps.
-- [ ] Governance validation passes on the exact final head.
-- [ ] Independent full-diff audit reports zero open material findings.
+- [x] Introduce stable gate `FND-ID-01` before `FND-02` and `FND-04`, while retaining `DUR-01` for full durable/database identity representation.
+- [x] Expand FND-01 to require exact existing-Rust migration classification and evidence, Cargo/toolchain/feature/target policy, and a machine-readable dependency-boundary model.
+- [x] Require a machine-readable cross-repository contract lock that accepts only merged canonical revisions and leaves unresolved revisions non-canonical.
+- [x] Lock the merged Platform contract correction at its exact merge commit, contract/schema revisions and canonical schema digest without claiming implementation or FND-02 acceptance.
+- [x] Add an initial machine-readable resource-limit registry and normative foundation error/failure scenario catalogues without inventing runtime values.
+- [x] Add clock semantics, a bounded world-format spike and exact client cutover requirements to the correct later gates.
+- [x] Reconcile backlog, global register, programme checkpoint, coordinator prompt and agent cross-repository/build/repository maps.
+- [x] Retain the new contracts through permanent governance inputs and semantic validation.
+- [x] Governance validation passes on the exact audited content head.
+- [x] Independent full-diff audit reports zero open material findings.
 
 ## Excluded scope
 
 - No root Cargo workspace, crate, protocol codec, runtime, database schema, client source migration or production behavior.
 - No writes to external repositories.
-- No acceptance of an unmerged Platform PR or mutable PR head as a canonical revision.
-- No final UUID/integer, tick frequency, queue size, chunk size or error-code value selection.
+- No acceptance of a mutable PR head as a canonical revision.
+- No claim that the disabled Platform producer, Rust server or Rust client consumers are migrated or implemented.
+- No final UUID/integer, tick frequency, queue size, chunk size or contract-owned numeric error-code selection.
 
 ## Implementation / findings
 
-- Task, dedicated branch and draft PR #15 created from exact current `main`.
-- Repository had no overlapping active package or open PR at task start.
-- Bounded architecture patch reconciles order, migration evidence and shared machine-readable registries.
-- Audit finding `OTV2-FND-HARDEN-001` repaired stale DUR-01 wire-freeze wording and made the new registries retained governance inputs with semantic validation.
+- Task, dedicated branch and draft PR #15 were created from exact current `main` with no overlapping active package or open PR.
+- The ordered programme now separates `FND-ID-01` semantic identity from `DUR-01` durable/database representation.
+- FND-01 now requires a pinned existing-Rust inventory and one explicit migration disposition per crate/subsystem: migrate as-is, migrate/rename, merge, split, rewrite, reference-only or drop.
+- Cargo/toolchain, target/feature matrix, machine-readable workspace boundaries, cross-repository locking, resource limits, stable error categories and failure scenarios are mandatory retained inputs.
+- Platform PR #540 changed from open to merged during execution; the contract lock was refreshed from live state rather than preserving a stale pending entry.
+
+## Audit repairs
+
+- `OTV2-FND-HARDEN-001`: stale programme wording still assigned wire-identity freezing to `DUR-01`; repaired by making `FND-ID-01` the wire/session semantic gate and renaming `DUR-01` to the durable representation contract.
+- `OTV2-FND-HARDEN-002`: new JSON registries initially had only parse-time validation; repaired by adding them to permanent governance inputs and validating lock state, SHA/revision grammar, required limit fields, uniqueness and hard maxima.
+- `OTV2-FND-HARDEN-003`: temporary validation generated Python bytecode in the branch; removed, with no generated or temporary workflow path remaining.
+- `OTV2-FND-HARDEN-004`: external Platform contract state changed during the audit; refreshed to merged commit `c0b8703d326a04b43ae8e06f6192b0cb91c859b7` and immutable schema identity.
 
 ## Validation
 
 ### Focused
 
-- command/run: `python tools/agents/validate_governance.py`
-- result: pending
+- core architecture application run `31001676593`, job `92291795974`: governance, JSON parsing and diff hygiene `PASS`;
+- audit-repair run `31002153221`, attempt `2`, job `92293869768`: repaired governance, Python syntax and diff hygiene `PASS`;
+- permanent semantic governance validator on content head `2d35599e4465d70c17bcb2877503499b8c6f2717`: `PASS`.
 
 ### Component/integration
 
-- result: `NOT_APPLICABLE` — documentation and machine-readable architecture contracts only
+- result: `NOT_APPLICABLE` — documentation, machine-readable architecture contracts and their governance validator only.
 
 ### E2E
 
-- result: `NOT_APPLICABLE` — no executable runtime behavior changes
+- result: `NOT_APPLICABLE` — no executable runtime behavior changed.
 
 ### Exact-head CI
 
-- head: pending
-- workflow/run: Agent governance, pending
-- result: pending
+- audited content head: `2d35599e4465d70c17bcb2877503499b8c6f2717`;
+- Agent governance run `31002575466`: `PASS`;
+- final task-checkpoint head requires the standard exact-head Agent governance gate before merge.
 
 ## Independent audit
 
-- exact head: pending
-- method/auditor: adversarial full-diff architecture and consistency review
-- material findings: pending
-- verdict: pending
+- audited content head: `2d35599e4465d70c17bcb2877503499b8c6f2717`;
+- method: adversarial full-diff review of ordering, authority, mutable-versus-merged external revisions, migration ownership, validator behavior, generated files and scope boundaries;
+- critical findings: `0`;
+- high findings: `0`;
+- open material-medium findings after repair: `0`;
+- verdict: `PASS`.
 
 ## PR and closeout
 
-- changed-file review: pending
-- unresolved review threads: pending
-- related/superseded PRs: none
-- merge commit/result: pending
-- ownership release: pending
+- changed-file review: `PASS` — intended architecture, governance, contract and validator paths only;
+- temporary workflows/generated bytecode remaining: `0`;
+- unresolved review threads/comments/requested changes: `0`;
+- related/superseded PRs: none;
+- implementation merge: pending protected squash merge of PR #15;
+- ownership release: pending separate lifecycle archive after merge.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Audit repair aligned FND-ID-01/DUR-01 boundaries and added retained semantic validation for contract-lock and resource-limit registries.
-status: implementing
+last_progress: Final architecture content and merged Platform contract lock are audited with zero open material findings; exact content-head Agent governance passed.
+status: ready
 branch: docs/foundation-contract-hardening-20260805
-head_sha: null
+head_sha: 2d35599e4465d70c17bcb2877503499b8c6f2717
 pr: 15
-ci_check_generation: null
-ci_checks_for_current_head: 0
+ci_check_generation: 31002575466
+ci_checks_for_current_head: 1
 terminal_ci_wait_started_at: null
-terminal_ci_checks_for_current_generation: 0
+terminal_ci_checks_for_current_generation: 1
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 1
+repair_cycles_for_current_gate: 2
 stall_warnings: 0
 blocker: null
-next_action: Re-audit the exact repaired diff, record final validation evidence and prepare PR #15 for protected merge.
+next_action: Require Agent governance on this final task-checkpoint head, mark PR #15 ready for review, then squash-merge and archive the task in a separate lifecycle PR.
 ```
