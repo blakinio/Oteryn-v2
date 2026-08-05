@@ -12,6 +12,7 @@ Preserve the complete set of material areas identified during the 2026-08-05 arc
 This document distinguishes three states:
 
 - **ACCEPTED** — an ADR or accepted contract already freezes the relevant boundary;
+- **PARTIALLY_ACCEPTED** — an ADR freezes a high-level direction, while a registered gate still must resolve measurable scope and detailed behavior;
 - **REGISTERED_UNRESOLVED** — an existing gate names the area, but its detailed contract is not accepted;
 - **NEWLY_IDENTIFIED** — the review found an important area that is not yet represented precisely enough by an existing gate.
 
