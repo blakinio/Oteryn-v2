@@ -1,0 +1,40 @@
+name: Temporary correction for ADR-0009 synchronization
+
+on:
+  push:
+    branches:
+      - docs/sync-adr-0009-registers
+
+permissions:
+  contents: write
+
+jobs:
+  correct-and-remove:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: docs/sync-adr-0009-registers
+          fetch-depth: 0
+
+      - name: Correct exact source match
+        shell: python
+        run: |
+          from pathlib import Path
+
+          target = Path(".github/workflows/temporary-sync-adr-0009.yml")
+          text = target.read_text(encoding="utf-8")
+          old = "- Status: `EXPANSION`.\\n- Deployment"
+          new = "- Status: `EXPANSION`\\n- Deployment"
+          if text.count(old) != 2:
+              raise SystemExit(f"expected two exact assertion fragments, found {text.count(old)}")
+          target.write_text(text.replace(old, new), encoding="utf-8")
+          Path(".github/workflows/temporary-fix-sync-workflow.yml").unlink()
+
+      - name: Commit correction
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/workflows/temporary-sync-adr-0009.yml .github/workflows/temporary-fix-sync-workflow.yml
+          git commit -m "fix: correct ADR-0009 sync assertion"
+          git push origin HEAD:docs/sync-adr-0009-registers
