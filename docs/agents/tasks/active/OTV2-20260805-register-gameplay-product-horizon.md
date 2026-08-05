@@ -7,13 +7,13 @@ mode: CONTRACT
 status: ready
 repository: blakinio/Oteryn-v2
 base_branch: main
-branch: arch/register-gameplay-product-horizon-20260805
-pr: 24
-base_sha: 0cff8ae0c98cddefd18a29b1c4da0935f94a74fd
-head_sha: 08020511a8d3456cb52b8de7e24cab57948921d8
+branch: arch/register-gameplay-product-horizon-v2-20260805
+pr: 29
+base_sha: 1b4aec6e094477bc1bda054ad660d6e39db44d6a
+head_sha: 4985a090d414800d39443ddfcb89fa5a4bb22580
 owner: architecture-coordinator
 created_at: 2026-08-05T15:41:00+02:00
-updated_at: 2026-08-05T16:00:00+02:00
+updated_at: 2026-08-05T16:25:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -80,7 +80,7 @@ The package preserves `FND-01` as the immediate next action and does not authori
 
 ### Focused
 
-- command/run: full PR #24 diff review against base `0cff8ae0c98cddefd18a29b1c4da0935f94a74fd`
+- command/run: full PR #29 diff review against base `1b4aec6e094477bc1bda054ad660d6e39db44d6a`
 - result: exactly five declared documentation files changed; 17 stable gates registered; no temporary workflow/script, runtime, Cargo or external-repository paths remain
 
 ### Component/integration
@@ -95,13 +95,13 @@ The package preserves `FND-01` as the immediate next action and does not authori
 
 ### Exact-head CI
 
-- architecture head: `08020511a8d3456cb52b8de7e24cab57948921d8`
+- architecture head: `4985a090d414800d39443ddfcb89fa5a4bb22580`
 - workflow/run: Agent governance pending after ready-for-review transition
 - result: pending
 
 ## Independent audit
 
-- exact architecture head: `08020511a8d3456cb52b8de7e24cab57948921d8`
+- exact architecture head: `4985a090d414800d39443ddfcb89fa5a4bb22580`
 - method/auditor: independent full-diff, stable-ID, scope-overlap and dependency-order review
 - material findings: none
 - verdict: `PASS`
@@ -120,18 +120,18 @@ Audit conclusions:
 
 - changed-file review: five declared documentation files; clean
 - unresolved review threads: none observed before ready-for-review transition
-- related/superseded PRs: none
+- related/superseded PRs: PR #24 superseded due stale required-check state after mid-flight ruleset changes
 - merge commit/result: pending exact-head governance
 - ownership release: pending merge and archive
 
 ## Context checkpoint
 
 ```yaml
-last_progress: PR #24 full architecture and domain-coverage audit passed on head 08020511a8d3456cb52b8de7e24cab57948921d8; the final task-checkpoint commit must now pass Agent governance.
+last_progress: Fresh PR #29 contains the unchanged audited five-file architecture diff on current main; the final task-checkpoint commit must now pass exact-head checks.
 status: ready
-branch: arch/register-gameplay-product-horizon-20260805
-head_sha: 08020511a8d3456cb52b8de7e24cab57948921d8
-pr: 24
+branch: arch/register-gameplay-product-horizon-v2-20260805
+head_sha: 4985a090d414800d39443ddfcb89fa5a4bb22580
+pr: 29
 ci_check_generation: final checkpoint-only commit
 ci_checks_for_current_head: 0
 terminal_ci_wait_started_at: null
@@ -141,5 +141,5 @@ identical_failure_retries: 0
 repair_cycles_for_current_gate: 0
 stall_warnings: 0
 blocker: null
-next_action: Mark PR #24 ready for review and verify Agent governance on the exact final head.
+next_action: Mark PR #29 ready for review and verify Agent governance, Dependency review and CodeQL on the exact final head.
 ```
