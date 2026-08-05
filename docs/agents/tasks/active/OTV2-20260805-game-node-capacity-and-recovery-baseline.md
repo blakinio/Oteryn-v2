@@ -4,16 +4,16 @@
 task_id: OTV2-20260805-game-node-capacity-and-recovery-baseline
 title: Record GameNode execution, capacity, deployment and recovery baseline
 mode: CONTRACT
-status: validating
+status: waiting
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/adr-0008-protocol-canary-reference-only
 pr: 37
 base_sha: 52ef04882e13771829e0159b63410a7cd9e80150
-head_sha: ac4affe5b3eab63a175ed3ac700e9d937e2f4f10
+head_sha: 3d6df771105156f6125c6f204fc48019079f53b7
 owner: GPT-5.6-Thinking-architecture-coordinator
 created_at: 2026-08-05T19:45:00+02:00
-updated_at: 2026-08-05T19:45:00+02:00
+updated_at: 2026-08-05T19:56:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -57,7 +57,7 @@ The package deliberately records invariants and required evidence while leaving 
 
 ### ACCEPTED DIRECTION
 
-- `GameNode` means one logical running instance of the game-server process with its own `GameNodeId`; it is not a physical host or Kubernetes Node.
+- `GameNode` means one logical running instance of the game-server process identified by the existing canonical `NodeId`; it is not a physical host or Kubernetes Node.
 - Production defaults to one GameNode process per container, while the same binary remains runnable as a native process.
 - One GameNode may host several ChannelRuntimes; a dedicated one-channel GameNode remains a supported placement option.
 - The server is multithreaded, but one logical writer commits authoritative mutations for each channel.
@@ -83,7 +83,7 @@ The package deliberately records invariants and required evidence while leaving 
 - [x] Critical durable operations remain atomic/idempotent and protected against duplication during crash recovery.
 - [x] Follow-up gates `PERF-01` and `OPS-CHANNEL-01` are registered with explicit ownership.
 - [x] No runtime code, deployment configuration, external repository or production system is changed.
-- [ ] Full changed-file and full-diff architecture audit passes.
+- [x] Full changed-file and architecture audit passes after correcting identifier terminology.
 - [ ] Exact-head required workflows pass.
 
 ## Excluded scope
@@ -101,13 +101,14 @@ The package deliberately records invariants and required evidence while leaving 
 - Registered `PERF-01` for capacity/performance/scalability and `OPS-CHANNEL-01` for GameNode deployment, dynamic channel orchestration and recovery.
 - Preserved existing ownership boundaries: `FND-03` owns execution, `FND-04` owns sessions/leases, `DUR-02` owns durable recovery, `DUR-03` owns item/currency conservation and `QA-E2E-01` owns physical failure evidence.
 - Reused PR #37 because the owner extended the current architecture package while it remained open; this task owns only new non-overlapping paths.
+- Audit finding corrected: `GameNode` names the runtime concept, but `NodeId` remains the accepted stable identifier pending `FND-ID-01`; the ADR no longer prematurely renames it to `GameNodeId`.
 
 ## Validation
 
 ### Focused
 
-- command/run: pending complete read-through and changed-file review of ADR-0009 and this task record
-- result: pending
+- command/run: complete read-through and changed-file patch review for ADR-0009 and this task record
+- result: `PASS`; terminology, ownership boundaries, deferrals and acceptance evidence are internally consistent
 
 ### Component/integration
 
@@ -121,32 +122,38 @@ The package deliberately records invariants and required evidence while leaving 
 
 ### Exact-head CI
 
-- head: pending final documentation head
-- workflow/run: pending
-- result: pending
+- validated architecture head before this checkpoint: `3d6df771105156f6125c6f204fc48019079f53b7`
+- workflow/run: pending refreshed required checks on the final documentation head
+- result: `WAITING`
 
 ## Independent audit
 
-- exact head: pending final documentation head
+- exact head: `3d6df771105156f6125c6f204fc48019079f53b7`
 - method/auditor: adversarial architecture review against ADR-0001, ADR-0003, ADR-0004, ADR-0007, FND-03/FND-04/DUR-02/DUR-03 ownership and repository governance
-- material findings: pending
-- verdict: pending
+- material findings: none after correcting the premature `GameNodeId` rename
+- observations:
+  - the ADR selects architectural invariants but not unsupported numerical capacity claims;
+  - the GameNode process remains separate from the host and orchestrator control plane;
+  - channel recovery preserves one-owner fencing and cannot silently become channel hopping;
+  - capacity and recovery claims remain blocked on representative benchmark and physical failure evidence;
+  - no public wire, persistence schema or runtime implementation is frozen by this documentation package.
+- verdict: `PASS`
 
 ## PR and closeout
 
-- changed-file review: pending
-- unresolved review threads: pending
+- changed-file review: `PASS` for the two newly owned paths; the preceding ADR-0008 package retained its prior audit result
+- unresolved review threads: pending refreshed PR check
 - related/superseded PRs: PR #37 also contains ADR-0008; no path ownership overlap
-- merge commit/result: pending
+- merge commit/result: pending required exact-head workflows
 - ownership release: pending merge and archive
 
 ## Context checkpoint
 
 ```yaml
-last_progress: ADR-0009 records the GameNode execution, capacity, deployment, dynamic-channel and failure-recovery baseline.
-status: validating
+last_progress: ADR-0009 records the audited GameNode execution, capacity, deployment, dynamic-channel and failure-recovery baseline with canonical NodeId terminology preserved.
+status: waiting
 branch: docs/adr-0008-protocol-canary-reference-only
-head_sha: ac4affe5b3eab63a175ed3ac700e9d937e2f4f10
+head_sha: 3d6df771105156f6125c6f204fc48019079f53b7
 pr: 37
 ci_check_generation: null
 ci_checks_for_current_head: 0
@@ -154,8 +161,8 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 0
+repair_cycles_for_current_gate: 1
 stall_warnings: 0
-blocker: null
-next_action: Audit the complete PR diff and update PR metadata for the expanded architecture scope.
+blocker: Required exact-head GitHub workflows have not yet passed on the final documentation head.
+next_action: Reconcile the final PR head, review threads and required exact-head workflows before merge.
 ```
