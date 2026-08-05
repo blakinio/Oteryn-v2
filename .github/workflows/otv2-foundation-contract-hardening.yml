@@ -1,0 +1,350 @@
+name: OTV2 foundation contract hardening
+
+on:
+  push:
+    branches:
+      - docs/foundation-contract-hardening-20260805
+    paths:
+      - .github/workflows/otv2-foundation-contract-hardening.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply-and-validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: docs/foundation-contract-hardening-20260805
+          fetch-depth: 0
+
+      - name: Apply bounded architecture patch
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+
+          root = Path('.')
+
+          def read(path):
+              return (root / path).read_text(encoding='utf-8')
+
+          def write(path, text):
+              p = root / path
+              p.parent.mkdir(parents=True, exist_ok=True)
+              p.write_text(text, encoding='utf-8', newline='\n')
+
+          def replace_once(path, old, new):
+              text = read(path)
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'{path}: expected one anchor, found {count}: {old[:120]!r}')
+              write(path, text.replace(old, new, 1))
+
+          backlog = 'docs/architecture/FOUNDATION_DECISION_BACKLOG.md'
+          replace_once(backlog,
+              '- `FND-01` — Workspace and Dependency Contract.\n- `FND-02` — `protocol-oteryn` v1 Contract.',
+              '- `FND-01` — Workspace, Dependency and Existing-Rust Migration Contract.\n- `FND-ID-01` — Foundation Identifier Vocabulary.\n- `FND-02` — `protocol-oteryn` v1 Contract.')
+          replace_once(backlog,
+              '- `FND-02` gates canonical protocol schemas/codecs, production framing and compatibility claims.',
+              '- `FND-ID-01` gates freezing identifier representations in protocol, Game Session and admission contracts.\n- `FND-02` gates canonical protocol schemas/codecs, production framing and compatibility claims.')
+          replace_once(backlog,
+              '### `FND-01` — Workspace and Dependency Contract\n\nThis is the only contract that blocks creation of the canonical root Cargo workspace.\n\nDecide:\n\n- exact minimal initial workspace members and crate/application names;',
+              '### `FND-01` — Workspace, Dependency and Existing-Rust Migration Contract\n\nThis is the only contract that blocks creation of the canonical root Cargo workspace. It is also the mandatory migration audit for the existing Rust implementation in `blakinio/otclient/oteryn-client`; it must not design a duplicate workspace in isolation.\n\nDecide:\n\n- exact minimal initial workspace members and crate/application names;\n- an exact source-SHA inventory of existing Rust crates, public contracts, consumers, tests and dependency edges;\n- one migration disposition per existing crate or subsystem: `MIGRATE_AS_IS`, `MIGRATE_AND_RENAME`, `MERGE`, `SPLIT`, `REWRITE`, `REFERENCE_ONLY` or `DROP`;')
+          replace_once(backlog,
+              '- target Rust edition and minimum supported toolchain;\n- initial CI targets, at minimum Linux server and Windows client;',
+              '- target Rust edition, resolver, pinned toolchain, `rust-version`, root lockfile and `--locked` policy;\n- inheritance policy for workspace package metadata, dependencies and lints;\n- initial CI targets and exact target triples, at minimum Linux server and Windows client;\n- a product-realistic feature/target matrix; `--all-features` is supplemental evidence and must not be the sole proof;')
+          replace_once(backlog,
+              '- executable checks that enforce the accepted dependency graph;\n- criteria for adding, splitting or merging crates later.',
+              '- a retained machine-readable `workspace-boundaries.toml` contract and executable `cargo metadata --locked` checks that enforce the accepted dependency graph;\n- canonical ownership and required locations for the cross-repository contract lock, resource-limit registry, error vocabulary and failure-scenario catalogue;\n- criteria for adding, splitting or merging crates later.')
+          replace_once(backlog,
+              'Mandatory direction: domain and simulation crates do not depend on Tokio, TCP, TLS, HTTP, SQL, PostgreSQL, Platform APIs, renderer state or UI widgets. World/content schema crates do not depend on Tauri, editor UI or renderer implementation. These boundaries must become machine-checked after bootstrap.\n\n### `FND-02` — `protocol-oteryn` v1 Contract',
+              'Mandatory direction: domain and simulation crates do not depend on Tokio, TCP, TLS, HTTP, SQL, PostgreSQL, Platform APIs, renderer state or UI widgets. World/content schema crates do not depend on Tauri, editor UI or renderer implementation. These boundaries must become machine-checked after bootstrap.\n\n### `FND-ID-01` — Foundation Identifier Vocabulary\n\nAccept this minimum vocabulary after `FND-01` and before `FND-02` or `FND-04` freezes wire/session schemas. Decide only the semantics required across process and repository boundaries:\n\n- meaning, canonical owner and scope of `AccountId`, `CharacterId`, `WorldId`, `ChannelId`, `InstanceId`, `NodeId`, `GameSessionId`, `CommandId`, `EntityId`, `ProtocolRevision`, `RulesetRevision`, `ContentRevision` and `SessionGeneration`;\n- global versus scoped uniqueness and whether reuse is permitted;\n- durable versus runtime-only identity;\n- public/client-visible versus opaque identity;\n- canonical comparison, textual diagnostics and wire/Game Session encoding constraints;\n- compatibility and migration rules when an external producer uses a different storage representation.\n\nDo not freeze PostgreSQL column types, indexes, full item-instance identity or every durable entity here. Those remain in `DUR-01`; the purpose of `FND-ID-01` is to prevent protocol and admission contracts from inventing incompatible meanings first.\n\n### `FND-02` — `protocol-oteryn` v1 Contract')
+          replace_once(backlog,
+              '- whether the existing Platform native contract is adopted, revised or explicitly superseded for the Rust server target;',
+              '- whether the exact latest merged Platform native contract is adopted, revised or explicitly superseded for the Rust server target; mutable PR heads are evidence only and cannot be canonical;\n- the machine-readable `docs/contracts/CROSS_REPOSITORY_CONTRACT_LOCK.json` entry with merged commit, schema revision/hash, producer/consumer status and rollout order;')
+          replace_once(backlog,
+              '- compression rules and bounded allocation;\n- golden fixtures shared by client and server.',
+              '- compression rules and bounded allocation;\n- entries in the resource-limit registry for every externally controlled size/depth/count;\n- stable machine error categories and mapping into the foundation error vocabulary;\n- golden fixtures shared by client and server.')
+          replace_once(backlog,
+              '- fixed or variable tick model and initial tick frequency;\n- authoritative command ordering;',
+              '- fixed or variable tick model and initial tick frequency;\n- monotonic versus wall-clock ownership, clock-skew tolerance, tick-to-time conversion and injected deterministic test clocks;\n- authoritative command ordering;')
+          replace_once(backlog,
+              '- checkpoint and crash-recovery boundary.',
+              '- checkpoint and crash-recovery boundary;\n- required outcomes for the named foundation failure scenarios covering overload, stale generations, dependency loss, split ownership and recovery.')
+          replace_once(backlog,
+              '### `FND-04` — Identity, Game Session, Admission and Character Lease Contract\n\nThe ownership boundary is accepted; the exact mechanism is not.',
+              '### `FND-04` — Identity, Game Session, Admission and Character Lease Contract\n\nThe ownership boundary is accepted; the exact mechanism is not. This contract consumes the accepted `FND-ID-01` meanings and may not redefine them.')
+          replace_once(backlog,
+              '- network partition and dependency failure behaviour.',
+              '- network partition and dependency failure behaviour;\n- stable public/internal error mapping, correlation/redaction rules and expected results for the shared foundation failure-scenario catalogue.')
+          replace_once(backlog,
+              '- exact World Project and World Bundle encoding contracts;\n- chunk-size/floor-packing benchmark and spatial indexing details;',
+              '- exact World Project and World Bundle encoding contracts;\n- a bounded non-canonical format spike proving deterministic bundle hashes, random access, corruption/decompression failure, source-to-bundle-to-load equivalence and measured 32x32 versus 64x64 chunk/floor packing before final encoding is frozen;\n- chunk-size/floor-packing benchmark and spatial indexing details;')
+          replace_once(backlog,
+              '- `VSL-02` exact Rust client migration revision, provenance and rollback;',
+              '- `VSL-02` exact Rust client migration revision, provenance, open-PR disposition, development freeze/cutover, history-preservation mechanism and rollback;')
+          old_order = '''```text\n1. Accept FND-01 Workspace and Dependency Contract\n2. Run a separate minimal workspace-bootstrap implementation task\n3. Accept FND-02 protocol-oteryn v1 Contract\n4. Accept FND-03 Runtime Execution Contract\n5. Accept FND-04 Identity, Game Session, Admission and Character Lease Contract\n6. Accept DUR-01 Identifier Contract\n7. Accept DUR-02 Persistence v1 Contract\n8. Accept DUR-03 Item Transaction and Anti-Duplication Contract, if not complete in DUR-02\n9. Complete DUR-04 content/world-detail/scripting contracts under ADR-0005\n10. Accept VSL-01 Foundation Vertical-Slice Programme\n11. Accept VSL-02 Exact Rust Client Migration Contract before moving client code\n12. Execute the separately authorized vertical-slice implementation programme\n```'''
+          new_order = '''```text\n1. Accept FND-01 Workspace, Dependency and Existing-Rust Migration Contract\n2. Run a separate minimal workspace-bootstrap implementation task\n3. Accept FND-ID-01 Foundation Identifier Vocabulary\n4. Merge and lock the final canonical Platform native-contract correction\n5. Accept FND-02 protocol-oteryn v1 Contract\n6. Accept FND-03 Runtime Execution Contract, including clock semantics\n7. Accept FND-04 Identity, Game Session, Admission and Character Lease Contract\n8. Accept DUR-01 full Identifier Contract for database and durable-state representation\n9. Accept DUR-02 Persistence v1 Contract\n10. Accept DUR-03 Item Transaction and Anti-Duplication Contract, if not complete in DUR-02\n11. Run the bounded world-format spike and complete DUR-04 under ADR-0005\n12. Accept VSL-01 Foundation Vertical-Slice Programme\n13. Accept VSL-02 Exact Rust Client Migration and Cutover Contract before moving client code\n14. Execute the separately authorized vertical-slice implementation programme\n```'''
+          replace_once(backlog, old_order, new_order)
+          replace_once(backlog,
+              '- `FND-02`, `FND-03` and `FND-04` gate canonical protocol, authoritative runtime and production admission/lease implementation respectively.',
+              '- `FND-ID-01` must be accepted before `FND-02` or `FND-04` freezes identifier meanings on the wire or in Game Sessions.\n- `FND-02`, `FND-03` and `FND-04` gate canonical protocol, authoritative runtime and production admission/lease implementation respectively.')
+          replace_once(backlog,
+              'draft, audit, accept, merge and archive `FND-01` — the **Workspace and Dependency Contract**.',
+              'draft, audit, accept, merge and archive `FND-01` — the **Workspace, Dependency and Existing-Rust Migration Contract**.')
+
+          register = 'docs/architecture/GLOBAL_ARCHITECTURE_DECISION_REGISTER.md'
+          replace_once(register,
+              '- `FND-02`, `FND-03` and `FND-04` independently gate canonical protocol, authoritative runtime and production admission/lease behavior.',
+              '- `FND-ID-01` gates identifier meanings required by protocol and admission contracts.\n- `FND-02`, `FND-03` and `FND-04` independently gate canonical protocol, authoritative runtime and production admission/lease behavior.')
+          replace_once(register,
+              '### `FND-01` — Workspace and Dependency Contract\n\n- Status: `BLOCKS_WORKSPACE_BOOTSTRAP`',
+              '### `FND-01` — Workspace, Dependency and Existing-Rust Migration Contract\n\n- Status: `BLOCKS_WORKSPACE_BOOTSTRAP`')
+          replace_once(register,
+              '- Decide the smallest initial applications, services and crates; every member requires an immediate consumer and observable acceptance.\n- Freeze legal dependency directions and forbidden edges.',
+              '- Decide the smallest initial applications, services and crates; every member requires an immediate consumer and observable acceptance.\n- Inventory the exact existing Rust client workspace at a pinned SHA and classify every reusable crate/subsystem as migrate, rename, merge, split, rewrite, reference-only or drop.\n- Freeze legal dependency directions and forbidden edges in a retained machine-readable boundary contract.')
+          replace_once(register,
+              '- Select Rust edition, minimum toolchain, target platforms, feature policy and baseline CI.\n- Define machine-enforced dependency-graph and forbidden-edge checks.',
+              '- Select Rust edition, Cargo resolver, pinned toolchain, `rust-version`, root lockfile, workspace metadata/lint inheritance, exact target triples, feature policy and baseline CI.\n- Define product-realistic target/feature builds in addition to supplemental all-feature checks.\n- Define machine-enforced `cargo metadata --locked` dependency-graph and forbidden-edge checks.')
+          replace_once(register,
+              '- Treat the wider crate list as a capability horizon, not an instruction to create empty layering crates.\n\n### `FND-02` — `protocol-oteryn` v1',
+              '- Treat the wider crate list as a capability horizon, not an instruction to create empty layering crates.\n\n### `FND-ID-01` — Foundation Identifier Vocabulary\n\n- Status: `BLOCKS_LAYER_IMPLEMENTATION` for protocol and admission schemas.\n- Freeze semantic ownership, scope, uniqueness, reuse, durability and visibility for the minimum cross-boundary identifiers.\n- Define canonical comparison and wire/Game Session encoding constraints without prematurely selecting every PostgreSQL column type.\n- Keep full durable/database/item identity representation in `DUR-01`.\n\n### `FND-02` — `protocol-oteryn` v1')
+          replace_once(register,
+              '- Reconcile with the exact current Platform native contract.',
+              '- Reconcile only with the exact latest merged Platform native contract; record pending PR corrections as unresolved, not canonical.\n- Populate the machine-readable cross-repository contract lock with merged commit, schema revision/hash, producers, consumers and rollout order.')
+          replace_once(register,
+              '- Produce shared golden fixtures and downgrade protection.',
+              '- Produce shared golden fixtures and downgrade protection.\n- Register every externally controlled size/depth/count and map stable failures into the common resource-limit and error vocabularies.')
+          replace_once(register,
+              '- Define tick/timer model, command ordering, bounded queues, overload/backpressure and parallel work return to the logical writer.',
+              '- Define tick/timer model, monotonic/wall-clock ownership, skew tolerance, deterministic test clocks, command ordering, bounded queues, overload/backpressure and parallel work return to the logical writer.')
+          replace_once(register,
+              '- Define channel lifecycle, draining, checkpoint, crash recovery and replay boundaries.',
+              '- Define channel lifecycle, draining, checkpoint, crash recovery and replay boundaries.\n- Prove named foundation failure scenarios for overload, dependency loss, stale generations, split ownership and recovery.')
+          replace_once(register,
+              '- Freeze token/session representation, issuer/audience, key rotation, replay prevention and revocation.',
+              '- Consume `FND-ID-01` meanings without redefining them.\n- Freeze token/session representation, issuer/audience, key rotation, replay prevention and revocation.')
+          replace_once(register,
+              '- Define Platform, Gateway, PostgreSQL and network failure behavior.',
+              '- Define Platform, Gateway, PostgreSQL and network failure behavior using the shared failure-scenario catalogue and stable public/internal error mapping.')
+          replace_once(register,
+              '- Permit only bounded format/compiler/loader spikes before acceptance; no compatibility or canonical-format claim may escape the spike.',
+              '- Require a bounded format/compiler/loader spike before final encoding selection, including deterministic hashes, random access, corruption/decompression failure, round-trip equivalence and measured chunk/floor packing. No compatibility or canonical-format claim may escape the spike.')
+          replace_once(register,
+              '- Define history/provenance preservation, path mapping, exclusions and rollback.',
+              '- Define history/provenance preservation, path mapping, exclusions, open-PR disposition, source-repository freeze, cutover and rollback.')
+          replace_once(register,
+              '7. After workspace bootstrap, enforce accepted dependency boundaries with executable CI checks.\n8. A decision is not complete until its PR is validated, audited, squash-merged and its task archived.',
+              '7. After workspace bootstrap, enforce accepted dependency boundaries with executable CI checks.\n8. Cross-repository locks accept only merged canonical commits and immutable schema identifiers; mutable PR heads remain pending evidence.\n9. Public contracts must register applicable resource limits, stable error categories and named failure scenarios.\n10. A decision is not complete until its PR is validated, audited, squash-merged and its task archived.')
+          replace_once(register,
+              'Draft and accept `FND-01` — the **Workspace and Dependency Contract**.',
+              'Draft and accept `FND-01` — the **Workspace, Dependency and Existing-Rust Migration Contract**.')
+
+          programme = 'docs/agents/tasks/active/OTV2-20260805-foundation-preimplementation-contracts.md'
+          replace_once(programme,
+              '  - canonical protocol implementation until FND-02 is accepted',
+              '  - protocol and Game Session identifier meanings until FND-ID-01 is accepted\n  - canonical protocol implementation until FND-02 is accepted')
+          replace_once(programme,
+              '- `FND-01` — Workspace and Dependency Contract.\n- `FND-02` — `protocol-oteryn` v1 Contract.',
+              '- `FND-01` — Workspace, Dependency and Existing-Rust Migration Contract.\n- `FND-ID-01` — Foundation Identifier Vocabulary.\n- `FND-02` — `protocol-oteryn` v1 Contract.')
+          replace_once(programme,
+              '- `FND-02` gates canonical protocol schemas/codecs and production compatibility claims.',
+              '- `FND-ID-01` gates freezing identifier meanings in protocol and admission schemas.\n- `FND-02` gates canonical protocol schemas/codecs and production compatibility claims.')
+          replace_once(programme,
+              '### `FND-01` — Workspace and Dependency Contract\n\n- exact minimal initial applications, services and crates;',
+              '### `FND-01` — Workspace, Dependency and Existing-Rust Migration Contract\n\n- exact minimal initial applications, services and crates;\n- pinned existing-Rust workspace inventory and migrate/rename/merge/split/rewrite/reference/drop disposition;')
+          replace_once(programme,
+              '- Rust edition/toolchain, feature and dependency policy;\n- initial target platforms and CI matrix;\n- executable dependency-graph enforcement;',
+              '- Rust edition/resolver/toolchain/`rust-version`/lockfile, workspace inheritance, feature and dependency policy;\n- exact target triples and product-realistic target/feature CI matrix;\n- retained machine-readable workspace-boundary contract and executable dependency-graph enforcement;')
+          replace_once(programme,
+              '### `FND-02` — `protocol-oteryn` v1 Contract',
+              '### `FND-ID-01` — Foundation Identifier Vocabulary\n\n- semantic ownership, scope, uniqueness, reuse, durability and visibility of the minimum cross-boundary IDs;\n- canonical wire/Game Session encoding constraints;\n- no premature PostgreSQL layout selection; full durable representation remains in `DUR-01`.\n\n### `FND-02` — `protocol-oteryn` v1 Contract')
+          replace_once(programme,
+              '- reconcile, revise or explicitly supersede the exact current Platform native contract;',
+              '- reconcile, revise or explicitly supersede the exact latest merged Platform native contract;\n- populate the machine-readable cross-repository contract lock and reject mutable PR heads as canonical;')
+          replace_once(programme,
+              '- tick and timer model;',
+              '- tick, monotonic/wall-clock and deterministic test-clock model;')
+          replace_once(programme,
+              '- [ ] `FND-02` accepted and reconciled with Platform before canonical protocol implementation.',
+              '- [ ] `FND-ID-01` accepted before protocol or admission freezes identifier meanings.\n- [ ] `FND-02` accepted and reconciled with a merged, machine-locked Platform revision before canonical protocol implementation.')
+          replace_once(programme,
+              '- [ ] Initial workspace members require an immediate consumer and observable acceptance; no empty layering crates.',
+              '- [ ] Initial workspace members require an immediate consumer and observable acceptance; no empty layering crates.\n- [ ] FND-01 classifies every existing Rust client crate/subsystem and preserves its exact evidence or explicitly rejects it.')
+          replace_once(programme,
+              'next_action: Execute the global architecture coordinator prompt and draft, audit, accept, merge and archive FND-01 — the Workspace and Dependency Contract.',
+              'next_action: Execute the global architecture coordinator prompt and draft, audit, accept, merge and archive FND-01 — the Workspace, Dependency and Existing-Rust Migration Contract.')
+          replace_once(programme, 'updated_at: 2026-08-05T12:42:00+02:00', 'updated_at: 2026-08-05T13:25:00+02:00')
+
+          prompt = 'docs/agents/prompts/OTV2_GLOBAL_ARCHITECTURE_DECISION_COORDINATOR.md'
+          replace_once(prompt,
+              '- `FND-01` — Workspace and Dependency Contract;\n- `FND-02` — `protocol-oteryn` v1;',
+              '- `FND-01` — Workspace, Dependency and Existing-Rust Migration Contract;\n- `FND-ID-01` — Foundation Identifier Vocabulary;\n- `FND-02` — `protocol-oteryn` v1;')
+          replace_once(prompt,
+              '- `FND-02` gates canonical protocol schemas/codecs, production framing and compatibility claims.',
+              '- `FND-ID-01` gates freezing identifier meanings in protocol and admission schemas.\n- `FND-02` gates canonical protocol schemas/codecs, production framing and compatibility claims.')
+          old_prompt_order = '''1. Accept `FND-01` Workspace and Dependency Contract.\n2. Leave or authorize one separate minimal workspace-bootstrap implementation task.\n3. Accept `FND-02` `protocol-oteryn` v1 Contract.\n4. Accept `FND-03` Runtime Execution Contract.\n5. Accept `FND-04` Identity, Game Session, Admission and Character Lease Contract.\n6. Accept `DUR-01` Identifier Contract.\n7. Accept `DUR-02` Persistence v1 Contract.\n8. Accept `DUR-03` Item Transaction and Anti-Duplication Contract where not fully contained in `DUR-02`.\n9. Accept `DUR-04` Content, World Detail and Scripting Contract under ADR-0005.\n10. Accept `VSL-01` Foundation Vertical-Slice Programme.\n11. Accept `VSL-02` Exact Rust Client Migration Contract before moving client code.\n12. Begin the separately authorized vertical-slice implementation programme.'''
+          new_prompt_order = '''1. Accept `FND-01` Workspace, Dependency and Existing-Rust Migration Contract.\n2. Leave or authorize one separate minimal workspace-bootstrap implementation task.\n3. Accept `FND-ID-01` Foundation Identifier Vocabulary.\n4. Require the final Platform native-contract correction to be merged and recorded in the cross-repository contract lock.\n5. Accept `FND-02` `protocol-oteryn` v1 Contract.\n6. Accept `FND-03` Runtime Execution Contract, including clock semantics.\n7. Accept `FND-04` Identity, Game Session, Admission and Character Lease Contract.\n8. Accept `DUR-01` full Identifier Contract for database and durable-state representation.\n9. Accept `DUR-02` Persistence v1 Contract.\n10. Accept `DUR-03` Item Transaction and Anti-Duplication Contract where not fully contained in `DUR-02`.\n11. Run the bounded native world-format spike and accept `DUR-04` under ADR-0005.\n12. Accept `VSL-01` Foundation Vertical-Slice Programme.\n13. Accept `VSL-02` Exact Rust Client Migration and Cutover Contract before moving client code.\n14. Begin the separately authorized vertical-slice implementation programme.'''
+          replace_once(prompt, old_prompt_order, new_prompt_order)
+          replace_once(prompt,
+              '### `FND-01` Workspace and Dependency Contract\n\nAt minimum decide:\n\n- exact minimal initial workspace members and names;',
+              '### `FND-01` Workspace, Dependency and Existing-Rust Migration Contract\n\nAt minimum decide:\n\n- exact minimal initial workspace members and names;\n- the exact pinned existing Rust workspace inventory, public contracts, consumers, tests and dependency graph;\n- one disposition per existing crate/subsystem: migrate as-is, migrate/rename, merge, split, rewrite, reference-only or drop;')
+          replace_once(prompt,
+              '- Rust edition and minimum supported toolchain;\n- feature policy and default features;',
+              '- Rust edition, Cargo resolver, pinned toolchain, `rust-version`, root lockfile and `--locked` policy;\n- workspace package/dependency/lint inheritance;\n- feature policy and default features;')
+          replace_once(prompt,
+              '- initial target platforms and exact baseline CI matrix;\n- executable dependency-graph and forbidden-edge checks;',
+              '- initial target platforms, exact target triples and product-realistic feature/target CI matrix;\n- retained machine-readable workspace-boundary model and executable `cargo metadata --locked` forbidden-edge checks;')
+          replace_once(prompt,
+              'The contract must authorize only a separate minimal bootstrap task, not silently implement the workspace in the contract PR.\n\n### `FND-02` `protocol-oteryn` v1',
+              'The contract must authorize only a separate minimal bootstrap task, not silently implement the workspace in the contract PR.\n\n### `FND-ID-01` Foundation Identifier Vocabulary\n\nAt minimum decide semantic ownership, scope, uniqueness, reuse, durability, public visibility and wire/Game Session encoding constraints for the minimum cross-boundary IDs. Do not select every PostgreSQL type or full item-instance representation; retain those in `DUR-01`.\n\n### `FND-02` `protocol-oteryn` v1')
+          replace_once(prompt,
+              'At minimum decide reconciliation with the exact current Platform native contract, transport, TLS/ALPN, framing, schema/IDL, limits, revision separation, sequencing, command IDs, replay/idempotency, snapshots/deltas/reconciliation, reconnect/resume, errors, downgrade prevention and golden fixtures.',
+              'At minimum decide reconciliation with the exact latest merged Platform native contract, populate the machine-readable cross-repository contract lock, and decide transport, TLS/ALPN, framing, schema/IDL, registered hard limits, revision separation, sequencing, command IDs, replay/idempotency, snapshots/deltas/reconciliation, reconnect/resume, stable error mapping, downgrade prevention and golden fixtures. A mutable PR head is never canonical.')
+          replace_once(prompt,
+              'At minimum decide node/world/channel/instance ownership, deployment topology, tick/timer model, command ordering, bounded queues, overload behavior, parallel work return, deterministic replay boundary, lifecycle, draining, checkpoint and crash recovery.',
+              'At minimum decide node/world/channel/instance ownership, deployment topology, tick/timer model, monotonic versus wall-clock ownership, skew tolerance, deterministic test clocks, command ordering, bounded queues, overload behavior, parallel work return, deterministic replay boundary, lifecycle, draining, checkpoint, crash recovery and named failure-scenario outcomes.')
+          replace_once(prompt,
+              'At minimum decide Game Session format/validation, issuer/audience, key discovery/rotation/revocation, consume/replay prevention, account/character/world/channel/revision binding, reconnect windows, session generation, stale-writer fencing, lease storage/timings, duplicate login, channel switch and dependency failure behavior.',
+              'At minimum consume the accepted `FND-ID-01` meanings and decide Game Session format/validation, issuer/audience, key discovery/rotation/revocation, consume/replay prevention, account/character/world/channel/revision binding, reconnect windows, session generation, stale-writer fencing, lease storage/timings, duplicate login, channel switch, stable public/internal errors and named dependency-failure behavior.')
+          replace_once(prompt,
+              'Pin exact external repository SHAs whenever their behavior affects a contract.',
+              'Pin exact merged external repository SHAs whenever their behavior affects a canonical contract. Mutable PR heads may be recorded only as pending evidence and must not populate canonical lock fields.')
+          replace_once(prompt,
+              'The immediate package is `FND-01` — the **Workspace and Dependency Contract**.',
+              'The immediate package is `FND-01` — the **Workspace, Dependency and Existing-Rust Migration Contract**.')
+
+          cross = 'docs/agents/CROSS_REPO_CONTRACTS.md'
+          replace_once(cross,
+              '- Golden fixtures/schema IDL have one canonical owner and immutable version identifiers.',
+              '- Golden fixtures/schema IDL have one canonical owner and immutable version identifiers.\n- `docs/contracts/CROSS_REPOSITORY_CONTRACT_LOCK.json` is the machine-readable index for canonical cross-repository revisions, producers, consumers and rollout order.\n- Canonical lock entries may contain only merged commits and immutable schema identifiers. Open PRs and mutable heads remain explicit pending evidence with canonical fields unset.')
+          replace_once(cross,
+              '→ Game Session bound to account, character, world, channel and protocol/profile revisions',
+              '→ Game Session bound to account, character, world, channel, native protocol version, protocol revision, ruleset revision and content revision')
+          replace_once(cross,
+              '- deterministic contract tests and fixture ownership.',
+              '- deterministic contract tests and fixture ownership;\n- the applicable resource-limit registry entries, stable error categories and named failure scenarios.')
+
+          matrix = 'docs/agents/BUILD_TEST_MATRIX.md'
+          replace_once(matrix,
+              '- `cargo clippy --workspace --all-targets --all-features -- -D warnings` or a documented feature-safe equivalent;\n- `cargo test --workspace` with focused package tests during development;',
+              '- product-realistic client, server and Studio target/feature Clippy builds with `-D warnings`;\n- supplemental `--all-features` checks only where they do not create impossible mutually exclusive configurations;\n- `cargo test --workspace` plus focused package tests and target-specific integration tests;\n- `cargo metadata --locked` validation against the retained machine-readable workspace-boundary contract;')
+          replace_once(matrix,
+              '- platform-specific client build/runtime tests;\n- multichannel integration, crash-recovery and soak scenarios.',
+              '- platform-specific client build/runtime tests on exact named target triples;\n- shared foundation failure-scenario tests, including time/clock, dependency loss, stale generation and overload cases;\n- multichannel integration, crash-recovery and soak scenarios.')
+
+          repo_map = 'docs/agents/REPOSITORY_MAP.md'
+          replace_once(repo_map,
+              '| `blakinio/otclient` | existing client/Rust implementation reference and migration source | read-only unless separately authorized |',
+              '| `blakinio/otclient` | existing client/Rust implementation and migration source; FND-01 must inventory and classify it at an exact SHA before designing replacements | read-only unless separately authorized |')
+          replace_once(repo_map,
+              '- Agent cross-repo policy: `docs/agents/CROSS_REPO_CONTRACTS.md`.',
+              '- Agent cross-repo policy: `docs/agents/CROSS_REPO_CONTRACTS.md`.\n- Machine-readable cross-repository revision state: `docs/contracts/CROSS_REPOSITORY_CONTRACT_LOCK.json`.\n- Shared resource-limit, error and failure contracts: `docs/contracts/RESOURCE_LIMITS_REGISTRY.json`, `FOUNDATION_ERROR_VOCABULARY.md` and `FOUNDATION_FAILURE_SCENARIOS.md`.')
+
+          contract_lock = {
+              'schema_version': 1,
+              'updated_at': '2026-08-05T13:25:00+02:00',
+              'policy': {
+                  'canonical_revisions_must_be_merged': True,
+                  'mutable_pr_heads_are_canonical': False,
+                  'required_fields_when_locked': [
+                      'coordination_id', 'contract_name', 'canonical_repository',
+                      'canonical_commit', 'schema_revision', 'schema_sha256',
+                      'producers', 'consumers', 'rollout_order'
+                  ]
+              },
+              'contracts': [
+                  {
+                      'coordination_id': 'OTS-20260804-native-protocol-selection',
+                      'contract_name': 'oteryn-native-gameplay-v1',
+                      'status': 'PENDING_CANONICAL_MERGE',
+                      'canonical_repository': 'blakinio/Oteryn-Platform',
+                      'canonical_commit': None,
+                      'schema_revision': None,
+                      'schema_sha256': None,
+                      'pending_pull_request': 540,
+                      'previous_merged_revision': '9035ae987db67c062a8778721a2c8e686ce76750',
+                      'previous_revision_status': 'TRANSITIONAL_PROFILE_BASED_NOT_ACCEPTED_FOR_OTERYN_V2',
+                      'producers': [
+                          {'repository': 'blakinio/Oteryn-Platform', 'status': 'DISABLED_TRANSITIONAL_PRODUCER'},
+                          {'repository': 'blakinio/Oteryn-v2', 'status': 'NOT_IMPLEMENTED'}
+                      ],
+                      'consumers': [
+                          {'repository': 'blakinio/Oteryn-v2', 'status': 'NOT_IMPLEMENTED'}
+                      ],
+                      'rollout_order': [
+                          'merge canonical Platform correction',
+                          'lock merged commit and immutable schema identity',
+                          'accept Oteryn-v2 FND-02 correspondence',
+                          'implement server and client consumers',
+                          'run cross-repository admission/gameplay/rollback E2E',
+                          'enable only through a separately authorized rollout'
+                      ],
+                      'accepted_for_fnd02': False
+                  }
+              ]
+          }
+          write('docs/contracts/CROSS_REPOSITORY_CONTRACT_LOCK.json', json.dumps(contract_lock, indent=2) + '\n')
+
+          limits = {
+              'schema_version': 1,
+              'status': 'FOUNDATION_REGISTRY_INITIALIZED',
+              'updated_at': '2026-08-05T13:25:00+02:00',
+              'unit_policy': 'Every limit declares an unambiguous unit and absolute hard maximum.',
+              'required_entry_fields': [
+                  'id', 'owner_contract', 'resource', 'unit', 'hard_maximum',
+                  'configurable_range', 'failure_category', 'allocation_impact',
+                  'client_visible', 'boundary_tests'
+              ],
+              'rules': [
+                  'A configurable value never removes the absolute hard maximum.',
+                  'Parsing and allocation checks occur before untrusted-size allocation.',
+                  'Compression entries include compressed size, decompressed size and ratio limits.',
+                  'Every externally controlled count, depth, length or byte size is registered before implementation acceptance.',
+                  'Unknown or absent required limits fail the owning contract review; they are not inferred at runtime.'
+              ],
+              'entries': []
+          }
+          write('docs/contracts/RESOURCE_LIMITS_REGISTRY.json', json.dumps(limits, indent=2) + '\n')
+
+          errors = '''# Foundation Error Vocabulary\n\nStatus: normative foundation vocabulary; concrete numeric codes remain owned by their accepted contracts.\n\n## Purpose\n\nProvide one cross-layer shape for failures without forcing protocol, Gateway, admission, runtime and persistence to invent incompatible semantics.\n\nEvery public or cross-component error must define:\n\n- a stable machine category and contract-owned code;\n- whether it is `RETRYABLE`, `TERMINAL` or `SECURITY_TERMINAL`;\n- whether retry requires the same command/session, a new session or owner intervention;\n- a redacted diagnostic message separate from client-facing presentation;\n- correlation/trace fields that contain no credentials, tickets or private payloads;\n- idempotency and partial-mutation outcome;\n- mapping from internal causes to the bounded public category.\n\n## Foundation categories\n\n- `INVALID_INPUT` — malformed, out-of-range or non-canonical input; terminal for the rejected operation.\n- `UNSUPPORTED_REVISION` — family/version/schema/ruleset/content mismatch; terminal with no silent downgrade.\n- `AUTHENTICATION_FAILED` — credential or proof invalid; security-terminal for the attempt.\n- `SESSION_REJECTED` — expired, replayed, consumed, wrong-audience or wrong-bound session.\n- `STALE_GENERATION` — stale session, writer, entity or revision fence; no mutation committed.\n- `CONFLICT` — a current authoritative owner/state prevents the requested transition.\n- `CAPACITY_EXCEEDED` — registered queue/entity/frame/resource limit reached.\n- `DEPENDENCY_UNAVAILABLE` — required external service unavailable; retry policy is contract-specific and bounded.\n- `TIMEOUT` — a named total-operation or lifecycle deadline expired.\n- `CANCELLED` — operation intentionally cancelled with documented cleanup state.\n- `INTERNAL_UNAVAILABLE` — safe fail-closed response for an unexpected internal condition; diagnostic details remain internal.\n\nContracts may add narrower codes but must map them to one category and must not expose secrets or unstable implementation text as API behavior.\n'''
+          write('docs/contracts/FOUNDATION_ERROR_VOCABULARY.md', errors)
+
+          failures = '''# Foundation Failure Scenario Catalogue\n\nStatus: normative scenario names; owning contracts define exact timings and expected codes.\n\nEach foundation contract must mark every applicable scenario as `PASS`, `NOT_APPLICABLE`, `BLOCKED` or `DEFERRED_BY_ACCEPTED_GATE` with named evidence.\n\n| ID | Scenario | Minimum invariant |\n|---|---|---|\n| `FS-PLATFORM-UNAVAILABLE` | Platform unavailable during login/admission | No alternate credential authority or unbound session is created. |\n| `FS-GATEWAY-AFTER-REDEEM` | Gateway fails after one-time ticket redemption | No second candidate or silent downgrade; result is bounded and auditable. |\n| `FS-POSTGRES-UNAVAILABLE` | Game PostgreSQL unavailable | No unfenced durable mutation; admission/runtime policy is explicit. |\n| `FS-LEASE-RENEW-TIMEOUT` | Character lease renewal deadline expires | Stale owner stops authoritative durable writes before another generation can commit. |\n| `FS-DUPLICATE-LOGIN` | Two admissions race for one character | At most one authoritative session and generation wins atomically. |\n| `FS-STALE-GENERATION` | Old session/node submits command or save | Rejected with no partial mutation. |\n| `FS-DUPLICATE-COMMAND` | Same `CommandId` is replayed | Deterministic prior result or explicit duplicate outcome; no duplicated effect. |\n| `FS-CHANNEL-SPLIT-OWNER` | Two nodes believe they own one channel | Fencing prevents dual authoritative commits. |\n| `FS-CHANNEL-DRAIN` | Channel drains during active gameplay | New work stops in order; admitted state reaches a documented safe boundary. |\n| `FS-QUEUE-SATURATION` | Bounded inbound/outbound/work queue fills | Defined backpressure/rejection; no silent loss or unbounded growth. |\n| `FS-SLOW-CLIENT` | Client cannot consume outbound state | Bounded memory and explicit disconnect/resync behavior. |\n| `FS-CLOCK-SKEW` | Wall clocks disagree or move | Monotonic deadlines remain safe; signed timestamps use bounded skew policy. |\n| `FS-KEY-ROTATION` | Signing/verification key rotates during login | Valid overlap and revocation behavior; no acceptance outside policy. |\n| `FS-REVISION-MISMATCH` | Protocol/ruleset/content revisions disagree | Fail closed with no implicit downgrade or mixed authoritative state. |\n| `FS-SNAPSHOT-DELTA-MISMATCH` | Snapshot and delta revisions diverge | Deterministic resync; no partial application. |\n| `FS-DB-OUTBOX-BOUNDARY` | Crash occurs around durable mutation/outbox publish | Transaction contract prevents lost or duplicated externally visible effects. |\n| `FS-WORLD-BUNDLE-CORRUPT` | Bundle checksum/version/decompression is invalid | Reject before unsafe allocation or partial world activation. |\n| `FS-CLIENT-CUTOVER-ROLLBACK` | Migrated client workspace fails acceptance | Development source of truth and exact rollback path remain unambiguous. |\n\nNew scenarios receive stable IDs and are added here rather than being named differently by each package.\n'''
+          write('docs/contracts/FOUNDATION_FAILURE_SCENARIOS.md', failures)
+
+          task = 'docs/agents/tasks/active/OTV2-20260805-foundation-contract-hardening.md'
+          replace_once(task, 'pr: null', 'pr: 15')
+          replace_once(task, 'updated_at: 2026-08-05T13:15:00+02:00', 'updated_at: 2026-08-05T13:25:00+02:00')
+          replace_once(task,
+              '- Task and dedicated branch created from exact current `main`.\n- Repository has no overlapping active package or open PR.',
+              '- Task, dedicated branch and draft PR #15 created from exact current `main`.\n- Repository had no overlapping active package or open PR at task start.\n- Bounded architecture patch reconciles order, migration evidence and shared machine-readable registries.')
+          replace_once(task,
+              'last_progress: Dedicated task and branch created from exact current main with no ownership overlap.',
+              'last_progress: Architecture hardening patch applied and final-tree governance validation started.')
+          replace_once(task, 'pr: null\nci_check_generation', 'pr: 15\nci_check_generation')
+          replace_once(task,
+              'next_action: Apply the bounded architecture hardening patch and run governance validation.',
+              'next_action: Inspect the exact PR diff, complete the independent audit and record exact-head CI.')
+
+          workflow = root / '.github/workflows/otv2-foundation-contract-hardening.yml'
+          workflow.unlink()
+          PY
+
+          python tools/agents/validate_governance.py
+          python -m json.tool docs/contracts/CROSS_REPOSITORY_CONTRACT_LOCK.json >/dev/null
+          python -m json.tool docs/contracts/RESOURCE_LIMITS_REGISTRY.json >/dev/null
+          git diff --check
+
+      - name: Persist validated final tree
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "docs(architecture): harden foundation contracts"
+          git push origin HEAD:docs/foundation-contract-hardening-20260805
