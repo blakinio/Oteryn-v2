@@ -10,10 +10,10 @@ base_branch: main
 branch: docs/adr-0008-protocol-canary-reference-only
 pr: 37
 base_sha: 52ef04882e13771829e0159b63410a7cd9e80150
-head_sha: 3d6df771105156f6125c6f204fc48019079f53b7
+head_sha: bc9158627f1e2374baaf2caa06957851f3168012
 owner: GPT-5.6-Thinking-architecture-coordinator
 created_at: 2026-08-05T19:45:00+02:00
-updated_at: 2026-08-05T19:56:00+02:00
+updated_at: 2026-08-05T20:00:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -102,6 +102,7 @@ The package deliberately records invariants and required evidence while leaving 
 - Preserved existing ownership boundaries: `FND-03` owns execution, `FND-04` owns sessions/leases, `DUR-02` owns durable recovery, `DUR-03` owns item/currency conservation and `QA-E2E-01` owns physical failure evidence.
 - Reused PR #37 because the owner extended the current architecture package while it remained open; this task owns only new non-overlapping paths.
 - Audit finding corrected: `GameNode` names the runtime concept, but `NodeId` remains the accepted stable identifier pending `FND-ID-01`; the ADR no longer prematurely renames it to `GameNodeId`.
+- CI metadata finding corrected: the PR body now contains the required `## Scope` heading and the title remains within the conventional 72-character policy.
 
 ## Validation
 
@@ -122,9 +123,12 @@ The package deliberately records invariants and required evidence while leaving 
 
 ### Exact-head CI
 
-- validated architecture head before this checkpoint: `3d6df771105156f6125c6f204fc48019079f53b7`
-- workflow/run: pending refreshed required checks on the final documentation head
-- result: `WAITING`
+- checked head before this checkpoint: `bc9158627f1e2374baaf2caa06957851f3168012`
+- Agent governance run `31032067500`: `FAIL` only in PR metadata validation because the preceding PR body lacked `## Scope`; governance and repository-policy validators themselves passed
+- repair: PR metadata corrected and this checkpoint update creates a new head/event with the required title/body shape
+- CodeQL run `31032070403`: pending on preceding head
+- Dependency review run `31032067528`: pending on preceding head
+- result: `WAITING` for refreshed exact-head workflows
 
 ## Independent audit
 
@@ -142,7 +146,7 @@ The package deliberately records invariants and required evidence while leaving 
 ## PR and closeout
 
 - changed-file review: `PASS` for the two newly owned paths; the preceding ADR-0008 package retained its prior audit result
-- unresolved review threads: pending refreshed PR check
+- unresolved review threads: 0
 - related/superseded PRs: PR #37 also contains ADR-0008; no path ownership overlap
 - merge commit/result: pending required exact-head workflows
 - ownership release: pending merge and archive
@@ -150,10 +154,10 @@ The package deliberately records invariants and required evidence while leaving 
 ## Context checkpoint
 
 ```yaml
-last_progress: ADR-0009 records the audited GameNode execution, capacity, deployment, dynamic-channel and failure-recovery baseline with canonical NodeId terminology preserved.
+last_progress: PR metadata was repaired after a governance-only heading failure; ADR-0009 remains audited and unchanged in substance.
 status: waiting
 branch: docs/adr-0008-protocol-canary-reference-only
-head_sha: 3d6df771105156f6125c6f204fc48019079f53b7
+head_sha: bc9158627f1e2374baaf2caa06957851f3168012
 pr: 37
 ci_check_generation: null
 ci_checks_for_current_head: 0
@@ -163,6 +167,6 @@ unchanged_state_checks: 0
 identical_failure_retries: 0
 repair_cycles_for_current_gate: 1
 stall_warnings: 0
-blocker: Required exact-head GitHub workflows have not yet passed on the final documentation head.
-next_action: Reconcile the final PR head, review threads and required exact-head workflows before merge.
+blocker: Refreshed required exact-head GitHub workflows have not yet passed.
+next_action: Verify the new PR head and required exact-head workflows, then allow auto-merge only if every gate passes.
 ```
