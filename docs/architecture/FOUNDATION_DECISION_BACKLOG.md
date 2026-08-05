@@ -672,10 +672,10 @@ No package may edit another active package's owned contract without explicit coo
 18. Draft ANL-02 and ANL-03 on the accepted event/persistence/item foundations
 19. Run the bounded world-format spike and complete DUR-04 under ADR-0005
 20. Implement QA-E2E-01 incrementally as the client, protocol, admission, persistence and content prerequisites land
-21. Accept PERF-01 before publishing supported capacity or claiming representative-load readiness
-22. Accept OPS-CHANNEL-01 before automatic production channel scaling or production recovery behavior is claimed
-23. Accept VSL-01 Foundation Vertical-Slice Programme with correlated event/audit evidence and named QA-E2E-01 tiers
-24. Execute the separately authorized vertical-slice implementation programme
+21. Accept VSL-01 Foundation Vertical-Slice Programme with correlated event/audit evidence and named QA-E2E-01 tiers
+22. Execute the separately authorized vertical-slice implementation programme
+23. Accept PERF-01 before publishing supported capacity or claiming Playable Alpha representative-load readiness
+24. Accept OPS-CHANNEL-01 before automatic production channel scaling or production GameNode/channel recovery behavior is claimed
 25. Accept GAME-ABILITY-01, GAME-AI-01 and GAME-INTERACTION-01 before Playable Alpha gameplay breadth is claimed
 26. Accept PROD-LIVEOPS-01, PROD-COMPAT-01, SEC-CLIENT-01, DATA-PRIVACY-01, UX-I18N-A11Y-01 and OPS-GM-01 before Playable Alpha operational completeness is claimed
 27. Complete ANL-02/ANL-03 before production-grade alpha analytics claims; defer ANL-04 until read-only investigation is authorized

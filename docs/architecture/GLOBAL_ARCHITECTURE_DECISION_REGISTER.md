@@ -302,7 +302,8 @@ Registration prevents omission; it does not accept technologies, formulas, schem
 
 ### `OPS-CHANNEL-01` — GameNode Deployment and Dynamic Channel Orchestration
 
-- Status: `REQUIRED_FOR_ALPHA` for automatic production scaling and claimed production recovery behavior.
+- Status: `BLOCKS_LAYER_IMPLEMENTATION`.
+- Blocks automatic production channel scaling and claimed production GameNode/channel recovery behavior.
 - Define process/container packaging, external orchestrator authority, registration, health, readiness and capacity reporting.
 - Freeze channel placement, lifecycle, dynamic creation, hysteresis, draining and closure.
 - Define ownership-generation fencing, replacement, checkpoint, bounded replay, fresh-session reconnect and full-snapshot recovery.
