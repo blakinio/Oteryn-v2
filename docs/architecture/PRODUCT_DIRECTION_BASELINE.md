@@ -1,6 +1,7 @@
 # Oteryn v2 Product Direction Baseline
 
 - Status: Accepted owner direction baseline
+- Canonical decision: ADR-0010
 - Date: 2026-08-05
 - Coordination ID: `OTV2-GLOBAL-ARCHITECTURE`
 - Applies to: product identity, world profiles, rulesets, content planning, parity analysis and future differentiation

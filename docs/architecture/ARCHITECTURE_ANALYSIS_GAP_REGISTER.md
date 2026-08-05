@@ -32,6 +32,7 @@ The following broad foundations are already accepted and therefore are not open 
 - native E2E platform and evidence tiers;
 - `protocol-canary` as reference-only migration evidence, excluded from target runtime;
 - GameNode process identity, one logical writer per channel, capacity-evidence discipline and recovery baseline.
+- Global Tibia parity as the initial product reference plus optional reference/evolved world profiles over one engine, client and `protocol-oteryn`, with default world-scoped gameplay-value isolation (ADR-0010).
 
 The exact implementation contracts beneath these foundations remain gated where listed below.
 
@@ -39,9 +40,11 @@ The exact implementation contracts beneath these foundations remain gated where 
 
 ## 1. Product vision and core gameplay loop
 
-- Coverage status: **NEWLY_IDENTIFIED**
-- Recommended candidate gate: `GAME-VISION-01` — Product Vision and Core Gameplay Contract
+- Coverage status: **PARTIALLY_ACCEPTED** by ADR-0010 and `PRODUCT_DIRECTION_BASELINE.md`
+- Registered gate: `GAME-VISION-01` — Product Vision, Parity Scope and World Profile Contract
 - Priority: parallel analysis with `FND-01`; must be accepted before broad gameplay and content production
+
+Accepted direction: begin from Global Tibia behavioral parity; permit separate reference and evolved Oteryn worlds over one shared engine/client/protocol; keep gameplay value world-scoped by default.
 
 Still unresolved:
 
@@ -53,7 +56,7 @@ Still unresolved:
 - intended risk, loss, death, recovery and reward philosophy;
 - expected progression duration, endgame structure and replayability;
 - solo, party, guild and large-group expectations;
-- whether classic and modern rulesets are equal products, migrations, optional profiles or one primary experience with compatibility profiles;
+- exact relationship among current-Global, historical-classic and evolved profiles, including which profiles are actual launch products;
 - explicit design pillars and anti-pillars used to reject technically attractive but product-incoherent features;
 - observable product-success criteria beyond technical correctness.
 
@@ -649,7 +652,7 @@ Still unresolved:
 ## Track 0 — immediate
 
 1. `FND-01` — workspace, dependency and existing-client migration contract.
-2. `GAME-VISION-01` candidate — product vision and core gameplay loop, in parallel without blocking workspace analysis.
+2. `GAME-VISION-01` — refine ADR-0010 into measurable parity scope, product pillars and launch strategy, in parallel without blocking workspace analysis.
 
 ## Track 1 — before durable gameplay schemas freeze
 
