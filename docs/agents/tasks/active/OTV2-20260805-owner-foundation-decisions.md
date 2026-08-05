@@ -4,16 +4,16 @@
 task_id: OTV2-20260805-owner-foundation-decisions
 title: Record owner-approved repository, admission and PostgreSQL decisions
 mode: CONTRACT
-status: validating
+status: ready
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/foundation-decisions-20260805
 pr: 5
 base_sha: 0eb3c329fd04211e1bb5c6e3f219f4daad5e500a
-head_sha: ba3448872789184f55cf999535def13ef96a9b02
+head_sha: 758a5345613f2822bac29870698a23d360e7cb39
 owner: chatgpt-github-agent
 created_at: 2026-08-05T09:28:00+02:00
-updated_at: 2026-08-05T09:41:00+02:00
+updated_at: 2026-08-05T09:46:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -80,8 +80,9 @@ Persist the owner decisions made on 2026-08-05 so future work does not depend on
 - [x] Current native protocol state is not overstated.
 - [x] PostgreSQL and separate Platform/game databases are recorded.
 - [x] Cross-system SQL ownership and Redis non-authority are recorded.
-- [ ] Exact-head governance CI passes.
-- [ ] Independent audit has zero open material findings.
+- [x] Governance CI passed on reviewed head `758a5345613f2822bac29870698a23d360e7cb39`.
+- [x] Independent audit has zero open material findings.
+- [ ] Final checkpoint commit receives exact-head governance success.
 - [ ] PR is squash-merged and this task is archived.
 
 ## Excluded scope
@@ -105,8 +106,10 @@ Persist the owner decisions made on 2026-08-05 so future work does not depend on
 
 ### Focused
 
-- method: repository governance workflow and complete diff review
-- result: pending exact-head run
+- method: `Agent governance` workflow and complete diff review
+- reviewed head: `758a5345613f2822bac29870698a23d360e7cb39`
+- workflow/run: `30985869942`
+- result: `PASS`
 
 ### Component/integration
 
@@ -118,36 +121,37 @@ Persist the owner decisions made on 2026-08-05 so future work does not depend on
 
 ### Exact-head CI
 
-- head: pending final task-record commit
-- workflow/run: `Agent governance`, pending
+- final head: pending this checkpoint commit
+- workflow/run: `Agent governance`, must rerun automatically
 - result: pending
 
 ## Independent audit
 
-- exact head: pending final task-record commit
+- reviewed head: `758a5345613f2822bac29870698a23d360e7cb39`
 - method/auditor: adversarial complete-diff review against ADR-0001, live Platform/otclient evidence and owner decisions
 - material findings:
   - resolved: initial task-file replacement removed detailed foundation content; original blob restored before readiness
-- verdict: pending final exact-head review
+  - none open
+- verdict: `PASS`
 
 ## PR and closeout
 
-- changed-file review: four intended paths after final task record
+- changed-file review: exactly three ADRs and this bounded task record
 - unresolved review threads: none observed
 - related/superseded PRs: none
 - merge commit/result: pending
-- ownership release: pending
+- ownership release: pending archive after merge
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Three accepted ADRs were added, the full prior foundation checkpoint was preserved, and PR #5 is ready for exact-head validation.
-status: validating
+last_progress: ADR-0002 through ADR-0004 passed governance validation and independent audit; the task is ready after one final exact-head governance run for this checkpoint update.
+status: ready
 branch: docs/foundation-decisions-20260805
-head_sha: ba3448872789184f55cf999535def13ef96a9b02
+head_sha: 758a5345613f2822bac29870698a23d360e7cb39
 pr: 5
-ci_check_generation: null
-ci_checks_for_current_head: 0
+ci_check_generation: 30985869942
+ci_checks_for_current_head: 1
 terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
@@ -155,5 +159,5 @@ identical_failure_retries: 0
 repair_cycles_for_current_gate: 1
 stall_warnings: 0
 blocker: null
-next_action: Run and inspect Agent governance on the exact final PR head.
+next_action: Verify Agent governance succeeds on the checkpoint commit, then mark PR #5 ready and squash-merge it.
 ```
