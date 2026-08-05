@@ -4,16 +4,16 @@
 task_id: OTV2-20260805-protocol-canary-reference-only
 title: Record protocol-canary as reference-only migration evidence
 mode: CONTRACT
-status: validating
+status: waiting
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/adr-0008-protocol-canary-reference-only
 pr: 37
 base_sha: 52ef04882e13771829e0159b63410a7cd9e80150
-head_sha: 0d9cc0db4d2ca4d7189d7e4d5d06489765a7b6af
+head_sha: 381a2863551c989045fb0a45befb97d2e362f0f6
 owner: GPT-5.6-Thinking-architecture-coordinator
 created_at: 2026-08-05T18:59:00+02:00
-updated_at: 2026-08-05T19:08:00+02:00
+updated_at: 2026-08-05T19:12:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -61,7 +61,8 @@ Record the owner-accepted binding migration disposition for the existing Rust cl
 - [x] The coordinator prompt requires `VSL-02` immediately after `FND-01` and one atomic destination migration/workspace PR.
 - [x] The global register links and applies ADR-0008.
 - [x] No runtime code, external repository or production system is changed.
-- [ ] Exact-head governance validation and independent full-diff audit pass.
+- [x] Independent full-diff architecture audit passes with zero material findings.
+- [ ] Exact-head required workflows pass.
 
 ## Excluded scope
 
@@ -82,8 +83,8 @@ Record the owner-accepted binding migration disposition for the existing Rust cl
 
 ### Focused
 
-- command/run: GitHub compare and complete PR diff review against base `52ef04882e13771829e0159b63410a7cd9e80150`
-- result: in progress
+- command/run: GitHub complete PR diff review against base `52ef04882e13771829e0159b63410a7cd9e80150`
+- result: `PASS`; changed files remain within declared architecture/task scope and contain no runtime or external-repository mutation
 
 ### Component/integration
 
@@ -97,41 +98,50 @@ Record the owner-accepted binding migration disposition for the existing Rust cl
 
 ### Exact-head CI
 
-- head: pending final task-record commit
-- workflow/run: Agent governance pending
-- result: pending
+- validated head before this checkpoint: `381a2863551c989045fb0a45befb97d2e362f0f6`
+- workflows:
+  - Agent governance run `31028569539` — pending
+  - CodeQL run `31028569426` — queued
+  - Dependency review run `31028569453` — queued
+- unchanged-state checks: 2
+- result: `WAITING`; no failure observed and the repository check budget for unchanged pending state is exhausted
 
 ## Independent audit
 
-- exact head: pending final task-record commit
-- method/auditor: adversarial full-diff review against ADR-0001, ADR-0002, ADR-0003, foundation backlog, global register and repository governance
-- material findings: pending
-- verdict: pending
+- exact head: `381a2863551c989045fb0a45befb97d2e362f0f6`
+- method/auditor: adversarial full-diff review against ADR-0001, ADR-0002, ADR-0003, ADR-0007, foundation backlog, global register and repository governance
+- material findings: none
+- observations:
+  - the decision does not select or implement the native wire schema;
+  - retained reference evidence cannot enter Cargo workspace membership or release packaging;
+  - unsupported Canary-only routes fail explicitly rather than downgrading;
+  - the prompt rewrite preserves repository, production, cross-repository, validation and escalation restrictions while removing stale sequencing.
+- verdict: `PASS`
 
 ## PR and closeout
 
-- changed-file review: pending final head
-- unresolved review threads: pending
+- changed-file review: `PASS`
+- unresolved review threads: 0
 - related/superseded PRs: none
-- merge commit/result: pending
-- ownership release: pending
+- merge commit/result: pending required exact-head workflows
+- ownership release: pending merge and archive
 
 ## Context checkpoint
 
 ```yaml
-last_progress: ADR-0008, the global register and the coordinator prompt now encode protocol-canary as reference-only and enforce the canonical migration sequence.
-status: validating
+last_progress: ADR-0008, the global register and the coordinator prompt encode protocol-canary as reference-only; full-diff audit passed and required workflows are pending.
+status: waiting
 branch: docs/adr-0008-protocol-canary-reference-only
-head_sha: 0d9cc0db4d2ca4d7189d7e4d5d06489765a7b6af
+head_sha: 381a2863551c989045fb0a45befb97d2e362f0f6
 pr: 37
-ci_check_generation: null
-ci_checks_for_current_head: 0
-terminal_ci_wait_started_at: null
-terminal_ci_checks_for_current_generation: 0
-unchanged_state_checks: 0
+ci_check_generation: 381a2863551c989045fb0a45befb97d2e362f0f6
+ci_checks_for_current_head: 2
+terminal_ci_wait_started_at: 2026-08-05T19:09:00+02:00
+terminal_ci_checks_for_current_generation: 2
+unchanged_state_checks: 2
 identical_failure_retries: 0
 repair_cycles_for_current_gate: 0
 stall_warnings: 0
-blocker: null
-next_action: Inspect the complete PR diff and perform the independent architecture audit on the final head.
+blocker: Required exact-head GitHub workflows have not reached terminal state.
+next_action: Reconcile the current PR head and merge only after all required exact-head workflows pass with zero unresolved reviews.
 ```
