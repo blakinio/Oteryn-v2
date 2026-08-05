@@ -13,7 +13,7 @@ base_sha: d4b5755cd45bfc6689f3614173f7c5701f56bb36
 head_sha: pending exact-final validation
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-05T17:33:00+02:00
-updated_at: 2026-08-05T17:53:00+02:00
+updated_at: 2026-08-05T17:56:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -91,13 +91,17 @@ Persist an accepted architecture contract for a reusable native Oteryn v2 E2E pl
 - Canary is retained as architecture evidence and a migration/reference source, not as a runtime dependency.
 - Direct SQL assertions are restricted to persistence/migration ownership; ordinary gameplay scenarios should prefer stable read-only probes, domain events and audit evidence.
 - The instrumented client adapter may observe and submit normal product actions but may not bypass Platform admission, create authoritative sessions, mutate server state or replace server validation.
+- Agent governance run `31022445259` proved both repository validators pass and found one PR metadata defect: the body lacked the mandatory `## Summary` heading.
+- PR #35 now includes `## Summary`, `## Scope` and `## Validation`; this commit triggers a fresh exact-head validation rather than reusing the failed event payload.
 
 ## Validation
 
 ### Focused
 
 - command/run: `python tools/agents/validate_governance.py`
-- result: pending exact-head workflow evidence
+- result: PASS inside workflow run `31022445259`
+- command/run: `python tools/repository/validate_repository_policy.py`
+- result: PASS inside workflow run `31022445259`
 
 ### Component/integration
 
@@ -111,9 +115,11 @@ Persist an accepted architecture contract for a reusable native Oteryn v2 E2E pl
 
 ### Exact-head CI
 
-- head: pending after this checkpoint commit
-- workflow/run: pending
-- result: pending
+- prior head: `bcb1e7efd4efd401a9f44fad03e07e290a9c72b6`
+- Dependency review run `31022446050`: PASS
+- Agent governance run `31022445259`: FAIL only at PR metadata validation; repository/governance validators passed
+- repair: added the required `## Summary` PR-body heading
+- exact final head/workflow: pending after this repair checkpoint
 
 ## Independent audit
 
@@ -127,8 +133,8 @@ Persist an accepted architecture contract for a reusable native Oteryn v2 E2E pl
 
 ## PR and closeout
 
-- changed-file review: six declared documentation paths in draft PR #35; exact-final review pending after this checkpoint commit
-- unresolved review threads: pending
+- changed-file review: six declared documentation paths in PR #35; exact-final review pending after this checkpoint commit
+- unresolved review threads: zero before this checkpoint; exact-final verification pending
 - related/superseded PRs: none identified
 - merge commit/result: pending
 - ownership release: pending
@@ -136,19 +142,19 @@ Persist an accepted architecture contract for a reusable native Oteryn v2 E2E pl
 ## Context checkpoint
 
 ```yaml
-last_progress: ADR-0007, both canonical quality policies, the foundation backlog and the global architecture register now consistently define QA-E2E-01.
+last_progress: PR metadata was repaired after the workflow proved repository governance valid but rejected the missing Summary heading.
 status: validating
 branch: docs/qa-e2e-architecture-20260805
 head_sha: pending after checkpoint commit
 pr: 35
-ci_check_generation: null
+ci_check_generation: next exact-head generation
 ci_checks_for_current_head: 0
 terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 0
+repair_cycles_for_current_gate: 1
 stall_warnings: 0
 blocker: null
-next_action: Verify the exact-final six-file diff, governance checks and review-thread state before readiness.
+next_action: Verify the fresh exact-head governance, dependency and CodeQL results and merge only if all required gates pass.
 ```
