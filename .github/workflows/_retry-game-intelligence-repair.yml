@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   repair:
-    if: "${{ github.event.head_commit.message == 'chore retry game intelligence architecture repairs' }}"
+    if: "${{ github.event.head_commit.message == 'chore rerun game intelligence architecture repairs' }}"
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -33,17 +33,11 @@ jobs:
               raise SystemExit('unable to locate repair script markers')
           body = source.split(start_marker, 1)[1].split(end_marker, 1)[0]
           code = '\n'.join(line[10:] if line.startswith('          ') else line for line in body.splitlines()) + '\n'
-
           needle = 'replace_once(task, "pr: null\\n", "pr: \\\"#17\\\"\\n")'
           if code.count(needle) != 2:
               raise SystemExit(f'expected two PR replacements, found {code.count(needle)}')
-          scoped = '''p = Path(task)
-text = p.read_text(encoding="utf-8")
-if text.count("pr: null\\n") != 2:
-    raise SystemExit(f"task: expected two null PR fields, found {text.count('pr: null' + chr(10))}")
-p.write_text(text.replace("pr: null\\n", "pr: \\\"#17\\\"\\n"), encoding="utf-8")'''
-          code = code.replace(needle, scoped, 1)
-          code = code.replace(needle, '', 1)
+          scoped = ('p = Path(task)\n' 'text = p.read_text(encoding="utf-8")\n' 'if text.count("pr: null\\n") != 2:\n' '    raise SystemExit(f"task: expected two null PR fields, found {text.count(chr(112)+chr(114)+chr(58)+chr(32)+chr(110)+chr(117)+chr(108)+chr(108)+chr(10))}")\n' 'p.write_text(text.replace("pr: null\\n", "pr: \\\"#17\\\"\\n"), encoding="utf-8")')
+          code = code.replace(needle, scoped, 1).replace(needle, '', 1)
           Path('/tmp/repair_game_intelligence.py').write_text(code, encoding='utf-8')
           PY
 
