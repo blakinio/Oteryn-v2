@@ -50,7 +50,7 @@ The canonical repository policy records `MPL-2.0` as the default software licens
 - the reserved creative-asset boundary in `LICENSE-ASSETS.md`;
 - the separate names and branding boundary in `TRADEMARKS.md`.
 
-MPL-2.0 is applied without the Exhibit B incompatibility notice. File- or directory-specific notices may define justified exceptions, but they must preserve third-party provenance and pass compatibility review.
+The standard MPL-2.0 text includes Exhibit B, but Oteryn-v2 does not attach or apply the separate Exhibit B incompatibility notice to covered source. File- or directory-specific notices may define justified exceptions, but they must preserve third-party provenance and pass compatibility review.
 
 The repository validator checks that these files and machine-readable policy fields remain present and mutually consistent. GitHub's displayed license classification is derived from the root `LICENSE` file rather than an independently mutable repository setting.
 
