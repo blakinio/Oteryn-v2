@@ -53,8 +53,8 @@ jobs:
           )
           replace_once(
               "docs/architecture/PRODUCT_DIRECTION_BASELINE.md",
-              "- exact product-profile/ruleset/content revision contract;\n",
-              "- exact product-profile/ruleset/content revision contract and its World Registry/Game Gateway admission binding;\n",
+              "4. exact product-profile/ruleset/content revision contract;\n",
+              "4. exact product-profile/ruleset/content revision contract and its World Registry/Game Gateway admission binding;\n",
           )
           replace_once(
               "docs/architecture/PRODUCT_DIRECTION_BASELINE.md",
