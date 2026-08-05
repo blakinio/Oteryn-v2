@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   apply:
-    if: "${{ github.event.head_commit.message == 'chore retry game intelligence patch with valid yaml' }}"
+    if: "${{ github.event.head_commit.message == 'chore retry game intelligence patch with scoped duplicate rule' }}"
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -37,26 +37,22 @@ jobs:
               lines.append(line[10:] if line.startswith('          ') else line)
           code = '\n'.join(lines) + '\n'
           code = code.replace("`EXPANSION`.\\n- Structured logs", "`EXPANSION`\\n- Structured logs")
-
-          broad = (
-              'replace_once(\n'
-              '    "docs/agents/tasks/active/OTV2-20260805-foundation-preimplementation-contracts.md",\n'
-              '    "  - docs/architecture/ADR-0005-native-world-format-and-oteryn-studio.md\\\\n",\n'
-              '    "  - docs/architecture/ADR-0005-native-world-format-and-oteryn-studio.md\\\\n  - docs/architecture/ADR-0006-game-intelligence-analytics-and-audit.md\\\\n",\n'
-              ')'
+          old_guard = (
+              '    if count != 1:\n'
+              '        raise SystemExit(f"{path}: expected one match, found {count}: {old[:120]!r}")\n'
           )
-          scoped = (
-              'p = Path("docs/agents/tasks/active/OTV2-20260805-foundation-preimplementation-contracts.md")\n'
-              'text = p.read_text(encoding="utf-8")\n'
-              'old = "  - docs/architecture/ADR-0005-native-world-format-and-oteryn-studio.md\\\\n"\n'
-              'new = "  - docs/architecture/ADR-0005-native-world-format-and-oteryn-studio.md\\\\n  - docs/architecture/ADR-0006-game-intelligence-analytics-and-audit.md\\\\n"\n'
-              'if old not in text:\n'
-              '    raise SystemExit("programme task ADR-0005 public-contract entry missing")\n'
-              'p.write_text(text.replace(old, new, 1), encoding="utf-8")'
+          new_guard = (
+              '    allowed_duplicate = (\n'
+              '        path == "docs/agents/tasks/active/OTV2-20260805-foundation-preimplementation-contracts.md"\n'
+              '        and "ADR-0005-native-world-format-and-oteryn-studio.md" in old\n'
+              '        and count == 2\n'
+              '    )\n'
+              '    if count != 1 and not allowed_duplicate:\n'
+              '        raise SystemExit(f"{path}: expected one match, found {count}: {old[:120]!r}")\n'
           )
-          if code.count(broad) != 1:
-              raise SystemExit(f'expected one broad programme-list edit, found {code.count(broad)}')
-          code = code.replace(broad, scoped, 1)
+          if code.count(old_guard) != 1:
+              raise SystemExit(f'expected one replace_once guard, found {code.count(old_guard)}')
+          code = code.replace(old_guard, new_guard, 1)
           Path('/tmp/apply_game_intelligence.py').write_text(code, encoding='utf-8')
           PY
 
