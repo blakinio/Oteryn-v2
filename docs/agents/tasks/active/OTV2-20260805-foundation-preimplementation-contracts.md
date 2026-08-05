@@ -74,7 +74,7 @@ The complete original 2026-08-05 handoff remains preserved unchanged at `docs/ag
 - The existing Rust client remains in `blakinio/otclient/oteryn-client` until `VSL-02` pins and moves it.
 - Oteryn Platform contains Identity, World Registry, Game Login Ticket and a standalone Go Game Gateway.
 - Existing producer-side native work does not prove the complete target runtime.
-- ADR-0001 through ADR-0006 and their lifecycle closeouts/package state are merged or tracked on `main` as applicable.
+- ADR-0001 through ADR-0006 are accepted; package lifecycle records are tracked separately.
 
 Every replacement agent must verify this baseline against the live default branch before repeating it.
 
@@ -232,9 +232,9 @@ The initial programme must prove at least:
 6. retry-safe item pickup;
 7. correlated combat/death/loot/pickup events, atomic item audit and replay-safe analytics;
 8. durable checkpoint and safe logout;
-8. relog to another channel with shared character state preserved;
-9. rejection of a simultaneous second session;
-10. isolation of channel-local state and preservation of world-shared state.
+9. relog to another channel with shared character state preserved;
+10. rejection of a simultaneous second session;
+11. isolation of channel-local state and preservation of world-shared state.
 
 ## Wider global decision horizon
 
@@ -344,7 +344,7 @@ This programme checkpoint does not itself:
 
 ## Independent audit
 
-Every package PR must challenge omitted boundaries, circular dependencies, placeholder crates, duplicate authority, unsafe concurrency/replay/recovery, item duplication, cross-repository rollout conflicts, unsupported runtime claims, premature freezing and stale decisions.
+Every package PR must challenge omitted boundaries, circular dependencies, placeholder crates, duplicate authority, unsafe concurrency/replay/recovery, item duplication, missing provenance/outbox evidence, telemetry/audit durability confusion, privacy/retention/access gaps, AI mutation authority, cross-repository rollout conflicts, unsupported runtime claims, premature freezing and stale decisions.
 
 ## Context checkpoint
 

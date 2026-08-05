@@ -145,26 +145,28 @@ This may be part of Persistence v1 only if that contract is sufficiently complet
 
 ### `ANL-01` — Game Event and Audit Foundation
 
-- Status: `BLOCKS_DURABLE_GAMEPLAY` where `DUR-02`/`DUR-03` require transactional audit evidence.
+- Status: `BLOCKS_DURABLE_GAMEPLAY`
+- Applies before `DUR-02`/`DUR-03` finalize transactional audit evidence.
 - Freeze the common event envelope, durability classes, producers/consumers, ordering, idempotency, outbox, publication checkpoints, deduplication, replay and schema compatibility.
 - Define bounded fail-open gameplay telemetry separately from atomic durable economy/security audit.
 - Define privacy classes, pseudonymous analytics identity, access, retention, deletion/anonymization and test fixtures.
 
 ### `ANL-02` — Gameplay, Balance and World Analytics
 
-- Status: `REQUIRED_FOR_ALPHA`.
+- Status: `REQUIRED_FOR_ALPHA`
 - Define combat/progression/session metrics, class/vocation balance, party/hunt dimensions, world/content usage, sample quality, version comparisons and dashboards.
 - Keep analytics observational; no automatic balance mutation.
 
 ### `ANL-03` — Economy Integrity and Security Analytics
 
-- Status: `REQUIRED_FOR_ALPHA` for a production-grade integrity/security analytics claim.
+- Status: `REQUIRED_FOR_ALPHA`
+- Required for a production-grade integrity/security analytics claim.
 - Define provenance/invariant consumers, alerts, cases, detector versioning, evidence quality, false-positive handling and separation from authoritative enforcement.
 - Preserve `DUR-03` as the anti-duplication prevention authority.
 
 ### `ANL-04` — Read-Only Investigation and AI
 
-- Status: `EXPANSION`.
+- Status: `EXPANSION`
 - Define least-privilege read-only evidence access, correlation, provenance reconstruction, human review and full auditability.
 - Prohibit runtime/database mutation, autonomous bans, balance changes, rollback and deployment.
 

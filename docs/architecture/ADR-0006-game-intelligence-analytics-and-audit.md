@@ -4,7 +4,7 @@
 - Date: 2026-08-05
 - Decision owners: Oteryn project owner and Oteryn v2 architecture programme
 - Coordination ID: `OTV2-GAME-INTELLIGENCE`
-- Related: ADR-0001 through ADR-0005, `FOUNDATION_DECISION_BACKLOG.md`, `GLOBAL_ARCHITECTURE_DECISION_REGISTER.md`, `FOUNDATION_FAILURE_SCENARIOS.md`
+- Related: ADR-0001 through ADR-0005, `FOUNDATION_DECISION_BACKLOG.md`, `GLOBAL_ARCHITECTURE_DECISION_REGISTER.md`, `RESOURCE_LIMITS_REGISTRY.json`, `FOUNDATION_ERROR_VOCABULARY.md`, `FOUNDATION_FAILURE_SCENARIOS.md`
 
 ## Context
 
@@ -315,6 +315,12 @@ Required health evidence includes:
 - privacy/redaction failures;
 - bounded cardinality and storage growth.
 
+`ANL-01` must register every externally controlled memory, allocation and transfer boundary in `RESOURCE_LIMITS_REGISTRY.json`, including event-envelope and payload bytes, queue entries/bytes, batch rows/bytes, dead-letter capacity, replay batch/window, decompression, query/result/export and evidence-package limits. Durable outbox backlog is governed by explicit operational thresholds and recovery behavior; it is never silently discarded to satisfy a memory limit.
+
+Public and cross-component failures must map to `FOUNDATION_ERROR_VOCABULARY.md`. At minimum, `ANL-01` must define stable contract-owned outcomes for telemetry drop/capacity, audit dependency unavailable, event/schema rejection, duplicate or ordering conflict, replay conflict, privacy-policy rejection and investigation access denial without exposing private payloads.
+
+The following stable scenarios from `FOUNDATION_FAILURE_SCENARIOS.md` are mandatory inputs to the owning contracts: `FS-ANALYTICS-TELEMETRY-OVERFLOW`, `FS-AUDIT-OUTBOX-BACKLOG`, `FS-EVENT-DUPLICATE-DELIVERY`, `FS-EVENT-OUT-OF-ORDER`, `FS-AUDIT-MUTATION-MISMATCH`, `FS-ANALYTICS-PRIVACY-POLICY`, `FS-DETECTOR-FALSE-POSITIVE` and `FS-INVESTIGATION-MUTATION-ATTEMPT`.
+
 Replay means replaying immutable events into read-only consumers or test fixtures. It never means applying the authoritative gameplay effect again.
 
 ### 11. Canary migration classification
@@ -405,7 +411,7 @@ Rejected. Event identity, transaction/outbox boundaries, privacy classes and ite
 
 - balance and world decisions can be based on versioned evidence;
 - item/currency anomalies can be investigated from authoritative provenance;
-- analytics storage failure cannot normally stall combat;
+- best-effort analytics consumer or storage failure cannot normally stall combat;
 - durable audit cannot silently degrade to incomplete best effort;
 - privacy and retention are architecture concerns rather than late dashboard settings;
 - AI remains useful without receiving mutation authority;

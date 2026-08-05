@@ -388,8 +388,10 @@ Decide:
 - bounded in-process queues, overload, drop and fail-open behavior for gameplay telemetry;
 - transactional outbox/atomic audit behavior for economy and security mutations;
 - idempotent delivery, deduplication, publication checkpoints and replay into read-only consumers;
-- resource limits, backpressure, dead-letter lifecycle and observability;
+- resource limits registered in `RESOURCE_LIMITS_REGISTRY.json`, backpressure, dead-letter lifecycle and observability;
+- stable error/outcome mapping through `FOUNDATION_ERROR_VOCABULARY.md`;
 - privacy classes, pseudonymous identity, access roles, retention, deletion/anonymization and legal hold;
+- named analytics/audit/privacy/investigation scenarios from `FOUNDATION_FAILURE_SCENARIOS.md`;
 - golden fixtures and duplicate/out-of-order/schema-evolution tests.
 
 This contract must be accepted before `DUR-02` and `DUR-03` finalize the outbox/audit evidence required by their transactions. It does not block minimal workspace bootstrap.

@@ -8,23 +8,25 @@ status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/game-intelligence-architecture-20260805
-pr: null
+pr: "#17"
 base_sha: 521531a38ad98845a1147d6220c204ddb88e4911
 head_sha: null
 owner: GPT-5.6 Thinking
 created_at: 2026-08-05T14:11:00+02:00
-updated_at: 2026-08-05T14:11:00+02:00
+updated_at: 2026-08-05T14:35:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
   - docs/architecture/ADR-0006-game-intelligence-analytics-and-audit.md
   - docs/architecture/FOUNDATION_DECISION_BACKLOG.md
   - docs/architecture/GLOBAL_ARCHITECTURE_DECISION_REGISTER.md
+  - docs/contracts/FOUNDATION_FAILURE_SCENARIOS.md
   - docs/agents/tasks/active/OTV2-20260805-game-intelligence-architecture.md
   - docs/agents/tasks/active/OTV2-20260805-foundation-preimplementation-contracts.md
   - docs/agents/prompts/OTV2_GLOBAL_ARCHITECTURE_DECISION_COORDINATOR.md
 public_contracts:
   - docs/architecture/ADR-0006-game-intelligence-analytics-and-audit.md
+  - docs/contracts/FOUNDATION_FAILURE_SCENARIOS.md
 depends_on:
   - ADR-0001 through ADR-0005
   - Canary Gameplay Analytics evidence at PRs #30 and #330
@@ -116,11 +118,11 @@ Accept and durably record a first-class Oteryn Game Intelligence architecture co
 ## Context checkpoint
 
 ```yaml
-last_progress: ADR-0006 and the ANL-01 through ANL-04 programme integration were drafted from pinned Canary/Otheryn evidence.
+last_progress: PR #17 contains ADR-0006, ANL-01 through ANL-04 integration, named failure scenarios and repaired audit findings.
 status: validating
 branch: docs/game-intelligence-architecture-20260805
 head_sha: null
-pr: null
+pr: "#17"
 ci_check_generation: null
 ci_checks_for_current_head: 0
 terminal_ci_wait_started_at: null
@@ -130,5 +132,5 @@ identical_failure_retries: 0
 repair_cycles_for_current_gate: 0
 stall_warnings: 0
 blocker: null
-next_action: Open the package PR, run exact-head Agent governance, perform the full-diff audit and close the package lifecycle.
+next_action: Run exact-head Agent governance, complete the final full-diff audit and close PR #17 through squash merge and separate archive.
 ```
