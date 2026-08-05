@@ -13,16 +13,20 @@ base_sha: d4b5755cd45bfc6689f3614173f7c5701f56bb36
 head_sha: pending exact-final validation
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-05T17:33:00+02:00
-updated_at: 2026-08-05T17:42:00+02:00
+updated_at: 2026-08-05T17:53:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
   - docs/agents/tasks/active/OTV2-20260805-native-e2e-test-platform-contract.md
   - docs/architecture/ADR-0007-native-end-to-end-test-platform.md
+  - docs/architecture/FOUNDATION_DECISION_BACKLOG.md
+  - docs/architecture/GLOBAL_ARCHITECTURE_DECISION_REGISTER.md
   - docs/agents/BUILD_TEST_MATRIX.md
   - docs/agents/END_TO_END_FEATURE_COMPLETENESS.md
 public_contracts:
   - docs/architecture/ADR-0007-native-end-to-end-test-platform.md
+  - docs/architecture/FOUNDATION_DECISION_BACKLOG.md
+  - docs/architecture/GLOBAL_ARCHITECTURE_DECISION_REGISTER.md
 depends_on:
   - ADR-0001
   - ADR-0002
@@ -66,6 +70,7 @@ Persist an accepted architecture contract for a reusable native Oteryn v2 E2E pl
 - [x] ADR-0007 defines scenario, evidence, cleanup, deterministic-control, failure-injection and flakiness requirements.
 - [x] The build/test matrix names `QA-E2E-01` and distinguishes the three tiers.
 - [x] End-to-end feature completeness requires evidence from the appropriate tier and forbids synthetic or environment-only success claims.
+- [x] The foundation backlog and global architecture register expose `QA-E2E-01`, its dependencies and its `VSL-01` completion gate.
 - [x] No Rust workspace, runtime, client, protocol, Platform or CI implementation is introduced by this task.
 - [ ] Governance validation passes on the exact final head.
 
@@ -81,6 +86,8 @@ Persist an accepted architecture contract for a reusable native Oteryn v2 E2E pl
 - ADR-0007 accepts the three-tier platform and stable gate `QA-E2E-01`.
 - `BUILD_TEST_MATRIX.md` now defines tier purpose, placement, mandatory evidence, high-risk scenarios and population classification.
 - `END_TO_END_FEATURE_COMPLETENESS.md` now requires each feature to name its tiers and prevents Tier 1, instrumented-client or environment-only evidence from being overclaimed.
+- `FOUNDATION_DECISION_BACKLOG.md` now records the stable gate, accepted direction, implementation order and `VSL-01` start condition.
+- `GLOBAL_ARCHITECTURE_DECISION_REGISTER.md` now records ADR-0007 as accepted and prevents `VSL-01` or `ALPHA-QUALITY-01` from creating a competing E2E platform.
 - Canary is retained as architecture evidence and a migration/reference source, not as a runtime dependency.
 - Direct SQL assertions are restricted to persistence/migration ownership; ordinary gameplay scenarios should prefer stable read-only probes, domain events and audit evidence.
 - The instrumented client adapter may observe and submit normal product actions but may not bypass Platform admission, create authoritative sessions, mutate server state or replace server validation.
@@ -110,14 +117,17 @@ Persist an accepted architecture contract for a reusable native Oteryn v2 E2E pl
 
 ## Independent audit
 
-- exact head: pending
-- method/auditor: exact-diff architecture, terminology, scope and unsupported-claim review
-- material findings: pending
-- verdict: pending
+- audit pass 1: found that ADR-0007 was not yet represented in the foundation backlog and global architecture register.
+- remediation: added the stable gate, accepted baseline, ordering and `VSL-01` dependency to both canonical registers.
+- audit pass 2: exact compare against `main@d4b5755cd45bfc6689f3614173f7c5701f56bb36` showed only intended architecture additions and narrow policy replacements; no prior decision was removed.
+- exact final head: pending after this checkpoint commit
+- method/auditor: separate exact-diff architecture, terminology, scope and unsupported-claim review by ChatGPT
+- open material findings: none identified before exact-final CI
+- verdict: conditional `PASS`, pending exact-final changed-file and CI verification
 
 ## PR and closeout
 
-- changed-file review: four declared documentation paths in draft PR #35; final diff review pending
+- changed-file review: six declared documentation paths in draft PR #35; exact-final review pending after this checkpoint commit
 - unresolved review threads: pending
 - related/superseded PRs: none identified
 - merge commit/result: pending
@@ -126,7 +136,7 @@ Persist an accepted architecture contract for a reusable native Oteryn v2 E2E pl
 ## Context checkpoint
 
 ```yaml
-last_progress: Draft PR #35 now contains ADR-0007 and aligned build-test and feature-completeness policies.
+last_progress: ADR-0007, both canonical quality policies, the foundation backlog and the global architecture register now consistently define QA-E2E-01.
 status: validating
 branch: docs/qa-e2e-architecture-20260805
 head_sha: pending after checkpoint commit
@@ -140,5 +150,5 @@ identical_failure_retries: 0
 repair_cycles_for_current_gate: 0
 stall_warnings: 0
 blocker: null
-next_action: Inspect the exact PR diff and required governance checks, then resolve any material finding before readiness.
+next_action: Verify the exact-final six-file diff, governance checks and review-thread state before readiness.
 ```
