@@ -6,11 +6,12 @@ end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-[*.{md,yml,yaml,json,toml,py,rs}]
+[*.{md,yml,yaml,json,toml}]
 indent_style = space
 indent_size = 2
 
-[*.py]
+[*.{py,rs}]
+indent_style = space
 indent_size = 4
 
 [Makefile]

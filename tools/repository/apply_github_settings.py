@@ -7,6 +7,7 @@ import json
 import os
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 from pathlib import Path
 from typing import Any
@@ -72,7 +73,19 @@ def configure_repository() -> None:
         },
     }
     request("PATCH", "", repository, expected=(200,))
+    request("PUT", "/topics", {"names": POLICY["topics"]}, expected=(200,))
     request("PUT", "/actions/permissions/workflow", POLICY["actions"], expected=(204,))
+
+
+def configure_labels() -> None:
+    current = request("GET", "/labels?per_page=100", expected=(200,))
+    existing = {label["name"] for label in current}
+    for label in POLICY["labels"]:
+        if label["name"] in existing:
+            encoded = urllib.parse.quote(label["name"], safe="")
+            request("PATCH", f"/labels/{encoded}", label, expected=(200,))
+        else:
+            request("POST", "/labels", label, expected=(201,))
 
 
 def configure_security() -> None:
@@ -106,6 +119,18 @@ def verify() -> None:
                 f"repository setting {key} mismatch: expected {expected!r}, got {repo.get(key)!r}"
             )
 
+    topics = request("GET", "/topics", expected=(200,))
+    if sorted(topics.get("names", [])) != sorted(POLICY["topics"]):
+        raise ApiError("repository topics do not match policy")
+
+    current_labels = request("GET", "/labels?per_page=100", expected=(200,))
+    current_names = {label["name"] for label in current_labels}
+    missing_labels = [
+        label["name"] for label in POLICY["labels"] if label["name"] not in current_names
+    ]
+    if missing_labels:
+        raise ApiError(f"repository labels missing after apply: {missing_labels}")
+
     permissions = request("GET", "/actions/permissions/workflow", expected=(200,))
     for key, expected in POLICY["actions"].items():
         if permissions.get(key) != expected:
@@ -129,7 +154,7 @@ def verify() -> None:
         raise ApiError("private vulnerability reporting is not enabled")
 
     print(
-        "Repository settings, Actions permissions, security features, "
+        "Repository settings, metadata, labels, Actions permissions, security features, "
         "administration environment, and main ruleset applied and verified."
     )
 
@@ -141,6 +166,7 @@ def main() -> int:
     try:
         configure_environment()
         configure_repository()
+        configure_labels()
         configure_security()
         configure_ruleset()
         verify()

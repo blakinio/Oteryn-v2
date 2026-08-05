@@ -64,6 +64,17 @@ def main() -> int:
         if repo.get(key) != expected:
             errors.append(f"repository policy {key} must be {expected!r}")
 
+    topics = policy.get("topics", [])
+    if not isinstance(topics, list) or not topics or len(topics) != len(set(topics)):
+        errors.append("repository topics must be a non-empty unique list")
+    labels = policy.get("labels", [])
+    label_names = [label.get("name") for label in labels if isinstance(label, dict)]
+    if len(label_names) != len(labels) or len(label_names) != len(set(label_names)):
+        errors.append("repository labels must have unique names")
+    for required_label in ("dependencies", "ci", "security", "architecture"):
+        if required_label not in label_names:
+            errors.append(f"repository policy missing label: {required_label}")
+
     ruleset = policy.get("ruleset", {})
     if ruleset.get("enforcement") != "active":
         errors.append("main ruleset must be active")
@@ -77,7 +88,6 @@ def main() -> int:
     required_rule_types = {
         "deletion",
         "required_linear_history",
-        "required_signatures",
         "pull_request",
         "required_status_checks",
         "non_fast_forward",
@@ -85,6 +95,8 @@ def main() -> int:
     missing_rules = sorted(required_rule_types - rule_types)
     if missing_rules:
         errors.append(f"main ruleset missing rules: {', '.join(missing_rules)}")
+    if "required_signatures" in rule_types:
+        errors.append("strict signed commits are incompatible with third-party squash PRs")
 
     workflow_dir = ROOT / ".github/workflows"
     if workflow_dir.is_dir():

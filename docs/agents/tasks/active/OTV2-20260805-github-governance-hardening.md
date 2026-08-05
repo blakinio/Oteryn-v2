@@ -4,16 +4,16 @@
 task_id: OTV2-20260805-github-governance-hardening
 title: Harden GitHub contribution, merge, CI and security governance
 mode: IMPLEMENTATION
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: ci/github-governance-hardening-20260805
-pr: null
-base_sha: 4165ae00633564f1375943eadf38eee173d3e076
+pr: 23
+base_sha: 0cff8ae0c98cddefd18a29b1c4da0935f94a74fd
 head_sha: null
 owner: repository-governance-agent
 created_at: 2026-08-05T15:33:00+02:00
-updated_at: 2026-08-05T15:33:00+02:00
+updated_at: 2026-08-05T15:48:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -40,13 +40,14 @@ Make the documented pull-request and squash-merge discipline enforceable through
 
 ## Acceptance criteria
 
-- [ ] `main` has an active no-routine-bypass ruleset requiring PR, exact-head CI, up-to-date branch, resolved threads, squash, linear history, signatures, and no force-push/deletion.
+- [ ] `main` has an active no-routine-bypass ruleset requiring PR, exact-head CI, up-to-date branch, resolved threads, squash, linear history, and no force-push/deletion.
 - [ ] GitHub Actions default token permissions are read-only.
 - [ ] Pull request and issue templates, CODEOWNERS, contribution policy, security policy, ignore rules, and editor configuration exist.
 - [ ] Every workflow action is pinned to a full commit SHA.
 - [ ] Governance validation runs on every PR and push to `main`.
 - [ ] PR title/body policy is executable.
 - [ ] Dependency review, Dependabot for Actions, and CodeQL are configured.
+- [ ] Managed labels and repository topics are applied.
 - [ ] Vulnerability alerts, automated fixes, private reporting, secret scanning, and push protection are enabled where supported.
 - [ ] Exact-head workflows pass and the full diff has no open material audit finding.
 - [ ] The implementation PR is squash-merged and the task is archived in a separate closeout PR.
@@ -67,19 +68,19 @@ Make the documented pull-request and squash-merge discipline enforceable through
 ## Context checkpoint
 
 ```yaml
-last_progress: Task created and implementation package prepared from main.
-status: implementing
+last_progress: PR #23 opened; self-audit removed signed-commit incompatibility with Dependabot, corrected Rust indentation, and added managed labels/topics.
+status: validating
 branch: ci/github-governance-hardening-20260805
 head_sha: null
-pr: null
-ci_check_generation: initial
+pr: 23
+ci_check_generation: audit-repair
 ci_checks_for_current_head: 0
 terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 0
+repair_cycles_for_current_gate: 1
 stall_warnings: 0
 blocker: null
-next_action: Commit the governance package, open the PR, and validate the exact head.
+next_action: Push the audit repair and validate all workflows on the exact new head.
 ```

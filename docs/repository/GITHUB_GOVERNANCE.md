@@ -7,8 +7,9 @@
 - Squash is the only allowed merge method.
 - `Agent governance / validate` must pass on the current head and the branch must be up to date.
 - Review conversations must be resolved.
-- Force-push, branch deletion, unsigned updates, and merge commits are rejected.
+- Force-push, branch deletion, and merge commits are rejected.
 - Required approvals remain `0` while the repository has only one maintainer. Increase this to at least `1` when a second trusted maintainer is added.
+- GitHub-generated squash commits are verified. A strict signed-commit rule is deferred because it would prevent the maintainer from squash-merging third-party-authored PRs such as Dependabot updates.
 
 ## Pull request and commit convention
 
@@ -40,6 +41,6 @@ The repository policy enables:
 
 ## Configuration as code
 
-`.github/repository-policy.json` is the expected GitHub configuration. `tools/repository/apply_github_settings.py` applies it idempotently. `.github/workflows/repository-configuration.yml` runs only when the policy or the workflow changes on `main`, or through an explicitly approved manual dispatch.
+`.github/repository-policy.json` is the expected GitHub configuration. `tools/repository/apply_github_settings.py` applies it idempotently, including repository metadata, labels, topics, Actions permissions, security settings, administration environment, and the `main` ruleset. `.github/workflows/repository-configuration.yml` runs only when the policy or the workflow changes on `main`, or through an explicitly approved manual dispatch.
 
 `tools/repository/validate_repository_policy.py` checks that required governance files exist, workflow actions use full SHAs, dangerous privileged triggers are absent, and the policy has the expected protection invariants.
