@@ -4,16 +4,16 @@
 task_id: OTV2-20260805-vsl02-client-migration-sequencing
 title: Move exact Rust client migration before identifier and protocol freeze
 mode: CONTRACT
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: arch/vsl02-client-migration-sequencing-20260805
-pr: null
+pr: 19
 base_sha: 14132133493a7e0990235c45fed63efa47233d9e
-head_sha: null
+head_sha: d7d957c3f9e8a4e941b5c0a285a5d38be51d9596
 owner: architecture-coordinator
 created_at: 2026-08-05T14:56:00+02:00
-updated_at: 2026-08-05T14:56:00+02:00
+updated_at: 2026-08-05T15:09:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -31,7 +31,7 @@ depends_on:
   - FND-01 remains the first unresolved foundation contract
   - ADR-0002 accepted repository ownership and client migration direction
 blocks:
-  - FND-ID-01 and FND-02 sequencing until the client migration/cutover gate is recorded consistently
+  - FND-ID-01 and FND-02 sequencing until this package is merged
 cross_repository_coordination_id: OTV2-NATIVE-FOUNDATION
 external_repositories:
   - blakinio/otclient
@@ -53,11 +53,11 @@ Also remove the stale statement that final database technology remains open, bec
 
 ## Acceptance criteria
 
-- [ ] ADR-0002 explicitly records the mandatory sequencing and stale-inventory protection.
-- [ ] Foundation backlog and global register place `VSL-02` immediately after `FND-01`.
-- [ ] The active programme checkpoint has exactly one next action and reflects the revised order.
-- [ ] The multichannel matrix no longer lists database technology as unresolved.
-- [ ] No runtime, Cargo workspace, client code or external repository is modified.
+- [x] ADR-0002 explicitly records the mandatory sequencing and stale-inventory protection.
+- [x] Foundation backlog and global register place `VSL-02` immediately after `FND-01`.
+- [x] The active programme checkpoint has exactly one next action and reflects the revised order.
+- [x] The multichannel matrix no longer lists database technology as unresolved.
+- [x] No runtime, Cargo workspace, client code or external repository is modified.
 - [ ] Governance validation passes on the exact final head.
 - [ ] Independent full-diff audit finds no material contradiction.
 
@@ -72,42 +72,46 @@ Also remove the stale statement that final database technology remains open, bec
 ## Implementation / findings
 
 - Owner accepted moving `VSL-02` immediately after `FND-01`.
+- ADR-0002 now makes the sequence normative and rejects an isolated placeholder destination client.
+- The backlog and global register promote `VSL-02` from a late vertical-slice gate to a foundation bootstrap/cutover gate.
+- The programme checkpoint now requires FND-01 to terminate into VSL-02.
 - The migration remains a separate cross-repository programme with one task/branch/PR per written repository.
-- Workspace bootstrap must not establish a competing canonical client copy. It may be combined with destination migration only if `VSL-02` explicitly owns and validates that operation.
+- Workspace bootstrap may be combined with destination migration only if `VSL-02` explicitly owns and validates that operation; otherwise it follows immediately after migration.
+- The multichannel matrix now treats PostgreSQL as accepted while leaving schema, isolation, locking, partitioning, migration and messaging details open.
 
 ## Validation
 
 ### Focused
 
-- command/run: pending
-- result: pending
+- command/run: full compare `14132133493a7e0990235c45fed63efa47233d9e..d7d957c3f9e8a4e941b5c0a285a5d38be51d9596`
+- result: six declared documentation files changed; no runtime/code paths changed
 
 ### Component/integration
 
 - command/run: `NOT_APPLICABLE` — architecture-only package
-- result: pending
+- result: `NOT_APPLICABLE`
 
 ### E2E
 
 - scenario: `NOT_APPLICABLE` — no runtime behavior changes
-- result: pending
+- result: `NOT_APPLICABLE`
 
 ### Exact-head CI
 
-- head: pending
+- head: pending final checkpoint commit
 - workflow/run: Agent governance
 - result: pending
 
 ## Independent audit
 
-- exact head: pending
+- exact head: pending final checkpoint commit
 - method/auditor: full architecture diff review
 - material findings: pending
 - verdict: pending
 
 ## PR and closeout
 
-- changed-file review: pending
+- changed-file review: six declared documentation files; pending final exact-head review
 - unresolved review threads: pending
 - related/superseded PRs: none known
 - merge commit/result: pending
@@ -116,12 +120,12 @@ Also remove the stale statement that final database technology remains open, bec
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner accepted moving VSL-02 and controlled client migration immediately after FND-01.
-status: implementing
+last_progress: PR #19 records the accepted VSL-02 sequencing across ADR-0002, the ordered backlog, global register, programme checkpoint and multichannel matrix.
+status: validating
 branch: arch/vsl02-client-migration-sequencing-20260805
-head_sha: null
-pr: null
-ci_check_generation: null
+head_sha: d7d957c3f9e8a4e941b5c0a285a5d38be51d9596
+pr: 19
+ci_check_generation: pending final checkpoint commit
 ci_checks_for_current_head: 0
 terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
@@ -130,5 +134,5 @@ identical_failure_retries: 0
 repair_cycles_for_current_gate: 0
 stall_warnings: 0
 blocker: null
-next_action: Update ADR-0002, the foundation backlog, global register, active programme checkpoint and multichannel scope matrix with the accepted sequencing decision.
+next_action: Audit the full PR #19 diff and verify Agent governance on the exact final head.
 ```
