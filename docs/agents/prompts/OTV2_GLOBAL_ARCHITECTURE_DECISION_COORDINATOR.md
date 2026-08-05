@@ -138,12 +138,12 @@ Maintain unresolved subjects in `docs/architecture/GLOBAL_ARCHITECTURE_DECISION_
 - `FND-02` — `protocol-oteryn` v1;
 - `FND-03` — Runtime Execution;
 - `FND-04` — Identity, Game Session, Admission and Character Lease;
-- `DUR-01` — Identifier Contract;
+- `DUR-01` — Durable Identifier Representation Contract;
 - `DUR-02` — Persistence v1;
 - `DUR-03` — Item Transaction and Anti-Duplication;
 - `DUR-04` — Content, World Detail and Scripting;
 - `VSL-01` — Foundation Vertical-Slice Programme;
-- `VSL-02` — Exact Rust Client Migration Contract.
+- `VSL-02` — Exact Rust Client Migration and Cutover Contract.
 
 Classify the wider horizon as:
 

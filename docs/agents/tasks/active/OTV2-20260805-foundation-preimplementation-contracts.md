@@ -25,6 +25,10 @@ public_contracts:
   - docs/architecture/ADR-0005-native-world-format-and-oteryn-studio.md
   - docs/architecture/FOUNDATION_DECISION_BACKLOG.md
   - docs/architecture/GLOBAL_ARCHITECTURE_DECISION_REGISTER.md
+  - docs/contracts/CROSS_REPOSITORY_CONTRACT_LOCK.json
+  - docs/contracts/RESOURCE_LIMITS_REGISTRY.json
+  - docs/contracts/FOUNDATION_ERROR_VOCABULARY.md
+  - docs/contracts/FOUNDATION_FAILURE_SCENARIOS.md
   - docs/architecture/MULTICHANNEL_SYSTEM_SCOPE_MATRIX.md
   - docs/architecture/OTHERYN_REFERENCE_MIGRATION_PLAN.md
 continuation_prompt: docs/agents/prompts/OTV2_GLOBAL_ARCHITECTURE_DECISION_COORDINATOR.md
@@ -109,12 +113,12 @@ Canonical evidence: ADR-0001 through ADR-0005.
 - `FND-02` — `protocol-oteryn` v1 Contract.
 - `FND-03` — Runtime Execution Contract.
 - `FND-04` — Identity, Game Session, Admission and Character Lease Contract.
-- `DUR-01` — Identifier Contract.
+- `DUR-01` — Durable Identifier Representation Contract.
 - `DUR-02` — Persistence v1 Contract.
 - `DUR-03` — Item Transaction and Anti-Duplication Contract.
 - `DUR-04` — Content, World Detail and Scripting Contract.
 - `VSL-01` — Foundation Vertical-Slice Programme.
-- `VSL-02` — Exact Rust Client Migration Contract.
+- `VSL-02` — Exact Rust Client Migration and Cutover Contract.
 
 ## Progressive implementation gates
 
@@ -248,7 +252,7 @@ These do not block initial workspace bootstrap or the foundation vertical slice 
 ## Acceptance criteria
 
 - [x] Repository ownership and client migration direction accepted in ADR-0002.
-- [ ] `FND-01` Workspace and Dependency Contract accepted.
+- [ ] `FND-01` Workspace, Dependency and Existing-Rust Migration Contract accepted.
 - [ ] A separate minimal workspace-bootstrap task is authorized after `FND-01`; no other foundation contract blocks bootstrap.
 - [ ] Initial workspace members require an immediate consumer and observable acceptance; no empty layering crates.
 - [ ] FND-01 classifies every existing Rust client crate/subsystem and preserves its exact evidence or explicitly rejects it.
@@ -258,13 +262,13 @@ These do not block initial workspace bootstrap or the foundation vertical slice 
 - [ ] `FND-03` accepted before authoritative runtime implementation.
 - [ ] `FND-04` accepted before production admission/lease implementation.
 - [x] PostgreSQL and separate Platform/game ownership accepted in ADR-0004.
-- [ ] `DUR-01` accepted before schema and wire identities are frozen.
+- [ ] `DUR-01` accepted before durable database identity representations are frozen and before authoritative durable gameplay mutation.
 - [ ] `DUR-02` accepted before durable gameplay mutations.
 - [ ] `DUR-03` accepted before durable item/currency mutation.
 - [x] Native world/content/editor direction accepted in ADR-0005.
 - [ ] `DUR-04` accepted before broad content import or durable scripting.
 - [ ] `VSL-01` accepted with named E2E evidence.
-- [ ] `VSL-02` pins source SHA, provenance mechanism and rollback before migration.
+- [ ] `VSL-02` pins source SHA, provenance, open-PR disposition, source freeze, cutover, history preservation and rollback before migration.
 - [ ] Each contract identifies canonical owner, producers, consumers and exact revisions.
 - [ ] Cross-repository changes use separate authorized tasks/branches/PRs and explicit rollout order.
 - [ ] Every executable package is separately authorized and bounded.
@@ -322,7 +326,7 @@ Every package PR must challenge omitted boundaries, circular dependencies, place
 ## Context checkpoint
 
 ```yaml
-last_progress: ADR-0001 through ADR-0005 are accepted; stable foundation gates, progressive implementation policy and the non-owning programme model are durable continuation sources.
+last_progress: ADR-0001 through ADR-0005 are accepted; FND-ID-01, the existing-Rust migration audit, and retained cross-repository/limit/error/failure registries now harden the ordered foundation programme.
 status: ready
 branch: null
 head_sha: null
@@ -336,6 +340,10 @@ public_contracts:
   - docs/architecture/ADR-0005-native-world-format-and-oteryn-studio.md
   - docs/architecture/FOUNDATION_DECISION_BACKLOG.md
   - docs/architecture/GLOBAL_ARCHITECTURE_DECISION_REGISTER.md
+  - docs/contracts/CROSS_REPOSITORY_CONTRACT_LOCK.json
+  - docs/contracts/RESOURCE_LIMITS_REGISTRY.json
+  - docs/contracts/FOUNDATION_ERROR_VOCABULARY.md
+  - docs/contracts/FOUNDATION_FAILURE_SCENARIOS.md
 continuation_prompt: docs/agents/prompts/OTV2_GLOBAL_ARCHITECTURE_DECISION_COORDINATOR.md
 validation_state: Each package requires exact-head Agent governance and full-diff audit; dependency boundaries become executable checks after workspace bootstrap.
 audit_state: Future package audits pending.

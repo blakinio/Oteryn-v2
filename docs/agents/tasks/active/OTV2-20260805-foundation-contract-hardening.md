@@ -13,7 +13,7 @@ base_sha: 5c074ad76c52168efede31824d7f28f482f844ce
 head_sha: null
 owner: architecture coordinator
 created_at: 2026-08-05T13:15:00+02:00
-updated_at: 2026-08-05T13:25:00+02:00
+updated_at: 2026-08-05T13:38:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -29,7 +29,8 @@ owned_paths:
   - docs/contracts/FOUNDATION_ERROR_VOCABULARY.md
   - docs/contracts/FOUNDATION_FAILURE_SCENARIOS.md
   - docs/agents/tasks/active/OTV2-20260805-foundation-contract-hardening.md
-  - .github/workflows/otv2-foundation-contract-hardening.yml
+  - docs/agents/GOVERNANCE_CONTRACT.json
+  - tools/agents/validate_governance.py
 public_contracts:
   - docs/architecture/FOUNDATION_DECISION_BACKLOG.md
   - docs/architecture/GLOBAL_ARCHITECTURE_DECISION_REGISTER.md
@@ -90,6 +91,7 @@ Persist the owner-approved architecture hardening discovered during the final pr
 - Task, dedicated branch and draft PR #15 created from exact current `main`.
 - Repository had no overlapping active package or open PR at task start.
 - Bounded architecture patch reconciles order, migration evidence and shared machine-readable registries.
+- Audit finding `OTV2-FND-HARDEN-001` repaired stale DUR-01 wire-freeze wording and made the new registries retained governance inputs with semantic validation.
 
 ## Validation
 
@@ -130,7 +132,7 @@ Persist the owner-approved architecture hardening discovered during the final pr
 ## Context checkpoint
 
 ```yaml
-last_progress: Architecture hardening patch applied and final-tree governance validation started.
+last_progress: Audit repair aligned FND-ID-01/DUR-01 boundaries and added retained semantic validation for contract-lock and resource-limit registries.
 status: implementing
 branch: docs/foundation-contract-hardening-20260805
 head_sha: null
@@ -141,8 +143,8 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 0
+repair_cycles_for_current_gate: 1
 stall_warnings: 0
 blocker: null
-next_action: Inspect the exact PR diff, complete the independent audit and record exact-head CI.
+next_action: Re-audit the exact repaired diff, record final validation evidence and prepare PR #15 for protected merge.
 ```

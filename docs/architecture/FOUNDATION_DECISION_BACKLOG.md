@@ -24,12 +24,12 @@ Use these identifiers in tasks, PRs, prompts and cross-repository coordination. 
 - `FND-02` — `protocol-oteryn` v1 Contract.
 - `FND-03` — Runtime Execution Contract.
 - `FND-04` — Identity, Game Session, Admission and Character Lease Contract.
-- `DUR-01` — Identifier Contract.
+- `DUR-01` — Durable Identifier Representation Contract.
 - `DUR-02` — Persistence v1 Contract.
 - `DUR-03` — Item Transaction and Anti-Duplication Contract.
 - `DUR-04` — Content, World Detail and Scripting Contract.
 - `VSL-01` — Foundation Vertical-Slice Programme.
-- `VSL-02` — Exact Rust Client Migration Contract.
+- `VSL-02` — Exact Rust Client Migration and Cutover Contract.
 
 ## Already accepted
 
@@ -272,7 +272,7 @@ audience
 
 ## Decisions required before durable gameplay mutation
 
-### `DUR-01` — Identifier Contract
+### `DUR-01` — Durable Identifier Representation Contract
 
 Freeze representations and visibility for:
 
@@ -447,7 +447,7 @@ Contracts may be developed in parallel only when ownership and dependencies do n
 - `DUR-01`, `DUR-02` and `DUR-03` must be accepted before authoritative durable character, item or currency mutation.
 - ADR-0005 is the accepted world/content direction; `DUR-04` must be accepted before broad content import or durable scripting.
 - `VSL-01` must name observable E2E evidence before implementation is called complete.
-- `VSL-02` must pin source SHA, provenance and rollback before moving client code.
+- `VSL-02` must pin source SHA, provenance, open-PR disposition, source freeze, cutover, history preservation and rollback before moving client code.
 
 ## Current next action
 

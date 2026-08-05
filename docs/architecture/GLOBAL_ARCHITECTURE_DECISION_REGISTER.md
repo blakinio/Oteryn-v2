@@ -102,7 +102,7 @@ Stable IDs are canonical across tasks, prompts and PRs. Stage labels are descrip
 
 ## Stage B — blocks durable gameplay
 
-### `DUR-01` — Identifier Contract
+### `DUR-01` — Durable Identifier Representation Contract
 
 - Status: `BLOCKS_DURABLE_GAMEPLAY`
 - Cover account, character, world, channel, instance, node, game session, command, entity, item-instance and revision identities.
@@ -157,7 +157,7 @@ This may be part of Persistence v1 only if that contract is sufficiently complet
 - Define action ordering, target legality, damage pipeline boundary, death, corpse, loot ownership, experience/kill attribution and retry-safe pickup integration.
 - Preserve extension points for conditions, PvP, boss contribution and rulesets.
 
-### `VSL-02` — Exact Rust Client Migration Contract
+### `VSL-02` — Exact Rust Client Migration and Cutover Contract
 
 - Status: `BLOCKS_VERTICAL_SLICE`
 - Pin exact source SHA from `blakinio/otclient/oteryn-client`.
