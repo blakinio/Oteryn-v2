@@ -21,13 +21,13 @@ The following terms are distinct:
 - **Host** — a physical server or virtual machine providing CPU, memory, networking and storage access.
 - **Container** — an optional operating-system isolation and packaging boundary around a process.
 - **GameNode process** — one running instance of the Oteryn game-server binary.
-- **GameNode** — the logical runtime identity of that process, with its own `GameNodeId`, lifecycle, health, capacity and assigned channel set.
+- **GameNode** — the logical runtime identity of that process, with its own `NodeId`, lifecycle, health, capacity and assigned channel set.
 - **ChannelRuntime** — one authoritative simulation of a gameplay channel identified by `ChannelId`.
 - **Orchestrator** — an external deployment control plane that starts, stops and replaces GameNode processes or containers.
 
 A GameNode is not a physical host and must not be confused with a Kubernetes Node or another orchestrator host concept. One host may run multiple GameNodes. One GameNode may run multiple ChannelRuntimes.
 
-`NodeId` in earlier architecture is refined to the explicit term `GameNodeId` wherever the game-process identity is meant. A later identifier contract must define representation and compatibility without overloading host identity.
+`NodeId` remains the stable identifier term accepted by existing architecture. `GameNode` is the unambiguous name of the game-process runtime concept identified by that `NodeId`. `FND-ID-01` may later define representation or an explicit alias, but it must not overload the identity of a physical host or orchestrator node.
 
 ### 2. Process and container model
 
