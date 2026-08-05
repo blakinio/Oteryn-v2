@@ -13,7 +13,7 @@ base_sha: 0cff8ae0c98cddefd18a29b1c4da0935f94a74fd
 head_sha: null
 owner: repository-governance-agent
 created_at: 2026-08-05T15:33:00+02:00
-updated_at: 2026-08-05T15:52:00+02:00
+updated_at: 2026-08-05T15:57:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -45,7 +45,7 @@ Make the documented pull-request and squash-merge discipline enforceable through
 - [ ] Pull request and issue templates, CODEOWNERS, contribution policy, security policy, ignore rules, and editor configuration exist.
 - [ ] Every workflow action is pinned to a full commit SHA.
 - [ ] Governance validation runs on every PR and push to `main`.
-- [ ] PR title/body policy is executable.
+- [ ] PR title/body policy is executable and supplies the permanent squash commit.
 - [ ] Dependency review, Dependabot for Actions, and CodeQL are configured.
 - [ ] Managed labels and repository topics are applied.
 - [ ] Vulnerability alerts, automated fixes, private reporting, secret scanning, and push protection are enabled where supported.
@@ -68,19 +68,19 @@ Make the documented pull-request and squash-merge discipline enforceable through
 ## Context checkpoint
 
 ```yaml
-last_progress: Agent governance passed on head 4a38b41; Dependency Review proved the dependency graph is currently disabled, so a base-ref-bound bootstrap exception is being added only for this enabling PR.
+last_progress: Full policy audit completed; final repair makes the PR title/body the canonical squash commit while preserving the bounded dependency-review bootstrap exception.
 status: validating
 branch: ci/github-governance-hardening-20260805
 head_sha: null
 pr: 23
-ci_check_generation: dependency-bootstrap-repair
-ci_checks_for_current_head: 1
+ci_check_generation: final-audit-repair
+ci_checks_for_current_head: 0
 terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 2
+repair_cycles_for_current_gate: 3
 stall_warnings: 0
 blocker: null
-next_action: Validate all three PR workflows on the exact repaired head.
+next_action: Run final exact-head Agent governance, CodeQL, and Dependency review, then merge if clean.
 ```

@@ -5,6 +5,7 @@
 - `main` is protected by the `Protect main` repository ruleset.
 - All changes reach `main` through a pull request.
 - Squash is the only allowed merge method.
+- The pull request title becomes the squash-commit title and the pull request body becomes its canonical message.
 - `Agent governance / validate` must pass on the current head and the branch must be up to date.
 - Review conversations must be resolved.
 - Force-push, branch deletion, and merge commits are rejected.
@@ -17,7 +18,7 @@ Pull request titles follow:
 
 `type(scope): imperative summary`
 
-The PR title becomes the permanent squash-commit title. Working commits may be iterative but must remain reviewable and free of secrets, generated outputs, and unrelated changes.
+The PR title and body form the permanent squash commit. Working commits may be iterative but must remain reviewable and free of secrets, generated outputs, and unrelated changes.
 
 ## GitHub Actions security
 

@@ -11,7 +11,7 @@
     "allow_update_branch": true,
     "use_squash_pr_title_as_default": true,
     "squash_merge_commit_title": "PR_TITLE",
-    "squash_merge_commit_message": "COMMIT_MESSAGES",
+    "squash_merge_commit_message": "PR_BODY",
     "has_issues": true,
     "has_projects": true,
     "has_wiki": false,

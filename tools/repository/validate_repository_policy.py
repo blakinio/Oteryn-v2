@@ -58,6 +58,8 @@ def main() -> int:
         "allow_rebase_merge": False,
         "delete_branch_on_merge": True,
         "use_squash_pr_title_as_default": True,
+        "squash_merge_commit_title": "PR_TITLE",
+        "squash_merge_commit_message": "PR_BODY",
         "has_wiki": False,
     }
     for key, expected in expected_repo.items():
