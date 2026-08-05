@@ -9,12 +9,13 @@ repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/sync-adr-0009-registers
 pr: 39
+closeout_pr: 40
 base_sha: 96c605c9fabc3266eca9dd7f0010c97e88fd057c
 head_sha: 4e92f7cbfc3bd2d22c233867ebfb670d5ffcd2b8
 merge_sha: 8d046c8dbd9643d9a01dc6b11156a695ed237164
 owner: GPT-5.6-Thinking-architecture-coordinator
 created_at: 2026-08-05T20:42:00+02:00
-updated_at: 2026-08-05T21:03:00+02:00
+updated_at: 2026-08-05T21:04:00+02:00
 completed_at: 2026-08-05T21:03:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
@@ -107,16 +108,18 @@ The canonical architecture indexes and multichannel terminology now accurately r
 - unresolved review threads: zero
 - related PR: PR #38 independently archives the ADR-0008/ADR-0009 decision tasks and has no architecture-path overlap
 - merge result: PR #39 squash-merged as `8d046c8dbd9643d9a01dc6b11156a695ed237164`
+- closeout PR: #40
 - ownership release: complete
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Canonical indexes synchronized, exact-head CI passed, PR #39 merged and task archived.
+last_progress: Canonical indexes synchronized, exact-head CI passed, PR #39 merged and task archived through closeout PR #40.
 status: completed
 branch: docs/sync-adr-0009-registers
 head_sha: 4e92f7cbfc3bd2d22c233867ebfb670d5ffcd2b8
 pr: 39
+closeout_pr: 40
 ci_check_generation: final
 ci_checks_for_current_head: 3
 terminal_ci_wait_started_at: null
