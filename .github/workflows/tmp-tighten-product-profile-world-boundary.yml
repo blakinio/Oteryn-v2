@@ -1,0 +1,93 @@
+name: Temporary product profile world-boundary patch
+
+on:
+  push:
+    branches:
+      - docs/register-architecture-analysis-gaps
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: docs/register-architecture-analysis-gaps
+          fetch-depth: 0
+      - name: Patch world-profile invariants
+        shell: python
+        run: |
+          from pathlib import Path
+
+          def replace_once(path, old, new):
+              p = Path(path)
+              text = p.read_text(encoding="utf-8")
+              if new in text:
+                  return
+              if old not in text:
+                  raise SystemExit(f"expected text not found in {path}: {old[:140]!r}")
+              p.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          replace_once(
+              "docs/architecture/ADR-0010-reference-and-evolved-world-product-profiles.md",
+              "A world may not silently switch between reference and evolved behavior. Profile upgrades require compatibility analysis, migration, validation and rollback.\n",
+              "A world may not silently switch between reference and evolved behavior. Profile upgrades require compatibility analysis, migration, validation and rollback.\n\nReference and evolved profiles use distinct logical `WorldId` values. Every channel belonging to one logical world inherits the same product-profile, ruleset and compatible content revision; changing channel cannot change the product-profile family. An instance may apply explicitly bounded encounter modifiers, but it may not become a hidden cross-profile bridge or a differently balanced economy.\n",
+          )
+          replace_once(
+              "docs/architecture/ADR-0010-reference-and-evolved-world-product-profiles.md",
+              "A reference world targets player-observable behavioral and product parity with a named, dated or otherwise immutable Global Tibia baseline.\n",
+              "A reference world targets player-observable behavioral and product parity with a named, versioned Global Tibia target definition. A continuously tracking policy, if later selected, must still materialize immutable reference revisions so every parity claim names the exact observed target.\n",
+          )
+          replace_once(
+              "docs/architecture/ADR-0010-reference-and-evolved-world-product-profiles.md",
+              "- `FND-02` — carry profile/ruleset/content compatibility through one `protocol-oteryn` family;\n",
+              "- `FND-02` — carry profile/ruleset/content compatibility through one `protocol-oteryn` family;\n- `FND-04` and the Platform World Registry/Game Gateway contract — expose and bind the selected `WorldId` and compatible profile revision so admission cannot cross profile families;\n",
+          )
+
+          replace_once(
+              "docs/architecture/PRODUCT_DIRECTION_BASELINE.md",
+              "A product-profile revision may be upgraded only through an explicit compatibility, migration, validation and rollback process. A world must never silently switch from reference parity to evolved behavior or vice versa.\n",
+              "A product-profile revision may be upgraded only through an explicit compatibility, migration, validation and rollback process. A world must never silently switch from reference parity to evolved behavior or vice versa.\n\nReference and evolved profiles are separate logical worlds with distinct `WorldId` values. Every channel of one logical world inherits the same product-profile, ruleset and compatible content revision. Channel switching cannot change profile family, and an instance cannot be used as a hidden bridge between differently balanced worlds or economies.\n",
+          )
+          replace_once(
+              "docs/architecture/PRODUCT_DIRECTION_BASELINE.md",
+              "- exact product-profile/ruleset/content revision contract;\n",
+              "- exact product-profile/ruleset/content revision contract and its World Registry/Game Gateway admission binding;\n",
+          )
+          replace_once(
+              "docs/architecture/PRODUCT_DIRECTION_BASELINE.md",
+              "- `FND-02` must preserve one `protocol-oteryn` family with profile/ruleset capability references rather than protocol forks.\n",
+              "- `FND-02` must preserve one `protocol-oteryn` family with profile/ruleset capability references rather than protocol forks.\n- `FND-04` and the Platform World Registry/Game Gateway contract must prevent admission to a world/profile revision different from the one selected and authorized.\n",
+          )
+
+          replace_once(
+              "docs/architecture/GLOBAL_ARCHITECTURE_DECISION_REGISTER.md",
+              "- Preserve one engine, client and `protocol-oteryn`; differences remain versioned ruleset/content/product profiles.\n",
+              "- Preserve one engine, client and `protocol-oteryn`; differences remain versioned ruleset/content/product profiles.\n- Require distinct `WorldId` values for reference and evolved worlds; every channel of one logical world inherits one profile family and compatible revision.\n",
+          )
+
+          replace_once(
+              "docs/architecture/FOUNDATION_DECISION_BACKLOG.md",
+              "   - cross-profile gameplay-value transfer is forbidden until a dedicated contract proves conservation, balance and migration safety.\n",
+              "   - reference and evolved profiles use distinct logical worlds; every channel of one `WorldId` inherits the same profile family and compatible revision.\n   - cross-profile gameplay-value transfer is forbidden until a dedicated contract proves conservation, balance and migration safety.\n",
+          )
+
+          replace_once(
+              "docs/architecture/GAMEPLAY_AND_PRODUCT_ARCHITECTURE_HORIZON.md",
+              "- explicit versioned product/ruleset/content profiles rather than forks;\n",
+              "- explicit versioned product/ruleset/content profiles rather than forks;\n- distinct `WorldId` values across profile families, with one inherited profile family for every channel of a logical world;\n",
+          )
+      - name: Commit tightened invariants
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "World-profile invariants already applied."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/architecture
+          git commit -m "docs(architecture): bind product profiles to logical worlds"
+          git push origin HEAD:docs/register-architecture-analysis-gaps
