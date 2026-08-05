@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   apply:
-    if: "${{ github.event.head_commit.message == 'chore: retry game intelligence patch after register drift' }}"
+    if: "${{ github.event.head_commit.message == 'chore: retry game intelligence patch after task-list drift' }}"
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -37,6 +37,22 @@ jobs:
               lines.append(line[10:] if line.startswith('          ') else line)
           code = '\n'.join(lines) + '\n'
           code = code.replace("`EXPANSION`.\\n- Structured logs", "`EXPANSION`\\n- Structured logs")
+
+          broad = '''replace_once(
+    "docs/agents/tasks/active/OTV2-20260805-foundation-preimplementation-contracts.md",
+    "  - docs/architecture/ADR-0005-native-world-format-and-oteryn-studio.md\\n",
+    "  - docs/architecture/ADR-0005-native-world-format-and-oteryn-studio.md\\n  - docs/architecture/ADR-0006-game-intelligence-analytics-and-audit.md\\n",
+)'''
+          scoped = '''p = Path("docs/agents/tasks/active/OTV2-20260805-foundation-preimplementation-contracts.md")
+text = p.read_text(encoding="utf-8")
+old = "  - docs/architecture/ADR-0005-native-world-format-and-oteryn-studio.md\\n"
+new = "  - docs/architecture/ADR-0005-native-world-format-and-oteryn-studio.md\\n  - docs/architecture/ADR-0006-game-intelligence-analytics-and-audit.md\\n"
+if old not in text:
+    raise SystemExit("programme task: ADR-0005 public-contract entry missing")
+p.write_text(text.replace(old, new, 1), encoding="utf-8")'''
+          if code.count(broad) != 1:
+              raise SystemExit(f'expected one broad programme-list edit, found {code.count(broad)}')
+          code = code.replace(broad, scoped, 1)
           Path('/tmp/apply_game_intelligence.py').write_text(code, encoding='utf-8')
           PY
 
