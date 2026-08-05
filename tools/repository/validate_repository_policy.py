@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import sys
@@ -11,6 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 POLICY_PATH = ROOT / ".github/repository-policy.json"
 USES_LINE = re.compile(r"^\s*uses:\s*([^@\s]+)@([^\s#]+)", re.MULTILINE)
+CANONICAL_MPL_2_0_GIT_BLOB_SHA = "d0a1fa1482eea82e19510e7920cbe3a03e41f691"
 
 REQUIRED_FILES = [
     ".github/CODEOWNERS",
@@ -34,6 +36,11 @@ REQUIRED_FILES = [
     "docs/repository/GITHUB_GOVERNANCE.md",
     "docs/repository/LICENSING.md",
 ]
+
+
+def git_blob_sha(data: bytes) -> str:
+    header = f"blob {len(data)}\0".encode("ascii")
+    return hashlib.sha1(header + data).hexdigest()
 
 
 def main() -> int:
@@ -68,7 +75,10 @@ def main() -> int:
 
     license_path = ROOT / "LICENSE"
     if license_path.is_file():
-        license_text = license_path.read_text(encoding="utf-8")
+        license_bytes = license_path.read_bytes()
+        license_text = license_bytes.decode("utf-8")
+        if git_blob_sha(license_bytes) != CANONICAL_MPL_2_0_GIT_BLOB_SHA:
+            errors.append("LICENSE does not match the pinned canonical MPL-2.0 text")
         required_license_fragments = (
             "Mozilla Public License Version 2.0",
             "2. License Grants and Conditions",
@@ -90,11 +100,15 @@ def main() -> int:
             "MPL-2.0",
             "LICENSE-ASSETS.md",
             "TRADEMARKS.md",
-            'not declared "Incompatible With Secondary Licenses"',
+            "does not attach or apply the separate Exhibit B incompatibility notice",
             "does not currently require copyright assignment or a Contributor License Agreement",
         ):
             if fragment not in licensing_text:
                 errors.append(f"licensing policy missing required boundary: {fragment}")
+
+    assets_path = ROOT / "LICENSE-ASSETS.md"
+    if assets_path.is_file() and "applies repository-wide" not in assets_path.read_text(encoding="utf-8"):
+        errors.append("creative asset reservation must explicitly apply repository-wide")
 
     repo = policy.get("repository", {})
     expected_repo = {
