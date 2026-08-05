@@ -26,9 +26,13 @@ REQUIRED_FILES = [
     ".github/workflows/repository-configuration.yml",
     "CONTRIBUTING.md",
     "SECURITY.md",
+    "LICENSE",
+    "LICENSE-ASSETS.md",
+    "TRADEMARKS.md",
     ".editorconfig",
     ".gitignore",
     "docs/repository/GITHUB_GOVERNANCE.md",
+    "docs/repository/LICENSING.md",
 ]
 
 
@@ -49,6 +53,48 @@ def main() -> int:
         errors.append("repository policy schema_version must be 1.0")
     if policy.get("required_status_check") != "Agent governance / validate":
         errors.append("unexpected required status check")
+
+    licensing = policy.get("licensing", {})
+    expected_licensing = {
+        "spdx_id": "MPL-2.0",
+        "license_file": "LICENSE",
+        "scope_policy": "docs/repository/LICENSING.md",
+        "reserved_assets_notice": "LICENSE-ASSETS.md",
+        "trademark_notice": "TRADEMARKS.md",
+        "incompatible_with_secondary_licenses": False,
+    }
+    if licensing != expected_licensing:
+        errors.append("repository licensing policy does not match the canonical MPL-2.0 boundary")
+
+    license_path = ROOT / "LICENSE"
+    if license_path.is_file():
+        license_text = license_path.read_text(encoding="utf-8")
+        required_license_fragments = (
+            "Mozilla Public License Version 2.0",
+            "2. License Grants and Conditions",
+            "3. Responsibilities",
+            "10. Versions of the License",
+            "Exhibit A - Source Code Form License Notice",
+            'Exhibit B - "Incompatible With Secondary Licenses" Notice',
+        )
+        for fragment in required_license_fragments:
+            if fragment not in license_text:
+                errors.append(f"LICENSE is missing canonical MPL-2.0 fragment: {fragment}")
+        if len(license_text.splitlines()) < 330:
+            errors.append("LICENSE is unexpectedly short for the canonical MPL-2.0 text")
+
+    licensing_policy_path = ROOT / "docs/repository/LICENSING.md"
+    if licensing_policy_path.is_file():
+        licensing_text = licensing_policy_path.read_text(encoding="utf-8")
+        for fragment in (
+            "MPL-2.0",
+            "LICENSE-ASSETS.md",
+            "TRADEMARKS.md",
+            'not declared "Incompatible With Secondary Licenses"',
+            "does not currently require copyright assignment or a Contributor License Agreement",
+        ):
+            if fragment not in licensing_text:
+                errors.append(f"licensing policy missing required boundary: {fragment}")
 
     repo = policy.get("repository", {})
     expected_repo = {
@@ -120,6 +166,17 @@ def main() -> int:
         for heading in ("## Summary", "## Scope", "## Validation"):
             if heading not in text:
                 errors.append(f"pull request template missing {heading}")
+
+    for path, fragments in {
+        "README.md": ("Mozilla Public License 2.0", "LICENSE-ASSETS.md", "TRADEMARKS.md"),
+        "CONTRIBUTING.md": ("MPL-2.0", "LICENSE-ASSETS.md", "TRADEMARKS.md"),
+    }.items():
+        file_path = ROOT / path
+        if file_path.is_file():
+            text = file_path.read_text(encoding="utf-8")
+            for fragment in fragments:
+                if fragment not in text:
+                    errors.append(f"{path} missing licensing reference: {fragment}")
 
     if errors:
         print("Repository policy validation failed:", file=sys.stderr)
