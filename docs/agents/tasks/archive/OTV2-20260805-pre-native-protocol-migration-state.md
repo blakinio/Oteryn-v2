@@ -13,7 +13,7 @@ base_sha: 100f2d538fa1fc5d0f32d2aed491778bc60033a1
 head_sha: 42bb3da12c7bcc80d098219044a1b8c817959d2f
 owner: released
 created_at: 2026-08-05T23:26:00+02:00
-updated_at: 2026-08-05T23:36:00+02:00
+updated_at: 2026-08-05T23:38:00+02:00
 execution_budget_minutes: 30
 large_budget_reason: null
 owned_paths: []
@@ -111,6 +111,7 @@ The decision preserves a buildable migration target without retaining Canary or 
 - required checks: all passed on exact final head
 - synchronization: branch updated with `main` commit `71cff9ca07900d76a78607484447a357cfbc245f` before final validation
 - merge result: PR #44 squash-merged as `4f50f137cb381caf90a68a8f77258147caea6ccd`
+- archive closeout: PR #45 moves this released record from active ownership to the archive
 - ownership release: complete through this archive move
 
 ## Context checkpoint
@@ -121,6 +122,7 @@ status: completed
 branch: docs/archive-pre-native-protocol-state
 head_sha: 4f50f137cb381caf90a68a8f77258147caea6ccd
 pr: null
+closeout_pr: 45
 ci_check_generation: closeout
 ci_checks_for_current_head: 3
 terminal_ci_wait_started_at: null
