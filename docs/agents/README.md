@@ -7,6 +7,7 @@ This directory is the durable operating system for autonomous and multi-agent wo
 - `AGENTS.md` — rules for this directory and task records.
 - `REPOSITORY_MAP.md` — current/planned repository layout and source-of-truth boundaries.
 - `CONTEXT_ROUTING.md` — which documents to load for each task class.
+- `CONTEXT_HANDOFF.md` — durable task checkpoints and resume procedure.
 - `BUILD_TEST_MATRIX.md` — validation selection.
 - `ANTI_STALL_AND_EXECUTION_BUDGET.md` — bounded autonomous execution.
 - `AUTONOMOUS_PROGRAM_CONTINUATION.md` — programme/coordinator continuation.

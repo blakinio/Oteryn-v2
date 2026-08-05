@@ -21,6 +21,7 @@
     "docs/agents/AGENTS.md",
     "docs/agents/REPOSITORY_MAP.md",
     "docs/agents/CONTEXT_ROUTING.md",
+    "docs/agents/CONTEXT_HANDOFF.md",
     "docs/agents/BUILD_TEST_MATRIX.md",
     "docs/agents/ANTI_STALL_AND_EXECUTION_BUDGET.md",
     "docs/agents/AUTONOMOUS_PROGRAM_CONTINUATION.md",
