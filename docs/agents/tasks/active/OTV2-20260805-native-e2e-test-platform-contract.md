@@ -4,16 +4,16 @@
 task_id: OTV2-20260805-native-e2e-test-platform-contract
 title: Define the native end-to-end test platform contract
 mode: CONTRACT
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/qa-e2e-architecture-20260805
-pr: null
+pr: 35
 base_sha: d4b5755cd45bfc6689f3614173f7c5701f56bb36
-head_sha: null
+head_sha: pending exact-final validation
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-05T17:33:00+02:00
-updated_at: 2026-08-05T17:33:00+02:00
+updated_at: 2026-08-05T17:42:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -62,11 +62,11 @@ Persist an accepted architecture contract for a reusable native Oteryn v2 E2E pl
 
 ## Acceptance criteria
 
-- [ ] ADR-0007 records the three-tier execution model and its ownership boundaries.
-- [ ] ADR-0007 defines scenario, evidence, cleanup, deterministic-control, failure-injection and flakiness requirements.
-- [ ] The build/test matrix names `QA-E2E-01` and distinguishes the three tiers.
-- [ ] End-to-end feature completeness requires evidence from the appropriate tier and forbids synthetic or environment-only success claims.
-- [ ] No Rust workspace, runtime, client, protocol, Platform or CI implementation is introduced by this task.
+- [x] ADR-0007 records the three-tier execution model and its ownership boundaries.
+- [x] ADR-0007 defines scenario, evidence, cleanup, deterministic-control, failure-injection and flakiness requirements.
+- [x] The build/test matrix names `QA-E2E-01` and distinguishes the three tiers.
+- [x] End-to-end feature completeness requires evidence from the appropriate tier and forbids synthetic or environment-only success claims.
+- [x] No Rust workspace, runtime, client, protocol, Platform or CI implementation is introduced by this task.
 - [ ] Governance validation passes on the exact final head.
 
 ## Excluded scope
@@ -78,6 +78,9 @@ Persist an accepted architecture contract for a reusable native Oteryn v2 E2E pl
 
 ## Implementation / findings
 
+- ADR-0007 accepts the three-tier platform and stable gate `QA-E2E-01`.
+- `BUILD_TEST_MATRIX.md` now defines tier purpose, placement, mandatory evidence, high-risk scenarios and population classification.
+- `END_TO_END_FEATURE_COMPLETENESS.md` now requires each feature to name its tiers and prevents Tier 1, instrumented-client or environment-only evidence from being overclaimed.
 - Canary is retained as architecture evidence and a migration/reference source, not as a runtime dependency.
 - Direct SQL assertions are restricted to persistence/migration ownership; ordinary gameplay scenarios should prefer stable read-only probes, domain events and audit evidence.
 - The instrumented client adapter may observe and submit normal product actions but may not bypass Platform admission, create authoritative sessions, mutate server state or replace server validation.
@@ -87,47 +90,47 @@ Persist an accepted architecture contract for a reusable native Oteryn v2 E2E pl
 ### Focused
 
 - command/run: `python tools/agents/validate_governance.py`
-- result: pending
+- result: pending exact-head workflow evidence
 
 ### Component/integration
 
 - command/run: `NOT_APPLICABLE` — architecture-only delivery with no executable runtime change
-- result: pending
+- result: `NOT_APPLICABLE`
 
 ### E2E
 
 - scenario: `NOT_APPLICABLE` — this task defines the future E2E platform and changes no executable product path
-- result: pending
+- result: `NOT_APPLICABLE`
 
 ### Exact-head CI
 
-- head: pending
+- head: pending after this checkpoint commit
 - workflow/run: pending
 - result: pending
 
 ## Independent audit
 
 - exact head: pending
-- method/auditor: exact-diff architecture and scope review
+- method/auditor: exact-diff architecture, terminology, scope and unsupported-claim review
 - material findings: pending
 - verdict: pending
 
 ## PR and closeout
 
-- changed-file review: pending
+- changed-file review: four declared documentation paths in draft PR #35; final diff review pending
 - unresolved review threads: pending
-- related/superseded PRs: none identified at task start
+- related/superseded PRs: none identified
 - merge commit/result: pending
 - ownership release: pending
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Dedicated branch created from main@d4b5755cd45bfc6689f3614173f7c5701f56bb36 and contract task claimed.
-status: implementing
+last_progress: Draft PR #35 now contains ADR-0007 and aligned build-test and feature-completeness policies.
+status: validating
 branch: docs/qa-e2e-architecture-20260805
-head_sha: null
-pr: null
+head_sha: pending after checkpoint commit
+pr: 35
 ci_check_generation: null
 ci_checks_for_current_head: 0
 terminal_ci_wait_started_at: null
@@ -137,5 +140,5 @@ identical_failure_retries: 0
 repair_cycles_for_current_gate: 0
 stall_warnings: 0
 blocker: null
-next_action: Add ADR-0007 and align the canonical test/completeness policies.
+next_action: Inspect the exact PR diff and required governance checks, then resolve any material finding before readiness.
 ```
