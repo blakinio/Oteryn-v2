@@ -13,7 +13,7 @@ base_sha: 0cff8ae0c98cddefd18a29b1c4da0935f94a74fd
 head_sha: null
 owner: repository-governance-agent
 created_at: 2026-08-05T15:33:00+02:00
-updated_at: 2026-08-05T15:48:00+02:00
+updated_at: 2026-08-05T15:52:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -68,19 +68,19 @@ Make the documented pull-request and squash-merge discipline enforceable through
 ## Context checkpoint
 
 ```yaml
-last_progress: PR #23 opened; self-audit removed signed-commit incompatibility with Dependabot, corrected Rust indentation, and added managed labels/topics.
+last_progress: Agent governance passed on head 4a38b41; Dependency Review proved the dependency graph is currently disabled, so a base-ref-bound bootstrap exception is being added only for this enabling PR.
 status: validating
 branch: ci/github-governance-hardening-20260805
 head_sha: null
 pr: 23
-ci_check_generation: audit-repair
-ci_checks_for_current_head: 0
+ci_check_generation: dependency-bootstrap-repair
+ci_checks_for_current_head: 1
 terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 1
+repair_cycles_for_current_gate: 2
 stall_warnings: 0
 blocker: null
-next_action: Push the audit repair and validate all workflows on the exact new head.
+next_action: Validate all three PR workflows on the exact repaired head.
 ```
