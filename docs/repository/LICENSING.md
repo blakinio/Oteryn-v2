@@ -12,7 +12,7 @@ Unless a file or directory contains a different explicit license notice, the fol
 
 The complete license text is in [`LICENSE`](../../LICENSE).
 
-MPL-2.0 is applied without the Exhibit B notice. Oteryn-v2 is therefore not declared "Incompatible With Secondary Licenses".
+The standard license text includes Exhibit B, but Oteryn-v2 does not attach or apply the separate Exhibit B incompatibility notice to covered source. The project is therefore not declared "Incompatible With Secondary Licenses".
 
 New source files should use the SPDX identifier where the file format supports comments:
 
@@ -29,7 +29,7 @@ The MPL-2.0 grant does not automatically cover creative game assets or project b
 - [`LICENSE-ASSETS.md`](../../LICENSE-ASSETS.md) for art, audio, maps, narrative and other creative assets;
 - [`TRADEMARKS.md`](../../TRADEMARKS.md) for names, logos and product identity.
 
-A file-specific license or a nearer directory-level license overrides the repository default for the material it governs. Third-party material must retain its original license, attribution and provenance.
+`LICENSE-ASSETS.md` is the repository-wide explicit notice for qualifying creative assets, including assets added outside a dedicated assets directory. A file-specific license or a nearer directory-level license overrides the repository default for the material it governs. Third-party material must retain its original license, attribution and provenance.
 
 ## Contributions
 
