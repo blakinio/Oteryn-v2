@@ -1,0 +1,51 @@
+name: Temporary ADR-0009 documentation patch
+
+on:
+  push:
+    branches:
+      - docs/sync-adr-0009-registers
+
+permissions:
+  contents: write
+
+jobs:
+  apply-docs-only:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: docs/sync-adr-0009-registers
+          fetch-depth: 0
+
+      - name: Apply corrected bounded patch
+        shell: python
+        run: |
+          from pathlib import Path
+
+          source_path = Path(".github/workflows/temporary-sync-adr-0009.yml")
+          lines = source_path.read_text(encoding="utf-8").splitlines()
+          start_marker = "          from pathlib import Path"
+          end_marker = '          Path(".github/workflows/temporary-sync-adr-0009.yml").unlink()'
+          start = lines.index(start_marker)
+          end = lines.index(end_marker)
+          script_lines = []
+          for line in lines[start:end]:
+              script_lines.append(line[10:] if line.startswith("          ") else line)
+          script = "\n".join(script_lines) + "\n"
+          old = "- Status: `EXPANSION`.\\n- Deployment"
+          new = "- Status: `EXPANSION`\\n- Deployment"
+          if script.count(old) != 1:
+              raise SystemExit(f"expected one correction target, found {script.count(old)}")
+          script = script.replace(old, new, 1)
+          exec(compile(script, "adr-0009-doc-sync", "exec"), {})
+
+      - name: Validate governance and links
+        run: python tools/agents/validate_governance.py
+
+      - name: Commit documentation only
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/architecture/FOUNDATION_DECISION_BACKLOG.md docs/architecture/GLOBAL_ARCHITECTURE_DECISION_REGISTER.md docs/architecture/MULTICHANNEL_SYSTEM_SCOPE_MATRIX.md
+          git commit -m "docs(architecture): synchronize ADR-0009 registers"
+          git push origin HEAD:docs/sync-adr-0009-registers
