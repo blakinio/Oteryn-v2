@@ -26,9 +26,9 @@ jobs:
           text = target.read_text(encoding="utf-8")
           old = "- Status: `EXPANSION`.\\n- Deployment"
           new = "- Status: `EXPANSION`\\n- Deployment"
-          if text.count(old) != 2:
-              raise SystemExit(f"expected two exact assertion fragments, found {text.count(old)}")
-          target.write_text(text.replace(old, new), encoding="utf-8")
+          if text.count(old) != 1:
+              raise SystemExit(f"expected one exact assertion fragment, found {text.count(old)}")
+          target.write_text(text.replace(old, new, 1), encoding="utf-8")
           Path(".github/workflows/temporary-fix-sync-workflow.yml").unlink()
 
       - name: Commit correction
