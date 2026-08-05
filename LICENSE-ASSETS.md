@@ -1,6 +1,6 @@
 # Creative assets and game content
 
-Unless a file, directory or asset package contains an explicit license granting additional rights, creative assets in this repository are **not** licensed under the Mozilla Public License 2.0 and are provided with all rights reserved by their respective copyright holders.
+This notice applies repository-wide to qualifying creative assets, regardless of their directory. Unless a file, directory or asset package contains an explicit license granting additional rights, creative assets in this repository are **not** licensed under the Mozilla Public License 2.0 and are provided with all rights reserved by their respective copyright holders.
 
 This reserved category includes, without limitation:
 
