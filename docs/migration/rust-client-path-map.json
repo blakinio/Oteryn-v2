@@ -290,8 +290,9 @@
     },
     {
       "source": ".github/workflows/native-protocol-rust-correspondence.yml",
-      "disposition": "REFERENCE_ONLY_DELETE_ON_SOURCE_MARKER",
+      "disposition": "REFERENCE_ONLY",
       "destination": [],
+      "source_marker_action": "DELETE_OBSOLETE_SUPERSEDED_WORKFLOW",
       "requirements": ["do not migrate; delete only after destination canonical merge"]
     }
   ],
