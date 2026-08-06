@@ -4,16 +4,16 @@
 task_id: OTV2-20260806-fnd-01-workspace-migration-contract
 title: Define the canonical Rust workspace and existing-client migration dispositions
 mode: CONTRACT
-status: validating
+status: ready
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/fnd-01-workspace-migration-contract
 pr: 46
 base_sha: cbc2150024d98bbdbfa9b1c17bc9b9df16bcd9f2
-head_sha: fc2897a0d4bbde27d421bf03faf6738e1b313789
+head_sha: null
 owner: GPT-5.6-Thinking-architecture-coordinator
 created_at: 2026-08-06T08:13:00+02:00
-updated_at: 2026-08-06T08:42:00+02:00
+updated_at: 2026-08-06T08:47:00+02:00
 execution_budget_minutes: 120
 large_budget_reason: FND-01 requires an exact source-SHA inventory, per-member migration dispositions, target workspace membership, dependency policy, toolchain/CI policy and reconciliation of protocol-free migration constraints.
 owned_paths:
@@ -94,8 +94,9 @@ Produce the owner-reviewable `FND-01` contract for the exact current Rust-client
 - [x] Toolchain, lockfile, target, release-role and CI matrices are defined.
 - [x] Provisional identifier collision with `FND-ID-01` is prevented.
 - [x] Independent architecture audit reports zero open material findings.
+- [x] Governance, Dependency Review and CodeQL passed on exact candidate head before this status checkpoint.
 - [ ] Owner accepts the proposed graph/dispositions.
-- [ ] Exact-head documentation/governance validation passes on the final owner-accepted candidate head.
+- [ ] Final owner-accepted head is synchronized with `main`, revalidated and merged.
 
 ## Excluded scope
 
@@ -153,13 +154,15 @@ Resolved audit findings:
 
 ### Exact-head CI
 
-- head: pending after this task checkpoint commit
-- workflow/run: pending
-- result: pending
+- validated head: `dde84e0ccd85f7f2a7f18afd507cbebbf713504b`
+- Agent governance: run `31078011483` — `PASS`
+- Dependency review: run `31078011462` — `PASS`
+- CodeQL: run `31078011574` — `PASS`
+- result: `PASS`
 
 ## Independent audit
 
-- exact architecture head: `fc2897a0d4bbde27d421bf03faf6738e1b313789`
+- exact architecture head: `fc2897a0d4bbde27d421bf03faf6738e1b313789`; task-only checkpoint head `dde84e0ccd85f7f2a7f18afd507cbebbf713504b` retained the same architecture files
 - method/auditor: adversarial source-to-target review against ADR-0001, ADR-0002, ADR-0005, ADR-0007, ADR-0008, ADR-0011, the exact 26-member source graph and later `FND-ID-01`/`FND-02`/`FND-04` ownership; dependency graph manually topologically sorted; production and harness closures challenged separately
 - resolved material findings:
   - candidate/accepted status ambiguity;
@@ -178,7 +181,7 @@ Resolved audit findings:
 ## PR and closeout
 
 - changed-file review: three declared documentation/task files only
-- unresolved review threads: pending PR inspection
+- unresolved review threads: 0
 - related/superseded PRs: Oteryn-v2 PR #38 is unrelated lifecycle cleanup; source PRs #23, #48 and #97 remain `VSL-02` inputs
 - merge commit/result: pending explicit owner acceptance
 - ownership release: pending
@@ -186,19 +189,19 @@ Resolved audit findings:
 ## Context checkpoint
 
 ```yaml
-last_progress: Candidate FND-01 contract, exact source inventory and independent architecture audit are complete; draft PR #46 awaits CI and explicit owner acceptance.
-status: validating
+last_progress: Candidate FND-01 contract, exact source inventory, independent audit and exact-head CI are complete; draft PR #46 is ready for explicit owner acceptance.
+status: ready
 branch: docs/fnd-01-workspace-migration-contract
-head_sha_before_checkpoint: fc2897a0d4bbde27d421bf03faf6738e1b313789
+head_sha_before_checkpoint: dde84e0ccd85f7f2a7f18afd507cbebbf713504b
 pr: 46
-ci_check_generation: pending
-ci_checks_for_current_head: 0
+ci_check_generation: dde84e0ccd85f7f2a7f18afd507cbebbf713504b
+ci_checks_for_current_head: 3
 terminal_ci_wait_started_at: null
-terminal_ci_checks_for_current_generation: 0
+terminal_ci_checks_for_current_generation: 3
 unchanged_state_checks: 0
 identical_failure_retries: 0
 repair_cycles_for_current_gate: 0
 stall_warnings: 0
 blocker: explicit owner acceptance required before marking PR ready or merging
-next_action: Inspect exact-head CI and PR review state, then present the candidate graph/dispositions to the owner for acceptance without implementing code.
+next_action: Ask the owner to accept or reject the proposed 19-member graph and disposition policy; if accepted, synchronize with main, update canonical registers, revalidate and merge.
 ```
