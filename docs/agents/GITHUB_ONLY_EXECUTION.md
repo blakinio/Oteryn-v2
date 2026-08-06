@@ -36,7 +36,7 @@ After the final branch/PR mutation:
 2. wait only the configured event grace period;
 3. query check suites, check runs and workflow runs for that SHA once;
 4. classify no run as `EVENT_SUPPRESSED`;
-5. classify an assigned-but-unstarted job with `runner_id = 0`, no runner name and no steps beyond the configured threshold as `RUNNER_STARVATION`;
+5. classify a queued/unassigned job with `runner_id = 0`, no runner name and no started steps beyond the configured threshold as `RUNNER_STARVATION`;
 6. do not mutate repository content merely to generate another event.
 
 Closing/reopening a PR, creating a replacement PR, rewinding a branch, changing a title or writing a timestamp is not a valid CI recovery mechanism unless that mutation is independently required by the task.
