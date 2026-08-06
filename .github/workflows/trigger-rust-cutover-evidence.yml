@@ -1,0 +1,32 @@
+name: Trigger Rust cutover evidence
+
+on:
+  push:
+    branches:
+      - migrate/rust-client-cutover-c923ad8
+    paths:
+      - '.github/workflows/trigger-rust-cutover-evidence.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  trigger:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out task branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: migrate/rust-client-cutover-c923ad8
+
+      - name: Trigger retained terminal evidence and remove this workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          printf '\n# Terminal evidence retriggered after MPL-2.0 and Linux lint correction.\n' >> .github/workflows/finalize-rust-cutover-evidence.yml
+          git rm -f .github/workflows/trigger-rust-cutover-evidence.yml
+          git add .github/workflows/finalize-rust-cutover-evidence.yml
+          git commit -m "ci(rust): run terminal cutover evidence"
+          git push origin HEAD:migrate/rust-client-cutover-c923ad8
