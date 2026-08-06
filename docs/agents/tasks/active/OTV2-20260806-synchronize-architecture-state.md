@@ -21,6 +21,9 @@ owned_paths:
   - docs/architecture/ARCHITECTURE_ANALYSIS_GAP_REGISTER.md
   - docs/architecture/FOUNDATION_DECISION_BACKLOG.md
   - docs/architecture/GLOBAL_ARCHITECTURE_DECISION_REGISTER.md
+  - docs/architecture/ADR-0010-reference-and-evolved-world-product-profiles.md
+  - docs/architecture/PRODUCT_DIRECTION_BASELINE.md
+  - docs/architecture/GAMEPLAY_AND_PRODUCT_ARCHITECTURE_HORIZON.md
   - docs/agents/tasks/active/OTV2-20260805-foundation-preimplementation-contracts.md
   - docs/agents/tasks/active/OTV2-20260806-synchronize-architecture-state.md
 public_contracts:
@@ -28,6 +31,9 @@ public_contracts:
   - docs/architecture/ARCHITECTURE_ANALYSIS_GAP_REGISTER.md
   - docs/architecture/FOUNDATION_DECISION_BACKLOG.md
   - docs/architecture/GLOBAL_ARCHITECTURE_DECISION_REGISTER.md
+  - docs/architecture/ADR-0010-reference-and-evolved-world-product-profiles.md
+  - docs/architecture/PRODUCT_DIRECTION_BASELINE.md
+  - docs/architecture/GAMEPLAY_AND_PRODUCT_ARCHITECTURE_HORIZON.md
 depends_on:
   - FND-01 accepted and archived
   - VSL-02 contract accepted and archived
@@ -60,6 +66,7 @@ The canonical architecture registers and non-owning programme checkpoint accurat
 - [x] Gap register no longer lists workspace migration as unresolved.
 - [x] Programme checkpoint records current `main`, accepted ADR-0001 through ADR-0011 and exactly one current next action.
 - [x] ADR-0001 aligns `NodeId` with ADR-0009 as the GameNode process-runtime identity.
+- [x] ADR-0010, the product baseline and the gameplay/product horizon no longer name `FND-01` as the current action.
 - [x] No runtime, Cargo, workflow, external-repository or product implementation remains in the final diff.
 - [ ] Governance validation and full changed-file audit pass on the exact final head.
 
@@ -75,6 +82,7 @@ The canonical architecture registers and non-owning programme checkpoint accurat
 - The stale registers still named `FND-01` as the immediate action after FND-01, VSL-02 and the destination cutover had already completed.
 - ADR-0011 was absent from accepted-decision summaries.
 - ADR-0001 retained an obsolete `NodeId` description that allowed host/process overloading despite ADR-0009.
+- ADR-0010, the product baseline and the gameplay/product horizon retained stale programme-effect statements naming `FND-01` as current.
 
 ## Validation
 
@@ -117,7 +125,7 @@ The canonical architecture registers and non-owning programme checkpoint accurat
 ## Context checkpoint
 
 ```yaml
-last_progress: Synchronized the canonical registers, ADR-0001 terminology and foundation programme checkpoint on draft PR #54.
+last_progress: Synchronized all current-state architecture surfaces, including the registers, ADR-0001/ADR-0010, product baseline, gameplay/product horizon and foundation programme checkpoint on draft PR #54.
 status: validating
 branch: docs/sync-architecture-state-20260806
 head_sha: null
