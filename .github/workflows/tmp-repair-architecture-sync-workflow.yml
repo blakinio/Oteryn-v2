@@ -1,0 +1,41 @@
+name: Repair temporary architecture synchronization workflow
+
+on:
+  push:
+    branches:
+      - docs/sync-architecture-state-20260806
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: docs/sync-architecture-state-20260806
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Remove invalid backlog checklist mutation
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('.github/workflows/tmp-architecture-state-sync.yml')
+          lines = path.read_text(encoding='utf-8').splitlines(keepends=True)
+          foundation = next(i for i, line in enumerate(lines) if '# Foundation backlog.' in line)
+          start = next(i for i in range(foundation, len(lines)) if lines[i].strip() == 'for old, new in [')
+          end = next(i for i in range(start, len(lines)) if lines[i].strip() == 'replace_once(backlog, old, new)')
+          del lines[start:end + 1]
+          path.write_text(''.join(lines), encoding='utf-8')
+          PY
+          rm .github/workflows/tmp-repair-architecture-sync-workflow.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/workflows/tmp-architecture-state-sync.yml .github/workflows/tmp-repair-architecture-sync-workflow.yml
+          git diff --cached --check
+          git commit -m "ci(temp): repair architecture sync assertions"
+          git push origin HEAD:docs/sync-architecture-state-20260806
