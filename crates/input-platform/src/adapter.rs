@@ -25,6 +25,8 @@ const GROUP_SHIFT: u8 = 1 << 1;
 const GROUP_ALT: u8 = 1 << 2;
 const GROUP_SUPER: u8 = 1 << 3;
 
+// Constructed by the Windows-only winit adapter; intentionally dormant in Linux builds.
+#[cfg_attr(not(windows), allow(dead_code))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum PlatformButtonState {
     Pressed,
@@ -40,12 +42,14 @@ impl PlatformButtonState {
     }
 }
 
+#[cfg_attr(not(windows), allow(dead_code))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum PlatformWheelUnit {
     Lines,
     Pixels,
 }
 
+#[cfg_attr(not(windows), allow(dead_code))]
 pub(crate) enum PlatformEvent<'a> {
     Key {
         code: Option<u16>,
