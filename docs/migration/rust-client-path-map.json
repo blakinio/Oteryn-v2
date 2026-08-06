@@ -5,6 +5,7 @@
     "repository": "blakinio/otclient",
     "path": "oteryn-client",
     "cutover_commit": "c923ad8a1dff17b4933a6110931b0823cec2c590",
+    "subtree_tree": "c0928dafca6df19ff11d7901e503ed85a5199439",
     "root_manifest_blob": "037013e8e4a762a65f0f2a30f7761ee14725a3fc",
     "root_lockfile_blob": "2143408c12c50132883890f0821278320a331fde"
   },
@@ -62,7 +63,7 @@
       "source": "oteryn-client/crates/diagnostics/**",
       "disposition": "MIGRATE_AS_IS",
       "destination": ["crates/diagnostics/**"],
-      "requirements": ["repository metadata and crate paths are rewritten"]
+      "requirements": ["rewrite repository metadata and crate paths only where required"]
     },
     {
       "source": "oteryn-client/crates/foundation/**",
@@ -78,7 +79,7 @@
       "disposition": "MIGRATE_AND_RENAME",
       "destination": ["crates/client-domain/**"],
       "requirements": [
-        "rename public crate and documentation to client projection ownership",
+        "rename crate and documentation to client projection ownership",
         "rename session generation references to ClientSessionEpoch"
       ]
     },
@@ -121,7 +122,7 @@
       "destination": ["crates/identity/**"],
       "requirements": [
         "retain PKCE, state, loopback validation, entropy and secret redaction",
-        "replace blocking listener and unmanaged thread behavior with application-runtime-owned asynchronous cancellation-safe I/O",
+        "replace blocking listener and unmanaged threads with application-runtime-owned asynchronous cancellation-safe I/O",
         "remove game-session and protocol dependencies"
       ]
     },
@@ -131,8 +132,8 @@
       "destination": ["crates/platform-contracts/**", "crates/platform-client/**"],
       "requirements": [
         "validated non-secret values terminate in platform-contracts",
-        "async HTTP/DTO handling terminates in platform-client",
-        "exclude source ureq, blocking API, gameplay routes, game-session credentials and admission"
+        "async HTTP and DTO handling terminate in platform-client",
+        "exclude source ureq, blocking API, gameplay routes, Game Session credentials and admission"
       ]
     },
     {
@@ -162,7 +163,7 @@
       ],
       "requirements": [
         "backend-neutral lifecycle goes to renderer",
-        "synthetic-asset adapters stay non-release"
+        "synthetic-asset adapters remain non-release"
       ]
     },
     {
@@ -189,14 +190,18 @@
     {
       "source": "oteryn-client/tests/integration/technical-login/**",
       "disposition": "REFERENCE_ONLY",
-      "destination": ["tests/pre-native-client/**"],
-      "requirements": ["rewrite only non-Canary negative lifecycle scenarios; no source test is copied wholesale"]
+      "destination": [],
+      "related_destination_authored": ["tests/pre-native-client/**"],
+      "requirements": [
+        "source tests are not copied",
+        "destination independently authors only non-Canary negative lifecycle scenarios"
+      ]
     },
     {
       "source": "oteryn-client/tests/security/auth/**",
       "disposition": "REWRITE",
       "destination": ["tests/security/auth/**"],
-      "requirements": ["adapt to async Platform/Identity boundaries and no gameplay credential"]
+      "requirements": ["adapt to async Platform and Identity boundaries with no gameplay credential"]
     },
     {
       "source": "oteryn-client/tools/architecture-check/**",
@@ -208,13 +213,13 @@
       "source": "oteryn-client/tools/asset-compiler/**",
       "disposition": "MIGRATE_AND_RENAME",
       "destination": ["tools/synthetic-asset-compiler/**"],
-      "requirements": ["do not imply ownership of future production asset compiler"]
+      "requirements": ["do not imply ownership of the future production asset compiler"]
     }
   ],
   "new_destination_members": [
     {
       "destination": "tools/synthetic-client-harness/**",
-      "reason": "named consumer for migrated client-domain, client-simulation, input, renderer and synthetic-assets without release leakage"
+      "reason": "named consumer for client-domain, client-simulation, input, renderer and synthetic-assets without release leakage"
     }
   ],
   "non_member_rules": [
@@ -236,10 +241,19 @@
     {
       "source": "oteryn-client/docs/agents/**",
       "disposition": "REFERENCE_ONLY",
-      "destination": []
+      "destination": [],
+      "requirements": [
+        "nested native-protocol task is superseded by ADR-0008 and FND-01",
+        "archive nested active task only in the later source-marker PR"
+      ]
     },
     {
       "source": "oteryn-client/AGENTS.md",
+      "disposition": "REFERENCE_ONLY",
+      "destination": []
+    },
+    {
+      "source": "oteryn-client/README.md",
       "disposition": "REFERENCE_ONLY",
       "destination": []
     },
