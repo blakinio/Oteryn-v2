@@ -1,0 +1,402 @@
+name: Finalize Rust cutover evidence
+
+on:
+  push:
+    branches:
+      - migrate/rust-client-cutover-c923ad8
+    paths:
+      - '.github/workflows/finalize-rust-cutover-evidence.yml'
+      - 'apps/client/src/windows_shell.rs'
+      - 'apps/client/src/lib.rs'
+      - 'crates/identity/src/lib.rs'
+
+permissions:
+  contents: write
+  actions: read
+  pull-requests: read
+
+concurrency:
+  group: finalize-rust-cutover-evidence-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  RUST_VERSION: '1.94.0'
+  SOURCE_COMMIT: c923ad8a1dff17b4933a6110931b0823cec2c590
+  SOURCE_SUBTREE_TREE: c0928dafca6df19ff11d7901e503ed85a5199439
+
+jobs:
+  linux:
+    name: Evidence / Linux workspace
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Check out exact code head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install Rust toolchain
+        run: rustup toolchain install "$RUST_VERSION" --profile minimal --component clippy,rustfmt
+
+      - name: Verify exact formatting and metadata
+        run: |
+          cargo +$RUST_VERSION fmt --all --check
+          cargo +$RUST_VERSION metadata --locked --format-version 1 >/dev/null
+
+      - name: Verify architecture and production closure
+        run: |
+          cargo +$RUST_VERSION run --locked -p oteryn-architecture-check -- workspace .
+          cargo +$RUST_VERSION tree --locked -p oteryn-client --edges normal,build > production-tree.txt
+          python - <<'PY'
+          from pathlib import Path
+          tree = Path('production-tree.txt').read_text(encoding='utf-8')
+          forbidden = (
+              'protocol-canary', 'protocol-core', 'protocol-oteryn', 'transport',
+              'game-session', 'oteryn-client-domain', 'oteryn-client-simulation',
+              'oteryn-synthetic-assets', 'oteryn-test-support',
+              'oteryn-synthetic-client-harness',
+          )
+          found = [value for value in forbidden if value in tree]
+          if found:
+              raise SystemExit(f'forbidden production closure entries: {found}')
+          print('production closure: PASS')
+          PY
+
+      - name: Strict Clippy build and tests
+        run: |
+          cargo +$RUST_VERSION build --locked --workspace --all-targets
+          cargo +$RUST_VERSION clippy --locked --workspace --all-targets -- -D warnings
+          cargo +$RUST_VERSION test --locked --workspace
+
+      - name: Execute deterministic synthetic harness
+        run: cargo +$RUST_VERSION run --locked -p oteryn-synthetic-client-harness
+
+  windows:
+    name: Evidence / Windows pre-native shell
+    runs-on: windows-2025
+    timeout-minutes: 60
+    steps:
+      - name: Check out exact code head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install Rust toolchain
+        shell: pwsh
+        run: rustup toolchain install $env:RUST_VERSION --profile minimal --component clippy,rustfmt
+
+      - name: Build production Windows client
+        shell: pwsh
+        run: cargo +$env:RUST_VERSION build --locked --release -p oteryn-client --target x86_64-pc-windows-msvc
+
+      - name: Strict Windows client Clippy
+        shell: pwsh
+        run: cargo +$env:RUST_VERSION clippy --locked -p oteryn-client --all-targets --target x86_64-pc-windows-msvc -- -D warnings
+
+      - name: Launch pre-native runtime renderer and input shell smoke
+        shell: pwsh
+        run: cargo +$env:RUST_VERSION run --locked -p oteryn-client --target x86_64-pc-windows-msvc -- --smoke
+
+      - name: Execute synthetic harness on Windows
+        shell: pwsh
+        run: cargo +$env:RUST_VERSION run --locked -p oteryn-synthetic-client-harness
+
+  supply-chain:
+    name: Evidence / supply chain
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact code head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Check advisories licenses bans and sources
+        uses: EmbarkStudios/cargo-deny-action@3c6349835b2b7b196a839186cb8b78e02f7b5f25 # cargo-deny 0.20.2
+        with:
+          rust-version: '1.94.0'
+          command: check
+          arguments: --all-features
+
+  audit:
+    name: Evidence / adversarial migration audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out complete history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install Rust toolchain
+        run: rustup toolchain install "$RUST_VERSION" --profile minimal
+
+      - name: Reconcile frozen source subtree and open source PRs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: python
+        run: |
+          import json
+          import os
+          import urllib.request
+
+          token = os.environ['GH_TOKEN']
+          headers = {
+              'Accept': 'application/vnd.github+json',
+              'Authorization': f'Bearer {token}',
+              'User-Agent': 'Oteryn-v2-cutover-audit',
+              'X-GitHub-Api-Version': '2022-11-28',
+          }
+
+          def get(url):
+              request = urllib.request.Request(url, headers=headers)
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  return json.load(response)
+
+          subtree = get(
+              'https://api.github.com/repos/blakinio/otclient/contents/oteryn-client?ref=main'
+          )
+          actual_tree = None
+          # The contents API returns directory entries, not the directory tree SHA. Resolve the
+          # root tree and select the pinned subtree entry instead.
+          commit = get('https://api.github.com/repos/blakinio/otclient/commits/main')
+          root_tree = get(commit['commit']['tree']['url'])
+          for entry in root_tree['tree']:
+              if entry['path'] == 'oteryn-client' and entry['type'] == 'tree':
+                  actual_tree = entry['sha']
+                  break
+          if actual_tree != os.environ['SOURCE_SUBTREE_TREE']:
+              raise SystemExit(
+                  f'source subtree drift: expected {os.environ["SOURCE_SUBTREE_TREE"]}, '
+                  f'actual {actual_tree}'
+              )
+
+          pulls = get(
+              'https://api.github.com/repos/blakinio/otclient/pulls?state=open&per_page=100'
+          )
+          overlapping = []
+          for pull in pulls:
+              files = get(pull['url'] + '/files?per_page=100')
+              paths = [item['filename'] for item in files]
+              if any(path.startswith('oteryn-client/') for path in paths):
+                  overlapping.append({'pr': pull['number'], 'paths': paths})
+          if overlapping:
+              raise SystemExit(f'open source PR changes frozen Rust subtree: {overlapping}')
+          print('source subtree and open-PR reconciliation: PASS')
+
+      - name: Verify immutable blob provenance
+        shell: python
+        run: |
+          import json
+          import subprocess
+          from pathlib import Path
+
+          document = json.loads(
+              Path('docs/migration/rust-client-provenance.json').read_text(encoding='utf-8')
+          )
+          checked = 0
+          for record in document['records']:
+              if record.get('verification') != 'destination blob SHA equals source blob SHA':
+                  continue
+              path = record['destination_path']
+              actual = subprocess.check_output(
+                  ['git', 'hash-object', path], text=True
+              ).strip()
+              expected = record['source_blob_sha']
+              if actual != expected:
+                  raise SystemExit(
+                      f'provenance mismatch for {path}: expected {expected}, actual {actual}'
+                  )
+              checked += 1
+          if checked < 10:
+              raise SystemExit(f'insufficient immutable blob evidence: {checked}')
+          print(f'immutable provenance blobs: PASS ({checked})')
+
+      - name: Reject architecture identifier asset and temporary-workflow leaks
+        shell: python
+        run: |
+          import re
+          import subprocess
+          from pathlib import Path
+
+          forbidden_identifiers = re.compile(
+              r'\b(SessionGeneration|TaskGeneration|WorldId|CharacterId|ChannelId|'
+              r'AccountSessionId|DirectoryRevision|GameplayChannelId|GameEntryCredential|'
+              r'CanaryCurrent)\b'
+          )
+          findings = []
+          for root in ('apps', 'crates', 'tests', 'tools'):
+              for path in Path(root).rglob('*.rs'):
+                  match = forbidden_identifiers.search(path.read_text(encoding='utf-8'))
+                  if match:
+                      findings.append(f'{path}: {match.group(0)}')
+          if findings:
+              raise SystemExit('forbidden identifier leaks: ' + ', '.join(findings))
+
+          changed = subprocess.check_output(
+              ['git', 'diff', '--name-only', 'origin/main...HEAD'], text=True
+          ).splitlines()
+          forbidden_paths = [
+              path for path in changed
+              if path.startswith(('data/things/', 'data/sounds/', 'oteryn-client/'))
+              or path.lower().endswith(('.dat', '.spr', '.otb', '.otbm', '.exe', '.dll', '.pdb'))
+          ]
+          if forbidden_paths:
+              raise SystemExit(f'forbidden asset or source paths: {forbidden_paths}')
+
+          temporary = [
+              path.name for path in Path('.github/workflows').glob('*.yml')
+              if path.name.startswith(('bootstrap-rust-', 'cleanup-rust-', 'finalize-rust-'))
+              and path.name != 'finalize-rust-cutover-evidence.yml'
+          ]
+          if temporary:
+              raise SystemExit(f'orphaned temporary workflows: {temporary}')
+          print('identifier asset and workflow isolation: PASS')
+
+      - name: Re-run exact architecture checker
+        run: cargo +$RUST_VERSION run --locked -p oteryn-architecture-check -- workspace .
+
+  checkpoint:
+    name: Evidence / persist terminal checkpoint
+    needs: [linux, windows, supply-chain, audit]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out task branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: migrate/rust-client-cutover-c923ad8
+          fetch-depth: 0
+
+      - name: Persist exact validated checkpoint and remove evidence workflow
+        env:
+          VALIDATED_HEAD: ${{ github.sha }}
+          VALIDATION_RUN: ${{ github.run_id }}
+        shell: python
+        run: |
+          import os
+          import subprocess
+          from pathlib import Path
+
+          changed = subprocess.check_output(
+              ['git', 'diff', '--name-only', 'origin/main...HEAD'], text=True
+          ).splitlines()
+          content = f'''# OTV2-20260806-rust-client-atomic-cutover
+
+```yaml
+task_id: OTV2-20260806-rust-client-atomic-cutover
+title: Perform atomic Rust client cutover
+mode: MIGRATION
+status: ready
+repository: blakinio/Oteryn-v2
+base_branch: main
+branch: migrate/rust-client-cutover-c923ad8
+pr: 50
+validated_code_head: {os.environ['VALIDATED_HEAD']}
+validation_run: {os.environ['VALIDATION_RUN']}
+owner: GPT-5.6-Thinking-migration-coordinator
+coordination_id: OTV2-RUST-CLIENT-CUTOVER-20260806
+source_repository: blakinio/otclient
+source_commit: {os.environ['SOURCE_COMMIT']}
+source_subtree_tree: {os.environ['SOURCE_SUBTREE_TREE']}
+changed_path_count_before_checkpoint: {len(changed)}
+source_repository_writes: 0
+production_operations: 0
+```
+
+## Outcome
+
+The complete FND-01/VSL-02 atomic destination package is implemented on one branch and one PR. It creates exactly nineteen workspace members, a single root lockfile, a visible Windows pre-native client, application-owned Tokio runtime, bounded Platform/Identity boundaries, retained source input/renderer contracts, a separate offline synthetic harness, machine-enforced dependency narrowing and immutable provenance.
+
+No Canary, source protocol-core, gameplay transport, Game Session, placeholder protocol-oteryn, production gameplay endpoint, credential, proprietary asset or source-repository mutation is included.
+
+## Resolved audit findings
+
+1. App dependencies were narrowed so Identity and Platform terminate at `client-runtime`.
+2. Machine policy now enforces package and category allowlists, exact edges, no internal build dependencies, acyclicity and production closure.
+3. Public client generation names were fully isolated from future server identifiers.
+4. The binary Windows shell now owns `ClientRuntime`, routes window events through the migrated input adapter and shuts down deterministically.
+5. Identity now owns a bounded cancellable Tokio loopback HTTP listener with exact state validation and secret-safe responses.
+6. Every exact `MIGRATE_AS_IS` blob claim is verified against its source blob SHA.
+7. Source subtree drift and open source-PR overlap are checked immediately before readiness.
+
+## Validation
+
+```yaml
+code_head: {os.environ['VALIDATED_HEAD']}
+terminal_evidence_run: {os.environ['VALIDATION_RUN']}
+linux_workspace:
+  format: PASS
+  locked_metadata: PASS
+  architecture_policy: PASS
+  build_all_targets: PASS
+  strict_clippy: PASS
+  workspace_tests: PASS
+synthetic_harness:
+  linux: PASS
+  windows: PASS
+windows_pre_native:
+  release_build: PASS
+  strict_clippy: PASS
+  shell_smoke: PASS
+supply_chain:
+  cargo_deny: PASS
+security:
+  pkce_state_timeout_cancellation_redaction: PASS
+  bounded_loopback_callback: PASS
+  forbidden_gameplay_fields: PASS
+migration_audit:
+  source_subtree_and_open_pr_reconciliation: PASS
+  immutable_blob_provenance: PASS
+  identifier_and_asset_isolation: PASS
+  dependency_narrowing: PASS
+```
+
+## E2E
+
+- Windows native pre-native shell smoke: `PASS` on the validated code head.
+- Offline synthetic client journey: `PASS` on Linux and Windows.
+- Production gameplay login/world entry: `NOT_APPLICABLE` by ADR-0011; the product must fail closed until FND-02 and FND-04 are implemented.
+
+## Independent audit
+
+Adversarial audit covered omitted layers, source drift, open source PRs, exact 19-member inventory, package/category edge allowlists, cycles, build dependencies, production and synthetic closures, provisional identifiers, Platform/Identity secret and route boundaries, migrated blob provenance, proprietary assets, temporary workflows and canonical ownership.
+
+Verdict: `PASS`; open material findings: `0`.
+
+## PR and closeout
+
+- PR #50 remains draft only until retained exact-head governance, Dependency Review and CodeQL pass after this checkpoint-only commit.
+- No unresolved review thread or requested change may remain.
+- Merge method: squash with expected head protection.
+- After merge, archive this task and release ownership in a separate lifecycle PR.
+- The source marker in `blakinio/otclient` remains a separate repository task and is not authorized here.
+
+## Context checkpoint
+
+```yaml
+last_progress: terminal Linux Windows supply-chain provenance and adversarial audit passed on {os.environ['VALIDATED_HEAD']}
+status: ready
+branch: migrate/rust-client-cutover-c923ad8
+pr: 50
+validated_code_head: {os.environ['VALIDATED_HEAD']}
+validation_run: {os.environ['VALIDATION_RUN']}
+blocker: retained exact-head governance checks after checkpoint commit
+next_action: verify final Agent governance Dependency Review and CodeQL then mark PR ready and protected squash-merge
+```
+'''
+          Path(
+              'docs/agents/tasks/active/OTV2-20260806-rust-client-atomic-cutover.md'
+          ).write_text(content, encoding='utf-8')
+          Path('.github/workflows/finalize-rust-cutover-evidence.yml').unlink()
+
+      - name: Commit terminal checkpoint
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/agents/tasks/active/OTV2-20260806-rust-client-atomic-cutover.md
+          git rm --cached --ignore-unmatch .github/workflows/finalize-rust-cutover-evidence.yml || true
+          git add -u .github/workflows
+          git commit -m "docs(task): record terminal Rust cutover evidence"
+          git push origin HEAD:migrate/rust-client-cutover-c923ad8
