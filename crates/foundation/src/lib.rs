@@ -147,7 +147,7 @@ impl CancellationToken {
     }
 
     pub fn cancel(&self) {
-        let _result = self.sender.send(true);
+        self.sender.send_replace(true);
     }
 
     #[must_use]

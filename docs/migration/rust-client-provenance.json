@@ -74,9 +74,9 @@
       "source_blob_sha": "671de3122ef00c00dd75f784214723e3ea43fc91",
       "destination_path": "crates/input-platform/src/adapter.rs",
       "disposition": "MIGRATE_AS_IS",
-      "transformation": "none",
+      "transformation": "source event normalization retained; added non-Windows dead-code scope annotations required by strict cross-target lint",
       "license": "MIT",
-      "verification": "destination blob SHA equals source blob SHA"
+      "verification": "source behavior retained; Linux strict Clippy and Windows adapter tests; byte equality intentionally not claimed"
     },
     {
       "source_path": "oteryn-client/crates/input-platform/src/error.rs",
