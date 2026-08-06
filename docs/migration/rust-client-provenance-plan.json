@@ -5,6 +5,7 @@
     "repository": "blakinio/otclient",
     "commit": "c923ad8a1dff17b4933a6110931b0823cec2c590",
     "subtree": "oteryn-client",
+    "subtree_tree": "c0928dafca6df19ff11d7901e503ed85a5199439",
     "license_declared": "MIT",
     "root_manifest_blob": "037013e8e4a762a65f0f2a30f7761ee14725a3fc",
     "root_lockfile_blob": "2143408c12c50132883890f0821278320a331fde"
@@ -21,7 +22,7 @@
       "do not claim preserved Git ancestry across repositories",
       "do not use fabricated co-authorship",
       "do not describe rewritten files as byte-identical",
-      "do not delete the source repository or source commit"
+      "do not delete the source repository, selected commit or source subtree"
     ],
     "required_destination_files": [
       "docs/migration/rust-client-provenance.json",
@@ -39,7 +40,9 @@
     ]
   },
   "source_state": {
-    "main_equals_inventory_commit": true,
+    "main_at_reconciliation_commit": "c923ad8a1dff17b4933a6110931b0823cec2c590",
+    "future_main_may_advance_outside_subtree": true,
+    "cutover_block_condition": "the current default branch resolves otclient/oteryn-client to a tree other than c0928dafca6df19ff11d7901e503ed85a5199439, or a new PR/task claims that subtree",
     "open_pull_requests": [
       {
         "number": 23,
@@ -59,34 +62,39 @@
     ],
     "active_task_records": [
       {
-        "task": "OTC-20260712-client-test-foundation",
+        "path": "docs/agents/tasks/active/OTC-20260712-client-test-foundation.md",
         "lane": "legacy-cpp-lua",
         "cutover_disposition": "EXCLUDED_STALE_CLOSEOUT"
       },
       {
-        "task": "OTC-20260714-protocol-session-reentrancy",
+        "path": "docs/agents/tasks/active/OTC-20260714-protocol-session-reentrancy.md",
         "lane": "legacy-cpp-lua",
         "cutover_disposition": "EXCLUDED_STALE_CLOSEOUT"
       },
       {
-        "task": "OTC-20260721-oteryn-identity-login",
+        "path": "docs/agents/tasks/active/OTC-20260721-oteryn-identity-login.md",
         "lane": "legacy-cpp-lua-auth",
         "cutover_disposition": "EXCLUDED_MERGED_HISTORICAL"
       },
       {
-        "task": "OTC-20260724-validation-cost-policy",
+        "path": "docs/agents/tasks/active/OTC-20260724-validation-cost-policy.md",
         "lane": "repository-governance",
         "cutover_disposition": "EXCLUDED_STALE_CLOSEOUT"
       },
       {
-        "task": "OTC-20260802-agent-governance-sync",
+        "path": "docs/agents/tasks/active/OTC-20260802-agent-governance-sync.md",
         "lane": "repository-governance",
         "cutover_disposition": "EXCLUDED_COMPLETED_STALE_RECORD"
       },
       {
-        "task": "OTC2-20260803-playability-p2-canary-world-protocol",
+        "path": "docs/agents/tasks/active/OTC2-20260803-playability-p2-canary-world-protocol.md",
         "lane": "rust-canary-reference",
         "cutover_disposition": "REFERENCE_ONLY_ARCHIVE_ON_SOURCE_MARKER"
+      },
+      {
+        "path": "oteryn-client/docs/agents/tasks/active/OTC2-20260805-native-protocol-single-version-completion.md",
+        "lane": "superseded-dual-protocol-native-plan",
+        "cutover_disposition": "SUPERSEDED_REFERENCE_ONLY_ARCHIVE_ON_SOURCE_MARKER"
       }
     ]
   },
@@ -136,32 +144,34 @@
     },
     {
       "crate": "native-tls",
-      "decision": "REMOVE_UNLESS_TRANSITIVE_PROVEN",
-      "reason": "selected HTTP boundary uses reqwest rustls backend"
+      "decision": "REMOVE_DIRECT_SOURCE_USE",
+      "reason": "the selected Platform HTTP boundary uses reqwest with the rustls backend; every remaining transitive occurrence requires lockfile-delta explanation"
     }
   ],
   "freeze": {
     "effective_when": "VSL-02 contract merge",
     "scope": "blakinio/otclient/oteryn-client/**",
+    "does_not_block": "commits and PRs wholly outside the Rust subtree",
+    "verification": "compare the current default-branch otclient/oteryn-client tree to c0928dafca6df19ff11d7901e503ed85a5199439 and import only from pinned commit c923ad8a1dff17b4933a6110931b0823cec2c590",
     "allowed_after_freeze": [
       "owner-approved critical security correction",
       "owner-approved build break correction needed to complete the atomic cutover"
     ],
     "required_on_exception": [
-      "new exact source commit",
-      "updated path/provenance/dependency manifests",
+      "new exact source commit and subtree tree",
+      "updated path, provenance and dependency manifests",
       "fresh VSL-02 reconciliation and audit",
       "owner-approved amendment before destination migration merge"
     ]
   },
   "rollout": [
     "merge VSL-02 contract in blakinio/Oteryn-v2",
-    "verify source main still equals c923ad8a1dff17b4933a6110931b0823cec2c590",
-    "open one atomic destination implementation PR on migrate/rust-client-cutover-c923ad8",
+    "verify selected source commit remains reachable and the current source default branch has subtree tree c0928dafca6df19ff11d7901e503ed85a5199439",
+    "open one atomic destination implementation PR on migrate/rust-client-cutover-c923ad8 using only the pinned commit",
     "validate and squash-merge destination implementation",
     "verify resulting destination main and immutable provenance",
-    "open separate source-marker PR in blakinio/otclient",
-    "mark oteryn-client non-canonical and archive the Rust/Canary active task",
+    "open a separately authorized source-marker PR in blakinio/otclient",
+    "mark oteryn-client non-canonical and archive both conflicting Rust active tasks",
     "validate and squash-merge source marker"
   ],
   "rollback": {
