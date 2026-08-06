@@ -20,18 +20,19 @@ jobs:
       - name: Remove legacy diagnostic aliases
         shell: python
         run: |
+          import re
           from pathlib import Path
           path = Path('crates/diagnostics/src/lib.rs')
           text = path.read_text(encoding='utf-8')
-          session_count = text.count('SessionGeneration')
-          task_count = text.count('TaskGeneration')
-          if session_count < 5 or task_count < 5:
-              raise SystemExit(f'unexpected alias counts: session={session_count}, task={task_count}')
+          if len(re.findall(r'\bSessionGeneration\b', text)) < 5:
+              raise SystemExit('unexpected SessionGeneration alias count')
+          if len(re.findall(r'\bTaskGeneration\b', text)) < 5:
+              raise SystemExit('unexpected TaskGeneration alias count')
           text = text.replace('ClientSessionEpoch as SessionGeneration', 'ClientSessionEpoch')
           text = text.replace('ClientTaskGeneration as TaskGeneration', 'ClientTaskGeneration')
-          text = text.replace('SessionGeneration', 'ClientSessionEpoch')
-          text = text.replace('TaskGeneration', 'ClientTaskGeneration')
-          if 'SessionGeneration' in text or 'TaskGeneration' in text:
+          text = re.sub(r'\bSessionGeneration\b', 'ClientSessionEpoch', text)
+          text = re.sub(r'\bTaskGeneration\b', 'ClientTaskGeneration', text)
+          if re.search(r'\b(SessionGeneration|TaskGeneration)\b', text):
               raise SystemExit('legacy diagnostic aliases remain')
           path.write_text(text, encoding='utf-8')
       - name: Commit repair
