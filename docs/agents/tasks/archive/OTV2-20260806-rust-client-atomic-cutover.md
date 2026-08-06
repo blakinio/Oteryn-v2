@@ -9,6 +9,7 @@ repository: blakinio/Oteryn-v2
 base_branch: main
 branch: migrate/rust-client-cutover-c923ad8
 pr: 50
+lifecycle_pr: 53
 final_head_sha: 5092f868a42d545f47a98c0b9723210570cd9d45
 merge_commit_sha: 78988f72a80cc904aa9176ae850c50d4efa0b0f0
 source_repository: blakinio/otclient
@@ -19,6 +20,7 @@ coordination_id: OTV2-RUST-CLIENT-CUTOVER-20260806
 owner: released
 created_at: 2026-08-06T10:32:00+02:00
 completed_at: 2026-08-06T13:14:22+02:00
+archived_at: 2026-08-06T13:16:00+02:00
 next_ordered_action: create the source-only historical marker in blakinio/otclient, then begin FND-ID-01
 ```
 
@@ -39,7 +41,7 @@ The complete accepted 19-member Rust workspace was migrated into `blakinio/Otery
 - [x] Exact-head governance, Dependency Review, CodeQL and Rust workspace checks pass.
 - [x] Adversarial migration audit passes with zero material findings.
 - [x] PR #50 was squash-merged and destination `main` was verified.
-- [x] Task ownership is released.
+- [x] Task ownership is released through lifecycle PR #53.
 
 ## Validation and merge evidence
 
@@ -56,7 +58,8 @@ Exact final head: `5092f868a42d545f47a98c0b9723210570cd9d45`.
 - Review threads: zero.
 - Final mergeability: mergeable.
 - Squash merge commit: `78988f72a80cc904aa9176ae850c50d4efa0b0f0`.
-- Post-merge `main` verification: `78988f72a80cc904aa9176ae850c50d4efa0b0f0` is the current verified main head.
+- Post-merge `main` verification: `78988f72a80cc904aa9176ae850c50d4efa0b0f0` is the verified implementation main head.
+- Lifecycle archive PR: #53.
 
 ## Excluded scope preserved
 
