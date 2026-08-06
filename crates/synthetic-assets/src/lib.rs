@@ -46,9 +46,11 @@ impl SyntheticImage {
         manifest: &[u8],
         rgba: Vec<u8>,
     ) -> Result<Self, SyntheticAssetError> {
-        let value: Value =
-            serde_json::from_slice(manifest).map_err(|_error| SyntheticAssetError::InvalidManifest)?;
-        let object = value.as_object().ok_or(SyntheticAssetError::InvalidManifest)?;
+        let value: Value = serde_json::from_slice(manifest)
+            .map_err(|_error| SyntheticAssetError::InvalidManifest)?;
+        let object = value
+            .as_object()
+            .ok_or(SyntheticAssetError::InvalidManifest)?;
         if object.get("schema").and_then(Value::as_str) != Some("synthetic-v1") {
             return Err(SyntheticAssetError::UnsupportedSchema);
         }
@@ -71,7 +73,11 @@ impl SyntheticImage {
         }
         let expected = usize::try_from(width)
             .ok()
-            .and_then(|width| usize::try_from(height).ok().and_then(|height| width.checked_mul(height)))
+            .and_then(|width| {
+                usize::try_from(height)
+                    .ok()
+                    .and_then(|height| width.checked_mul(height))
+            })
             .and_then(|pixels| pixels.checked_mul(4))
             .ok_or(SyntheticAssetError::SizeOverflow)?;
         if expected > MAX_RGBA_BYTES {

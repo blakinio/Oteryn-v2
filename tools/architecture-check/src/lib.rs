@@ -50,7 +50,9 @@ pub fn validate_workspace(root: &Path) -> Result<(), String> {
             .iter()
             .any(|fragment| member.contains(fragment))
         {
-            return Err(format!("forbidden package name entered workspace: {member}"));
+            return Err(format!(
+                "forbidden package name entered workspace: {member}"
+            ));
         }
     }
     Ok(())
@@ -123,7 +125,9 @@ fn validate_policy_shape(policy: &Policy) -> Result<(), String> {
     for role in role_sets {
         for member in role {
             if !union.insert(member.clone()) {
-                return Err(format!("package appears in multiple release roles: {member}"));
+                return Err(format!(
+                    "package appears in multiple release roles: {member}"
+                ));
             }
         }
     }

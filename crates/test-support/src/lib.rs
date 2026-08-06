@@ -163,7 +163,10 @@ mod tests {
         );
         assert_eq!(context.occurred_at(), timeline.now());
         assert_eq!(context.process_generation(), ProcessGeneration::new(2));
-        assert_eq!(context.session_generation(), Some(ClientSessionEpoch::new(5)));
+        assert_eq!(
+            context.session_generation(),
+            Some(ClientSessionEpoch::new(5))
+        );
         assert_eq!(
             context.task_generation(),
             Some(ClientTaskGeneration::new(8))

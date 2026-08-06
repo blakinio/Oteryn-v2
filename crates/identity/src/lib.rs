@@ -133,9 +133,7 @@ impl CallbackResult {
         let mut code = None;
         let mut state = None;
         for pair in query.split('&') {
-            let (key, value) = pair
-                .split_once('=')
-                .ok_or(IdentityError::InvalidCallback)?;
+            let (key, value) = pair.split_once('=').ok_or(IdentityError::InvalidCallback)?;
             let decoded = percent_decode(value)?;
             match key {
                 "code" if code.is_none() => code = Some(decoded),
@@ -176,12 +174,7 @@ impl IdentityFlow {
         receiver: &mut mpsc::Receiver<String>,
         cancellation: CancellationToken,
     ) -> Result<AuthorizationCode, IdentityError> {
-        let receive = async {
-            receiver
-                .recv()
-                .await
-                .ok_or(IdentityError::CallbackClosed)
-        };
+        let receive = async { receiver.recv().await.ok_or(IdentityError::CallbackClosed) };
         let bounded = tokio::time::timeout(self.timeout, cancellable(cancellation, receive))
             .await
             .map_err(|_elapsed| IdentityError::Timeout)?;
@@ -198,8 +191,7 @@ impl IdentityFlow {
 }
 
 fn base64_url_no_pad(bytes: &[u8]) -> String {
-    const TABLE: &[u8; 64] =
-        b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+    const TABLE: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
     let mut output = String::with_capacity(bytes.len().div_ceil(3) * 4);
     for chunk in bytes.chunks(3) {
         let first = chunk[0];
@@ -269,7 +261,10 @@ mod tests {
     fn pkce_is_deterministic_and_redacted() -> Result<(), IdentityError> {
         let material = PkceMaterial::from_entropy(&[7_u8; 32])?;
         assert!(material.challenge().len() >= 43);
-        assert_eq!(format!("{:?}", material.verifier()), "SecretString([REDACTED])");
+        assert_eq!(
+            format!("{:?}", material.verifier()),
+            "SecretString([REDACTED])"
+        );
         Ok(())
     }
 

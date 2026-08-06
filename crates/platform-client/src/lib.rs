@@ -58,11 +58,9 @@ pub struct PlatformClientConfig {
 
 impl PlatformClientConfig {
     pub fn new(base_url: &str) -> Result<Self, PlatformClientError> {
-        let base_url = Url::parse(base_url).map_err(|_error| PlatformClientError::InvalidBaseUrl)?;
-        let loopback = matches!(
-            base_url.host_str(),
-            Some("localhost" | "127.0.0.1" | "::1")
-        );
+        let base_url =
+            Url::parse(base_url).map_err(|_error| PlatformClientError::InvalidBaseUrl)?;
+        let loopback = matches!(base_url.host_str(), Some("localhost" | "127.0.0.1" | "::1"));
         if base_url.scheme() != "https" && !(loopback && base_url.scheme() == "http") {
             return Err(PlatformClientError::InsecureBaseUrl);
         }
@@ -156,7 +154,9 @@ pub fn parse_directory(bytes: &[u8]) -> Result<DirectorySnapshot, PlatformClient
     if contains_forbidden_gameplay_field(&value) {
         return Err(PlatformClientError::ForbiddenGameplayField);
     }
-    let root = value.as_object().ok_or(PlatformClientError::InvalidPayload)?;
+    let root = value
+        .as_object()
+        .ok_or(PlatformClientError::InvalidPayload)?;
     let epoch = root
         .get("epoch")
         .and_then(Value::as_u64)

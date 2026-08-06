@@ -167,18 +167,9 @@ impl MonotonicClock for ManualClock {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TimeError {
-    Overflow {
-        base: Moment,
-        duration: Duration,
-    },
-    BackwardMovement {
-        current: Moment,
-        requested: Moment,
-    },
-    NonMonotonicInterval {
-        start: Moment,
-        end: Moment,
-    },
+    Overflow { base: Moment, duration: Duration },
+    BackwardMovement { current: Moment, requested: Moment },
+    NonMonotonicInterval { start: Moment, end: Moment },
 }
 
 impl Display for TimeError {
