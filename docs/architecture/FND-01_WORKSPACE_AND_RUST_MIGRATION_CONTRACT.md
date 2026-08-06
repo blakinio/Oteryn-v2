@@ -10,59 +10,43 @@
 
 ## 1. Purpose and authority
 
-This candidate contract defines the Rust workspace that may be created by the controlled native-client migration. It inventories the actual source implementation, classifies every current member, proposes the minimum consumer-backed destination graph and fixes the dependency, build, release-role and machine-enforcement rules required by the migration.
+This candidate defines the Rust workspace that may be created by the controlled native-client migration. It classifies every current source member, proposes the minimum consumer-backed destination graph and fixes dependency, build, release-role, target, CI and machine-enforcement policy.
 
-This document does not:
+It does not move code, create Cargo members, implement `protocol-oteryn`, freeze public identifiers, authorize gameplay transport/admission or create an authoritative server runtime. Physical migration remains owned by `VSL-02`. The graph remains a candidate until explicit owner acceptance.
 
-- move source code;
-- create the root Cargo workspace;
-- implement `protocol-oteryn`;
-- freeze public identifier representations;
-- authorize gameplay transport, Game Session credentials or admission;
-- create an authoritative server runtime;
-- make the candidate graph accepted before owner approval.
+## 2. Binding architecture
 
-Physical migration remains owned by `VSL-02` and its one atomic destination pull request.
+- ADR-0001: one native Rust client, one authoritative Rust server and one project-owned `protocol-oteryn`.
+- ADR-0002: Rust ownership moves to `blakinio/Oteryn-v2` after `FND-01` and `VSL-02` through one atomic destination migration/workspace PR.
+- ADR-0005: production world/content/asset formats remain separately owned; synthetic fixture packs are not production formats.
+- ADR-0007: later E2E uses one shared three-tier platform with exact evidence and no hidden retry-until-green.
+- ADR-0008: `protocol-canary` is `REFERENCE_ONLY` and cannot enter destination Cargo membership, binaries, negotiation, fallback, translation or packaging.
+- ADR-0011: the migrated client may launch in `pre-native-protocol`, but gameplay entry fails before gameplay credential consumption, Game Session binding or endpoint connection.
+- `FND-ID-01` owns public identifier meaning/representation.
+- `FND-02` owns native framing, schema, gameplay transport, limits, TLS, sequencing and compatibility.
+- `FND-04` owns Game Session credentials, routing/admission and character leases.
 
-## 2. Binding decisions
+## 3. Exact source inventory
 
-The following accepted decisions constrain this candidate:
-
-- ADR-0001: one native Rust client, one authoritative Rust server and one project-owned `protocol-oteryn`;
-- ADR-0002: client/server/shared Rust ownership moves to `blakinio/Oteryn-v2` after `FND-01` and `VSL-02` through one atomic destination migration/workspace PR;
-- ADR-0007: later E2E uses one shared three-tier platform with exact evidence and no hidden retry-until-green;
-- ADR-0008: `protocol-canary` is `REFERENCE_ONLY` and cannot enter the destination production workspace graph, binaries, negotiation, fallback, translation or release packaging;
-- ADR-0011: the migrated client may compile and launch in `pre-native-protocol`, but gameplay entry is visibly unavailable and fails before gameplay credential consumption, Game Session binding or endpoint connection;
-- `FND-ID-01` owns cross-boundary identifier meaning and representation;
-- `FND-02` owns native protocol framing, schema, transport limits, TLS, sequencing and compatibility;
-- `FND-04` owns exact Game Session, credential, admission and character-lease behavior;
-- ADR-0005 and later content gates own the production world/content/asset formats; synthetic fixture packs are not that contract.
-
-## 3. Exact source evidence
-
-The complete source member, dependency, consumer, direct third-party and non-member inventory is canonical evidence at:
+The exact 26-member source graph, direct dependencies, direct consumers, third-party dependencies, root policy and non-member paths are recorded at:
 
 ```text
 docs/architecture/FND-01_RUST_SOURCE_INVENTORY.md
 ```
 
-That inventory proves:
+That evidence proves the source cannot migrate unchanged because:
 
-- 26 source workspace members;
-- a Windows-only target/toolchain baseline;
-- direct Canary dependencies from the application and technical-login tests;
-- Canary-specific entry policy in `game-session`;
-- an over-fragmented account/directory/entry stack;
-- client-only domain/simulation semantics;
-- synthetic-only asset/resource formats;
-- source `protocol-core` and `transport` ceilings that cannot become native limits by inertia;
-- three open source PRs that do not currently change the Rust workspace but remain `VSL-02` reconciliation inputs.
+- application and technical-login tests directly depend on Canary;
+- `game-session` contains `CanaryCurrent` entry policy;
+- account/directory/entry concerns are fragmented across tightly coupled crates;
+- client domain/simulation are projection and render-snapshot contracts, not server authority;
+- asset/resource packages implement synthetic fixtures;
+- source protocol/transport ceilings cannot become native limits by inertia;
+- several tested members have no product consumer.
 
-Any source change after `c923ad8a1dff17b4933a6110931b0823cec2c590` invalidates affected inventory rows until `VSL-02` reconciles the selected cutover SHA. It does not silently amend this contract.
+Any source change after the inventory SHA invalidates affected rows until `VSL-02` reconciles the selected cutover SHA.
 
 ## 4. Proposed initial destination workspace
-
-The atomic destination migration should create exactly these initial members:
 
 ```text
 apps/client
@@ -126,154 +110,137 @@ crates/game-session
 persistence, world, content, scripting and server-runtime crates
 ```
 
-Their absence is intentional. Later gates may add only members with an immediate accepted consumer and an owned contract.
+Later gates may add only members with an immediate accepted consumer and owned contract.
 
-## 5. Why the synthetic harness is a separate executable
+## 5. Production client and synthetic harness separation
 
-The production-shaped `oteryn-client` binary must not carry optional normal dependencies on client simulation or synthetic fixture packages merely because a feature is disabled by default. Cargo optional dependencies still enlarge the package's declared trust and maintenance surface.
+`oteryn-client` is the production-shaped pre-native shell. It must not declare optional normal dependencies on client simulation or synthetic fixture packages merely because a feature disables them by default.
 
-Therefore deterministic renderer/domain/simulation evidence uses:
+Deterministic foundation evidence uses a separate non-release executable:
 
 ```text
 tools/synthetic-client-harness
 ```
 
-The harness is a separate non-release executable. It may depend on `client-domain`, `client-simulation`, `renderer`, `input-actions`, `input-platform`, `synthetic-assets`, `test-support` and `foundation`.
+The harness may consume client domain/simulation, input, renderer, synthetic assets and test support. It cannot access live Identity/Game Gateway/gameplay endpoints, consume credentials, enter release packaging or claim protocol/server/native-E2E compatibility.
 
-It must not:
+## 6. Proposed members and immediate acceptance
 
-- consume live Identity or gameplay credentials;
-- call live Game Gateway or gameplay endpoints;
-- be packaged as the production client;
-- claim protocol, server, admission or native E2E compatibility;
-- share a release role with `oteryn-client`.
-
-This separation keeps the production dependency closure provably smaller than the complete workspace.
-
-## 6. Proposed member consumers and migration acceptance
-
-| Destination member | Immediate consumer or purpose | Observable acceptance |
+| Destination member | Immediate consumer/purpose | Observable acceptance |
 |---|---|---|
-| `apps/client` | production-shaped pre-native shell | builds, launches and shuts down on Windows; gameplay is explicitly unavailable before sensitive boundaries |
-| `foundation` | lower client layers | deterministic cancellation, monotonic-time and local-generation tests |
-| `diagnostics` | runtime, Platform client and test support | bounded/redacted diagnostic tests |
-| `client-runtime` | app and pre-native tests | deterministic lifecycle and shutdown with no gameplay adapter |
-| `platform-contracts` | Platform client, Identity, runtime and auth tests | bounded DTO-neutral account/directory values using explicitly provisional client references |
-| `platform-client` | Identity/runtime and auth tests | validated account/directory HTTP boundary; no gameplay-ticket/admission implementation |
-| `identity` | runtime and auth tests | PKCE, callback, stale-operation, cancellation and secret-redaction evidence |
+| `apps/client` | production-shaped pre-native shell | Windows build, deterministic launch/shutdown and explicit gameplay-unavailable state |
+| `foundation` | lower client layers | cancellation, monotonic time and explicitly local generation tests |
+| `diagnostics` | runtime, Platform client and tests | bounded/redacted diagnostics |
+| `client-runtime` | app and pre-native tests | application-owned Tokio runtime, deterministic lifecycle/shutdown, no gameplay adapter |
+| `platform-contracts` | Platform client, Identity, runtime and auth tests | bounded display/account-directory values with provisional client references and no gameplay routes |
+| `platform-client` | Identity/runtime and auth tests | asynchronous cancellation-safe account/directory HTTP boundary only |
+| `identity` | runtime and auth tests | PKCE, browser/loopback callback, cancellation, stale-operation and redaction tests |
 | `client-domain` | client simulation and synthetic harness | typed client command/event and stale-session tests |
-| `client-simulation` | synthetic harness | deterministic event application and immutable snapshot tests |
-| `input-actions` | input adapter, app and harness | normalized semantic-action tests |
-| `input-platform` | app and harness | target-isolated Windows/winit adapter evidence |
-| `renderer` | app and harness | surface lifecycle, device/resource recovery and bounded synthetic-scene evidence |
-| `synthetic-assets` | fixture compiler and harness | deterministic fixture pack/decode tests; no production asset claim |
-| `test-support` | integration tests and harness | deterministic fixtures, clocks and safe diagnostics |
-| `tests/security/auth` | Identity/Platform boundary | exact negative and lifecycle security scenarios |
-| `tests/pre-native-client` | ADR-0011 | proves no protocol adapter, gameplay credential consumption, Game Session binding, endpoint connection or false success |
-| `architecture-check` | entire workspace | validates locked Cargo metadata against `workspace-boundaries.toml` |
-| `synthetic-asset-compiler` | fixture pipeline | deterministic compilation, path-safety and provenance tests |
-| `synthetic-client-harness` | deterministic client foundation evidence | separate executable runs bounded domain/simulation/input/renderer scenarios without live services |
+| `client-simulation` | synthetic harness | deterministic client event application and immutable snapshots |
+| `input-actions` | adapter, app and harness | framework-neutral semantic input tests |
+| `input-platform` | app and harness | Windows/winit target-isolation evidence |
+| `renderer` | app and harness | surface/device/resource lifecycle and bounded recovery |
+| `synthetic-assets` | fixture compiler and harness | deterministic project-owned fixture packs/decode; no production claim |
+| `test-support` | tests and harness | deterministic fixtures, clocks and safe diagnostics |
+| `tests/security/auth` | Identity/Platform boundary | exact negative and lifecycle security cases |
+| `tests/pre-native-client` | ADR-0011 | no protocol adapter, gameplay credential, Game Session binding, endpoint connection or false success |
+| `architecture-check` | complete workspace | locked metadata checked against root machine policy |
+| `synthetic-asset-compiler` | fixture pipeline | deterministic compilation, path safety and provenance |
+| `synthetic-client-harness` | non-release deterministic evidence | bounded domain/simulation/input/renderer scenarios without live services |
 
-## 7. Per-member migration dispositions
+## 7. Per-member source dispositions
 
-The disposition vocabulary is closed:
+Closed vocabulary: `MIGRATE_AS_IS`, `MIGRATE_AND_RENAME`, `MERGE`, `SPLIT`, `REWRITE`, `REFERENCE_ONLY`, `DROP`.
 
-```text
-MIGRATE_AS_IS
-MIGRATE_AND_RENAME
-MERGE
-SPLIT
-REWRITE
-REFERENCE_ONLY
-DROP
-```
+| Source member | Disposition | Destination/rule |
+|---|---|---|
+| `apps/client` | `REWRITE` | retain useful Windows shell/render composition; remove Canary/W7 entry wiring; expose pre-native state |
+| `crates/account-session` | `MERGE` | client-local account context moves into `platform-contracts` under a non-canonical name |
+| `crates/app-runtime` | `MIGRATE_AND_RENAME` | `client-runtime`; retain app-owned Tokio orchestration/shutdown, remove W7 policy |
+| `crates/asset-decode` | `MERGE` | `synthetic-assets` |
+| `crates/asset-types` | `MERGE` | `synthetic-assets` |
+| `crates/asset-runtime` | `MERGE` | `synthetic-assets` |
+| `crates/diagnostics` | `MIGRATE_AS_IS` | `diagnostics` |
+| `crates/foundation` | `REWRITE` | retain clocks/cancellation/technical generations; remove or rename future-authoritative `SessionGeneration` semantics |
+| `crates/game-domain` | `MIGRATE_AND_RENAME` | `client-domain`; explicitly client projection only |
+| `crates/simulation-core` | `MIGRATE_AND_RENAME` | `client-simulation`; explicitly non-authoritative client state |
+| `crates/input-actions` | `MIGRATE_AS_IS` | `input-actions` |
+| `crates/input-platform` | `MIGRATE_AS_IS` | `input-platform`; app/harness become named consumers |
+| `crates/game-session` | `SPLIT` | safe non-secret selection/lifecycle logic into `platform-contracts`/`client-runtime`; all credentials, Canary profile, routing and admission deferred |
+| `crates/identity` | `REWRITE` | retain PKCE/browser/loopback security; remove gameplay-session/protocol coupling and unmanaged blocking I/O |
+| `crates/platform` | `SPLIT` | non-gameplay validated values into `platform-contracts`; async account/directory I/O into `platform-client`; source `ureq`, ticket issuance and gameplay routing are not migrated as production behavior |
+| `crates/protocol-canary` | `REFERENCE_ONLY` | source history only |
+| `crates/protocol-core` | `REFERENCE_ONLY` | reconsider under `FND-02` |
+| `crates/renderer` | `MIGRATE_AS_IS` | `renderer`; root metadata/target policy rewritten |
+| `crates/renderer-resource` | `SPLIT` | backend-neutral generation/cache logic into renderer; synthetic adapters/tests remain fixture/harness-only |
+| `crates/test-support` | `MIGRATE_AS_IS` | `test-support` |
+| `crates/transport` | `REFERENCE_ONLY` | reconsider under `FND-02`; no pre-native production consumer |
+| `crates/world-directory` | `MERGE` | display/selection values into `platform-contracts`; source host/port routes and canonical-looking IDs are not retained as public contracts |
+| `tests/integration/technical-login` | `REFERENCE_ONLY` | rewrite only non-Canary scenarios into auth/pre-native tests |
+| `tests/security/auth` | `REWRITE` | consolidated Platform/Identity boundaries |
+| `tools/architecture-check` | `REWRITE` | root policy data replaces hard-coded aspirational matrix |
+| `tools/asset-compiler` | `MIGRATE_AND_RENAME` | `synthetic-asset-compiler` |
 
-| Source member | Disposition | Destination / rule | Reason |
-|---|---|---|---|
-| `apps/client` | `REWRITE` | `apps/client` | retain useful Windows shell/render composition; remove Canary and W7 entry wiring; expose explicit pre-native state |
-| `crates/account-session` | `MERGE` | `platform-contracts` | one client-local correlation ID does not justify a crate |
-| `crates/app-runtime` | `MIGRATE_AND_RENAME` | `client-runtime` | retain application-owned Tokio orchestration and deterministic shutdown; remove W7/Canary policy |
-| `crates/asset-decode` | `MERGE` | `synthetic-assets` | synthetic decoder is fixture infrastructure |
-| `crates/asset-types` | `MERGE` | `synthetic-assets` | synthetic pack schema is not a production asset contract |
-| `crates/asset-runtime` | `MERGE` | `synthetic-assets` | synthetic pack runtime remains non-release fixture infrastructure |
-| `crates/diagnostics` | `MIGRATE_AS_IS` | `diagnostics` | independent bounded/redacted boundary with immediate consumers |
-| `crates/foundation` | `REWRITE` | `foundation` | retain clocks, cancellation and technical generations; rename/remove `SessionGeneration` semantics reserved for `FND-ID-01` |
-| `crates/game-domain` | `MIGRATE_AND_RENAME` | `client-domain` | useful protocol-neutral client projection, not authoritative server domain |
-| `crates/simulation-core` | `MIGRATE_AND_RENAME` | `client-simulation` | deterministic client writer/snapshots, not GameNode runtime |
-| `crates/input-actions` | `MIGRATE_AS_IS` | `input-actions` | clean framework-neutral semantic boundary |
-| `crates/input-platform` | `MIGRATE_AS_IS` | `input-platform` | clean target-specific adapter boundary; app/harness become named consumers |
-| `crates/game-session` | `SPLIT` | safe non-secret selection/value logic into `platform-contracts`; client orchestration into `client-runtime`; credential/profile/admission code deferred | current crate mixes client lifecycle, secrets and `CanaryCurrent`; `FND-04` owns the future contract |
-| `crates/identity` | `REWRITE` | `identity` | retain PKCE/browser/loopback security; remove gameplay-credential and Canary-oriented lifecycle dependencies |
-| `crates/platform` | `SPLIT` | validated non-gameplay values in `platform-contracts`; account/directory I/O in `platform-client`; Game Session issuance/admission deferred | separate value contracts from I/O and later admission ownership; source blocking `ureq` adapter is not automatically accepted |
-| `crates/protocol-canary` | `REFERENCE_ONLY` | source repository/provenance only | ADR-0008 |
-| `crates/protocol-core` | `REFERENCE_ONLY` | reconsider under `FND-02` | current little-endian helpers and 64-KiB ceiling cannot freeze native framing |
-| `crates/renderer` | `MIGRATE_AS_IS` | `renderer` | surface/device owner has a production-shell consumer; metadata and target policy are rewritten at root |
-| `crates/renderer-resource` | `SPLIT` | backend-neutral generation/cache/resource logic into `renderer`; synthetic adapters/tests into `synthetic-assets` or harness tests | direct synthetic dependencies must not leak into production renderer |
-| `crates/test-support` | `MIGRATE_AS_IS` | `test-support` | multiple test/harness consumers |
-| `crates/transport` | `REFERENCE_ONLY` | reconsider under `FND-02` | no initial gameplay consumer and current frame ceiling conflicts with unresolved native limits |
-| `crates/world-directory` | `MERGE` | `platform-contracts` | directory values and selection validation belong together; source identifiers remain provisional |
-| `tests/integration/technical-login` | `REFERENCE_ONLY` | rewrite only non-Canary scenarios into `pre-native-client` and auth tests | direct Canary/transport/late-credential behavior violates the initial state |
-| `tests/security/auth` | `REWRITE` | `tests/security/auth` | preserve security scenarios against consolidated boundaries |
-| `tools/architecture-check` | `REWRITE` | `tools/architecture-check` | policy becomes data in `workspace-boundaries.toml`, not a hard-coded aspirational catalogue |
-| `tools/asset-compiler` | `MIGRATE_AND_RENAME` | `synthetic-asset-compiler` | name must not imply ownership of the future production asset compiler |
-
-Every source member appears exactly once. `REFERENCE_ONLY` code is not copied into Cargo membership, release packaging or destination product paths. Later selective reuse requires the owning gate and explicit provenance.
+Every source member appears exactly once. Reference-only code is not copied into destination Cargo membership, product paths or release packaging. Selective later reuse requires the owning gate and explicit provenance.
 
 ## 8. Non-member dispositions
 
 | Source subsystem | Disposition | Destination rule |
 |---|---|---|
-| `assets/test-fixtures` | `MIGRATE_AND_RENAME` | `tests/fixtures/synthetic-assets` with project-owned/synthetic provenance |
+| `assets/test-fixtures` | `MIGRATE_AND_RENAME` | `tests/fixtures/synthetic-assets`, with project-owned/synthetic provenance |
 | `contracts/canary` | `REFERENCE_ONLY` | source history only |
-| source architecture and agent docs | `REFERENCE_ONLY` | link for provenance; destination ADRs/governance are authoritative |
-| source root `Cargo.toml` | `REWRITE` | one destination root manifest using the accepted FND-01 graph |
-| source `Cargo.lock` | `REWRITE` | regenerate one destination lockfile; preserve source blob and produce direct/transitive dependency delta evidence |
-| source `rust-toolchain.toml` | `REWRITE` | retain Rust 1.94.0; add accepted Windows and Linux targets |
-| source `rustfmt.toml` | `REWRITE` | retain edition/width; normalize repository text to LF rather than target-dependent native endings |
-| source `deny.toml` | `REWRITE` | product-realistic Windows default and Linux shared graphs; all-features supplemental |
-| source Rust CI | `REWRITE` | destination target/product matrix and release-closure negative checks |
-| source protocol fixtures | `REFERENCE_ONLY` | no Canary fixture enters destination product contracts |
+| source architecture/agent docs | `REFERENCE_ONLY` | provenance links only; destination policy is authoritative |
+| source root manifest | `REWRITE` | one destination root manifest using accepted FND-01 membership |
+| source lockfile | `REWRITE` | one destination lockfile plus direct/transitive dependency delta; source blob retained as evidence |
+| source toolchain | `REWRITE` | Rust 1.94.0 with accepted Windows/Linux targets |
+| source rustfmt | `REWRITE` | edition 2024, width 100 and repository LF normalization |
+| source cargo-deny | `REWRITE` | Windows-default, Linux-shared and supplemental all-feature graphs |
+| source Rust CI | `REWRITE` | product/target matrix and release-closure negatives |
+| source protocol fixtures | `REFERENCE_ONLY` | no Canary fixture enters destination contracts |
 
 ## 9. Provisional identifier safeguards
 
-The destination migration must not preserve source names that can be mistaken for accepted cross-boundary identifiers.
+Before `FND-ID-01`, retained source types must not use names that imply accepted global/cross-boundary identity.
 
-Before destination acceptance:
+Required semantic renaming:
 
 ```text
-AccountSessionId       -> ClientAccountContextId
-DirectoryRevision      -> ClientDirectoryGeneration
-GameplayChannelId      -> DirectoryChannelRef
-source WorldId         -> DirectoryWorldRef
-source CharacterId     -> DirectoryCharacterRef
-source SessionGeneration -> ClientSessionEpoch or another explicitly client-local name
+AccountSessionId         -> ClientAccountContextId
+DirectoryRevision        -> ClientDirectoryGeneration
+GameplayChannelId        -> DirectoryChannelRef
+source WorldId           -> DirectoryWorldRef
+source CharacterId       -> DirectoryCharacterRef
+source SessionGeneration -> ClientSessionEpoch or another explicitly local name
 ```
 
-Exact names may be refined by the migration implementation, but every retained type must state:
+Each retained type states that it is client-local or producer-opaque, grants no authority, carries no durable/global uniqueness claim and does not commit wire/database representation. Client-domain entity/item handles remain session-local projection handles. Server/shared public crates cannot depend on them before `FND-ID-01`.
 
-- client-local or producer-opaque scope;
-- no durable/global uniqueness claim;
-- no authority outside the owning process/boundary;
-- no commitment to future wire or database representation.
+## 10. Platform and Identity boundary
 
-Client-domain entity/item handles remain client projection handles. No server/shared crate may depend on these provisional types before `FND-ID-01`.
+### 10.1 Values exposed to the client
 
-## 10. Platform and Identity boundary during migration
+`platform-contracts` may expose bounded account context, world/character display metadata, availability and selection references. It must not expose:
 
-`platform-contracts` owns validated, DTO-neutral, non-secret account and directory values used by the native client. It is not the raw JSON schema and does not independently redefine the external Platform contract.
+- gameplay host or port;
+- gameplay endpoint URI;
+- protocol profile/adapter selection;
+- Game Session credential or bearer material;
+- admission/routing token;
+- node/container/orchestrator identity.
 
-`platform-client` owns account-authentication and account-directory HTTP adaptation only. The initial migration must not implement or retain a live gameplay-ticket/Game Session issuance path.
+If current producer DTOs contain route fields, `platform-client` may validate and discard them inside the I/O adapter for source compatibility evidence; they cannot enter `platform-contracts`, application state, logs or telemetry. `FND-04` later defines authoritative channel binding and routing.
 
-The source blocking `ureq` implementation is reference evidence. `VSL-02` must select one of two explicit outcomes:
+### 10.2 I/O model
 
-1. an audited asynchronous, cancellation-safe Platform HTTP implementation owned by the application Tokio runtime; or
-2. a bounded dedicated blocking worker with deadlines, cancellation, deterministic shutdown and proof that no event/render thread can block.
+The source blocking `ureq` adapter is `REFERENCE_ONLY` and is not a permitted production migration outcome.
 
-Silent blocking on the window/event/frame thread is forbidden. The chosen HTTP/TLS dependency, feature set and certificate-root behavior must be recorded in the migration dependency delta.
+`platform-client` exposes asynchronous cancellation-safe operations scheduled on the application-owned Tokio runtime. It must not create a global runtime, unmanaged thread or block the window/event/frame thread. Every request has explicit body/header/time limits, deadline, cancellation, deterministic shutdown and secret redaction.
 
-Identity may retain PKCE, system-browser and loopback callback behavior. It may not depend on gameplay protocol, gameplay transport, Game Session credential types or admission state.
+`VSL-02` selects and records the exact audited async HTTP/TLS dependency, feature set and certificate-root policy. That library choice cannot weaken this boundary.
 
-## 11. Root Cargo and repository policy
+Identity callback I/O follows the same cancellation/deadline/ownership rules. Identity may retain PKCE, system-browser and loopback security behavior but cannot depend on gameplay protocol, transport, Game Session credentials or admission state.
+
+## 11. Root Cargo and dependency policy
 
 The destination root owns exactly one:
 
@@ -286,7 +253,7 @@ deny.toml
 workspace-boundaries.toml
 ```
 
-Root package policy:
+Root policy:
 
 ```text
 edition = 2024
@@ -297,20 +264,17 @@ repository = https://github.com/blakinio/Oteryn-v2
 publish = false
 ```
 
-Rules:
-
-- members inherit edition, rust-version, license, repository, workspace dependencies and lints;
-- no member owns another lockfile;
-- direct third-party dependencies are declared once and pinned to exact reviewed versions during migration;
-- path dependencies remain inside the workspace;
-- Git dependencies and unknown registries are forbidden by default;
-- wildcards are forbidden;
-- multiple transitive versions require a narrow documented exception with owner, reason and removal condition;
-- `cargo metadata --locked` is mandatory;
-- source lockfile blob `2143408c12c50132883890f0821278320a331fde` remains provenance evidence and the destination records a dependency delta;
+- Members inherit package metadata, workspace dependencies and lints.
+- No member owns another lockfile.
+- Direct third-party dependencies are declared once and pinned to reviewed exact versions during migration.
+- Paths remain inside the workspace.
+- Git dependencies/unknown registries/wildcards are forbidden by default.
+- Multiple transitive versions require a narrow owner/reason/removal exception.
+- `cargo metadata --locked` is mandatory.
+- The destination records a dependency delta against source lockfile blob `2143408c12c50132883890f0821278320a331fde`.
 - Rustfmt uses edition 2024, width 100 and LF-normalized repository text.
 
-Minimum lint baseline:
+Minimum lints:
 
 ```text
 unsafe_code = forbid
@@ -324,11 +288,11 @@ clippy::unimplemented = deny
 clippy::unwrap_used = deny
 ```
 
-A local relaxation requires a path-scoped documented reason. Malformed external input must not produce an uncontrolled panic.
+Local relaxation requires a path-scoped reviewed reason.
 
-## 12. Closed dependency policy
+## 12. Closed workspace dependency policy
 
-Initial categories:
+Categories:
 
 ```text
 app
@@ -349,11 +313,9 @@ test
 tool
 ```
 
-### 12.1 Allowed normal category edges
+### 12.1 Complete normal category allowlist
 
-The following normal workspace edges are the complete initial allowlist. Absence means forbidden.
-
-| Source category | Allowed normal target categories |
+| Source | Allowed normal target categories |
 |---|---|
 | `app` | `foundation`, `diagnostics`, `client-runtime`, `input-platform`, `renderer` |
 | `foundation` | none |
@@ -369,54 +331,57 @@ The following normal workspace edges are the complete initial allowlist. Absence
 | `renderer` | `foundation`, `diagnostics` |
 | `test-fixture` | `foundation` |
 | `test-support` | `foundation`, `diagnostics` |
-| `test` | every product category plus `test-fixture` and `test-support` |
-| `tool` | `foundation`, `diagnostics`, `client-domain`, `client-simulation`, `input`, `input-platform`, `renderer`, `test-fixture`, `test-support` |
+| `test` | product categories, `test-fixture`, `test-support` as narrowed below |
+| `tool` | foundation/client-test categories as narrowed below |
 
-Package-specific policy further narrows tool edges:
+### 12.2 Exact package narrowing
 
-- `architecture-check` has no normal workspace dependency;
-- `synthetic-asset-compiler` depends only on `synthetic-assets` among workspace members;
-- `synthetic-client-harness` may depend only on the exact client foundation packages named in Section 5.
+```text
+oteryn-client
+  -> foundation, diagnostics, client-runtime, input-platform, renderer
 
-### 12.2 Development and build edges
+oteryn-identity-security-tests
+  -> foundation, diagnostics, platform-contracts, platform-client, identity, test-support
 
-- Product crates may use `test-support` and `synthetic-assets` only as development dependencies.
-- Tests and tools may normally depend on product/test packages according to the allowlist.
-- No workspace build dependency is accepted initially.
-- Production crates cannot normally or at build time depend on `test`, `test-support`, `test-fixture` or `tool` categories.
-- Dev dependencies participate in cycle detection; no cycle is accepted merely because one edge is dev-only.
+oteryn-pre-native-client-tests
+  -> foundation, diagnostics, client-runtime, platform-contracts, platform-client, identity, test-support
 
-### 12.3 Permanent and gate-specific forbidden edges
+oteryn-architecture-check
+  -> no workspace package
+
+oteryn-synthetic-asset-compiler
+  -> synthetic-assets
+
+oteryn-synthetic-client-harness
+  -> foundation, client-domain, client-simulation, input-actions, input-platform,
+     renderer, synthetic-assets, test-support
+```
+
+No workspace build dependency is accepted initially.
+
+Product crates may depend on `test-support` and `synthetic-assets` only as dev dependencies. Tests/tools may normally depend only on their exact package allowlists. Dev edges participate in cycle detection.
+
+### 12.3 Forbidden edges and names
 
 Permanent:
 
-- any package/feature/dependency named `protocol-canary` or unrestricted `canary` compatibility;
-- external path dependencies;
-- workspace cycles;
-- `foundation` to any workspace crate;
-- `client-domain`/`client-simulation` to Tokio, TCP, TLS, HTTP, SQL, Platform I/O, renderer implementation, winit or wgpu;
+- any local package/feature/dependency named `protocol-canary` or unrestricted Canary compatibility;
+- external path dependencies and workspace cycles;
+- `foundation` to any workspace package;
+- client domain/simulation to Tokio, network, SQL, Platform I/O, renderer implementation, winit or wgpu;
 - renderer to Identity, Platform, protocol, transport or mutable simulation implementation;
 - input actions to winit/OS APIs;
-- production to test/tool/fixture code.
+- production normal/build dependency on tests, tools, test support or fixtures.
 
 Before later gates:
 
-- production app to gameplay protocol, gameplay transport or Game Session/admission crates;
-- any server/shared public crate to provisional client identifier types;
-- production renderer to synthetic asset packages.
+- production app to gameplay protocol, transport or Game Session/admission packages;
+- server/shared public code to provisional client references;
+- production client/renderer to synthetic asset packages.
 
 ## 13. Machine-readable enforcement
 
-The root `workspace-boundaries.toml` is the canonical Cargo dependency/release-role policy. It records:
-
-- schema version;
-- FND-01 source inventory revision;
-- every package name, path, category and release role;
-- allowed normal/dev/build category edges;
-- package-specific narrowed edges;
-- forbidden names/features/sources;
-- production release-closure exclusions;
-- metadata/toolchain/lockfile rules.
+`workspace-boundaries.toml` records every member, path, category, exact package edge allowlist, release role, source restriction and release-closure exclusion.
 
 Minimum shape:
 
@@ -431,99 +396,53 @@ forbid_git_dependencies = true
 forbid_cycles = true
 forbidden_package_names = ["oteryn-protocol-canary"]
 forbidden_feature_names = ["protocol-canary", "canary"]
-
-[[package]]
-name = "oteryn-client"
-path = "apps/client"
-category = "app"
-release_role = "client-windows-pre-native"
 ```
 
-`tools/architecture-check` reads this file and `cargo metadata --locked`. It must not duplicate an aspirational future crate catalogue in Rust source.
+`architecture-check` reads this policy and `cargo metadata --locked`; it must not duplicate a future aspirational crate catalogue in code.
 
-The validator fails for:
+Validation fails for unregistered/duplicate members, undeclared edges, cycles, external/Git/unknown sources, forbidden names/features, test/tool/fixture leakage, protocol/transport/Game Session edges in the pre-native app, synthetic leakage into production or metadata/toolchain/lockfile drift.
 
-- unregistered/missing/duplicate members;
-- unknown categories or release roles;
-- forbidden or undeclared edges;
-- cycles across normal/dev/build edges;
-- external path, Git or unknown-registry dependencies;
-- forbidden package/feature names;
-- test/tool/fixture packages in the production release closure;
-- protocol, gameplay transport or Game Session dependencies in the pre-native app closure;
-- synthetic assets in the production renderer/client closure;
-- metadata, toolchain or root-lockfile drift.
+## 14. Features, release roles and targets
 
-## 14. Features and release roles
+Features are additive capabilities, not product identities, environments, protocol selectors or security bypasses. There is no Canary feature and no empty native-protocol feature/crate. The synthetic harness is a separate package, not a production-client feature.
 
-Features are additive capabilities, not product identities, environments, protocol selectors or security-boundary bypasses.
+Initial targets:
 
-- There is no Canary feature.
-- There is no empty native-protocol feature or crate.
-- Platform-specific dependencies use Cargo target sections where practical.
-- Every optional dependency belongs to one named feature and one explicit CI lane.
-- The synthetic harness is a separate package, not a feature that changes the production binary's identity.
+```text
+x86_64-pc-windows-msvc
+x86_64-unknown-linux-gnu
+```
 
-Initial release/validation roles:
+Release/validation roles:
 
-### `client-windows-pre-native`
+1. `client-windows-pre-native`
+   - Windows default client graph;
+   - no gameplay protocol/transport/Game Session, client simulation, synthetic fixture or test/tool dependency;
+   - explicit gameplay-unavailable state.
 
-- target `x86_64-pc-windows-msvc`;
-- builds `oteryn-client` default graph;
-- excludes protocol, gameplay transport, Game Session, synthetic fixtures, test support, tests and tools;
-- launches to explicit gameplay-unavailable state.
+2. `synthetic-client-harness`
+   - separate Windows non-release executable;
+   - deterministic client foundation evidence;
+   - no live service/credential capability.
 
-### `synthetic-client-harness`
+3. `shared-linux-validation`
+   - portable shared/test/tool selection on Linux;
+   - proves Windows dependency isolation;
+   - no Linux desktop-client or GameNode claim.
 
-- target `x86_64-pc-windows-msvc` initially;
-- separate non-release executable;
-- deterministic client domain/simulation/input/renderer/fixture scenarios;
-- no live credential or endpoint access.
-
-### `shared-linux-validation`
-
-- target `x86_64-unknown-linux-gnu`;
-- builds/tests portable shared crates, tests and tools selected by policy;
-- proves Windows dependencies remain target-isolated;
-- does not claim a Linux desktop-client release or GameNode implementation.
-
-`--all-features` is supplemental supply-chain/compile evidence only.
+`--all-features` is supplemental evidence only.
 
 ## 15. CI matrix
 
 Required lanes:
 
-1. **Workspace policy / Ubuntu**
-   - pinned Rust 1.94.0;
-   - locked metadata;
-   - `workspace-boundaries.toml` validation;
-   - package metadata, source, feature, cycle and root-lockfile checks;
-   - format and repository governance.
+- **Workspace policy / Ubuntu:** pinned toolchain, locked metadata, machine-boundary validation, package/source/cycle/root-lock checks, format and governance.
+- **Shared Linux:** compile, Clippy and tests for the named portable selection on `x86_64-unknown-linux-gnu`.
+- **Windows pre-native client:** default build/tests, deterministic launch/shutdown, renderer lifecycle, ADR-0011 negative entry evidence and production dependency-closure audit.
+- **Windows synthetic harness:** separate harness build/run with deterministic fixture scenarios and no live network capability.
+- **Security/supply chain:** Windows-default and Linux-shared advisory/license/source checks, supplemental all-features, auth/redaction tests, Dependency Review and CodeQL.
 
-2. **Shared Linux validation**
-   - `x86_64-unknown-linux-gnu`;
-   - compile, Clippy and tests for the named portable/shared/test/tool selection;
-   - no Linux desktop-runtime claim.
-
-3. **Windows pre-native client**
-   - `x86_64-pc-windows-msvc`;
-   - default client build/tests;
-   - deterministic launch/shutdown and renderer lifecycle;
-   - ADR-0011 negative entry evidence;
-   - production dependency-closure audit.
-
-4. **Windows synthetic harness**
-   - separate harness build/run;
-   - deterministic domain/simulation/input/renderer/asset fixtures;
-   - explicit synthetic labeling and no live-network capability.
-
-5. **Security and supply chain**
-   - advisory/license/source checks for Windows default and Linux shared graphs;
-   - all-features supplemental check;
-   - auth/secret/redaction negative tests;
-   - repository-required Dependency Review and CodeQL.
-
-The production release lane fails if `cargo tree`/metadata shows any normal or build dependency from `oteryn-client` to:
+The production lane fails if `oteryn-client` has a normal/build dependency on:
 
 ```text
 protocol-canary
@@ -538,71 +457,37 @@ test-support
 any tests or tools package
 ```
 
-A later accepted gate may change only entries it owns. Canary remains forbidden unless a new owner-approved ADR reverses ADR-0008.
+Later gates may change only entries they own. Canary remains permanently forbidden unless a new owner-approved ADR reverses ADR-0008.
 
-## 16. Protocol and transport source treatment
+## 16. Protocol, transport, renderer and fixtures
 
-The initial workspace contains no gameplay protocol or transport member.
+The initial workspace contains no gameplay protocol or transport member. Bounded reader/writer patterns, Tokio task ownership, queue/cancellation/shutdown behavior and malformed/saturation tests remain source evidence for `FND-02`. Any reuse must be revalidated against native framing, limits, endianness, TLS, sequencing, replay and error contracts.
 
-Useful source evidence retained for `FND-02` includes:
+Synthetic assets use only project-owned fixtures, remain absent from production closures, cannot claim ADR-0005 formats/identifiers and must be removable without changing product contracts.
 
-- bounded reader/writer patterns;
-- Tokio full-duplex task ownership, queues, cancellation and deterministic joined shutdown;
-- malformed/truncated/saturation tests;
-- protocol-neutral adapter-domain mapping cases.
+Renderer production code retains surface/device/backend-neutral resource lifecycle. Source resource code coupled to synthetic assets is split so the adapter remains test/harness-only.
 
-`FND-02` must re-evaluate any reused file against accepted native framing, maximums, endianness, TLS, sequencing, acknowledgement, replay and error contracts. This candidate grants no wire compatibility claim.
+## 17. Crate evolution criteria
 
-## 17. Synthetic asset and renderer policy
+A new crate requires a distinct trust/security boundary, target/release role, heavy-dependency isolation, stable public contract with at least two immediate consumers, or executable/tool/platform/FFI ownership.
 
-Synthetic assets remain only because they provide deterministic, legally bounded renderer and client-simulation evidence before production content exists.
+Split when value contracts mix with I/O, target-specific code leaks downward, production depends on fixtures/tests or client projection is confused with server authority.
 
-They must:
-
-- use synthetic/project-owned fixtures;
-- live under explicit fixture/test/tool names;
-- be absent from production client and renderer dependency closures;
-- never claim to implement ADR-0005 World Project, World Bundle, Content Registry or production asset format;
-- avoid identifiers that freeze future content identity;
-- retain bounded allocation, dimensions, paths and provenance;
-- be removable without changing production contracts.
-
-The renderer retains production-usable surface/device/resource lifecycle code. Any source resource code directly coupled to synthetic assets is split so the adapter remains test/harness-only.
-
-## 18. Crate evolution criteria
-
-A new crate is justified only when at least one is true:
-
-- distinct trust/security boundary;
-- distinct target or release role;
-- prevents heavy/unsafe/platform dependency leakage;
-- owns a stable public contract with at least two immediate consumers;
-- executable, tool, platform/FFI adapter or separately governed boundary.
-
-Split when one crate mixes value contracts with I/O, target-specific code leaks downward, production depends on fixtures/tests, or client projection is confused with server authority.
-
-Merge when a crate owns one trivial type, has one consumer without a meaningful trust/release boundary, mirrors an aspirational layer or always changes with another crate.
+Merge when a crate owns one trivial type, has one consumer without a meaningful boundary, mirrors an aspirational layer or always changes with another crate.
 
 No empty crate, future placeholder or one-type convenience crate is accepted.
 
-## 19. Canonical supporting locations
-
-Existing canonical contracts remain:
+## 18. Canonical supporting locations
 
 ```text
 docs/contracts/CROSS_REPOSITORY_CONTRACT_LOCK.json
 docs/contracts/RESOURCE_LIMITS_REGISTRY.json
 docs/contracts/FOUNDATION_ERROR_VOCABULARY.md
 docs/contracts/FOUNDATION_FAILURE_SCENARIOS.md
-```
-
-Workspace policy:
-
-```text
 workspace-boundaries.toml
 ```
 
-`VSL-02` migration evidence:
+`VSL-02` produces:
 
 ```text
 docs/migration/rust-client-provenance.json
@@ -610,68 +495,45 @@ docs/migration/rust-client-path-map.json
 docs/migration/rust-dependency-delta.json
 ```
 
-The manifests record exact source SHA/range, paths, transformations, exclusions, license/provenance, dependency changes and final destination merge. They do not claim cross-repository Git ancestry under squash merge.
+These record source SHA/range, paths, transformations, exclusions, licenses, dependency changes and final destination merge without false cross-repository ancestry claims.
 
-## 20. VSL-02 handoff
+## 19. VSL-02 handoff
 
-After owner acceptance and merge of `FND-01`, `VSL-02` is the mandatory next gate.
+After owner acceptance and merge, `VSL-02` must:
 
-It must:
+1. compare source `main` with the inventory revision;
+2. pin the cutover SHA and reconcile every changed path;
+3. classify open PRs/tasks and establish source freeze;
+4. produce provenance/path/dependency manifests;
+5. plan one atomic destination PR implementing every disposition;
+6. define rollback before source non-canonical marking;
+7. validate exact Windows/Linux/release-role matrices;
+8. prove pre-native closure and fail-closed entry;
+9. merge destination first;
+10. then create the source-marker PR.
 
-1. compare source `main` with the FND-01 inventory revision;
-2. pin the exact cutover SHA and reconcile every changed Rust/non-member path;
-3. classify all open PRs and active tasks and establish a source freeze;
-4. produce exact provenance, path-map and dependency-delta manifests;
-5. plan one atomic destination PR implementing every accepted disposition;
-6. define rollback before the source is marked non-canonical;
-7. validate exact Windows/Linux/product-role matrices;
-8. prove the pre-native production closure and fail-closed entry state;
-9. merge the destination first;
-10. only then create the source-marker PR in `blakinio/otclient`.
+No import-only destination PR or later workspace-cleanup destination PR is allowed.
 
-No separate import-only destination PR and no post-import workspace-cleanup destination PR are allowed.
+## 20. Rejected alternatives
 
-## 21. Rejected alternatives
+- unchanged source copy: imports Canary, fragmented session layers and source-shaped protocol limits;
+- synthetic optional dependencies in production app: enlarges and risks the production graph;
+- deleting all tested foundations: loses useful code with real test/tool consumers;
+- empty server/native-protocol crates: no accepted consumer/contract;
+- retaining source protocol/transport as production generic layers: limits and consumer remain unresolved;
+- treating client simulation as server authority or synthetic packs as production assets: contradicts ownership.
 
-### Copy the source workspace unchanged
+## 21. Acceptance conditions
 
-Rejected because it imports Canary, Canary-shaped protocol/transport assumptions, fragmented session layers and synthetic systems under production-sounding names.
+Ready for owner acceptance only when:
 
-### Keep client simulation/fixtures as optional dependencies of the production app
-
-Rejected because optional normal dependencies still enlarge the production package's declared graph and can be accidentally enabled or packaged. A separate harness provides cleaner proof.
-
-### Delete all non-binary crates until native protocol exists
-
-Rejected because tested client domain, simulation, renderer, input, security and synthetic foundations have immediate test/tool consumers when accurately labeled.
-
-### Create empty server or native-protocol crates during migration
-
-Rejected because no accepted immediate contract/consumer exists.
-
-### Keep source transport/protocol-core as generic production foundations
-
-Rejected initially because their current limits/API are source-programme shaped and there is no pre-native production consumer. `FND-02` owns selective reuse.
-
-### Treat client domain/simulation as authoritative server crates
-
-Rejected because their source contracts model client projection and render snapshots, not GameNode authority, persistence or command execution.
-
-### Treat synthetic packs as production assets
-
-Rejected because ADR-0005 and later content gates own those formats.
-
-## 22. Acceptance conditions
-
-This candidate is ready for owner acceptance only when:
-
-- all 26 source members and relevant non-members are inventoried exactly once;
-- proposed dispositions cover each member exactly once;
-- the target graph is acyclic and every member has an immediate consumer;
-- production and synthetic executables have separate dependency/release closures;
-- no provisional identifier can be confused with an accepted FND-ID-01 identifier;
-- blocking Platform I/O cannot reach the frame/event thread;
-- protocol, transport, admission and content gate ownership remains intact;
-- the machine-readable policy is implementable without hidden package exceptions;
-- independent audit finds zero open material contradictions or accidental implementation authorization;
-- the owner explicitly accepts the proposed graph and disposition policy.
+- all 26 source members/non-members are inventoried and disposed exactly once;
+- the proposed graph is acyclic and every member has an immediate consumer;
+- production and synthetic executables have separate closures;
+- no provisional identifier resembles an accepted FND-ID-01 identity;
+- gameplay routes/credentials cannot enter pre-native contracts;
+- all Platform/Identity I/O is async, cancellation-safe and runtime-owned;
+- machine policy has complete category and package allowlists;
+- later gate ownership remains intact;
+- independent audit finds zero open material findings;
+- owner explicitly accepts the graph and dispositions.
