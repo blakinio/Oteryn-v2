@@ -4,10 +4,7 @@
 //! a logger or subscriber, start background work, write files, send telemetry,
 //! create crash reports or participate in application correctness.
 
-use oteryn_foundation::{
-    ClientSessionEpoch, ClientTaskGeneration, Moment,
-    ProcessGeneration,
-};
+use oteryn_foundation::{ClientSessionEpoch, ClientTaskGeneration, Moment, ProcessGeneration};
 use std::fmt::{self, Debug, Display, Formatter};
 use std::time::Duration;
 
