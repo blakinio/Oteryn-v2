@@ -1,0 +1,371 @@
+name: Finalize Rust client composition
+
+on:
+  push:
+    branches:
+      - migrate/rust-client-cutover-c923ad8
+    paths:
+      - '.github/workflows/finalize-rust-composition.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: finalize-rust-composition-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  finalize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Check out task branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: migrate/rust-client-cutover-c923ad8
+
+      - name: Install Rust toolchain
+        run: rustup toolchain install 1.94.0 --profile minimal --component clippy,rustfmt
+
+      - name: Bind production shell to runtime and input lifecycle
+        shell: python
+        run: |
+          from pathlib import Path
+
+          client = Path('apps/client/src/lib.rs')
+          text = client.read_text(encoding='utf-8')
+          text = text.replace(
+              '    pub const fn input_adapter(&self) -> &InputPlatformAdapter {\n'
+              '        &self.input_adapter\n'
+              '    }\n',
+              '    pub const fn input_adapter(&self) -> &InputPlatformAdapter {\n'
+              '        &self.input_adapter\n'
+              '    }\n\n'
+              '    #[must_use]\n'
+              '    pub fn input_adapter_mut(&mut self) -> &mut InputPlatformAdapter {\n'
+              '        &mut self.input_adapter\n'
+              '    }\n',
+          )
+          client.write_text(text, encoding='utf-8')
+
+          shell = Path('apps/client/src/windows_shell.rs')
+          text = shell.read_text(encoding='utf-8')
+          text = text.replace(
+              'use oteryn_client::pre_native_status;',
+              'use oteryn_client::{ClientBootstrap, pre_native_status};',
+          )
+          text = text.replace(
+              '    EventLoopRun,\n',
+              '    EventLoopRun,\n    Runtime,\n',
+          )
+          text = text.replace(
+              '            Self::EventLoopRun => "client event loop failed",\n',
+              '            Self::EventLoopRun => "client event loop failed",\n'
+              '            Self::Runtime => "client runtime creation failed",\n',
+          )
+          text = text.replace(
+              'struct Application {\n    smoke: bool,\n',
+              'struct Application {\n    smoke: bool,\n    client: Option<ClientBootstrap>,\n',
+          )
+          text = text.replace(
+              '    fn new(smoke: bool) -> Self {\n        Self {\n            smoke,\n',
+              '    fn new(smoke: bool) -> Result<Self, ShellError> {\n        Ok(Self {\n'
+              '            smoke,\n'
+              '            client: Some(ClientBootstrap::new().map_err(|_error| ShellError::Runtime)?),\n',
+          )
+          text = text.replace(
+              '            generation: ProcessGeneration::new(1),\n        }\n    }\n',
+              '            generation: ProcessGeneration::new(1),\n        })\n    }\n',
+          )
+          marker = '''    fn window_event(
+        &mut self,
+        event_loop: &ActiveEventLoop,
+        _window_id: WindowId,
+        event: WindowEvent,
+    ) {
+        match event {
+'''
+          replacement = '''    fn window_event(
+        &mut self,
+        event_loop: &ActiveEventLoop,
+        _window_id: WindowId,
+        event: WindowEvent,
+    ) {
+        if let Some(client) = &mut self.client
+            && client
+                .input_adapter_mut()
+                .process_window_event(&event)
+                .is_err()
+        {
+            event_loop.exit();
+            return;
+        }
+        match event {
+'''
+          if marker not in text:
+              raise SystemExit('window_event insertion point not found')
+          text = text.replace(marker, replacement)
+          text = text.replace(
+              '    let mut application = Application::new(smoke);\n'
+              '    event_loop\n'
+              '        .run_app(&mut application)\n'
+              '        .map_err(|_error| ShellError::EventLoopRun)\n',
+              '    let mut application = Application::new(smoke)?;\n'
+              '    let result = event_loop\n'
+              '        .run_app(&mut application)\n'
+              '        .map_err(|_error| ShellError::EventLoopRun);\n'
+              '    if let Some(client) = application.client.take() {\n'
+              '        client.shutdown();\n'
+              '    }\n'
+              '    result\n',
+          )
+          shell.write_text(text, encoding='utf-8')
+
+      - name: Add cancellable loopback callback listener
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path('crates/identity/src/lib.rs')
+          text = path.read_text(encoding='utf-8')
+          text = text.replace(
+              'use tokio::sync::mpsc;\n',
+              'use tokio::io::{AsyncReadExt, AsyncWriteExt};\n'
+              'use tokio::net::{TcpListener, TcpStream};\n'
+              'use tokio::sync::mpsc;\n',
+          )
+          text = text.replace(
+              'const MAX_CALLBACK_QUERY_BYTES: usize = 4096;\n',
+              'const MAX_CALLBACK_QUERY_BYTES: usize = 4096;\n'
+              'const MAX_CALLBACK_REQUEST_BYTES: usize = 8192;\n',
+          )
+          text = text.replace(
+              '    CallbackClosed,\n',
+              '    CallbackClosed,\n'
+              '    LoopbackBind,\n'
+              '    LoopbackIo,\n'
+              '    CallbackRequestTooLarge,\n',
+          )
+          text = text.replace(
+              '            Self::CallbackClosed => "Identity callback channel closed",\n',
+              '            Self::CallbackClosed => "Identity callback channel closed",\n'
+              '            Self::LoopbackBind => "Identity loopback listener could not bind",\n'
+              '            Self::LoopbackIo => "Identity loopback callback I/O failed",\n'
+              '            Self::CallbackRequestTooLarge => "Identity callback request exceeded its bound",\n',
+          )
+          old = '''        let callback = CallbackResult::parse_query(&query)?;
+        if callback.state != self.expected_state {
+            return Err(IdentityError::StateMismatch);
+        }
+        Ok(callback.code)
+    }
+}
+
+fn base64_url_no_pad'''
+          new = '''        self.validate_query(&query)
+    }
+
+    pub fn validate_query(&self, query: &str) -> Result<AuthorizationCode, IdentityError> {
+        let callback = CallbackResult::parse_query(query)?;
+        if callback.state != self.expected_state {
+            return Err(IdentityError::StateMismatch);
+        }
+        Ok(callback.code)
+    }
+}
+
+pub struct LoopbackCallbackListener {
+    listener: TcpListener,
+}
+
+impl LoopbackCallbackListener {
+    pub async fn bind() -> Result<Self, IdentityError> {
+        let listener = TcpListener::bind(("127.0.0.1", 0))
+            .await
+            .map_err(|_error| IdentityError::LoopbackBind)?;
+        Ok(Self { listener })
+    }
+
+    pub fn local_port(&self) -> Result<u16, IdentityError> {
+        self.listener
+            .local_addr()
+            .map(|address| address.port())
+            .map_err(|_error| IdentityError::LoopbackIo)
+    }
+
+    pub async fn await_callback(
+        &self,
+        flow: &IdentityFlow,
+        cancellation: CancellationToken,
+    ) -> Result<AuthorizationCode, IdentityError> {
+        let accept = async {
+            self.listener
+                .accept()
+                .await
+                .map_err(|_error| IdentityError::LoopbackIo)
+        };
+        let bounded = tokio::time::timeout(flow.timeout, cancellable(cancellation, accept))
+            .await
+            .map_err(|_elapsed| IdentityError::Timeout)?;
+        let (mut stream, peer) = match bounded {
+            Cancellable::Completed(result) => result?,
+            Cancellable::Cancelled => return Err(IdentityError::Cancelled),
+        };
+        if !peer.ip().is_loopback() {
+            return Err(IdentityError::InvalidCallback);
+        }
+        let result = read_callback_query(&mut stream)
+            .await
+            .and_then(|query| flow.validate_query(&query));
+        match result {
+            Ok(code) => {
+                write_callback_response(
+                    &mut stream,
+                    "200 OK",
+                    "Authorization complete. Return to Oteryn.",
+                )
+                .await?;
+                Ok(code)
+            }
+            Err(error) => {
+                let _response = write_callback_response(
+                    &mut stream,
+                    "400 Bad Request",
+                    "Authorization callback rejected.",
+                )
+                .await;
+                Err(error)
+            }
+        }
+    }
+}
+
+async fn read_callback_query(stream: &mut TcpStream) -> Result<String, IdentityError> {
+    let mut request = Vec::with_capacity(1024);
+    let mut chunk = [0_u8; 1024];
+    loop {
+        if request.len() >= MAX_CALLBACK_REQUEST_BYTES {
+            return Err(IdentityError::CallbackRequestTooLarge);
+        }
+        let read = stream
+            .read(&mut chunk)
+            .await
+            .map_err(|_error| IdentityError::LoopbackIo)?;
+        if read == 0 {
+            break;
+        }
+        let next_len = request
+            .len()
+            .checked_add(read)
+            .ok_or(IdentityError::CallbackRequestTooLarge)?;
+        if next_len > MAX_CALLBACK_REQUEST_BYTES {
+            return Err(IdentityError::CallbackRequestTooLarge);
+        }
+        request.extend_from_slice(&chunk[..read]);
+        if request.windows(4).any(|window| window == b"\r\n\r\n") {
+            break;
+        }
+    }
+    let request = std::str::from_utf8(&request).map_err(|_error| IdentityError::InvalidCallback)?;
+    let request_line = request.lines().next().ok_or(IdentityError::InvalidCallback)?;
+    let mut parts = request_line.split_whitespace();
+    if parts.next() != Some("GET") {
+        return Err(IdentityError::InvalidCallback);
+    }
+    let target = parts.next().ok_or(IdentityError::InvalidCallback)?;
+    if !matches!(parts.next(), Some("HTTP/1.0" | "HTTP/1.1")) || parts.next().is_some() {
+        return Err(IdentityError::InvalidCallback);
+    }
+    let (path, query) = target
+        .split_once('?')
+        .ok_or(IdentityError::InvalidCallback)?;
+    if path != "/callback" || query.is_empty() {
+        return Err(IdentityError::InvalidCallback);
+    }
+    Ok(query.to_owned())
+}
+
+async fn write_callback_response(
+    stream: &mut TcpStream,
+    status: &str,
+    body: &str,
+) -> Result<(), IdentityError> {
+    let response = format!(
+        "HTTP/1.1 {status}\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Length: {}\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{body}",
+        body.len()
+    );
+    stream
+        .write_all(response.as_bytes())
+        .await
+        .map_err(|_error| IdentityError::LoopbackIo)
+}
+
+fn base64_url_no_pad'''
+          if old not in text:
+              raise SystemExit('IdentityFlow insertion point not found')
+          text = text.replace(old, new)
+          test_marker = '''    #[test]
+    fn callback_requires_exact_state() -> Result<(), IdentityError> {
+'''
+          loopback_test = '''    #[test]
+    fn loopback_listener_accepts_exact_state_callback() -> Result<(), Box<dyn std::error::Error>> {
+        let runtime = tokio::runtime::Builder::new_current_thread()
+            .enable_io()
+            .enable_time()
+            .build()?;
+        runtime.block_on(async {
+            let listener = LoopbackCallbackListener::bind().await?;
+            let port = listener.local_port()?;
+            let flow = IdentityFlow::new(
+                StateNonce::new("state-1")?,
+                Duration::from_secs(2),
+            );
+            let client = tokio::spawn(async move {
+                let mut stream = TcpStream::connect(("127.0.0.1", port)).await?;
+                stream
+                    .write_all(
+                        b"GET /callback?code=authorization-code&state=state-1 HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n",
+                    )
+                    .await?;
+                let mut response = Vec::new();
+                stream.read_to_end(&mut response).await?;
+                Ok::<Vec<u8>, std::io::Error>(response)
+            });
+            let code = listener
+                .await_callback(&flow, CancellationToken::new())
+                .await?;
+            assert_eq!(code.expose().expose(), "authorization-code");
+            let response = client.await??;
+            assert!(response.starts_with(b"HTTP/1.1 200 OK"));
+            Ok::<(), Box<dyn std::error::Error>>(())
+        })?;
+        Ok(())
+    }
+
+'''
+          if test_marker not in text:
+              raise SystemExit('identity test insertion point not found')
+          text = text.replace(test_marker, loopback_test + test_marker)
+          path.write_text(text, encoding='utf-8')
+
+      - name: Refresh formatting and strict quality
+        run: |
+          cargo +1.94.0 generate-lockfile
+          cargo +1.94.0 fmt --all
+          cargo +1.94.0 clippy --fix --allow-dirty --allow-staged --locked --workspace --all-targets -- -D warnings
+
+      - name: Prove composition on Linux
+        run: |
+          cargo +1.94.0 test --locked --workspace
+          cargo +1.94.0 run --locked -p oteryn-synthetic-client-harness
+          cargo +1.94.0 run --locked -p oteryn-architecture-check -- workspace .
+
+      - name: Remove finalizer and commit
+        run: |
+          git rm -f .github/workflows/finalize-rust-composition.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Cargo.lock apps crates tests tools
+          git commit -m "fix(rust): bind runtime input and loopback Identity composition"
+          git push origin HEAD:migrate/rust-client-cutover-c923ad8
