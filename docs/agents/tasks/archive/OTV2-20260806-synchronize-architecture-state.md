@@ -9,14 +9,14 @@ repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/sync-architecture-state-20260806
 pr: 54
-lifecycle_pr: pending
+lifecycle_pr: 55
 base_sha: 1b91f9aa0abda8fccb0389972636708c4301ef88
 final_head_sha: 8bf403a5b58d188f36991c25d848fd609aa4b240
 merge_commit_sha: bfb5fd9c77c04572747e80bf614816ceb86b568f
 owner: released
 created_at: 2026-08-06T13:30:00+02:00
 completed_at: 2026-08-06T13:56:00+02:00
-archived_at: pending lifecycle merge
+archived_at: 2026-08-06
 execution_budget_minutes: 60
 cross_repository_coordination_id: OTV2-RUST-CLIENT-CUTOVER-20260806
 next_ordered_action: create and merge the source-only historical marker in blakinio/otclient, then begin FND-ID-01
