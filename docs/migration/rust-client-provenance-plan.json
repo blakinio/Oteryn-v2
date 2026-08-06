@@ -1,0 +1,176 @@
+{
+  "schema_version": 1,
+  "coordination_id": "OTV2-RUST-CLIENT-CUTOVER-20260806",
+  "source": {
+    "repository": "blakinio/otclient",
+    "commit": "c923ad8a1dff17b4933a6110931b0823cec2c590",
+    "subtree": "oteryn-client",
+    "license_declared": "MIT",
+    "root_manifest_blob": "037013e8e4a762a65f0f2a30f7761ee14725a3fc",
+    "root_lockfile_blob": "2143408c12c50132883890f0821278320a331fde"
+  },
+  "destination": {
+    "repository": "blakinio/Oteryn-v2",
+    "contract_base_commit": "9034bd4bfa491eac6a898b29bc8151c94a4c2b89",
+    "canonical_after_merge": true,
+    "squash_merge_required": true
+  },
+  "history_policy": {
+    "method": "content migration with immutable provenance manifests",
+    "forbidden_claims": [
+      "do not claim preserved Git ancestry across repositories",
+      "do not use fabricated co-authorship",
+      "do not describe rewritten files as byte-identical",
+      "do not delete the source repository or source commit"
+    ],
+    "required_destination_files": [
+      "docs/migration/rust-client-provenance.json",
+      "docs/migration/rust-client-path-map.json",
+      "docs/migration/rust-dependency-delta.json"
+    ],
+    "required_per_file_fields": [
+      "source_path",
+      "source_blob_sha",
+      "destination_path",
+      "disposition",
+      "transformation",
+      "license",
+      "verification"
+    ]
+  },
+  "source_state": {
+    "main_equals_inventory_commit": true,
+    "open_pull_requests": [
+      {
+        "number": 23,
+        "lane": "legacy-cpp-lua-ui",
+        "cutover_disposition": "EXCLUDED_CONTINUES_LEGACY"
+      },
+      {
+        "number": 48,
+        "lane": "operational-proprietary-package-analysis",
+        "cutover_disposition": "EXCLUDED_REFERENCE_ONLY"
+      },
+      {
+        "number": 97,
+        "lane": "legacy-client-asset-installer-security",
+        "cutover_disposition": "EXCLUDED_CONTINUES_LEGACY"
+      }
+    ],
+    "active_task_records": [
+      {
+        "task": "OTC-20260712-client-test-foundation",
+        "lane": "legacy-cpp-lua",
+        "cutover_disposition": "EXCLUDED_STALE_CLOSEOUT"
+      },
+      {
+        "task": "OTC-20260714-protocol-session-reentrancy",
+        "lane": "legacy-cpp-lua",
+        "cutover_disposition": "EXCLUDED_STALE_CLOSEOUT"
+      },
+      {
+        "task": "OTC-20260721-oteryn-identity-login",
+        "lane": "legacy-cpp-lua-auth",
+        "cutover_disposition": "EXCLUDED_MERGED_HISTORICAL"
+      },
+      {
+        "task": "OTC-20260724-validation-cost-policy",
+        "lane": "repository-governance",
+        "cutover_disposition": "EXCLUDED_STALE_CLOSEOUT"
+      },
+      {
+        "task": "OTC-20260802-agent-governance-sync",
+        "lane": "repository-governance",
+        "cutover_disposition": "EXCLUDED_COMPLETED_STALE_RECORD"
+      },
+      {
+        "task": "OTC2-20260803-playability-p2-canary-world-protocol",
+        "lane": "rust-canary-reference",
+        "cutover_disposition": "REFERENCE_ONLY_ARCHIVE_ON_SOURCE_MARKER"
+      }
+    ]
+  },
+  "dependency_decisions": [
+    {
+      "crate": "tokio",
+      "version": "1.51.4",
+      "decision": "RETAIN_EXACT",
+      "normal_features": ["io-util", "net", "rt-multi-thread", "sync", "time"],
+      "dev_features": ["macros", "test-util"],
+      "reason": "retain the already reviewed LTS runtime during cutover; feature sets remain package-scoped"
+    },
+    {
+      "crate": "reqwest",
+      "version": "0.13.4",
+      "decision": "ADD_EXACT",
+      "default_features": false,
+      "features": ["form", "json", "rustls", "stream"],
+      "forbidden_features": [
+        "blocking",
+        "cookies",
+        "gzip",
+        "brotli",
+        "zstd",
+        "deflate",
+        "multipart",
+        "socks",
+        "system-proxy",
+        "native-tls",
+        "native-tls-vendored",
+        "http2",
+        "http3"
+      ],
+      "runtime_policy": [
+        "redirect policy none",
+        "no automatic proxy discovery",
+        "certificate and hostname validation mandatory",
+        "bounded chunked response reads",
+        "request and total operation deadlines",
+        "cancellation through application-owned Tokio runtime"
+      ]
+    },
+    {
+      "crate": "ureq",
+      "decision": "REMOVE",
+      "reason": "blocking source implementation is reference-only"
+    },
+    {
+      "crate": "native-tls",
+      "decision": "REMOVE_UNLESS_TRANSITIVE_PROVEN",
+      "reason": "selected HTTP boundary uses reqwest rustls backend"
+    }
+  ],
+  "freeze": {
+    "effective_when": "VSL-02 contract merge",
+    "scope": "blakinio/otclient/oteryn-client/**",
+    "allowed_after_freeze": [
+      "owner-approved critical security correction",
+      "owner-approved build break correction needed to complete the atomic cutover"
+    ],
+    "required_on_exception": [
+      "new exact source commit",
+      "updated path/provenance/dependency manifests",
+      "fresh VSL-02 reconciliation and audit",
+      "owner-approved amendment before destination migration merge"
+    ]
+  },
+  "rollout": [
+    "merge VSL-02 contract in blakinio/Oteryn-v2",
+    "verify source main still equals c923ad8a1dff17b4933a6110931b0823cec2c590",
+    "open one atomic destination implementation PR on migrate/rust-client-cutover-c923ad8",
+    "validate and squash-merge destination implementation",
+    "verify resulting destination main and immutable provenance",
+    "open separate source-marker PR in blakinio/otclient",
+    "mark oteryn-client non-canonical and archive the Rust/Canary active task",
+    "validate and squash-merge source marker"
+  ],
+  "rollback": {
+    "before_destination_merge": "close destination PR; source remains canonical and unchanged",
+    "after_destination_before_source_marker": "revert destination merge only if no dependent destination change merged; source remains intact",
+    "after_source_marker": [
+      "revert source marker first so the source is explicitly canonical again",
+      "then revert destination migration before any dependent destination change",
+      "do not leave both repositories non-canonical or both writable as canonical"
+    ]
+  }
+}
