@@ -1,0 +1,29 @@
+name: Format Rust cutover repairs
+
+on:
+  push:
+    branches: [migrate/rust-client-cutover-c923ad8]
+    paths: ['.github/workflows/format-rust-cutover.yml']
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: migrate/rust-client-cutover-c923ad8
+      - run: rustup toolchain install 1.94.0 --profile minimal --component rustfmt
+      - run: cargo +1.94.0 fmt --all
+      - name: Commit formatting
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add crates/diagnostics/src/lib.rs
+          git diff --cached --quiet && { echo 'expected formatting change missing'; exit 1; }
+          git commit -m "style(rust): format diagnostic identifier repair"
+          git push origin HEAD:migrate/rust-client-cutover-c923ad8
