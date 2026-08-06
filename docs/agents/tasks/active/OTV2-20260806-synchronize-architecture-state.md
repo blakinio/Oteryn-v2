@@ -4,16 +4,16 @@
 task_id: OTV2-20260806-synchronize-architecture-state
 title: Synchronize canonical architecture after Rust client cutover
 mode: GOVERNANCE
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/sync-architecture-state-20260806
-pr: null
+pr: 54
 base_sha: 1b91f9aa0abda8fccb0389972636708c4301ef88
 head_sha: null
 owner: architecture-coordinator-20260806
 created_at: 2026-08-06T13:30:00+02:00
-updated_at: 2026-08-06T13:30:00+02:00
+updated_at: 2026-08-06T13:40:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -55,12 +55,12 @@ The canonical architecture registers and non-owning programme checkpoint accurat
 
 ## Acceptance criteria
 
-- [ ] Global register marks FND-01, VSL-02, ADR-0011 and the destination cutover accurately.
-- [ ] Foundation backlog records completed migration gates and the pending source-marker closeout.
-- [ ] Gap register no longer lists workspace migration as unresolved.
-- [ ] Programme checkpoint records current `main`, accepted ADR-0001 through ADR-0011 and exactly one current next action.
-- [ ] ADR-0001 aligns `NodeId` with ADR-0009 as the GameNode process-runtime identity.
-- [ ] No runtime, Cargo, workflow, external-repository or product implementation remains in the final diff.
+- [x] Global register marks FND-01, VSL-02, ADR-0011 and the destination cutover accurately.
+- [x] Foundation backlog records completed migration gates and the pending source-marker closeout.
+- [x] Gap register no longer lists workspace migration as unresolved.
+- [x] Programme checkpoint records current `main`, accepted ADR-0001 through ADR-0011 and exactly one current next action.
+- [x] ADR-0001 aligns `NodeId` with ADR-0009 as the GameNode process-runtime identity.
+- [x] No runtime, Cargo, workflow, external-repository or product implementation remains in the final diff.
 - [ ] Governance validation and full changed-file audit pass on the exact final head.
 
 ## Excluded scope
@@ -80,8 +80,8 @@ The canonical architecture registers and non-owning programme checkpoint accurat
 
 ### Focused
 
-- command/run: pending
-- result: pending
+- command/run: `python tools/agents/validate_governance.py` and exact changed-file review
+- result: pending exact-head CI
 
 ### Component/integration
 
@@ -117,12 +117,12 @@ The canonical architecture registers and non-owning programme checkpoint accurat
 ## Context checkpoint
 
 ```yaml
-last_progress: Claimed a bounded documentation-only synchronization package from main 1b91f9aa0abda8fccb0389972636708c4301ef88.
-status: implementing
+last_progress: Synchronized the canonical registers, ADR-0001 terminology and foundation programme checkpoint on draft PR #54.
+status: validating
 branch: docs/sync-architecture-state-20260806
 head_sha: null
-pr: null
-ci_check_generation: null
+pr: 54
+ci_check_generation: pending
 ci_checks_for_current_head: 0
 terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
@@ -131,5 +131,5 @@ identical_failure_retries: 0
 repair_cycles_for_current_gate: 0
 stall_warnings: 0
 blocker: null
-next_action: Synchronize the five canonical architecture and programme documents, then inspect the exact branch diff.
+next_action: Inspect the exact PR #54 diff, then run governance and exact-head CI validation.
 ```
