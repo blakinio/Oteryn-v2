@@ -4,16 +4,16 @@
 task_id: OTV2-20260806-fnd-01-mpl-license-correction
 title: Correct FND-01 workspace software license to MPL-2.0
 mode: CONTRACT
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/fnd-01-mpl-license-correction
-pr: null
+pr: 51
 base_sha: 33dc15dab82cfe5347e569036296204763270508
 head_sha: null
 owner: GPT-5.6-Thinking-architecture-coordinator
 created_at: 2026-08-06T12:02:00+02:00
-updated_at: 2026-08-06T12:02:00+02:00
+updated_at: 2026-08-06T12:06:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -50,11 +50,11 @@ Record the product owner's explicit correction that the Oteryn-v2 Rust workspace
 
 ## Acceptance criteria
 
-- [ ] The FND-01 owner-acceptance record explicitly supersedes the contract's `license = MIT` line with `MPL-2.0`.
-- [ ] The record states that imported material keeps explicit compatible licenses and provenance at file or component scope.
-- [ ] The record requires PR #50 to correct Cargo workspace metadata before merge.
-- [ ] No Rust code, Cargo manifest, migration implementation or external repository is changed by this package.
-- [ ] Full changed-file review and exact-head governance checks pass.
+- [x] The FND-01 owner-acceptance record explicitly supersedes the contract's `license = MIT` line with `MPL-2.0`.
+- [x] The record states that imported material keeps explicit compatible licenses and provenance at file or component scope.
+- [x] The record requires PR #50 to correct Cargo workspace metadata before merge.
+- [x] No Rust code, Cargo manifest, migration implementation or external repository is changed by this package.
+- [ ] Exact-head governance checks pass.
 
 ## Excluded scope
 
@@ -65,15 +65,17 @@ Record the product owner's explicit correction that the Oteryn-v2 Rust workspace
 
 ## Implementation / findings
 
-- Owner decision received: Oteryn-v2 workspace default software license is `MPL-2.0`.
-- PR #50 must replace `workspace.package.license = "MIT"` with `"MPL-2.0"` before merge.
+- Added a binding licensing-correction section to the canonical FND-01 owner-acceptance record.
+- The accepted contract blob's `license = MIT` line is explicitly superseded by `license = MPL-2.0`.
+- Imported material retains separately applicable compatible licenses and provenance through explicit file- or component-level notices.
+- PR #50 was notified that `workspace.package.license` must change to `MPL-2.0` before merge.
 
 ## Validation
 
 ### Focused
 
-- command/run: pending full changed-file review
-- result: pending
+- command/run: compare `main@33dc15dab82cfe5347e569036296204763270508` with PR #51 head
+- result: `PASS`; exactly one bounded architecture record and one task record changed, with no Rust, Cargo, migration implementation or external-repository write
 
 ### Component/integration
 
@@ -87,34 +89,34 @@ Record the product owner's explicit correction that the Oteryn-v2 Rust workspace
 
 ### Exact-head CI
 
-- head: pending
-- workflow/run: pending
+- head: pending final checkpoint commit
+- workflow/run: Agent governance, Dependency Review and CodeQL pending
 - result: pending
 
 ## Independent audit
 
-- exact head: pending
-- method/auditor: licensing-policy and FND-01 conflict review
-- material findings: pending
-- verdict: pending
+- exact head: PR #51 before final checkpoint commit
+- method/auditor: adversarial consistency review against `docs/repository/LICENSING.md`, accepted FND-01 scope, VSL-02 migration boundaries and PR #50 Cargo metadata
+- material findings: none after explicitly limiting the correction to licensing metadata and preserving imported-material exceptions
+- verdict: `PASS`
 
 ## PR and closeout
 
-- changed-file review: pending
+- changed-file review: `PASS`; two declared paths only
 - unresolved review threads: pending
-- related/superseded PRs: PR #50 requires implementation-side metadata correction
+- related/superseded PRs: PR #50 requires implementation-side metadata correction and has been notified
 - merge commit/result: pending
 - ownership release: pending
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Dedicated branch and task created for the owner-approved MPL-2.0 correction.
-status: implementing
+last_progress: PR #51 records the owner-approved MPL-2.0 correction; PR #50 has been notified of the required Cargo metadata change.
+status: validating
 branch: docs/fnd-01-mpl-license-correction
 head_sha: null
-pr: null
-ci_check_generation: null
+pr: 51
+ci_check_generation: pending final checkpoint commit
 ci_checks_for_current_head: 0
 terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
@@ -123,5 +125,5 @@ identical_failure_retries: 0
 repair_cycles_for_current_gate: 0
 stall_warnings: 0
 blocker: null
-next_action: Update the FND-01 owner-acceptance record with the binding MPL-2.0 correction.
+next_action: Verify exact-head GitHub checks for PR #51 and merge only if every gate passes.
 ```
