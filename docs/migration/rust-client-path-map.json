@@ -236,7 +236,8 @@
     {
       "source": "oteryn-client/docs/architecture/**",
       "disposition": "REFERENCE_ONLY",
-      "destination": []
+      "destination": [],
+      "requirements": ["native correspondence receives a superseded notice only in the later source-marker PR"]
     },
     {
       "source": "oteryn-client/docs/agents/**",
@@ -286,6 +287,12 @@
       "source": ".github/workflows/rust-client.yml",
       "disposition": "REWRITE",
       "destination": [".github/workflows/rust.yml"]
+    },
+    {
+      "source": ".github/workflows/native-protocol-rust-correspondence.yml",
+      "disposition": "REFERENCE_ONLY_DELETE_ON_SOURCE_MARKER",
+      "destination": [],
+      "requirements": ["do not migrate; delete only after destination canonical merge"]
     }
   ],
   "always_excluded": [
