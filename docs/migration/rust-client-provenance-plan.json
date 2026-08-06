@@ -175,11 +175,20 @@
     "validate and squash-merge source marker"
   ],
   "rollback": {
-    "before_destination_merge": "close destination PR; source remains canonical and unchanged",
-    "after_destination_before_source_marker": "revert destination merge only if no dependent destination change merged; source remains intact",
+    "before_destination_merge": [
+      "close the destination PR",
+      "source remains the single canonical but administratively frozen Rust source"
+    ],
+    "after_destination_before_source_marker": [
+      "place the destination Rust workspace under a non-writable rollback hold",
+      "revert the destination migration before dependent destination changes remain",
+      "record source as the single canonical Rust source and lift or replace its migration freeze only through an owner-approved coordination amendment"
+    ],
     "after_source_marker": [
-      "revert source marker first so the source is explicitly canonical again",
-      "then revert destination migration before any dependent destination change",
+      "place the destination Rust workspace under a non-writable rollback hold",
+      "revert the source marker; that merge transfers canonical write authority back to the source",
+      "revert the destination migration before any dependent destination change",
+      "do not release the destination rollback hold until the destination no longer claims canonical ownership",
       "do not leave both repositories non-canonical or both writable as canonical"
     ]
   }
