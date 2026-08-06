@@ -11,7 +11,7 @@ permissions:
 env:
   RUST_VERSION: '1.94.0'
   SOURCE_SUBTREE_TREE: c0928dafca6df19ff11d7901e503ed85a5199439
-  AUDIT_GENERATION: '4'
+  AUDIT_GENERATION: '5'
 
 jobs:
   linux:
@@ -142,7 +142,11 @@ jobs:
           if bad:
               raise SystemExit(f'forbidden asset or source paths: {bad}')
           workflow_changes = [p for p in changed if p.startswith('.github/workflows/')]
-          unexpected = [p for p in workflow_changes if p != '.github/workflows/rust-cutover-terminal-audit.yml']
+          allowed_workflow_changes = {
+              '.github/workflows/rust.yml',
+              '.github/workflows/rust-cutover-terminal-audit.yml',
+          }
+          unexpected = [p for p in workflow_changes if p not in allowed_workflow_changes]
           if unexpected:
               raise SystemExit(f'unexpected migration workflow changes: {unexpected}')
       - run: cargo +$RUST_VERSION run --locked -p oteryn-architecture-check -- workspace .
