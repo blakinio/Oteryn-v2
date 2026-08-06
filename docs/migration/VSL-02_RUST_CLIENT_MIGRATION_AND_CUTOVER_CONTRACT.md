@@ -1,102 +1,127 @@
 # VSL-02: Exact Rust Client Migration and Cutover Contract
 
-- Status: candidate for exact-head audit and merge
+- Status: implementation-ready candidate
 - Date: 2026-08-06
 - Coordination ID: `OTV2-RUST-CLIENT-CUTOVER-20260806`
 - Destination repository: `blakinio/Oteryn-v2`
 - Destination contract base: `9034bd4bfa491eac6a898b29bc8151c94a4c2b89`
 - Source repository: `blakinio/otclient`
 - Source subtree: `oteryn-client/`
-- Selected cutover commit: `c923ad8a1dff17b4933a6110931b0823cec2c590`
+- Selected source commit: `c923ad8a1dff17b4933a6110931b0823cec2c590`
+- Selected subtree tree: `c0928dafca6df19ff11d7901e503ed85a5199439`
 - Governing workspace contract: `docs/architecture/FND-01_WORKSPACE_AND_RUST_MIGRATION_CONTRACT.md`
+- Source reconciliation: `docs/migration/VSL-02_SOURCE_RECONCILIATION.md`
 - Machine path map: `docs/migration/rust-client-path-map.json`
 - Machine provenance/rollout plan: `docs/migration/rust-client-provenance-plan.json`
 
 ## 1. Purpose and authority
 
-This contract determines the only permitted migration of the existing Rust client from `blakinio/otclient/oteryn-client` into the canonical `blakinio/Oteryn-v2` Rust workspace.
+This contract defines the only permitted migration of the Rust client from `blakinio/otclient/oteryn-client` into the canonical `blakinio/Oteryn-v2` Rust workspace.
 
-It converts the accepted FND-01 dispositions into an exact cutover package:
+It converts FND-01 into an executable cutover package:
 
-- one immutable source revision;
-- one source-to-destination path map;
-- one atomic destination implementation pull request;
+- one immutable source commit and subtree tree;
+- one exact source-to-destination path map;
+- one atomic destination implementation PR;
 - one root Cargo workspace and lockfile;
 - truthful provenance without false cross-repository ancestry;
-- a product-realistic validation and equivalence matrix;
-- no Canary, gameplay transport or speculative native protocol;
-- destination-first rollout and a later source-only moved marker;
+- product-realistic validation and disposition-specific equivalence evidence;
+- no Canary, gameplay transport, Game Session or speculative native protocol;
+- destination-first canonical ownership and a later source-only moved marker;
 - rollback that never leaves zero or two writable canonical Rust clients.
 
-This contract does not move code. The implementation task created after this contract merges owns the atomic destination PR. A later separately authorized task owns the source-marker PR in `blakinio/otclient`.
+This contract does not move code. Its merge authorizes creation of the atomic destination migration task in `blakinio/Oteryn-v2`. A later separately authorized task is required for the source-marker PR in `blakinio/otclient`.
 
 ## 2. Binding decisions
 
 The following remain binding:
 
-- ADR-0002: `blakinio/Oteryn-v2` becomes the canonical Rust client/server/shared workspace through destination-first migration.
+- ADR-0002: Oteryn-v2 becomes the canonical Rust client/server/shared workspace through destination-first migration.
 - ADR-0008: `protocol-canary` is `REFERENCE_ONLY` and cannot enter destination Cargo membership, product binaries, fallback, negotiation, translation or packaging.
 - ADR-0011: the migrated client launches in explicit `pre-native-protocol`; gameplay entry fails before gameplay credential consumption, Game Session binding or gameplay endpoint connection.
 - FND-01: the initial destination workspace has exactly 19 named members and the accepted per-source dispositions.
-- `FND-ID-01`: later public identifier meanings and representations remain unfrozen.
-- `FND-02`: native protocol/framing/gameplay transport remains absent.
-- `FND-04`: Game Session credential, routing, admission and character lease behavior remains absent.
+- FND-ID-01: public identifier meanings and representations remain deferred.
+- FND-02: native protocol, framing and gameplay transport remain deferred.
+- FND-04: Game Session credential, routing, admission and character lease behavior remain deferred.
 
-VSL-02 may select migration tooling and dependencies needed to implement FND-01, but it may not capture later protocol, runtime, admission or durable-gameplay contracts.
+The old nested source task that proposed automatic dual-protocol selection, `protocol-oteryn` implementation and source transport reuse is superseded for the destination. It is historical evidence only and must be archived as such in the later source-marker PR.
 
 ## 3. Exact cutover source
 
-The selected and frozen source is:
+The selected source is immutable:
 
 ```text
 repository: blakinio/otclient
 commit: c923ad8a1dff17b4933a6110931b0823cec2c590
 subtree: oteryn-client/
+subtree tree: c0928dafca6df19ff11d7901e503ed85a5199439
 root manifest blob: 037013e8e4a762a65f0f2a30f7761ee14725a3fc
 root lockfile blob: 2143408c12c50132883890f0821278320a331fde
 ```
 
-`VSL-02_SOURCE_RECONCILIATION.md` proves that the source default branch still equals the FND-01 inventory revision and that no open PR changes the Rust subtree.
+The implementation imports only from this commit. It never imports from a mutable later `main`.
 
-The implementation task must not silently use a newer commit, PR head, local working tree, archive generated from another revision or mutable URL. Any source-subtree drift blocks the atomic import until this contract is explicitly amended and re-audited.
+The source default branch may advance outside `oteryn-client/**` without blocking cutover. Before opening the atomic migration PR and again before merging it, the current source default branch must resolve `oteryn-client/` to tree `c0928daf...`.
 
-## 4. Atomic destination implementation package
+A changed subtree, new Rust-subtree PR or new active ownership claim stops the migration. Selecting a newer source requires an owner-approved VSL-02 amendment, a new commit/tree, regenerated manifests and a fresh audit.
 
-The implementation uses one dedicated branch:
+## 4. Source freeze and conflict closure
+
+The administrative freeze starts when this contract merges:
+
+```text
+blakinio/otclient/oteryn-client/**
+```
+
+It forbids new Rust-subtree feature, refactor, dependency, protocol, formatting and documentation changes. Legacy C++/Lua work outside the subtree is unaffected.
+
+Two source Rust programmes are explicitly closed as destination authority:
+
+1. `OTC2-20260803-playability-p2-canary-world-protocol`
+   - `protocol-canary` remains source-only reference evidence;
+   - no Canary crate, fixture or compatibility path is migrated.
+2. `oteryn-client/docs/agents/tasks/active/OTC2-20260805-native-protocol-single-version-completion.md`
+   - its dual-protocol/native-runtime plan is superseded by ADR-0008, ADR-0011 and FND-01;
+   - it cannot be resumed against the destination;
+   - it is archived as `SUPERSEDED_REFERENCE_ONLY` by the source-marker PR.
+
+## 5. Atomic destination implementation package
+
+The implementation uses one branch:
 
 ```text
 migrate/rust-client-cutover-c923ad8
 ```
 
-and one destination PR targeting `blakinio/Oteryn-v2:main`.
+and one PR targeting `blakinio/Oteryn-v2:main`.
 
-The single PR must contain all of the following or it is incomplete:
+That single PR must contain:
 
-1. the canonical root Cargo workspace with the 19 accepted members;
-2. all accepted source migrations, merges, splits, renames and rewrites;
-3. explicit omission of every `REFERENCE_ONLY` source path;
-4. the launchable Windows `pre-native-protocol` client state;
-5. the separate non-release synthetic client harness;
-6. root `Cargo.lock`, `rust-toolchain.toml`, `rustfmt.toml`, `deny.toml` and `workspace-boundaries.toml`;
-7. the machine-enforced FND-01 dependency and release-role graph;
-8. destination Rust workflows and exact Windows/Linux matrices;
-9. finalized per-file provenance, path map and dependency delta;
-10. source/destination equivalence and transformation evidence;
-11. exact negative closure evidence proving Canary, gameplay transport, Game Session and synthetic/test packages are absent from the production client dependency closure;
-12. migration/rollback documentation and the exact later source-marker handoff.
+1. the canonical root Cargo workspace with exactly the 19 accepted members;
+2. all FND-01 migrations, merges, splits, renames and rewrites;
+3. explicit omission of every reference-only source path;
+4. a launchable Windows `pre-native-protocol` client;
+5. a separate non-release synthetic client harness;
+6. root `Cargo.lock`, toolchain, rustfmt, cargo-deny and `workspace-boundaries.toml`;
+7. executable architecture/dependency/release-role enforcement;
+8. destination Rust workflows and Windows/Linux product matrices;
+9. finalized provenance, path-map and dependency-delta files;
+10. disposition-specific transformation/equivalence evidence;
+11. production closure negatives proving no Canary, protocol, transport, Game Session, synthetic or test leakage;
+12. migration, source-marker and rollback handoff documentation.
 
-The following split delivery is forbidden:
+The following delivery is forbidden:
 
 ```text
 PR A: copy source
 PR B: remove Canary
-PR C: create workspace/CI
-PR D: fix boundaries
+PR C: create workspace and CI
+PR D: repair boundaries
 ```
 
-The destination must never contain a merged intermediate state that is canonical but violates FND-01 or ADR-0011.
+No merged intermediate destination may be canonical while violating FND-01 or ADR-0011.
 
-## 5. Initial destination workspace
+## 6. Initial destination workspace
 
 The atomic PR creates exactly:
 
@@ -125,7 +150,7 @@ tools/synthetic-asset-compiler
 tools/synthetic-client-harness
 ```
 
-No other Cargo member may be introduced by the migration PR. In particular, it must not create:
+It must not create, alias or hide:
 
 ```text
 protocol-canary
@@ -136,28 +161,30 @@ game-session
 game-server
 session-lease
 persistence
-world/content/scripting production crates
+production world/content/scripting crates
 ```
 
-An implementation detail placed inside an accepted member does not authorize a hidden later-gate contract. The architecture checker must reject package aliases, features or paths that recreate a forbidden member under another name.
+No placeholder or feature flag may recreate a forbidden member under another name.
 
-## 6. Source-to-destination mapping
+## 7. Source-to-destination mapping
 
-The normative machine mapping is `rust-client-path-map.json`. It records all 26 source workspace members, non-member root/config paths, new destination-only harness ownership and permanent exclusions.
+`rust-client-path-map.json` is normative. It covers all 26 source workspace members, non-member configs, fixtures, source governance and exclusions.
 
-Implementation requirements:
+Implementation rules:
 
-- every source workspace member appears exactly once in the finalized path map;
-- every copied or transformed source file receives a source blob SHA and destination path in `rust-client-provenance.json`;
-- every destination Rust source file is classified as migrated/transformed or destination-authored;
-- destination-authored glue cannot be mislabeled as migrated source;
-- merged/split crates use stable destination modules declared by the mapping instead of temporary import directories;
-- no `legacy/`, `old/`, `_tmp`, `imported/` or duplicate source-tree staging path is committed;
-- no source manifest, lockfile, workflow or governance file is copied as destination authority.
+- every source member has exactly one disposition;
+- every migrated or transformed source file receives source blob and destination path provenance;
+- every destination Rust/config/fixture file is classified as source-derived or destination-authored;
+- rewritten files are never called byte-identical;
+- merged/split crates land directly in their final destination modules;
+- no committed `legacy/`, `old/`, `_tmp`, `imported/` or duplicate staging tree;
+- no source governance, source workspace manifest, source lockfile or source workflow is copied as destination authority.
 
-### 6.1 Reference-only exclusions
+The source technical-login tests are `REFERENCE_ONLY`: they have no destination path. `tests/pre-native-client/**` is independently destination-authored from accepted negative scenarios and cannot be described as a copied test suite.
 
-These remain reachable only through source repository links and immutable SHAs:
+## 8. Permanent reference-only exclusions
+
+These remain accessible only through source links and immutable SHAs:
 
 ```text
 oteryn-client/crates/protocol-canary/**
@@ -169,17 +196,15 @@ oteryn-client/docs/agents/**
 oteryn-client/AGENTS.md
 ```
 
-Useful algorithms or tests in `protocol-core`/`transport` may be reconsidered only by `FND-02`. The migration PR cannot copy them into an unregistered utility module to bypass the disposition.
+Useful protocol/transport patterns may be reconsidered only by FND-02. The migration PR cannot copy them into another utility module to bypass their disposition.
 
-### 6.2 Generated/binary/private exclusions
+No generated build output, binary, debug symbol, cache, secret, environment file or proprietary Tibia/CipSoft asset may enter the destination.
 
-No build output, binary, debug symbol, cache, credential, environment file or proprietary Tibia/CipSoft asset may enter the destination. The finalized provenance validator must fail on any excluded pattern listed in the machine path map.
+## 9. Provenance and history truthfulness
 
-## 7. Provenance and history truthfulness
+Cross-repository Git ancestry is not preserved by a squash-merged content migration. The project uses immutable machine-readable provenance instead of a false history claim.
 
-Cross-repository Git ancestry is not preserved by a squash-merged content migration. The project therefore uses immutable, machine-readable provenance instead of a false history claim.
-
-The atomic PR produces:
+The atomic PR finalizes:
 
 ```text
 docs/migration/rust-client-provenance.json
@@ -187,7 +212,7 @@ docs/migration/rust-client-path-map.json
 docs/migration/rust-dependency-delta.json
 ```
 
-For every destination file derived from source, provenance records:
+Every source-derived file records:
 
 ```text
 source_repository
@@ -203,41 +228,39 @@ verification
 
 Rules:
 
-- the source repository and exact commit remain permanent historical evidence;
-- rewritten files are never called byte-identical;
-- no fabricated co-author or copied commit author list is added;
+- source repository, selected commit and subtree remain permanent evidence;
+- no fabricated co-author or copied author list;
 - source copyright/license notices are preserved where applicable;
-- project-authored transformations are attributed to the destination PR;
-- no proprietary asset is imported merely because a source test or document referenced it;
-- the final squash commit message links the coordination ID and source revision.
+- destination-authored glue and rewrites are attributed to the destination PR;
+- no proprietary asset is imported because a source file referenced it;
+- final squash message records the coordination ID, selected source commit and subtree tree.
 
-The source subtree is not deleted after migration. This preserves legal, design and blame evidence without pretending that destination Git ancestry contains the source commits.
+The source subtree remains present after migration for legal, design and blame evidence.
 
-## 8. Dependency selection and delta
+## 10. Dependency policy
 
-### 8.1 Toolchain and existing reviewed runtime
+### 10.1 Toolchain and runtime
 
-The migration retains:
-
-```text
-Rust: 1.94.0
-edition: 2024
-resolver: 3
-Tokio: =1.51.4
-```
-
-Tokio remains exact-pinned during cutover to avoid combining repository migration with a runtime upgrade. Package-specific feature policy:
+Retain during cutover:
 
 ```text
-normal runtime: io-util, net, rt-multi-thread, sync, time
-test-only where required: macros, test-util
+Rust 1.94.0
+edition 2024
+resolver 3
+Tokio =1.51.4
 ```
 
-Features remain least-capability and package-scoped. A test feature must not enlarge the production client closure.
+Tokio normal features are package-scoped:
 
-### 8.2 Async Platform/Identity HTTP
+```text
+io-util, net, rt-multi-thread, sync, time
+```
 
-The selected replacement for source blocking `ureq` is:
+`macros` and `test-util` are test-only where required. Test features may not enlarge the production client closure.
+
+### 10.2 Async Platform and Identity HTTP
+
+Replace source blocking `ureq` with:
 
 ```toml
 reqwest = {
@@ -247,9 +270,7 @@ reqwest = {
 }
 ```
 
-This selection is compatible with the accepted Rust toolchain because the selected crate declares an MSRV below Rust 1.94. It provides the asynchronous Tokio client and explicit rustls backend required by FND-01.
-
-Forbidden reqwest capabilities in the initial graph:
+Forbidden initial capabilities:
 
 ```text
 blocking
@@ -262,135 +283,103 @@ native-tls, native-tls-vendored
 http2, http3
 ```
 
-Required client-builder policy:
+Required client policy:
 
-- use the rustls backend explicitly;
+- explicit rustls backend;
 - automatic redirects disabled;
 - automatic proxy discovery disabled;
-- cookie storage disabled;
-- transparent response decompression disabled;
+- cookie storage and transparent decompression disabled;
 - certificate and hostname validation cannot be disabled;
-- no production custom CA or certificate pin is added during migration;
-- request body, response headers, response chunks and total response body are bounded;
-- connect, request and total operation deadlines are explicit;
-- cancellation belongs to the application-owned Tokio runtime;
-- cancellation and shutdown must terminate request tasks without leaking secrets or workers;
-- secrets are redacted from `Debug`, diagnostics and errors.
+- no production custom CA or pin introduced during migration;
+- bounded request body, response headers, chunks and total body;
+- explicit connect, request and total-operation deadlines;
+- cancellation and shutdown owned by the application Tokio runtime;
+- no leaked tasks, workers or secrets;
+- redacted diagnostics and errors.
 
-The exact dependency graph is generated into the destination lockfile and reviewed by cargo-deny, Dependency Review and `rust-dependency-delta.json`.
+Source direct `ureq` and direct native-tls Platform usage are removed. Every remaining transitive native-tls occurrence must be explained by the lockfile delta and may not enable a forbidden production capability.
 
-### 8.3 Removed source dependencies
+### 10.3 Upgrade restraint
 
-The migration removes direct production use of:
+All other retained direct dependencies stay exact-pinned unless a target split or accepted merge removes them. No opportunistic broad upgrade is allowed in the migration PR.
 
-```text
-ureq
-native-tls used by the source blocking Platform adapter
-protocol-canary dependencies
-protocol-core dependencies
-transport dependencies
-game-session dependencies
-```
+Every added, removed, version-changed or feature-changed dependency appears in `rust-dependency-delta.json` with affected packages, reason, license and security review.
 
-A transitive package with a similar name is not automatically prohibited, but it must be explained by the lockfile delta and must not enable a forbidden runtime capability.
+## 11. Pre-native product behavior
 
-### 8.4 Existing source dependencies
-
-Other direct source dependencies retain exact versions during cutover unless a target split or accepted merge makes them unnecessary. Any change beyond repository/path/package renaming must appear in `rust-dependency-delta.json` with reason, affected packages, features, license and security review.
-
-No opportunistic broad dependency upgrade is allowed in the atomic migration PR.
-
-## 9. Pre-native product behavior
-
-The production `oteryn-client` binary must:
+The production `oteryn-client` must:
 
 - build for `x86_64-pc-windows-msvc`;
-- launch a real window/application shell;
-- initialize permitted Platform account/directory and Identity boundaries;
-- expose an explicit user-facing state that native gameplay is unavailable in this build;
+- launch a real application window/shell;
+- initialize only permitted Identity and account/directory boundaries;
+- clearly show native gameplay unavailable in this build;
 - never advertise Canary or protocol selection;
-- fail before gameplay credential request/consumption;
+- fail before gameplay credential request or consumption;
 - fail before Game Session binding;
-- fail before any gameplay endpoint DNS resolution or connection;
+- fail before gameplay endpoint DNS resolution or connection;
 - never present synthetic harness success as live gameplay;
-- shut down deterministically with no worker/task leak.
+- shut down deterministically with no task/worker leak.
 
-The production client may display bounded account/world/character directory metadata only when it contains no gameplay host, port, endpoint, protocol selector, admission token or Game Session credential.
+Directory metadata must contain no gameplay host, port, endpoint, protocol selector, admission token or Game Session credential.
 
-## 10. Synthetic harness behavior
+## 12. Synthetic harness behavior
 
-`oteryn-synthetic-client-harness` is a separate non-release executable. It is the named immediate consumer for client-domain, client-simulation, input, renderer, synthetic-assets and test-support.
+`oteryn-synthetic-client-harness` is a separate non-release executable and the named consumer for client domain, simulation, input, renderer, synthetic assets and test support.
 
 It must:
 
-- use project-owned deterministic fixtures only;
-- run without Identity, Platform or gameplay network capability;
-- provide bounded scenes and deterministic expected snapshots;
-- exercise migrated domain/simulation/input/renderer/resource behavior;
+- use only project-owned deterministic fixtures;
+- have no Identity, Platform or gameplay network capability;
+- run bounded deterministic scenarios and expected snapshots;
 - never enter production installer/package manifests;
-- never be a production client feature;
+- never be enabled as a production-client feature;
 - never claim protocol, server or shared three-tier E2E compatibility.
 
-The production client cannot depend normally or at build time on the harness, client simulation, synthetic assets or test support.
+The production app cannot normally or at build time depend on the harness, client simulation, synthetic assets or test support.
 
-## 11. Equivalence and transformation evidence
-
-Migration evidence is based on disposition, not a false blanket byte-equivalence claim.
+## 13. Disposition-specific equivalence evidence
 
 ### `MIGRATE_AS_IS`
 
-Required:
-
-- source and destination public-item inventory;
-- source test catalogue and destination test result;
-- semantic diff limited to crate path/package/repository metadata and accepted identifier rename propagation;
-- source blob and destination blob references.
+- source/destination public-item inventory;
+- retained focused tests;
+- semantic diff limited to repository/package/path metadata and accepted propagated renames;
+- source and destination blob references.
 
 ### `MIGRATE_AND_RENAME`
 
-Required:
-
-- package/API rename table;
-- source-to-destination symbol map;
-- same focused behavioral tests or explicitly documented strengthened replacements;
-- proof that client ownership terminology changed without changing the preserved behavior.
+- package/API/symbol rename map;
+- same behavioral tests or explicitly stronger replacements;
+- proof ownership terminology changed without unsupported behavior change.
 
 ### `MERGE`
 
-Required:
-
-- source modules mapped into exact destination modules;
-- duplicate type/error/limit reconciliation table;
-- no reverse dependency/cycle introduced;
-- tests retained at the new owner.
+- source modules mapped to final destination modules;
+- duplicate type/error/limit reconciliation;
+- tests retained at the new owner;
+- no reverse dependency or cycle.
 
 ### `SPLIT`
 
-Required:
-
-- source public items classified as retained, rewritten, deferred or dropped;
-- each retained item has exactly one destination owner;
-- deferred gameplay credential/route/protocol semantics are absent from destination symbols and closures;
+- every source public item classified retained, rewritten, deferred or dropped;
+- each retained item has one destination owner;
+- deferred gameplay credential/route/protocol semantics absent from symbols and closures;
 - no hidden compatibility shim recreates the source crate.
 
 ### `REWRITE`
 
-Required:
-
-- preserved security/behavior scenarios named explicitly;
-- discarded assumptions named explicitly;
+- preserved security/behavior scenarios named;
+- discarded assumptions named;
 - destination tests prove the new boundary;
-- no compatibility claim based solely on source tests.
+- no compatibility claim based only on source tests.
 
 ### `REFERENCE_ONLY`
 
-Required:
+- exact source path/SHA remains in evidence;
+- zero destination source copy/member;
+- zero release artifact inclusion.
 
-- source path/SHA remains in provenance plan;
-- zero destination Cargo member/source copy;
-- no release artifact contains the code or fixtures.
-
-## 12. Root workspace and machine enforcement
+## 14. Root workspace and enforcement
 
 The atomic PR creates one root:
 
@@ -403,40 +392,34 @@ deny.toml
 workspace-boundaries.toml
 ```
 
-`workspace-boundaries.toml` is generated from the accepted FND-01 graph and must list every member, package name, category, exact allowed internal normal/dev/build edge, target role and release role.
+`workspace-boundaries.toml` lists every member, package, category, allowed normal/dev/build edge, target role and release role.
 
-`oteryn-architecture-check` consumes both the policy and:
+`oteryn-architecture-check` consumes that policy and `cargo metadata --locked`. It fails on:
 
-```text
-cargo metadata --locked --format-version 1
-```
-
-It fails on:
-
-- missing/unregistered/duplicate workspace members;
+- missing, duplicate or unregistered members;
 - cycles including dev/build edges;
-- forbidden package/feature/dependency names;
-- external path/Git/unknown registry dependencies;
-- source-only Canary/protocol/transport code copied into another package;
-- production dependency on client-domain, client-simulation, synthetic-assets, test-support, tests or tools;
-- provisional identifier names that violate FND-01 safeguards;
-- root metadata/toolchain/lockfile drift;
-- production release closure mismatch.
+- forbidden names, features or dependencies;
+- external path, Git or unknown registry dependencies;
+- source-only Canary/protocol/transport code hidden in another package;
+- production dependency on client domain/simulation, synthetic assets, test support, tests or tools;
+- provisional identifier violations;
+- root metadata, toolchain or lockfile drift;
+- production closure mismatch.
 
-## 13. Validation matrix for the atomic PR
+## 15. Validation matrix for the atomic PR
 
-All commands run with the pinned toolchain and `--locked` where Cargo supports it.
+### 15.1 Source and provenance
 
-### 13.1 Source and provenance gate
+- selected commit remains reachable;
+- selected subtree tree equals `c0928daf...`;
+- current source default branch has the same subtree tree;
+- no unclassified member/path or new Rust ownership claim;
+- all finalized JSON manifests parse and pass schema checks;
+- every source-derived path/blob exists at the selected commit;
+- every destination file is provenance-classified;
+- exclusions, binaries, secrets and proprietary assets are absent.
 
-- source API confirms `main == c923ad8a1dff17b4933a6110931b0823cec2c590`;
-- source subtree inventory has no unclassified member/path;
-- finalized JSON manifests parse and satisfy repository schema validation;
-- every migrated source path/blob exists at the cutover commit;
-- every destination Rust/config/fixture file appears in provenance or is destination-authored;
-- excluded paths/assets/binaries are absent.
-
-### 13.2 Workspace policy / Ubuntu
+### 15.2 Workspace policy on Ubuntu
 
 ```text
 cargo metadata --locked --format-version 1
@@ -444,53 +427,39 @@ cargo fmt --all --check
 cargo run --locked -p oteryn-architecture-check -- workspace .
 ```
 
-Plus governance, JSON schema, provenance completeness, source restriction, cycle and lockfile-delta validation.
+Also run governance, source restriction, cycle, root-lock and dependency-delta validators.
 
-### 13.3 Shared Linux
+### 15.3 Shared Linux
 
-Target:
+For `x86_64-unknown-linux-gnu`, compile, Clippy and test the named portable shared/test/tool selection. Do not build or claim a Linux desktop client.
 
-```text
-x86_64-unknown-linux-gnu
-```
+### 15.4 Windows pre-native client
 
-Compile, Clippy and test the exact portable shared/test/tool package selection. Do not build the Windows desktop application and do not claim Linux desktop-client support.
+For `x86_64-pc-windows-msvc`:
 
-### 13.4 Windows pre-native client
-
-Target:
-
-```text
-x86_64-pc-windows-msvc
-```
-
-Required:
-
-- build default production client graph;
-- strict Clippy and focused unit/integration tests;
-- deterministic launch, visible pre-native state and shutdown scenario;
+- default production build and strict Clippy;
+- deterministic launch, visible pre-native state and shutdown;
 - PKCE/callback/account-directory negative tests;
-- no credential request/consumption or gameplay endpoint connection;
-- renderer surface and device-loss lifecycle evidence;
+- proof of no gameplay credential or endpoint operation;
+- renderer surface/device-loss lifecycle evidence;
 - production dependency closure audit.
 
-### 13.5 Windows synthetic harness
+### 15.5 Windows synthetic harness
 
-Build and run the separate harness with deterministic domain/simulation/input/renderer/synthetic-asset scenarios. Network calls are disabled by dependency closure and test configuration.
+Build/run deterministic domain, simulation, input, renderer and synthetic-asset scenarios. Network capability is absent by dependency closure.
 
-### 13.6 Security and supply chain
+### 15.6 Security and supply chain
 
-- cargo-deny on Windows-default and Linux-shared graphs;
+- cargo-deny for Windows-default and Linux-shared graphs;
 - supplemental all-features review only;
-- Dependency Review;
-- CodeQL;
-- secret/redaction/oversize/truncation/path-traversal negative tests;
-- reqwest feature and client-builder policy tests;
-- license and source provenance review.
+- Dependency Review and CodeQL;
+- secret/redaction/oversize/truncation/path-traversal tests;
+- reqwest feature/client-builder policy checks;
+- license and provenance review.
 
-### 13.7 Production closure negatives
+### 15.7 Production closure negatives
 
-For `oteryn-client`, inspect normal and build dependencies for the Windows production target. The closure must not contain destination packages or aliases corresponding to:
+The Windows production normal/build closure must not contain packages, aliases, features, paths, artifacts or release entries corresponding to:
 
 ```text
 protocol-canary
@@ -506,127 +475,114 @@ any test package
 any tool package
 ```
 
-The check also searches package names, features, source paths, compiled artifact names and release manifests for Canary/native placeholder leakage.
+## 16. Implementation PR merge gate
 
-## 14. Implementation PR review and merge gate
+Merge only when:
 
-The destination implementation PR is ready only when:
-
-- source SHA still matches the contract;
-- all 19 members and no others exist;
-- every mapping/provenance/dependency record is final;
-- full changed-file list is within declared migration scope;
-- no proprietary asset, binary, secret or generated output is present;
-- focused, Linux, Windows client, synthetic harness, security and supply-chain gates pass on the exact unchanged head;
+- selected commit/tree and current source subtree are reverified;
+- exactly 19 workspace members exist;
+- mapping, provenance and dependency records are final;
+- full diff is within declared migration scope;
+- no prohibited asset, binary, secret or generated output exists;
+- all focused, Linux, Windows client, harness, security and supply-chain gates pass on the exact unchanged head;
 - independent migration audit has zero material findings;
-- no review thread/requested change remains;
+- no unresolved review/requested change or ownership conflict remains;
 - destination branch is current with `main`;
 - rollback remains executable and no later-gate contract is captured;
 - squash merge is used.
 
-The implementation merge commit becomes the canonical Rust-workspace commit recorded in the later source-marker PR.
+The destination merge commit becomes the canonical Rust workspace commit used by the later source marker.
 
-## 15. Source development freeze
+## 17. Forward rollout
 
-The source freeze defined in `VSL-02_SOURCE_RECONCILIATION.md` becomes active when this contract merges.
-
-It is an administrative migration hold, not a deletion or runtime change. The implementation task rechecks the source SHA immediately before import and immediately before destination merge. Any unexpected source-subtree change stops the cutover.
-
-Legacy C++/Lua PRs and tasks outside `oteryn-client/**` remain independent and are not transferred into Oteryn-v2.
-
-## 16. Forward rollout order
-
-The exact rollout is:
-
-1. merge this VSL-02 contract in `blakinio/Oteryn-v2`;
-2. verify source SHA and destination base again;
+1. merge and archive this VSL-02 contract;
+2. verify selected source commit/tree and current source subtree again;
 3. create the atomic destination migration task/branch/PR;
-4. complete all import, rewrite, workspace, CI, provenance and validation work in that PR;
-5. squash-merge the destination PR;
-6. verify destination `main`, canonical workspace and provenance at the merge commit;
-7. create a separate owner-authorized source-marker task/branch/PR in `blakinio/otclient`;
-8. update source README/AGENTS, add moved record and archive the stale Rust/Canary task;
-9. validate and squash-merge the source marker;
-10. release coordination ownership and proceed to `FND-ID-01`.
+4. complete all migration, rewrite, workspace, CI, provenance and validation work in that PR;
+5. squash-merge destination implementation;
+6. verify destination `main` and immutable provenance;
+7. create a separately authorized source-marker task/branch/PR in `blakinio/otclient`;
+8. mark the Rust subtree moved/non-canonical and archive both conflicting Rust active tasks;
+9. validate and squash-merge source marker;
+10. release coordination ownership and proceed to FND-ID-01.
 
-The source marker cannot merge before step 5. FND-ID-01 cannot freeze identifiers against an unmerged destination workspace.
+The source marker cannot merge before the destination implementation. FND-ID-01 cannot freeze identifiers against an unmerged destination workspace.
 
-## 17. Rollback
+## 18. Rollback
 
 ### Before destination merge
 
-Close the destination PR. No source file or canonical ownership state changed.
+Close the destination PR. Source remains canonical and unchanged.
 
 ### After destination merge, before source marker
 
-The source remains intact and explicitly unmarked. The destination merge may be reverted only when no dependent destination change has merged. Re-run destination governance after revert and preserve the failed migration PR/provenance as evidence.
+Source remains intact. Revert the destination merge only when no dependent destination change has merged. Preserve failed migration/provenance evidence.
 
 ### After source marker
 
-Rollback is coordinated and uses two PRs:
-
-1. revert the source marker first, restoring explicit source canonical status;
-2. then revert the destination migration before any dependent destination contract/code remains;
+1. revert source marker first, restoring explicit source canonical status;
+2. then revert destination migration before dependent destination work remains;
 3. update coordination records and reopen migration analysis.
 
-Never revert the destination first while leaving the source explicitly non-canonical. Never enable normal development in both repositories as a rollback shortcut.
+Never revert destination first while source remains explicitly non-canonical. Never enable normal Rust development in both repositories as a rollback shortcut.
 
-## 18. Later source-marker contract
+## 19. Source-marker requirements
 
-The marker PR changes ownership/documentation only. Exact required paths are listed in `VSL-02_SOURCE_RECONCILIATION.md`.
+The separate marker PR changes ownership documentation and task lifecycle only. Exact paths are in `VSL-02_SOURCE_RECONCILIATION.md`.
 
-It must record:
+It records:
 
-- selected source SHA;
+- selected source commit and subtree tree;
 - destination implementation PR and merge commit;
 - finalized path/provenance/dependency manifests;
 - date canonical ownership changed;
 - no Canary migration claim;
-- rollback order;
-- destination repository path and governance.
+- both archived source Rust tasks and their reference/superseded status;
+- rollback order and destination governance.
 
-It must preserve the source subtree and Git history as historical evidence.
+It preserves the source subtree and Git history as historical evidence.
 
-## 19. Completion and next gate
+## 20. Completion and next gate
 
-VSL-02 is complete when this contract and machine plans are audited, exact-head validated, squash-merged and archived.
+VSL-02 is complete when this contract, reconciliation and machine plans are independently audited, exact-head validated, squash-merged and archived.
 
-Its merge authorizes creation of the atomic destination migration task. It does not itself authorize partial workspace bootstrap or source-repository writes.
+Its merge authorizes the atomic destination migration task. It does not authorize source writes, partial workspace bootstrap or native protocol implementation.
 
-After the destination migration and source marker are terminal, the ordered next architecture gate is:
+After the destination migration and source marker are terminal, the next architecture gate is:
 
 ```text
 FND-ID-01 — Foundation Identifier Vocabulary
 ```
 
-## 20. Rejected alternatives
+## 21. Rejected alternatives
 
-- **Use latest source at implementation time:** destroys exact inventory/provenance reproducibility.
-- **Copy 26 crates unchanged:** imports Canary, fragmented session ownership and source-shaped protocol limits.
-- **Preserve history with a misleading squash/subtree claim:** cross-repository ancestry would be false.
-- **Import first, clean later:** creates a canonical invalid intermediate workspace.
-- **Keep `protocol-canary` temporarily:** contradicts ADR-0008 and risks permanent fallback coupling.
-- **Create empty `protocol-oteryn`:** creates a false compatibility surface before FND-02.
-- **Keep blocking `ureq`:** violates accepted async/cancellation ownership.
-- **Upgrade all dependencies during migration:** obscures equivalence and increases rollback risk.
-- **Move/delete the source subtree immediately:** removes evidence and makes rollback unsafe.
-- **Mark source moved before destination merge:** can leave no canonical Rust implementation.
-- **Develop in both repositories after cutover:** creates divergent authority and duplicate work.
+- use mutable latest source at implementation time;
+- copy all 26 crates unchanged;
+- claim preserved cross-repository ancestry;
+- import first and clean later;
+- retain Canary temporarily;
+- create empty `protocol-oteryn`;
+- keep blocking `ureq`;
+- upgrade broadly during migration;
+- delete/move source before destination merge;
+- require whole source `main` to remain unchanged despite unrelated legacy work;
+- leave the nested dual-protocol task resumable;
+- develop in both repositories after cutover.
 
-## 21. Acceptance checklist
+## 22. Acceptance checklist
 
-- [x] Exact source SHA is pinned and equals current source `main`.
-- [x] Source drift, open PRs and active tasks are reconciled.
-- [x] All 26 source members have exact machine path dispositions.
-- [x] Non-member roots/configs/fixtures/exclusions are mapped.
+- [x] Exact source commit and subtree tree are pinned.
+- [x] Source drift, open PRs, root tasks and nested Rust task are reconciled.
+- [x] All 26 source members and relevant non-members have machine dispositions.
+- [x] Technical-login reference-only semantics do not imply a copied destination path.
 - [x] Provenance/history truthfulness policy is fixed.
-- [x] The 19-member atomic destination PR scope is complete.
+- [x] Atomic 19-member destination PR scope is complete.
 - [x] Tokio retention and reqwest/rustls replacement are exact.
-- [x] Production and synthetic release closures are separated.
+- [x] Production and synthetic closures are separate.
 - [x] Equivalence evidence is disposition-specific.
 - [x] Windows/Linux/security/source/provenance validation matrices are fixed.
-- [x] Source freeze and exact marker scope/order are fixed.
-- [x] Forward rollout and rollback prevent zero/dual canonical ownership.
+- [x] Subtree freeze and source-marker scope/order are fixed.
+- [x] Rollout and rollback prevent zero/dual canonical ownership.
 - [ ] Independent exact-diff audit reports zero material findings.
 - [ ] Required exact-head GitHub checks pass.
 - [ ] Contract is squash-merged and task archived.
