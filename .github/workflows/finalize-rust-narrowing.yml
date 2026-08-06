@@ -1,0 +1,55 @@
+name: Finalize Rust dependency narrowing
+
+on:
+  push:
+    branches:
+      - migrate/rust-client-cutover-c923ad8
+    paths:
+      - '.github/workflows/finalize-rust-narrowing.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: finalize-rust-narrowing-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  finalize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Check out task branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: migrate/rust-client-cutover-c923ad8
+
+      - name: Install Rust toolchain
+        run: rustup toolchain install 1.94.0 --profile minimal --component clippy,rustfmt
+
+      - name: Correct associated function call
+        run: sed -i 's/runtime\.pre_native_status()/ClientRuntime::pre_native_status()/g' tests/pre-native-client/src/lib.rs
+
+      - name: Refresh lockfile and formatting
+        run: |
+          cargo +1.94.0 generate-lockfile
+          cargo +1.94.0 fmt --all
+
+      - name: Apply strict Clippy fixes
+        run: cargo +1.94.0 clippy --fix --allow-dirty --allow-staged --locked --workspace --all-targets -- -D warnings
+
+      - name: Prove Linux workspace and harness
+        run: |
+          cargo +1.94.0 test --locked --workspace
+          cargo +1.94.0 run --locked -p oteryn-synthetic-client-harness
+          cargo +1.94.0 run --locked -p oteryn-architecture-check -- workspace .
+
+      - name: Remove one-shot workflows and commit
+        run: |
+          git rm -f .github/workflows/bootstrap-rust-lock.yml .github/workflows/cleanup-rust-lock.yml .github/workflows/finalize-rust-narrowing.yml 2>/dev/null || true
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Cargo.lock apps crates tests tools workspace-boundaries.toml
+          git commit -m "fix(rust): finalize FND-01 dependency narrowing"
+          git push origin HEAD:migrate/rust-client-cutover-c923ad8
