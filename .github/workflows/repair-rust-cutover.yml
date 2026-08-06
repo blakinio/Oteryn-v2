@@ -28,6 +28,8 @@ jobs:
 
       - name: Synchronize current main
         run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch origin main
           git merge --no-edit origin/main
 
@@ -77,8 +79,6 @@ jobs:
             .github/workflows/patch-rust-evidence-coordinator.yml \
             .github/workflows/patch-rust-terminal-checkpoint.yml \
             .github/workflows/repair-rust-cutover.yml
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add Cargo.toml crates/input-platform/src/adapter.rs
           git commit -m "fix(rust): align and validate atomic cutover"
           git push origin HEAD:migrate/rust-client-cutover-c923ad8
