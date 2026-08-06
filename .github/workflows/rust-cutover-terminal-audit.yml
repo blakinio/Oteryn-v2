@@ -11,6 +11,7 @@ permissions:
 env:
   RUST_VERSION: '1.94.0'
   SOURCE_SUBTREE_TREE: c0928dafca6df19ff11d7901e503ed85a5199439
+  AUDIT_GENERATION: '3'
 
 jobs:
   linux:
