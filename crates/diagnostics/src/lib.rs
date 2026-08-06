@@ -5,7 +5,7 @@
 //! create crash reports or participate in application correctness.
 
 use oteryn_foundation::{
-    ClientSessionEpoch as SessionGeneration, ClientTaskGeneration as TaskGeneration, Moment,
+    ClientSessionEpoch, ClientTaskGeneration, Moment,
     ProcessGeneration,
 };
 use std::fmt::{self, Debug, Display, Formatter};
@@ -241,8 +241,8 @@ pub enum DiagnosticValue {
     Duration(Duration),
     Moment(Moment),
     ProcessGeneration(ProcessGeneration),
-    SessionGeneration(SessionGeneration),
-    TaskGeneration(TaskGeneration),
+    ClientSessionEpoch(ClientSessionEpoch),
+    ClientTaskGeneration(ClientTaskGeneration),
     Redacted(SensitiveValue),
 }
 
@@ -263,8 +263,8 @@ impl Display for DiagnosticValue {
             Self::Duration(value) => write_duration(formatter, *value),
             Self::Moment(value) => Display::fmt(value, formatter),
             Self::ProcessGeneration(value) => Display::fmt(value, formatter),
-            Self::SessionGeneration(value) => Display::fmt(value, formatter),
-            Self::TaskGeneration(value) => Display::fmt(value, formatter),
+            Self::ClientSessionEpoch(value) => Display::fmt(value, formatter),
+            Self::ClientTaskGeneration(value) => Display::fmt(value, formatter),
             Self::Redacted(value) => Display::fmt(value, formatter),
         }
     }
@@ -295,8 +295,8 @@ impl Display for CorrelationId {
 pub struct TechnicalContext {
     occurred_at: Moment,
     process_generation: ProcessGeneration,
-    session_generation: Option<SessionGeneration>,
-    task_generation: Option<TaskGeneration>,
+    session_generation: Option<ClientSessionEpoch>,
+    task_generation: Option<ClientTaskGeneration>,
     correlation_id: Option<CorrelationId>,
 }
 
@@ -313,13 +313,13 @@ impl TechnicalContext {
     }
 
     #[must_use]
-    pub const fn with_session(mut self, generation: SessionGeneration) -> Self {
+    pub const fn with_session(mut self, generation: ClientSessionEpoch) -> Self {
         self.session_generation = Some(generation);
         self
     }
 
     #[must_use]
-    pub const fn with_task(mut self, generation: TaskGeneration) -> Self {
+    pub const fn with_task(mut self, generation: ClientTaskGeneration) -> Self {
         self.task_generation = Some(generation);
         self
     }
@@ -341,12 +341,12 @@ impl TechnicalContext {
     }
 
     #[must_use]
-    pub const fn session_generation(self) -> Option<SessionGeneration> {
+    pub const fn session_generation(self) -> Option<ClientSessionEpoch> {
         self.session_generation
     }
 
     #[must_use]
-    pub const fn task_generation(self) -> Option<TaskGeneration> {
+    pub const fn task_generation(self) -> Option<ClientTaskGeneration> {
         self.task_generation
     }
 
@@ -547,8 +547,8 @@ mod tests {
             DiagnosticCode::new(21),
             SafeText::trusted_static("operation rejected")?,
             TechnicalContext::new(Moment::ZERO, ProcessGeneration::new(3))
-                .with_session(SessionGeneration::new(5))
-                .with_task(TaskGeneration::new(8)),
+                .with_session(ClientSessionEpoch::new(5))
+                .with_task(ClientTaskGeneration::new(8)),
         );
         let key = FieldKey::trusted_static("attempt")?;
         event.try_add_field(DiagnosticField::new(key, DiagnosticValue::Unsigned(1)))?;
