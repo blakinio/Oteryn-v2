@@ -10,20 +10,23 @@ base_branch: main
 branch: docs/fnd-01-workspace-migration-contract
 pr: null
 base_sha: cbc2150024d98bbdbfa9b1c17bc9b9df16bcd9f2
-head_sha: null
+head_sha: 6ccb5c59261648d8055c479a5695ca346bb71bf3
 owner: GPT-5.6-Thinking-architecture-coordinator
 created_at: 2026-08-06T08:13:00+02:00
-updated_at: 2026-08-06T08:13:00+02:00
+updated_at: 2026-08-06T08:32:00+02:00
 execution_budget_minutes: 120
 large_budget_reason: FND-01 requires an exact source-SHA inventory, per-member migration dispositions, target workspace membership, dependency policy, toolchain/CI policy and reconciliation of protocol-free migration constraints.
 owned_paths:
   - docs/architecture/FND-01_WORKSPACE_AND_RUST_MIGRATION_CONTRACT.md
+  - docs/architecture/FND-01_RUST_SOURCE_INVENTORY.md
   - docs/agents/tasks/active/OTV2-20260806-fnd-01-workspace-migration-contract.md
 public_contracts:
   - docs/architecture/FND-01_WORKSPACE_AND_RUST_MIGRATION_CONTRACT.md
+  - docs/architecture/FND-01_RUST_SOURCE_INVENTORY.md
 depends_on:
   - ADR-0001
   - ADR-0002
+  - ADR-0005
   - ADR-0007
   - ADR-0008
   - ADR-0011
@@ -38,73 +41,103 @@ external_repositories:
 
 ## Outcome
 
-Produce the owner-reviewable `FND-01` contract for the exact current Rust-client workspace. The contract must classify every current workspace member and relevant non-member subsystem, define the minimal consumer-backed destination graph and establish toolchain, dependency, feature, CI and machine-enforcement policy without implementing or moving code.
+Produce the owner-reviewable `FND-01` contract for the exact current Rust-client workspace. The contract classifies every current workspace member and relevant non-member subsystem, proposes the minimal consumer-backed destination graph and establishes toolchain, dependency, feature, release-role, CI and machine-enforcement policy without implementing or moving code.
 
 ## Architecture and source of truth
 
 ### PROVEN
 
-- `blakinio/Oteryn-v2@cbc2150024d98bbdbfa9b1c17bc9b9df16bcd9f2` is the destination architecture baseline.
-- `blakinio/otclient@c923ad8a1dff17b4933a6110931b0823cec2c590` is the exact source revision being inventoried.
-- The source Rust workspace has 26 members and uses Rust `1.94.0`, edition 2024, resolver 3 and one lockfile.
-- The source binary and technical-login integration tests depend on `protocol-canary`.
-- ADR-0008 prohibits Canary from the destination production workspace, dependency graph, binaries, negotiation, fallback and translation paths.
-- ADR-0011 permits a launchable `pre-native-protocol` client but forbids a speculative `protocol-oteryn` implementation and requires gameplay entry to fail closed before credential consumption or gameplay endpoint connection.
-- The source `protocol-core` and `transport` impose `u16::MAX`-sized protocol/frame ceilings, while later native protocol limits remain owned by `FND-02`; these source limits cannot silently become the native contract.
-- Open source PRs #23, #48 and #97 do not modify `oteryn-client` Rust workspace members, but VSL-02 must still reconcile their terminal cutover disposition.
+- Destination baseline: `blakinio/Oteryn-v2@cbc2150024d98bbdbfa9b1c17bc9b9df16bcd9f2`.
+- Source inventory revision: `blakinio/otclient@c923ad8a1dff17b4933a6110931b0823cec2c590`.
+- The exact source workspace has 26 members, Rust `1.94.0`, edition 2024, resolver 3 and one lockfile.
+- Source application and technical-login integration tests depend on `protocol-canary`.
+- Source `game-session` contains Canary-specific entry policy.
+- Source account/directory/entry responsibilities are fragmented across five tightly coupled crates plus application orchestration.
+- Source domain/simulation are explicitly client projection/snapshot contracts, not authoritative server runtime.
+- Source asset/resource packages implement synthetic fixture formats.
+- Source protocol/transport limits cannot silently become the native protocol contract.
+- Open source PRs #23, #48 and #97 do not alter the inspected Rust workspace, but remain `VSL-02` reconciliation inputs.
 
-### DERIVED
+### DERIVED CANDIDATE
 
-- The current account/directory/game-entry boundary is over-fragmented across `account-session`, `world-directory`, `game-session`, `platform`, `identity` and `app-runtime` and contains Canary-specific entry policy.
-- Current `game-domain` and `simulation-core` are client projection/simulation contracts, not sufficient evidence for an authoritative server domain/runtime.
-- Current asset crates implement synthetic test-fixture formats, not the future production Oteryn asset/content contract.
-- The initial destination graph should preserve tested client foundations while making client-only, synthetic and provisional semantics explicit.
+- Proposed destination has one production-shaped pre-native client and a separate non-release synthetic harness.
+- `protocol-canary`, `protocol-core`, gameplay `transport` and `game-session` do not enter the initial workspace.
+- Client domain/simulation and synthetic assets remain only because separate test/tool consumers prove immediate value.
+- Platform values and Platform I/O split into `platform-contracts` and `platform-client`.
+- Provisional source identifiers must be renamed so they cannot be confused with future `FND-ID-01` identifiers.
+- Source blocking Platform HTTP is not an accepted production implementation.
 
-### UNKNOWN
+### UNKNOWN / OPEN AUDIT POINTS
 
-- Final public identifier representations remain owned by `FND-ID-01`.
-- Native protocol framing, limits and transport composition remain owned by `FND-02`.
-- Exact Platform Game Session/admission contract remains owned by `FND-04`.
-- VSL-02 will pin the cutover revision and reconcile changes after this inventory.
+- Final owner acceptance of the proposed 19-member graph and per-member dispositions.
+- Exact async Platform HTTP/TLS crate and feature selection remains a `VSL-02` dependency decision after the FND-01 boundary is accepted.
+- Final public identifier representations remain `FND-ID-01`.
+- Native protocol/transport implementation remains `FND-02`.
+- Game Session/admission remains `FND-04`.
 
 ## Acceptance criteria
 
-- [ ] Every source workspace member has exactly one migration disposition.
-- [ ] Relevant non-member assets, Canary contracts, docs and root workspace policy files are classified.
-- [ ] The exact minimal destination workspace and package names are defined.
-- [ ] Every initial member has a named product, tool or test consumer and observable acceptance.
-- [ ] `protocol-canary`, current Canary-shaped protocol helpers and unsupported gameplay transport are absent from the initial production graph.
-- [ ] The `pre-native-protocol` application state is preserved without empty native-protocol crates.
-- [ ] Client projection/simulation types are not misrepresented as authoritative server domain/runtime.
-- [ ] Synthetic asset code and fixtures are visibly test/development-only and excluded from release artifacts.
-- [ ] Legal and forbidden dependency directions are defined for machine enforcement.
-- [ ] Toolchain, lockfile, feature, target and CI matrices are fixed.
-- [ ] Canonical contract/registry locations and crate-evolution criteria are fixed.
-- [ ] No source or destination runtime code is changed.
-- [ ] Independent architecture audit reports zero open material findings before owner acceptance.
+- [x] Every source workspace member appears exactly once in the source inventory.
+- [x] Direct internal edges, direct consumers and direct third-party dependencies are recorded at the exact source SHA.
+- [x] Relevant non-member assets, Canary contracts, docs and root policy files are inventoried.
+- [x] Every source member has exactly one candidate migration disposition.
+- [x] A minimal 19-member destination graph and package names are proposed.
+- [x] Every proposed member has a named product, tool or test consumer.
+- [x] Production client and synthetic harness use separate packages and release closures.
+- [x] Canary, current protocol helpers, gameplay transport and Game Session code are absent from the initial production/workspace graph.
+- [x] Client projection/simulation types are not presented as authoritative server domain/runtime.
+- [x] Synthetic asset code is explicitly non-release fixture infrastructure.
+- [x] Legal and forbidden dependency directions are expressed as a closed machine-enforceable policy.
+- [x] Toolchain, lockfile, target, release-role and CI matrices are proposed.
+- [x] Provisional identifier collision with `FND-ID-01` is prevented by required renaming.
+- [ ] Platform directory contracts explicitly omit gameplay host/port routing before `FND-04`.
+- [ ] Platform/Identity I/O is fixed to an asynchronous cancellation-safe boundary; source `ureq` is reference-only.
+- [ ] Package-specific test/tool dependency allowlists are complete and non-circular.
+- [ ] Independent architecture audit reports zero open material findings.
+- [ ] Owner accepts the proposed graph/dispositions.
+- [ ] Exact-head documentation/governance validation passes after owner acceptance edits.
 
 ## Excluded scope
 
-- No physical client migration or root Cargo workspace creation.
+- No physical client migration or Cargo workspace creation.
 - No source-repository write, freeze or moved marker.
 - No `protocol-oteryn` schema, codec or transport implementation.
 - No server runtime, persistence, admission, content or Studio implementation.
 - No final identifier representations.
-- No merge of the contract as accepted architecture before the proposed dispositions and unresolved policy points are reviewed.
+- No merge as accepted architecture before owner approval.
 
 ## Implementation / findings
 
-- Exact source and destination revisions pinned for analysis.
-- All 26 source member manifests inventoried.
-- Canary and native-contract incompatibilities identified in the source protocol/transport layer.
-- Candidate target graph and per-member dispositions are being audited.
+Completed:
+
+- exact source and destination revision verification;
+- complete 26-member manifest/dependency/consumer inventory;
+- direct third-party dependency treatment;
+- non-member source inventory;
+- candidate dispositions for all 26 source members;
+- proposed 19-member destination graph;
+- separation of the production client from a synthetic harness executable;
+- provisional identifier safeguards;
+- closed category-edge and release-closure policy;
+- Windows/Linux/product-role CI proposal;
+- root Cargo, lockfile, formatting, supply-chain and machine-policy proposal.
+
+Resolved audit findings:
+
+- candidate wording no longer labels the graph as accepted before owner approval;
+- `renderer-resource` is split so synthetic dependencies cannot leak into production renderer;
+- `foundation` is rewritten rather than incorrectly classified as a multi-crate split;
+- exact source edges/consumers/dependencies moved into a dedicated evidence inventory;
+- synthetic domain/simulation evidence moved to a separate executable rather than optional dependencies of the production app.
+
+Open material audit findings are limited to the Platform routing/I/O clarifications and exact package-specific test/tool allowlists listed above.
 
 ## Validation
 
 ### Focused
 
-- command/run: exact source manifest/API review and complete contract diff review
-- result: in progress
+- command/run: exact source manifest/API review; member-count and disposition-count review; candidate dependency/release-role audit
+- result: `PASS` for source inventory and coverage; contract audit still in progress for listed open points
 
 ### Component/integration
 
@@ -118,32 +151,33 @@ Produce the owner-reviewable `FND-01` contract for the exact current Rust-client
 
 ### Exact-head CI
 
-- head: pending
+- head: pending final candidate head
 - workflow/run: pending
 - result: pending
 
 ## Independent audit
 
-- exact head: pending
-- method/auditor: adversarial review against ADR-0001, ADR-0002, ADR-0007, ADR-0008, ADR-0011, the complete source workspace graph and later FND-ID-01/FND-02/FND-04 ownership boundaries
-- material findings: pending
+- exact head: pending final candidate head
+- method/auditor: adversarial review against ADR-0001, ADR-0002, ADR-0005, ADR-0007, ADR-0008, ADR-0011, the exact source inventory and later `FND-ID-01`/`FND-02`/`FND-04` ownership
+- resolved material findings: premature accepted wording; missing exact source graph; renderer synthetic dependency leakage; production-app synthetic optional dependencies; ambiguous client/server domain ownership
+- open material findings: Platform routing exposure, async I/O requirement and package-specific allowlists
 - verdict: pending
 
 ## PR and closeout
 
 - changed-file review: pending
 - unresolved review threads: pending
-- related/superseded PRs: PR #38 is unrelated lifecycle cleanup; source PRs #23, #48 and #97 remain VSL-02 reconciliation inputs
+- related/superseded PRs: Oteryn-v2 PR #38 is unrelated lifecycle cleanup; source PRs #23, #48 and #97 remain `VSL-02` inputs
 - merge commit/result: pending owner acceptance
 - ownership release: pending
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Created the bounded FND-01 architecture package after exact source and destination revision verification.
+last_progress: Exact source inventory and hardened candidate FND-01 contract drafted; adversarial audit reduced open findings to Platform routing/I/O and package-specific dependency allowlists.
 status: investigating
 branch: docs/fnd-01-workspace-migration-contract
-head_sha: null
+head_sha: 6ccb5c59261648d8055c479a5695ca346bb71bf3
 pr: null
 ci_check_generation: null
 ci_checks_for_current_head: 0
@@ -154,5 +188,5 @@ identical_failure_retries: 0
 repair_cycles_for_current_gate: 0
 stall_warnings: 0
 blocker: none
-next_action: Draft the complete source-member disposition matrix and minimal destination workspace, then perform an adversarial dependency and gate-ownership audit.
+next_action: Close the Platform routing/I/O and package-specific edge findings, then open a draft PR for owner review without merging.
 ```
