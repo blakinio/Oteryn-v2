@@ -164,6 +164,46 @@
       "owner-approved amendment before destination migration merge"
     ]
   },
+  "source_marker": {
+    "requires_separate_owner_authorization": true,
+    "runs_after_destination_merge": true,
+    "operations": [
+      {
+        "path": "oteryn-client/README.md",
+        "action": "ADD_MOVED_NON_CANONICAL_NOTICE"
+      },
+      {
+        "path": "oteryn-client/AGENTS.md",
+        "action": "ADD_HIGHEST_PRIORITY_IMPLEMENTATION_FREEZE"
+      },
+      {
+        "path": "oteryn-client/MOVED_TO_OTERYN_V2.md",
+        "action": "CREATE_PROVENANCE_AND_ROLLBACK_RECORD"
+      },
+      {
+        "path": "docs/agents/tasks/active/OTC2-20260803-playability-p2-canary-world-protocol.md",
+        "action": "MOVE_TO_ARCHIVE_AS_REFERENCE_ONLY"
+      },
+      {
+        "path": "oteryn-client/docs/agents/tasks/active/OTC2-20260805-native-protocol-single-version-completion.md",
+        "action": "MOVE_TO_ARCHIVE_AS_SUPERSEDED_REFERENCE_ONLY"
+      },
+      {
+        "path": "oteryn-client/docs/architecture/OTERYN_NATIVE_PROTOCOL_CORRESPONDENCE.md",
+        "action": "ADD_SUPERSEDED_NON_CANONICAL_NOTICE"
+      },
+      {
+        "path": ".github/workflows/native-protocol-rust-correspondence.yml",
+        "action": "DELETE_OBSOLETE_SUPERSEDED_WORKFLOW"
+      }
+    ],
+    "must_not_change": [
+      "Rust runtime source",
+      "legacy C++/Lua ownership",
+      "unrelated open PR state",
+      "source Git history"
+    ]
+  },
   "rollout": [
     "merge VSL-02 contract in blakinio/Oteryn-v2",
     "verify selected source commit remains reachable and the current source default branch has subtree tree c0928dafca6df19ff11d7901e503ed85a5199439",
@@ -171,7 +211,7 @@
     "validate and squash-merge destination implementation",
     "verify resulting destination main and immutable provenance",
     "open a separately authorized source-marker PR in blakinio/otclient",
-    "mark oteryn-client non-canonical and archive both conflicting Rust active tasks",
+    "mark oteryn-client non-canonical, archive both conflicting Rust tasks and remove the obsolete correspondence workflow",
     "validate and squash-merge source marker"
   ],
   "rollback": {
