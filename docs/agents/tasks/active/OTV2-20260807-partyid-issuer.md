@@ -15,7 +15,7 @@ final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-07T11:21:00+02:00
-updated_at: 2026-08-07T11:24:00+02:00
+updated_at: 2026-08-07T11:27:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -70,8 +70,10 @@ The decision fixes world-level game-domain issuer authority and cross-channel id
 ## Validation
 
 ### Focused
-- command/run: pending exact-head documentation/governance workflow
-- result: pending
+- candidate head `d4776f28aa5b671ac55265ed5d2b37f29fd0fc19`: Dependency Review succeeded.
+- candidate head `d4776f28aa5b671ac55265ed5d2b37f29fd0fc19`: Agent governance run `31165692345` failed in `Verify pull request target and metadata` because the initial PR body omitted required `## Validation`.
+- correction: PR #67 metadata was fixed without changing architecture content; this task checkpoint records that real validation event and causes a new exact-head generation rather than an empty retrigger commit.
+- CodeQL for the prior candidate was still in progress when this checkpoint was written.
 
 ### Component/integration
 - command/run: `NOT_APPLICABLE` — architecture documentation only
@@ -82,9 +84,9 @@ The decision fixes world-level game-domain issuer authority and cross-channel id
 - result: `NOT_APPLICABLE`
 
 ### Exact-head CI
-- final head: recorded in immutable PR/check evidence after this final content commit
-- trigger source: pull_request
-- workflow/run/job: pending
+- final head: pending after this evidence commit
+- trigger source: pull_request synchronize
+- workflow/run/job: pending new generation
 - runner assignment: pending
 - classification: pending
 - result: pending
@@ -98,7 +100,7 @@ The decision fixes world-level game-domain issuer authority and cross-channel id
 
 ## PR and closeout
 
-- changed-file review: pending final diff review
+- changed-file review: prior candidate reviewed; repeat against new exact head
 - unresolved review threads: pending
 - related PRs: #63 through #66 are separate non-overlapping architecture packages
 - protected auto-merge: pending
@@ -108,7 +110,7 @@ The decision fixes world-level game-domain issuer authority and cross-channel id
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner PartyId decision is recorded and PR #67 is open with only two declared documentation paths.
+last_progress: PartyId baseline is recorded; initial governance metadata defect was diagnosed and corrected, and a real evidence checkpoint created the next exact-head CI generation.
 status: validating
 branch: docs/OTV2-20260807-partyid-issuer
 head_sha: null
@@ -116,7 +118,7 @@ pr: 67
 final_head_sha: null
 final_head_frozen_at: null
 ci_trigger_source: pull_request
-ci_check_generation: null
+ci_check_generation: 2
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -125,10 +127,10 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 0
-ci_recovery_actions_for_current_head: 0
+repair_cycles_for_current_gate: 1
+ci_recovery_actions_for_current_head: 1
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Review the exact two-file diff and exact-head CI for PR #67 without moving the head unless a material defect is found.
+next_action: Validate the new exact head, keep PR #67 draft until required checks and independent audit are satisfied, and do not change architecture content unless a material defect is found.
 ```
