@@ -8,9 +8,11 @@ status: owner_discussion_checkpoint
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260807-lag-disconnect-protection-handover
+pr: 74
 base_sha: af094d4d75d3a19db63714810f263059c78f7b3a
 owner: Oteryn project owner
 created_at: 2026-08-07T14:40:00+02:00
+updated_at: 2026-08-07T14:44:00+02:00
 owned_paths:
   - docs/agents/tasks/active/OTV2-20260807-lag-disconnect-protection-analysis.md
 public_contracts: []
@@ -246,16 +248,16 @@ The `Emergency Character Controller` should remain optional in the architecture 
 ```yaml
 status: owner_discussion_checkpoint
 branch: docs/OTV2-20260807-lag-disconnect-protection-handover
-head_sha: PENDING_THIS_CHECKPOINT_COMMIT
-pr: PENDING
+head_sha: 2a0394a86d403e3fac34ffb30a2967a1556f2253
+pr: 74
 owned_paths:
   - docs/agents/tasks/active/OTV2-20260807-lag-disconnect-protection-analysis.md
 public_contracts: []
 last_progress: Owner redirected the discussion from reconnect grace into a distinct Lag / Disconnect Protection mechanism and requested that all current considerations be saved for a new agent.
-validation_state: documentation handoff only; validate exact branch/PR head after creation
+validation_state: PR #74 created from main@af094d4d75d3a19db63714810f263059c78f7b3a; this metadata refresh advances the branch after the recorded content head, so the next agent must resolve the live PR head before mutation
 audit_state: candidate concepts explicitly separated from owner-accepted prerequisites
 e2e_state: not applicable; no implementation authorized
-ci_generation: pending
+ci_generation: PR #74
 run_ids: []
 counters:
   waits: 0
@@ -266,7 +268,7 @@ next_action: Ask the owner whether genuine disconnect protection should be limit
 
 ## Resume instruction for the next agent
 
-Read this entire task, then verify live `main`, this task's PR/merge state, and the accepted prerequisite documents from PR #72 and PR #73.
+Read this entire task, then verify live `main`, PR #74/head/merge state, and the accepted prerequisite documents from PR #72 and PR #73.
 
 Do **not** restart the identity/reconnect discussion.
 
