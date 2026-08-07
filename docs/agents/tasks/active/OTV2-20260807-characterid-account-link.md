@@ -4,18 +4,18 @@
 task_id: OTV2-20260807-characterid-account-link
 title: Record CharacterId global identity and Platform account linkage
 mode: CONTRACT
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260807-characterid-account-link
-pr: null
+pr: 68
 base_sha: 6804f5d67b63f1374a9efa3710bcaad10805c801
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-07T11:45:00+02:00
-updated_at: 2026-08-07T11:45:00+02:00
+updated_at: 2026-08-07T11:49:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -65,6 +65,12 @@ No Rust runtime, character service implementation, account database mutation, pr
 
 No write to `blakinio/Oteryn-Platform` is authorized by this task.
 
+## Implementation / findings
+
+PR #68 owns only the two declared documentation paths. PRs #63 through #67 are separate architecture packages with no overlapping paths.
+
+The accepted model deliberately separates three concerns: Platform-owned `AccountId`, globally stable game-domain `CharacterId`, and mutable current-world membership. Platform WWW consumes an authorized projection rather than acquiring gameplay authority.
+
 ## Validation
 
 ### Focused
@@ -80,7 +86,7 @@ No write to `blakinio/Oteryn-Platform` is authorized by this task.
 - result: `NOT_APPLICABLE`
 
 ### Exact-head CI
-- final head: recorded in immutable PR/check evidence after final content commit
+- final head: recorded in immutable PR/check evidence after this final content commit
 - trigger source: pull_request
 - workflow/run/job: pending
 - runner assignment: pending
@@ -96,7 +102,7 @@ No write to `blakinio/Oteryn-Platform` is authorized by this task.
 
 ## PR and closeout
 
-- changed-file review: pending
+- changed-file review: pending final diff review
 - unresolved review threads: pending
 - related PRs: #63 through #67 are separate non-overlapping FND-ID-01/reconciliation packages
 - protected auto-merge: pending
@@ -106,14 +112,14 @@ No write to `blakinio/Oteryn-Platform` is authorized by this task.
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner accepted global CharacterId UUIDv7 and explicit Platform AccountId linkage semantics.
-status: implementing
+last_progress: Owner CharacterId decision is recorded and PR #68 is open with only two declared documentation paths.
+status: validating
 branch: docs/OTV2-20260807-characterid-account-link
 head_sha: null
-pr: null
+pr: 68
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
+ci_trigger_source: pull_request
 ci_check_generation: null
 ci_checks_for_current_head: 0
 ci_run_ids: []
@@ -128,5 +134,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Open a bounded documentation PR with required validation metadata, then inspect the exact two-file diff and exact-head checks.
+next_action: Review the exact two-file diff and exact-head CI for PR #68 without moving the head unless a material defect is found.
 ```
