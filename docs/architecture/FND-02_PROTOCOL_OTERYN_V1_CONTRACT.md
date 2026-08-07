@@ -448,6 +448,20 @@ Rules:
 - after apply, `last_applied_server_sequence = target_server_sequence`;
 - newer sequenced messages apply afterward.
 
+### Snapshot sequencing barrier
+
+A replacement snapshot creates a bounded publication barrier at its declared `target_server_sequence`.
+
+While `SnapshotBegin` through matching `SnapshotCommit` are in flight for one current connection generation:
+
+- the server does not transmit any `SERVER_SEQUENCED` message whose `server_sequence` is greater than `target_server_sequence` on that transport before `SnapshotCommit`;
+- authoritative runtime may continue progressing, but later sequenced outputs are retained in the server-owned bounded egress/replay path and become eligible for transmission only after the snapshot commits on the wire;
+- the client therefore never needs an unbounded buffer of post-snapshot sequenced messages while assembling a replacement snapshot;
+- if the bounded server-side retention/egress policy cannot preserve the required continuation, the transport/session follows the explicit FND-03/FND-04 slow-client/recovery policy rather than violating ordering or dropping authoritative state silently;
+- a connection-generation change aborts the barrier together with the partial snapshot; the new generation establishes a fresh replay-or-snapshot reconciliation boundary.
+
+The barrier is a protocol ordering invariant. FND-03 owns the concrete egress queue, backpressure and retention implementation and must keep it bounded.
+
 TLS already supplies transport integrity; v1 adds no application checksum/MAC.
 
 ### Resync
@@ -578,7 +592,8 @@ Required evidence:
 8. tests proving schema-source-hash differences do not themselves force incompatibility;
 9. tests proving raw protobuf byte differences do not define command identity/equality;
 10. reconnect tests proving old generation traffic in both directions cannot regain/apply authority;
-11. pipelining tests proving contiguous IDs reserve once, full-window rejection does not consume the next ID, pending duplicates are not re-enqueued and later IDs cannot commit mutation ahead of earlier reserved IDs.
+11. pipelining tests proving contiguous IDs reserve once, full-window rejection does not consume the next ID, pending duplicates are not re-enqueued and later IDs cannot commit mutation ahead of earlier reserved IDs;
+12. snapshot-barrier tests proving post-target sequenced messages are not emitted before `SnapshotCommit`, old-generation partial snapshots are discarded and bounded server-side retention/backpressure handles continuation without silent loss.
 
 Shared generated schemas/codecs are useful, but not the only oracle.
 
@@ -624,6 +639,6 @@ Mutable PR heads are never written to the lock as canonical merged evidence.
 
 A future implementation may claim `protocol-oteryn` v1 compatibility only when it proves that it:
 
-> speaks only the registered Oteryn v1 transport/framing/schema foundation; authenticates TLS server identity correctly with no 0-RTT or Canary downgrade; enforces hard limits before unsafe allocation; treats `(GameSessionId, CommandId)` as the one ordered command identity with bounded ordered ingress and never reserves/executes a lower CommandId twice; fences stale connection generations in both directions; applies server sequence/state revisions without guessing; reconciles through bounded replay or atomic replacement snapshot; and passes independent byte, malformed, property, fuzz, cross-version and pipelining evidence.
+> speaks only the registered Oteryn v1 transport/framing/schema foundation; authenticates TLS server identity correctly with no 0-RTT or Canary downgrade; enforces hard limits before unsafe allocation; treats `(GameSessionId, CommandId)` as the one ordered command identity with bounded ordered ingress and never reserves/executes a lower CommandId twice; fences stale connection generations in both directions; applies server sequence/state revisions without guessing; reconciles through bounded replay or atomic replacement snapshot with a bounded snapshot sequencing barrier; and passes independent byte, malformed, property, fuzz, cross-version, pipelining and snapshot-barrier evidence.
 
 Until those proofs exist, this is architecture authority, **not** an implementation-complete claim.
