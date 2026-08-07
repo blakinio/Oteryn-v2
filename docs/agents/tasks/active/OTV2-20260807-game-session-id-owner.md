@@ -8,14 +8,14 @@ status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260807-game-session-id-owner
-pr: null
+pr: 82
 base_sha: 96760a99ce09bf20417a4a9d6dc1961785156b6c
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-07T20:36:00+02:00
-updated_at: 2026-08-07T20:36:00+02:00
+updated_at: 2026-08-07T20:39:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -89,7 +89,7 @@ Accepted separation:
 
 ```text
 Platform / Gateway
-    -> authenticates identity and grants/routs an attempt
+    -> authenticates identity and grants/routes an attempt
 
 Game Session / Admission authority
     -> decides successful gameplay admission
@@ -164,10 +164,10 @@ The exact atomic creation/commit point inside the future admission state machine
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner accepted game-domain ownership/issuance of GameSessionId and the bounded architecture task was opened on current main.
+last_progress: Owner-accepted GameSessionId owner/issuer baseline is recorded and draft PR #82 is open with exactly the two declared documentation paths.
 status: validating
 branch: docs/OTV2-20260807-game-session-id-owner
-pr: null
+pr: 82
 final_head_sha: null
 final_head_frozen_at: null
 ci_trigger_source: pull_request
@@ -185,5 +185,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Add the canonical GameSessionId owner/issuer baseline, open the bounded PR, then audit and validate its exact final head.
+next_action: Review exact PR #82 diff, perform independent architecture audit, and inspect exact-head checks without moving the head unless a material defect is found.
 ```
