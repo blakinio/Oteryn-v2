@@ -300,7 +300,7 @@ Rules:
 
 FND-04 owns the admission/reconnect state machine; FND-02 owns the visible fence.
 
-## 13. `CommandId`: identity and order
+## 13. `CommandId`: identity, order and bounded pipelining
 
 FND-02 rejects the historical `UUIDv4 CommandId + client_sequence` pair.
 
@@ -319,19 +319,66 @@ CommandId:
 
 `CommandId` is both operation identity and total client-command order. It is not a credential or durable entity ID.
 
-Let `next_command_id` be server-authoritative:
+### 13.1 Server-authoritative ingress high-water mark
 
-- `command_id == next_command_id`: validate/execute once; after a terminal accepted/rejected outcome is committed, advance exactly once;
-- `command_id < next_command_id`: retry/duplicate/stale; **never execute again**; replay retained result when available, otherwise return `DUPLICATE_OUTCOME_EXPIRED` and reconcile;
-- `command_id > next_command_id`: reject without domain mutation as `COMMAND_SEQUENCE_GAP`, return expected ID and reconcile.
+`next_command_id` means the **next CommandId not yet reserved by authoritative session ingress**.
 
-A bounded contiguous pipeline is allowed; the hard outstanding-command limit is registered as 64.
+A command is reserved exactly once when:
 
-Safety does not require remembering all old command payloads forever. The monotonic high-water mark proves that every lower ID has already had its one processing opportunity. Evicting old result payloads can remove exact replay convenience but can never re-enable execution.
+1. the envelope/generation is valid;
+2. its `command_id == next_command_id`;
+3. the bounded outstanding-command window has capacity; and
+4. the server atomically places that command identity into the ordered authoritative session-ingress stream.
 
-A duplicate's new bytes are not reinterpreted, so protobuf's non-canonical serialization cannot become a duplicate-equality bug.
+At that point `next_command_id` advances exactly once, even though domain execution/result may occur later.
 
-A new `GameSessionId` gets a new command namespace beginning at 1.
+This allows bounded pipelining without waiting one network RTT for every command result.
+
+Commands reserved in the ingress stream commit authoritative effects/results in CommandId order. FND-03 may parallelize non-authoritative auxiliary work but may not allow later CommandIds to commit authoritative mutation ahead of earlier reserved CommandIds.
+
+The hard count of reserved-but-not-terminal commands is 64 per GameSession.
+
+### 13.2 Receive behavior
+
+- `command_id == next_command_id` and capacity is available:
+  - reserve it once in ordered ingress;
+  - advance `next_command_id` once;
+  - later produce exactly one terminal authoritative outcome.
+- `command_id == next_command_id` but the bounded ingress window is full:
+  - reject with `TOO_MANY_OUTSTANDING_COMMANDS`;
+  - do **not** reserve or advance the ID;
+  - the client may retry that same ID later.
+- `command_id < next_command_id`:
+  - it is already reserved, pending or terminal;
+  - it is **never enqueued/executed again**;
+  - if terminal result is retained, replay it as duplicate replay;
+  - if the original command is still pending, no second execution or second terminal outcome is created; the original eventual outcome remains authoritative;
+  - if neither pending state nor terminal result is retained while the same GameSession is still claimed resumable, return `COMMAND_OUTCOME_EXPIRED` and require reconciliation.
+- `command_id > next_command_id`:
+  - reject without reservation/domain mutation as `COMMAND_SEQUENCE_GAP`;
+  - return the expected ID and require bounded reconciliation.
+
+A structurally valid `ClientCommand` whose registered command type/payload is semantically rejected may still consume its reserved CommandId and produce one terminal `REJECTED` result. Malformed outer frame/envelope traffic is handled before command-stream reservation and follows protocol-fatal rules instead.
+
+### 13.3 Reconnect and crash consequence
+
+Eligible reconnect preserving the same `GameSessionId` also preserves:
+
+- `next_command_id`;
+- every still-authoritative pending command identity;
+- retained terminal outcomes needed for duplicate/result reconciliation.
+
+A runtime/recovery design may not claim same-GameSession resume if it has lost enough of this state that a lower reserved CommandId could execute again or an already-committed ordering boundary could be contradicted. FND-03/FND-04/DUR contracts must either preserve/reconstruct the necessary session command state or terminate the old logical GameSession safely.
+
+### 13.4 Why no unbounded UUID cache is required
+
+Safety follows from the monotonic ingress high-water mark: every `command_id < next_command_id` has already been reserved once and can never become a new operation again.
+
+Old result payloads may be evicted under a bounded retention policy; that can remove exact-result replay convenience but cannot re-enable execution.
+
+A duplicate's replacement bytes are never reinterpreted as a new operation, so protobuf's non-canonical byte serialization cannot become a command-equality bug.
+
+A new `GameSessionId` gets a fresh command namespace beginning at 1.
 
 ## 14. Server-authoritative sequence
 
@@ -502,12 +549,12 @@ FND-02 defines these wire obligations:
 
 | Scenario | Requirement |
 |---|---|
-| `FS-DUPLICATE-COMMAND` | lower CommandId never re-executes; replay retained result or outcome-expired/resync |
+| `FS-DUPLICATE-COMMAND` | lower CommandId is never reserved/executed twice; pending duplicate is not re-enqueued; retained terminal outcome may be replayed |
 | `FS-REVISION-MISMATCH` | no guessed mutation; resync |
 | `FS-SNAPSHOT-DELTA-MISMATCH` | invalid chain/assembly discarded; replay or replacement snapshot |
 | `FS-SLOW-CLIENT` | hard wire/input limits exist; FND-03 owns egress queue/drop/disconnect policy |
-| `FS-QUEUE-SATURATION` | 64 outstanding commands is protocol ingress bound; broader runtime backpressure is FND-03 |
-| `FS-STALE-GENERATION` | stale transport can neither command nor restore liveness/state |
+| `FS-QUEUE-SATURATION` | 64 reserved-but-not-terminal commands is protocol ingress bound; 65th expected ID is rejected without reservation |
+| `FS-STALE-GENERATION` | stale transport can neither command nor restore/apply liveness/state |
 | `FS-DUPLICATE-LOGIN` | protocol preserves GameSession/generation fencing; FND-04 decides admission/takeover |
 | `FS-GATEWAY-AFTER-REDEEM` | no fallback/reuse assumption; FND-04 owns credential recovery |
 | `FS-KEY-ROTATION` | transport/admission credentials are not protocol IDs; FND-04 owns key-roll behavior |
@@ -530,7 +577,8 @@ Required evidence:
 7. tests proving removed protobuf tags are reserved and never reused;
 8. tests proving schema-source-hash differences do not themselves force incompatibility;
 9. tests proving raw protobuf byte differences do not define command identity/equality;
-10. reconnect tests proving old generation traffic in both directions cannot regain/apply authority.
+10. reconnect tests proving old generation traffic in both directions cannot regain/apply authority;
+11. pipelining tests proving contiguous IDs reserve once, full-window rejection does not consume the next ID, pending duplicates are not re-enqueued and later IDs cannot commit mutation ahead of earlier reserved IDs.
 
 Shared generated schemas/codecs are useful, but not the only oracle.
 
@@ -556,6 +604,7 @@ Mutable PR heads are never written to the lock as canonical merged evidence.
 - **Exact schema SHA equality:** rejected; artifact identity is not semantic compatibility.
 - **Fixed capability digest:** rejected; core invariants belong to protocol major, optional additions to explicit IDs.
 - **UUIDv4 CommandId + independent sequence:** rejected; one GameSession-scoped monotonic uint64 gives deterministic identity/order and bounded duplicate proof.
+- **Single outstanding command / stop-and-wait:** rejected; it would unnecessarily couple command throughput and responsiveness to network RTT. The accepted bounded ordered-ingress model permits safe pipelining.
 - **QUIC v1:** deferred pending measured benefit.
 - **Application compression v1:** rejected until bandwidth evidence justifies decompression/ratio/CPU attack surface.
 
@@ -563,7 +612,7 @@ Mutable PR heads are never written to the lock as canonical merged evidence.
 
 - runtime tick/scheduler/threading/queue mechanics — `FND-03`;
 - heartbeat cadence, liveness state machine, reconnect credential, lease/takeover rules — `FND-04`;
-- persistence of session/sequence fences across crashes when required — later runtime/durability contracts;
+- persistence/recovery of session command/sequence fences across crashes when required — later runtime/durability contracts;
 - movement payloads — `VSL-MOVE-01`;
 - combat/death/loot payloads — `VSL-COMBAT-01`;
 - map/content snapshot payloads — `VSL-CONTENT-01`;
@@ -575,6 +624,6 @@ Mutable PR heads are never written to the lock as canonical merged evidence.
 
 A future implementation may claim `protocol-oteryn` v1 compatibility only when it proves that it:
 
-> speaks only the registered Oteryn v1 transport/framing/schema foundation; authenticates TLS server identity correctly with no 0-RTT or Canary downgrade; enforces hard limits before unsafe allocation; treats `(GameSessionId, CommandId)` as the one ordered command identity and never re-executes a lower CommandId; fences stale connection generations in both directions; applies server sequence/state revisions without guessing; reconciles through bounded replay or atomic replacement snapshot; and passes independent byte, malformed, property, fuzz and cross-version evidence.
+> speaks only the registered Oteryn v1 transport/framing/schema foundation; authenticates TLS server identity correctly with no 0-RTT or Canary downgrade; enforces hard limits before unsafe allocation; treats `(GameSessionId, CommandId)` as the one ordered command identity with bounded ordered ingress and never reserves/executes a lower CommandId twice; fences stale connection generations in both directions; applies server sequence/state revisions without guessing; reconciles through bounded replay or atomic replacement snapshot; and passes independent byte, malformed, property, fuzz, cross-version and pipelining evidence.
 
 Until those proofs exist, this is architecture authority, **not** an implementation-complete claim.
