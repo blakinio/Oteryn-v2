@@ -17,18 +17,21 @@ This baseline is architecture only. It does not authorize runtime implementation
 The initial gameplay-policy target is:
 
 ```text
-disconnect_protection_activation = 2.0 seconds
+0.0 s <= elapsed < 2.0 s  -> normal PvE monster attacks
+elapsed >= 2.0 s          -> disconnect protection active
 ```
 
-The protection becomes eligible after **2.0 seconds without sufficient server-authoritative evidence that the player still has valid control/liveness**.
+In player-facing terms, the first and second seconds after loss of sufficient server-authoritative control/liveness evidence remain normal combat. **From the beginning of the third second, all PvE monsters must stop actively attacking the disconnected/protected character.**
+
+The activation boundary is therefore exactly **2.0 seconds elapsed**, not 3.0 seconds elapsed. Saying "from the third second" describes the interval that begins immediately after the first two full seconds have passed.
 
 The timer is measured from server-observed state, not from an untrusted client statement such as `I have lag` or `I disconnected`.
 
-The exact heartbeat packets, evidence aggregation and low-level state names remain later `FND-03` / `FND-04` work, but the gameplay-visible protection threshold is owner-accepted as 2 seconds.
+The exact heartbeat packets, evidence aggregation and low-level state names remain later `FND-03` / `FND-04` work, but this gameplay-visible boundary is owner-accepted.
 
 ## Relationship to gameplay ticks
 
-The owner selected 2 seconds because Oteryn's intended Tibia-like combat/gameplay cadence uses a 2-second gameplay tick boundary for this class of behavior.
+The owner selected the two-full-second boundary because Oteryn's intended Tibia-like combat/gameplay cadence uses a 2-second gameplay tick boundary for this class of behavior.
 
 This does **not** require the authoritative Rust server main loop, scheduler or networking runtime to execute only once every 2 seconds. Internal simulation, liveness detection and transport processing may run at a finer cadence.
 
@@ -37,32 +40,37 @@ The architecture requirement is the gameplay result:
 ```text
 last sufficient server-authoritative control/liveness evidence
         |
-        | 2.0 s
+        | first 2 full seconds: normal PvE combat
         v
-PvE disconnect protection becomes active
+start of third second / elapsed >= 2.0 s
+        |
+        v
+all PvE monsters stop actively attacking the protected actor
 ```
 
 ## Owner-accepted PvE monster behavior
 
-Once the 2-second protection threshold is reached, **PvE monsters must stop actively attacking the disconnected/protected character**.
+From the beginning of the third second of continuous insufficient server-authoritative control/liveness evidence, **all PvE monsters must stop actively attacking the disconnected/protected character**, including monsters that were already targeting or engaged with that actor.
 
-For architecture purposes, `stop actively attacking` means that while protection is active, monster AI does not emit new offensive actions against that protected actor.
+For architecture purposes, `stop actively attacking` means that while protection is active, monster AI does not emit any new offensive action against that protected actor. Existing targeting, aggro or threat bookkeeping may remain preserved internally, but it cannot continue producing attacks while protection is active.
 
-Protection activation does not retroactively roll back authoritative gameplay that was already committed before the threshold was reached.
+Protection activation does not retroactively roll back authoritative gameplay that was already committed before the 2.0-second boundary.
 
 Therefore, unless a later gameplay contract explicitly changes a case, effects already committed before activation may still resolve, including conceptually:
 
-- an attack already authoritatively committed;
-- a projectile already emitted;
+- an attack already authoritatively committed before the boundary;
+- a projectile already emitted before the boundary;
 - damage-over-time already applied;
 - a field/hazard already present;
 - an area effect already committed by the simulation.
+
+No monster may begin or commit a **new** offensive action against the protected actor at or after the activation boundary while protection remains active.
 
 The protection is not invulnerability.
 
 ## Aggro and combat-state preservation
 
-Stopping new monster attacks must not be implemented by clearing authoritative combat state.
+Stopping all monster attacks must not be implemented by clearing authoritative combat state.
 
 In particular, protection activation must not by itself:
 
@@ -82,14 +90,14 @@ A later gameplay contract must define the exact preserved aggro representation a
 
 ## Relationship to reconnect grace
 
-This 2-second protection threshold is separate from the already accepted reconnect continuity window:
+This start-of-third-second protection boundary is separate from the already accepted reconnect continuity window:
 
 ```text
-disconnect protection activation = 2 seconds
-reconnect grace window           = 15 seconds
+disconnect protection: first 2 full seconds normal; active from start of third second
+reconnect grace window: 15 seconds
 ```
 
-The 2-second value determines when the PvE protection policy becomes active.
+The 2.0-second elapsed boundary determines when the PvE protection policy becomes active.
 
 The 15-second value determines the initial eligibility window in which the same logical `GameSessionId` may be resumed with a newer transport/connection generation, subject to later `FND-04` validation.
 
@@ -117,7 +125,7 @@ These require separate owner decisions.
 
 This baseline does not yet decide:
 
-- the exact liveness/heartbeat evidence required before the 2-second timer is considered continuously elapsed;
+- the exact liveness/heartbeat evidence required before the two-second timer is considered continuously elapsed;
 - whether short packet loss below the threshold enters a named `DEGRADED` state;
 - the exact monster-AI targeting/aggro data structure while attacks are suppressed;
 - whether bosses use identical protection behavior;
@@ -142,23 +150,25 @@ This baseline is mandatory input to later:
 
 Tests must eventually prove at minimum that:
 
-1. before 2 seconds, normal PvE combat behavior is not silently rewritten by the protection system;
-2. once the server-authoritative 2-second threshold is reached, monsters stop emitting new offensive actions against the protected actor;
-3. already committed effects are not rolled back by protection activation;
-4. reconnect resumes control of the same actor without healing, teleport, combat-state reset or duplicate authority;
-5. stale old transport generations cannot resume command authority after reconnect;
-6. deliberate repeated disconnects cannot create duplicate actors or account-level double-online state.
+1. throughout the first two full seconds, normal PvE combat behavior is not silently rewritten by the protection system;
+2. from the beginning of the third second (`elapsed >= 2.0 s`), every PvE monster stops emitting new offensive actions against the protected actor, including monsters that already had that actor targeted;
+3. already committed effects from before the activation boundary are not rolled back by protection activation;
+4. no new monster offensive action is committed against the actor while protection remains active;
+5. reconnect resumes control of the same actor without healing, teleport, combat-state reset or duplicate authority;
+6. stale old transport generations cannot resume command authority after reconnect;
+7. deliberate repeated disconnects cannot create duplicate actors or account-level double-online state.
 
 ## Programme effect
 
 Accepted now:
 
 ```text
-PvE disconnect protection activates after 2.0 s of insufficient server-authoritative control/liveness evidence
-once active, PvE monsters stop issuing new attacks against the protected character
-protection is not invulnerability and does not roll back already committed gameplay
-2 s protection activation remains separate from the accepted 15 s reconnect grace
-2 s is a gameplay-policy threshold, not a requirement for a 2 s server main loop
+first 2 full seconds after loss of sufficient server-authoritative control/liveness evidence -> normal PvE attacks
+from start of third second / elapsed >= 2.0 s -> ALL PvE monsters stop actively attacking the protected character
+already-targeting monsters are also suppressed from issuing new attacks
+protection is not invulnerability and does not roll back gameplay committed before the boundary
+2 s gameplay boundary remains separate from the accepted 15 s reconnect grace
+2 s is a gameplay-policy boundary, not a requirement for a 2 s server main loop
 ```
 
 No runtime, protocol, persistence, database, client or Platform implementation is authorized by this baseline.
