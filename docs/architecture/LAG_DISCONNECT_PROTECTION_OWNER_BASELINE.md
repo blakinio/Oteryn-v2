@@ -3,6 +3,7 @@
 - Status: Owner-accepted pre-contract baseline
 - Date: 2026-08-07
 - Decision owner: Oteryn project owner
+- Owner acceptance checkpoint: 2026-08-07
 - Coordination ID: `OTV2-NATIVE-FOUNDATION`
 - Applies to: server-authoritative connection-health detection, PvE disconnect protection, reconnect/re-entry safety, instanced-encounter recovery and later `FND-03` / `FND-04` / gameplay / analytics contracts
 
