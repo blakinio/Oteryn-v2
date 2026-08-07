@@ -8,9 +8,11 @@ status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260807-game-session-reconnect-generation
+pr: 73
 base_sha: 97b29e5c927f319ed03fb5583614d5fe0366d134
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-07T14:00:00+02:00
+updated_at: 2026-08-07T14:03:00+02:00
 execution_budget_minutes: 30
 owned_paths:
   - docs/agents/tasks/active/OTV2-20260807-game-session-reconnect-generation.md
@@ -57,4 +59,4 @@ Record the owner decision that a bounded eligible reconnect after genuine transp
 
 ## Validation
 
-Documentation-only architecture decision. The task owns exactly one dedicated architecture baseline and this task record. Exact-head governance/security checks and independent architecture audit are required before merge readiness.
+PR #73 owns exactly the two declared documentation paths. Documentation-only architecture decision. Exact-head governance/security checks and independent architecture audit are required before merge readiness.
