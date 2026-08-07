@@ -4,18 +4,18 @@
 task_id: OTV2-20260807-fnd-id01-contract
 title: Complete the minimum FND-ID-01 foundation identifier contract
 mode: CONTRACT
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260807-fnd-id01-contract
-pr: null
+pr: 85
 base_sha: 67c45efd35a4882ee414a9cd78c879a7d61a97ac
-head_sha: null
+head_sha: a4278709183aad9c61e3414f480004121c1b0598
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-07T21:00:00+02:00
-updated_at: 2026-08-07T21:00:00+02:00
+updated_at: 2026-08-07T21:08:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -50,7 +50,7 @@ external_repositories:
 
 Create the complete minimum `FND-ID-01` foundation identifier contract required before `FND-02`, without expanding the gate into a whole-game identifier catalogue or implementing runtime/protocol/persistence behavior.
 
-The contract must consolidate the already owner-accepted identity decisions into one normative foundation surface, resolve only the remaining identity-level ambiguities that block downstream foundation contracts, and explicitly assign all remaining wire/runtime/session/persistence mechanics to their owning gates.
+The contract consolidates the owner-accepted identity decisions into one normative candidate surface, resolves only remaining identity-level ambiguities required by downstream foundation contracts, and explicitly assigns wire/runtime/session/persistence mechanics to their owning gates.
 
 ## Architecture and source of truth
 
@@ -58,23 +58,26 @@ The contract must consolidate the already owner-accepted identity decisions into
 - `PROVEN` — `FND-ID-01_MINIMUM_CROSS_BOUNDARY_SCOPE_OWNER_BASELINE.md` fixes the minimum catalogue: `AccountId`, `CharacterId`, `WorldId`, `ChannelId`, `NodeId`, `InstanceId`, `PartyId`, `GameSessionId`, plus only conditionally necessary foundation identities.
 - `PROVEN` — detailed owner baselines already freeze semantic scope, UUIDv7 direction/representation for adopted Oteryn-owned identities, owner/issuer boundaries and identity-versus-authority separation.
 - `PROVEN` — accepted instance handoff architecture requires every authoritative ownership transition to have a unique transfer identity and to be idempotent/generation-fenced.
-- `DERIVED` — the complete contract must classify that already-required transfer identity at the identity layer while leaving transaction/state-machine behavior in `FND-03`/`FND-04`; otherwise the minimum catalogue would leave a circular downstream identity dependency.
+- `DERIVED` — `HandoffId` is the narrow foundation identity required to satisfy that already-accepted transfer invariant without making `FND-02`, `FND-03` and `FND-04` invent incompatible transfer namespaces.
+- `DERIVED` — `NodeId` issuance is closed by local fresh UUIDv7 generation during each authenticated GameNode bootstrap, followed by trusted registration; this preserves one ID per process incarnation and the accepted no-central-UUID-service direction without making NodeId a credential.
+- `CONFLICT` — `FOUNDATION_DECISION_BACKLOG.md` and `GLOBAL_ARCHITECTURE_DECISION_REGISTER.md` retain an older broad FND-ID-01 candidate list that predates the later owner-accepted minimum-scope baseline. Issue #86 records the required non-destructive reconciliation; the later minimum-scope baseline is semantic authority for this contract.
+- `PROVEN` — the pinned external Platform native protocol revision remains reconciliation evidence only; it does not prove a final AccountId wire representation or override later Oteryn-v2 identifier semantics.
 - `PROVEN` — no runtime, protocol, database or Platform implementation is authorized by the current architecture mode.
 
 ## Acceptance criteria
 
-- [ ] Provide one normative minimum identifier catalogue and owner/issuer/scope/lifecycle/representation/visibility matrix.
-- [ ] Preserve all accepted semantics for `AccountId`, `CharacterId`, `WorldId`, `ChannelId`, `NodeId`, `InstanceId`, `PartyId` and `GameSessionId`.
-- [ ] Resolve the identity-level `NodeId` generator/issuer ambiguity without making registration or channel authority implicit in identifier possession.
-- [ ] Classify the already-required unique ownership-transfer identity without designing the downstream handoff state machine.
-- [ ] Explicitly reject premature `AdmissionId` and `CharacterLeaseId` creation unless a later accepted foundation amendment proves an independent semantic entity is required.
-- [ ] Define the minimum foundation fencing/revision vocabulary as non-identity values, including connection and channel/instance ownership generations, without stealing exact runtime/protocol mechanics.
-- [ ] Preserve strong semantic typing, full 128-bit UUIDv7 where accepted, explicit scope, no nil sentinels, no reuse, and lossless validation.
-- [ ] Preserve external `AccountId` authority without silent re-keying.
-- [ ] Define public/internal visibility defaults and compact-handle boundaries.
-- [ ] Keep `CommandId`, wire byte order/IDL/framing, runtime handle bit layout, session/lease state machines and PostgreSQL layout in their owning later gates.
-- [ ] Preserve architecture/analysis-only mode; no Rust/runtime/protocol/persistence/Platform implementation.
-- [ ] Review the complete changed-file diff.
+- [x] Provide one normative minimum identifier catalogue and owner/issuer/scope/lifecycle/representation/visibility matrix.
+- [x] Preserve all accepted semantics for `AccountId`, `CharacterId`, `WorldId`, `ChannelId`, `NodeId`, `InstanceId`, `PartyId` and `GameSessionId`.
+- [x] Resolve the identity-level `NodeId` generator/issuer ambiguity without making registration or channel authority implicit in identifier possession.
+- [x] Classify the already-required unique ownership-transfer identity without designing the downstream handoff state machine.
+- [x] Explicitly reject premature `AdmissionId` and `CharacterLeaseId` creation unless a later accepted foundation amendment proves an independent semantic entity is required.
+- [x] Define the minimum foundation fencing/revision vocabulary as non-identity values, including connection and channel/instance ownership generations, without stealing exact runtime/protocol mechanics.
+- [x] Preserve strong semantic typing, full 128-bit UUIDv7 where accepted, explicit scope, no nil sentinels, no reuse, and lossless validation.
+- [x] Preserve external `AccountId` authority without silent re-keying.
+- [x] Define public/internal visibility defaults and compact-handle boundaries.
+- [x] Keep `CommandId`, wire byte order/IDL/framing, runtime handle bit layout, session/lease state machines and PostgreSQL layout in their owning later gates.
+- [x] Preserve architecture/analysis-only mode; no Rust/runtime/protocol/persistence/Platform implementation.
+- [x] Review the complete changed-file scope against the exact base; only the declared task and contract paths are changed on the contract branch.
 - [ ] Obtain an independent architecture audit on the frozen exact head with zero open material findings.
 - [ ] Pass required exact-head repository checks.
 
@@ -89,11 +92,21 @@ This task does not:
 - modify `blakinio/Oteryn-Platform`;
 - define item/economy/analytics/quest/content/social/operations identifier catalogues beyond the minimum foundation requirement;
 - freeze `CommandId` or protocol sequencing representation;
-- finalize product/gameplay policy such as disconnect protection, combat, transfer pricing or Party Finder matching.
+- finalize product/gameplay policy such as disconnect protection, combat, transfer pricing or Party Finder matching;
+- silently edit the stale long-lived coordination registers; issue #86 owns the required follow-up reconciliation so the conflict remains visible until corrected.
 
 ## Implementation / findings
 
-The contract is being drafted from accepted owner baselines. New text must distinguish consolidation of accepted decisions from identity-level closure required by already accepted foundation invariants.
+The candidate contract now:
+
+- consolidates the accepted eight-identity minimum catalogue;
+- admits one conditional foundation identity, `HandoffId`, because the accepted ownership-transition architecture already requires a unique cross-runtime transfer identity;
+- fixes NodeId lifecycle issuance to one fresh locally generated UUIDv7 per process incarnation, with trusted registration separate from mutation authority;
+- keeps AccountId externally owned and losslessly wrapped rather than silently re-keyed;
+- keeps `AdmissionId` and `CharacterLeaseId` out of the foundation until `FND-04` proves an independent semantic lifecycle;
+- classifies connection/channel/instance generations and party revision as non-identity ordering/fencing values;
+- leaves protocol encoding, runtime handle layout, admission/lease state machines and persistence mechanics to their downstream gates;
+- records issue #86 for stale backlog/register scope language discovered during consistency review.
 
 No runtime implementation is permitted in this task.
 
@@ -101,8 +114,9 @@ No runtime implementation is permitted in this task.
 
 ### Focused
 
-- command/run: pending documentation/governance validation
-- result: pending
+- exact-base changed-file review: `PASS` for the two task-owned paths;
+- architecture consistency self-review: `PASS` with one documentation conflict external to the task-owned paths recorded as issue #86;
+- result: pending independent audit and exact-head repository checks.
 
 ### Component/integration
 
@@ -116,7 +130,7 @@ No runtime implementation is permitted in this task.
 
 ### Exact-head CI
 
-- final head: pending
+- final head: pending after this task checkpoint update freezes the content head
 - trigger source: pull_request
 - workflow/run/job: pending
 - runner assignment: pending
@@ -129,12 +143,15 @@ No runtime implementation is permitted in this task.
 - method/auditor: separate architecture consistency review against accepted ADRs and owner baselines
 - material findings: pending
 - verdict: pending
+- known environment constraint: automatic Codex code review is currently reporting account review-usage exhaustion on contemporaneous PR #84; this does not waive the independent-audit requirement for PR #85.
 
 ## PR and closeout
 
-- changed-file review: pending
+- delivery PR: #85
+- changed-file review: task + new foundation contract only
 - unresolved review threads: pending
 - related/superseded PRs: PR #84 is separate minimum-scope lifecycle closeout only; no path overlap with this contract
+- documentation consistency follow-up: issue #86
 - protected auto-merge: pending all gates
 - merge commit/result: pending
 - ownership release: pending
@@ -142,15 +159,15 @@ No runtime implementation is permitted in this task.
 ## Context checkpoint
 
 ```yaml
-last_progress: Dedicated current-main branch created and complete FND-ID-01 contract task claimed with non-overlapping paths.
-status: implementing
+last_progress: Complete minimum FND-ID-01 candidate contract is drafted in PR #85; self-review found no material semantic conflict in the contract and separately registered stale backlog/register scope wording as issue #86.
+status: validating
 branch: docs/OTV2-20260807-fnd-id01-contract
-head_sha: null
-pr: null
+head_sha: a4278709183aad9c61e3414f480004121c1b0598
+pr: 85
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
-ci_check_generation: null
+ci_trigger_source: pull_request
+ci_check_generation: pending next exact head
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -163,6 +180,6 @@ repair_cycles_for_current_gate: 0
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
-blocker: null
-next_action: Draft the complete minimum FND-ID-01 foundation identifier contract from all accepted owner baselines.
+blocker: independent architecture audit must be available and pass before merge; automatic review quota is currently exhausted on the adjacent closeout PR
+next_action: Freeze this updated head, inspect exact-head CI, inspect review/audit availability, and do not merge unless every required gate is proven.
 ```
