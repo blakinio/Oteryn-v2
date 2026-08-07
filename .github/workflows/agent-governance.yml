@@ -12,11 +12,11 @@ on:
   workflow_dispatch:
     inputs:
       pull_request_number:
-        description: Open pull request number to validate
+        description: Open PR number, e.g. 58 (a pasted "pull_request_number: 58" is also accepted)
         required: true
         type: string
       expected_head_sha:
-        description: Exact 40-character pull request head SHA
+        description: Exact 40-character PR head SHA (a pasted "expected_head_sha: ..." is also accepted)
         required: true
         type: string
 
@@ -34,10 +34,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     env:
-      TARGET_SHA: >-
-        ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha
-        || github.event_name == 'workflow_dispatch' && github.event.inputs.expected_head_sha
-        || github.sha }}
+      TARGET_SHA: ${{ github.sha }}
     steps:
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
@@ -71,9 +68,22 @@ jobs:
           repository = os.environ["REPOSITORY"]
           errors: list[str] = []
 
+          def normalize_labeled_input(raw: str, label: str) -> str:
+              value = raw.strip()
+              prefix = f"{label}:"
+              if value.lower().startswith(prefix.lower()):
+                  value = value[len(prefix):].strip()
+              return value
+
           if event_name == "workflow_dispatch":
-              number_text = os.environ.get("DISPATCH_PR_NUMBER", "").strip()
-              expected_head = os.environ.get("DISPATCH_EXPECTED_HEAD_SHA", "").strip().lower()
+              number_text = normalize_labeled_input(
+                  os.environ.get("DISPATCH_PR_NUMBER", ""),
+                  "pull_request_number",
+              )
+              expected_head = normalize_labeled_input(
+                  os.environ.get("DISPATCH_EXPECTED_HEAD_SHA", ""),
+                  "expected_head_sha",
+              ).lower()
               event_sha = os.environ.get("EVENT_SHA", "").strip().lower()
 
               if re.fullmatch(r"[1-9][0-9]*", number_text) is None:
@@ -117,12 +127,14 @@ jobs:
                   errors.append("manual dispatch requires an open pull request")
               if head_sha != expected_head:
                   errors.append("pull request head moved after expected_head_sha was recorded")
+              target_sha = expected_head
           else:
               title = os.environ.get("EVENT_PR_TITLE", "")
               body = os.environ.get("EVENT_PR_BODY", "")
               head_sha = os.environ.get("EVENT_PR_HEAD_SHA", "")
               head_repository = os.environ.get("EVENT_PR_HEAD_REPOSITORY", "")
               base_ref = os.environ.get("EVENT_PR_BASE_REF", "")
+              target_sha = head_sha
 
           if head_repository != repository:
               errors.append("governance validation only accepts same-repository pull request heads")
@@ -147,6 +159,9 @@ jobs:
               for error in errors:
                   print(f"- {error}", file=sys.stderr)
               raise SystemExit(1)
+
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env_file:
+              env_file.write(f"TARGET_SHA={target_sha}\n")
 
           print(f"Validated PR metadata and exact target head {head_sha}.")
           PY
