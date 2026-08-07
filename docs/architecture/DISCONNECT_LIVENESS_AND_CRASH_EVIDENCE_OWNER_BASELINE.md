@@ -74,7 +74,17 @@ Missing client crash evidence must never by itself revoke otherwise valid discon
 
 When the native client crashes, hangs fatally or is terminated by an internal fatal condition, the client-side diagnostics layer should preserve a bounded local crash package when technically possible.
 
-On a later successful client start, an approved diagnostics uploader may submit the package to the Oteryn diagnostics/Game Intelligence ingestion boundary.
+On a later successful client start, an approved diagnostics uploader **automatically submits** eligible pending crash packages to the Oteryn diagnostics/Game Intelligence ingestion boundary. Per-crash interactive confirmation is not required.
+
+Automatic submission is owner-accepted only under the following safety boundary:
+
+- local redaction/filtering happens before upload;
+- the upload schema is allowlisted and versioned rather than accepting arbitrary files or arbitrary log directories;
+- report, stack, log-ring and attachment sizes are hard-bounded before network transmission;
+- secrets, reusable credentials, tokens, private chat content and unrelated personal data are excluded before upload;
+- the client records whether a package was successfully accepted so the same crash does not upload indefinitely;
+- transient upload failure may use bounded retry/backoff, but crash upload must never block normal client startup or gameplay admission indefinitely;
+- client crash uploads remain untrusted diagnostic evidence and never become gameplay authority.
 
 The package may contain, subject to later privacy and resource-limit contracts:
 
@@ -214,6 +224,7 @@ If crash-log upload, storage or analysis is unavailable:
 - GameNode recovery and fencing continue according to their own contract;
 - diagnostics loss/backlog is observable;
 - durable security evidence follows the durability rules of ADR-0006 where applicable;
+- normal client startup/gameplay admission is not indefinitely blocked by diagnostic upload failure;
 - the system must not invent a crash classification when evidence is missing.
 
 ## 11. Required future tests
@@ -225,11 +236,13 @@ Future contracts and implementation must prove at minimum:
 3. a client cannot self-declare lag/disconnect protection;
 4. stale heartbeat/ack evidence from an older transport generation cannot recover authority;
 5. isolated packet loss/jitter does not deterministically trigger protection before the accepted liveness policy says it should;
-6. client crash evidence can be retained locally and submitted after restart when available;
-7. absence of client crash evidence does not revoke valid protection;
-8. GameNode crash evidence survives process/container death through an external collector/supervisor path;
-9. correlated mass infrastructure failures can be distinguished from isolated client incidents;
-10. automated diagnostic/AI analysis remains outside authoritative mutation and cannot ban, alter gameplay or decide protection.
+6. client crash evidence can be retained locally and is automatically submitted after restart when available;
+7. automatic upload applies local redaction, allowlisted schema and hard size limits before transmission;
+8. upload failure cannot indefinitely block normal client startup/gameplay admission and retry behavior remains bounded;
+9. absence of client crash evidence does not revoke valid protection;
+10. GameNode crash evidence survives process/container death through an external collector/supervisor path;
+11. correlated mass infrastructure failures can be distinguished from isolated client incidents;
+12. automated diagnostic/AI analysis remains outside authoritative mutation and cannot ban, alter gameplay or decide protection.
 
 ## Programme effect
 
@@ -242,7 +255,10 @@ socket-open state alone != sufficient liveness proof
 client self-report != authority
 2.0-second PvE protection timer starts from last sufficient server-authoritative liveness evidence
 crash/log evidence is collected and analysed after/around the incident when available
-client crash -> bounded local evidence -> upload after restart when possible
+client crash -> bounded local evidence -> automatic upload after restart when possible
+per-crash user confirmation is not required
+upload -> local redaction + allowlisted/versioned schema + hard size limits + bounded retry
+crash-upload failure must not indefinitely block normal startup/gameplay admission
 GameNode crash -> external supervisor/collector preserves evidence
 network/infrastructure incidents -> correlated with player and node evidence
 Game Intelligence performs deterministic + read-only AI-assisted analysis outside ChannelRuntime
