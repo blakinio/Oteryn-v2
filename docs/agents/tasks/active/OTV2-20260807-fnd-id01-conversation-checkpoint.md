@@ -4,18 +4,18 @@
 task_id: OTV2-20260807-fnd-id01-conversation-checkpoint
 title: Consolidate owner-accepted FND-ID-01 architecture decisions
 mode: CONTRACT
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260807-fnd-id01-conversation-checkpoint
-pr: null
+pr: 69
 base_sha: 6804f5d67b63f1374a9efa3710bcaad10805c801
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-07T11:59:00+02:00
-updated_at: 2026-08-07T11:59:00+02:00
+updated_at: 2026-08-07T12:03:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -66,6 +66,12 @@ This checkpoint is intentionally downstream of detailed packages #63 through #68
 
 The checkpoint is a recovery and coordination surface; detailed owner baselines remain the authoritative sources for their respective topics.
 
+## Implementation / findings
+
+PR #69 owns only the two declared documentation paths. It consolidates decisions without modifying the individual baselines or any runtime/control-plane repository.
+
+The checkpoint explicitly preserves all deliberate deferrals and records the ordered continuation from the incomplete `FND-ID-01` catalogue into `FND-02`, `FND-03` and `FND-04`.
+
 ## Validation
 
 ### Focused
@@ -80,21 +86,38 @@ The checkpoint is a recovery and coordination surface; detailed owner baselines 
 - scenario: `NOT_APPLICABLE` — no executable runtime behavior changes
 - result: `NOT_APPLICABLE`
 
+### Exact-head CI
+- final head: recorded in immutable PR/check evidence after this final content commit
+- trigger source: pull_request
+- workflow/run/job: pending
+- runner assignment: pending
+- classification: pending
+- result: pending
+
 ### Independent audit
 - exact head: pending
 - method/auditor: pending
 - material findings: pending
 - verdict: pending
 
+## PR and closeout
+
+- changed-file review: pending final diff review
+- unresolved review threads: pending
+- dependency: detailed owner-baseline PRs #63 through #68
+- merge readiness: blocked until dependency state, exact-head checks and independent audit are satisfactory
+- merge commit/result: pending
+- ownership release: pending
+
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner requested that all accepted architecture decisions from the conversation be persisted as one recoverable FND-ID-01 checkpoint.
-status: implementing
+last_progress: All owner-accepted decisions from the 2026-08-07 FND-ID-01 architecture conversation are consolidated in one recovery checkpoint and PR #69 is open.
+status: validating
 branch: docs/OTV2-20260807-fnd-id01-conversation-checkpoint
-pr: null
+pr: 69
 final_head_sha: null
-ci_trigger_source: null
-blocker: null
-next_action: Create the consolidated architecture checkpoint, open a draft PR, inspect exact diff and checks, and keep it dependent on the detailed owner-baseline packages.
+ci_trigger_source: pull_request
+blocker: detailed baseline dependency plus exact-head checks and independent audit
+next_action: Review exact two-file diff and exact-head checks without moving the head unless a material defect is found.
 ```
