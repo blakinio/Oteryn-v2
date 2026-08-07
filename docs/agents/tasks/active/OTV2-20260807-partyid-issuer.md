@@ -4,18 +4,18 @@
 task_id: OTV2-20260807-partyid-issuer
 title: Record PartyId issuer and world scope
 mode: CONTRACT
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260807-partyid-issuer
-pr: null
+pr: 67
 base_sha: 6804f5d67b63f1374a9efa3710bcaad10805c801
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-07T11:21:00+02:00
-updated_at: 2026-08-07T11:21:00+02:00
+updated_at: 2026-08-07T11:24:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -61,6 +61,12 @@ Record the owner-accepted decision that `PartyId` is a strongly typed full-128-b
 
 No Rust runtime, Party service implementation, invite/membership protocol, database DDL, Platform changes, production activation or completion of the full `FND-ID-01` catalogue.
 
+## Implementation / findings
+
+PR #67 owns only the two declared documentation paths. PRs #63 through #66 are separate architecture packages with no overlapping paths.
+
+The decision fixes world-level game-domain issuer authority and cross-channel identity semantics without prematurely fixing Party/Social service deployment or membership mechanics.
+
 ## Validation
 
 ### Focused
@@ -76,7 +82,7 @@ No Rust runtime, Party service implementation, invite/membership protocol, datab
 - result: `NOT_APPLICABLE`
 
 ### Exact-head CI
-- final head: recorded in immutable PR/check evidence after final content commit
+- final head: recorded in immutable PR/check evidence after this final content commit
 - trigger source: pull_request
 - workflow/run/job: pending
 - runner assignment: pending
@@ -92,7 +98,7 @@ No Rust runtime, Party service implementation, invite/membership protocol, datab
 
 ## PR and closeout
 
-- changed-file review: pending
+- changed-file review: pending final diff review
 - unresolved review threads: pending
 - related PRs: #63 through #66 are separate non-overlapping architecture packages
 - protected auto-merge: pending
@@ -102,14 +108,14 @@ No Rust runtime, Party service implementation, invite/membership protocol, datab
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner accepted PartyId UUIDv7 plus world-level game-domain Party/Social issuer semantics.
-status: implementing
+last_progress: Owner PartyId decision is recorded and PR #67 is open with only two declared documentation paths.
+status: validating
 branch: docs/OTV2-20260807-partyid-issuer
 head_sha: null
-pr: null
+pr: 67
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
+ci_trigger_source: pull_request
 ci_check_generation: null
 ci_checks_for_current_head: 0
 ci_run_ids: []
@@ -124,5 +130,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Add the owner-accepted PartyId baseline, open a bounded documentation PR and validate its exact head.
+next_action: Review the exact two-file diff and exact-head CI for PR #67 without moving the head unless a material defect is found.
 ```
