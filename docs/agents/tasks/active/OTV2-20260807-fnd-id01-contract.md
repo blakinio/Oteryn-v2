@@ -10,12 +10,12 @@ base_branch: main
 branch: docs/OTV2-20260807-fnd-id01-contract
 pr: 85
 base_sha: 67c45efd35a4882ee414a9cd78c879a7d61a97ac
-head_sha: a4278709183aad9c61e3414f480004121c1b0598
+head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-07T21:00:00+02:00
-updated_at: 2026-08-07T21:08:00+02:00
+updated_at: 2026-08-07T21:09:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -130,7 +130,7 @@ No runtime implementation is permitted in this task.
 
 ### Exact-head CI
 
-- final head: pending after this task checkpoint update freezes the content head
+- final head: pending; the branch head after this metadata correction is the candidate validation head
 - trigger source: pull_request
 - workflow/run/job: pending
 - runner assignment: pending
@@ -159,10 +159,10 @@ No runtime implementation is permitted in this task.
 ## Context checkpoint
 
 ```yaml
-last_progress: Complete minimum FND-ID-01 candidate contract is drafted in PR #85; self-review found no material semantic conflict in the contract and separately registered stale backlog/register scope wording as issue #86.
+last_progress: Complete minimum FND-ID-01 candidate contract is drafted in PR #85; self-review found no material semantic conflict in the contract and separately registered stale backlog/register scope wording as issue #86. PR metadata now contains the exact governance-required Summary/Scope/Validation headings.
 status: validating
 branch: docs/OTV2-20260807-fnd-id01-contract
-head_sha: a4278709183aad9c61e3414f480004121c1b0598
+head_sha: null
 pr: 85
 final_head_sha: null
 final_head_frozen_at: null
@@ -176,10 +176,10 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 0
+repair_cycles_for_current_gate: 1
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: independent architecture audit must be available and pass before merge; automatic review quota is currently exhausted on the adjacent closeout PR
-next_action: Freeze this updated head, inspect exact-head CI, inspect review/audit availability, and do not merge unless every required gate is proven.
+next_action: Freeze the new exact head, inspect exact-head CI and independent review availability, and do not merge unless every required gate is proven.
 ```
