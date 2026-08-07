@@ -4,18 +4,18 @@
 task_id: OTV2-20260808-fnd02-protocol-contract
 title: Freeze the protocol-oteryn v1 foundation contract
 mode: CONTRACT
-status: investigating
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260808-fnd02-protocol-contract
-pr: null
+pr: 94
 base_sha: b9c5764711c4206832209f6ca89b9dc56492c3c1
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-08T00:25:00+02:00
-updated_at: 2026-08-08T00:25:00+02:00
+updated_at: 2026-08-08T00:48:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -53,110 +53,140 @@ external_repositories:
 
 ## Outcome
 
-Freeze one implementable, secure and evolvable `protocol-oteryn` v1 foundation contract for the native Rust client/server stack without implementing runtime code. The package must independently decide transport, TLS integration, framing, serialization, versioning, capability extension, wire identifier representation, command identity/order/idempotency, authoritative server sequencing, snapshot/delta/resync semantics, reconnect continuity fields, error behavior, hard wire limits and independent compatibility evidence.
+Freeze one implementable, secure and evolvable `protocol-oteryn` v1 foundation contract for the native Rust client/server stack without implementing runtime code.
 
 ## Architecture and source of truth
 
-- `PROVEN`: current trusted base is `b9c5764711c4206832209f6ca89b9dc56492c3c1` after Character Authority closeout PR #91.
-- `PROVEN`: no open Oteryn-v2 PR exists at task start.
-- `PROVEN`: `FOUNDATION_PROGRAMME_CURRENT_STATUS.md` marks FND-02 as the next ordered foundation gate.
-- `PROVEN`: the Platform contract at `blakinio/Oteryn-Platform@c0b8703d326a04b43ae8e06f6192b0cb91c859b7` is `RECONCILIATION_INPUT_ONLY`, not final FND-02 authority.
-- `PROVEN`: `RESOURCE_LIMITS_REGISTRY.json` contains no concrete entries before this task.
-- `PROVEN`: canonical Rust workspace has 19 members and no production server or protocol-oteryn crate yet; this task is architecture-only.
-- `PROVEN`: current TLS 1.3 specification is RFC 9846; application protocols must define TLS integration and server identity verification.
-- `PROVEN`: Protocol Buffers binary supports compatible schema evolution, while serialized protobuf bytes are not a canonical semantic representation.
-- `OWNER_AUTHORIZED`: the project owner instructed continued architecture execution on 2026-08-08.
+- `PROVEN`: task base is `b9c5764711c4206832209f6ca89b9dc56492c3c1`; no open Oteryn-v2 PR existed when the task started.
+- `PROVEN`: current-status authority identified FND-02 as the next ordered gate.
+- `PROVEN`: `blakinio/Oteryn-Platform@c0b8703d326a04b43ae8e06f6192b0cb91c859b7` is reconciliation input only.
+- `PROVEN`: FND-ID keeps canonical `GameSessionId` game-issued after admission and leaves `CommandId`/wire ordering to FND-02.
+- `PROVEN`: accepted reconnect semantics preserve an eligible `GameSessionId` while advancing transport generation.
+- `PROVEN`: accepted liveness semantics use server-observed control progress, not gameplay-command silence or socket-open state.
+- `PROVEN`: the resource-limit registry had no concrete entries before this task.
+- `PROVEN`: current TLS 1.3 is RFC 9846; service identity verification is covered by RFC 9525.
+- `PROVEN`: protobuf supports compatible additive evolution but serialized protobuf bytes are not canonical semantic identity.
+- `OWNER_AUTHORIZED`: the owner instructed continued architecture execution on 2026-08-08.
+
+## Frozen candidate contract
+
+The PR currently freezes:
+
+- family `oteryn`, protocol major `1`;
+- transport profile `TCP + TLS 1.3`, ALPN `oteryn-game/1`, verified server identity, no TLS 0-RTT/plaintext/Canary fallback;
+- BE32 length framing with one bounded protobuf envelope;
+- protobuf binary, `proto3` source IDL, no concrete Rust protobuf library yet;
+- schema revision/hash as evidence rather than lockstep runtime compatibility identity;
+- no speculative optional capabilities in initial v1; future additive numeric capabilities only;
+- exposed foundation UUID IDs as 16-byte UUID network-order values;
+- monotonic `uint64 connection_generation` fencing both directions;
+- `(GameSessionId, uint64 CommandId)` as the one client command identity/order, with no UUIDv4+second-sequence pair;
+- monotonic per-GameSession server sequence;
+- typed domain revisions, bounded replay/resync and atomic chunked snapshot replacement;
+- liveness probe/ack primitives separated from gameplay-command activity;
+- stable protocol error registry;
+- concrete externally controlled protocol limits;
+- independent byte/golden, malformed, property, fuzz and cross-version evidence requirements.
 
 ## Acceptance criteria
 
-- [ ] One production protocol family `oteryn` remains the only native gameplay protocol.
-- [ ] Transport/TLS/framing are frozen with no Canary fallback, sniffing or plaintext downgrade.
-- [ ] IDL/serialization is independently selected and its evolution rules are explicit.
-- [ ] The foundation `.proto` schema is implementable without freezing downstream movement/combat/content message payloads.
-- [ ] Core protocol semantics are versioned separately from optional capabilities, content and rulesets.
-- [ ] `CommandId` semantics, ordering, retries and bounded result-replay behavior prevent re-execution after duplicate delivery.
-- [ ] Server authoritative sequencing survives eligible reconnect without allowing stale transport generations to regain command authority.
-- [ ] Snapshot/delta/resync rules are deterministic and never guess through revision gaps.
-- [ ] Liveness wire primitives support server-authoritative control-progress evidence without using gameplay-command absence as disconnect evidence.
-- [ ] Exact externally controlled protocol limits are added to `RESOURCE_LIMITS_REGISTRY.json`.
-- [ ] FND-02 error codes map to `FOUNDATION_ERROR_VOCABULARY.md`.
-- [ ] Applicable `FOUNDATION_FAILURE_SCENARIOS.md` entries are classified by the contract.
-- [ ] Canonical byte fixtures, malformed corpus, property tests, fuzzing and cross-version fixtures are required as implementation evidence; shared production codecs are not the sole oracle.
-- [ ] The immutable old Platform contract remains historical reconciliation evidence and is not falsely marked as final Oteryn-v2 conformance.
-- [ ] FND-03 becomes the next ordered gate only after FND-02 delivery is accepted and merged.
-- [ ] No Rust runtime, listener, codec crate, database schema, Platform write or production activation is introduced.
-- [ ] Complete changed-file review passes.
-- [ ] Independent architecture/security audit reports zero open material findings.
+- [x] One native production family remains `oteryn`; Canary fallback/translation is absent.
+- [x] Transport/TLS/framing are explicit and downgrade-resistant.
+- [x] IDL/serialization and evolution rules are explicit without pinning a Rust implementation library.
+- [x] Foundation IDL avoids freezing downstream gameplay payload schemas.
+- [x] Core protocol semantics are separate from optional capabilities/content/rulesets.
+- [x] Command identity/order prevents duplicate re-execution without an unbounded UUID cache.
+- [x] Server sequence and transport generation survive eligible reconnect correctly.
+- [x] Snapshot/delta/resync never guesses through revision/sequence gaps.
+- [x] Partial snapshots cannot cross connection generations.
+- [x] Liveness does not depend on gameplay-command traffic.
+- [x] Exact externally controlled hard limits are registered.
+- [x] Error codes map to the shared foundation vocabulary.
+- [x] Applicable foundation failure scenarios have explicit FND-02 assertions.
+- [x] Independent codec/framing evidence is mandatory for later implementation acceptance.
+- [x] Historical Platform contract remains reconciliation-only evidence.
+- [x] No Rust runtime, listener, codec crate, database schema, Platform write or production activation is introduced.
+- [ ] Complete final-head changed-file review passes.
+- [ ] Independent exact-head architecture/security audit reports zero open material findings.
 - [ ] Exact-head required GitHub checks pass.
+- [ ] Delivery PR is squash-merged.
+- [ ] Follow-up closeout records immutable merged FND-02 evidence, reconciles programme status/lock and releases ownership.
 
 ## Excluded scope
 
-- Runtime implementation of `protocol-oteryn`, server listener, client adapter or codecs.
-- Selection of a concrete Rust protobuf runtime/library; the wire contract may constrain compatibility but dependency choice remains an implementation decision with its own maintenance/security evidence.
-- FND-03 scheduler/runtime execution details.
-- FND-04 credential construction, admission/lease state machine, reconnect eligibility or final heartbeat policy timing.
-- Gameplay-specific movement, combat, inventory, chat, quest or content message schemas beyond their extension/registry mechanism.
+- Runtime implementation of protocol/listener/client adapter/codecs.
+- Concrete Rust protobuf/TLS dependency selection.
+- FND-03 scheduler/runtime queues/recovery implementation.
+- FND-04 credential/admission/lease/reconnect state machine and heartbeat cadence.
+- Gameplay-specific movement/combat/inventory/chat/quest/content payloads.
 - Platform contract mutation or rollout.
 - QUIC, application compression, live channel migration or Canary compatibility in v1.
 
-## Implementation / findings
+## Audit findings and repairs
 
-Discovery is in progress. The old Platform tuple is being decomposed into reusable security requirements versus stale runtime/wire assumptions. Transport, IDL, message registry, ordering and hard-limit decisions will be frozen only where required to unblock FND-03 and the first native vertical slice.
+The first adversarial pass found five contract-hygiene issues and all were repaired before final validation:
+
+1. `ProtocolError` was unnecessarily bidirectional -> registry now makes it server-to-client.
+2. bootstrap message phases were named too narrowly -> registry uses `BOOTSTRAP`.
+3. server sequence class naming was inconsistent -> standardized on `SERVER_SEQUENCED`.
+4. stale-generation fencing was explicit mainly for client->server -> contract now requires current generation in both directions and client rejection of stale server frames.
+5. capability/snapshot/liveness edge cases were underspecified -> unknown supported capabilities may be ignored during intersection while unknown selected/required capabilities fail; partial snapshots are discarded on generation change; liveness probe IDs never wrap/reuse.
+
+The contract also states that mTLS/client certificates are not a v1 requirement; FND-04 application admission proof remains separate.
 
 ## Validation
 
 ### Focused
 
-- command/run: repository documentation/governance validator on exact PR head
-- result: pending
+- JSON/protobuf/hash/static contract consistency: final exact-head review pending.
+- foundation schema SHA-256 recorded in registry: `6e1c614661e72daac529be9d0ec06317201b916cd47ae17ff1590da5c7205ebe`.
 
 ### Component/integration
 
-- command/run: `NOT_APPLICABLE` — architecture/contract/schema-definition documentation only; no executable component changes
-- result: `NOT_APPLICABLE`
+`NOT_APPLICABLE` — this delivery changes architecture/contract/schema-definition files only.
 
 ### E2E
 
-- scenario: `NOT_APPLICABLE` for this contract-delivery PR; the contract defines mandatory later E2E/fixture evidence but does not implement the protocol
-- result: `NOT_APPLICABLE`
+`NOT_APPLICABLE` — the contract defines mandatory later wire/E2E evidence but does not implement gameplay transport.
 
 ### Exact-head CI
 
-- final head: pending
 - trigger source: pull_request
-- workflow/run/job: pending
-- runner assignment: pending
-- classification: pending
-- result: pending
+- PR: `#94`
+- final head: pending last task-checkpoint commit
+- Agent governance: pending current generation
+- Dependency review: pending current generation
+- CodeQL: pending current generation
 
 ## Independent audit
 
-- exact head: pending
-- method/auditor: adversarial protocol/security/compatibility architecture review against accepted Oteryn-v2 ADRs, FND-ID, Platform reconciliation input, current TLS/Protobuf primary sources and full package diff
-- material findings: pending
-- verdict: pending
+- exact head: pending final checkpoint head
+- method: adversarial protocol/security/compatibility review against accepted ADRs, FND-ID, reconnect/liveness baselines, Platform reconciliation input, TLS/protobuf primary evidence and complete diff
+- first-pass findings: five, all repaired before final-head review
+- open material findings: pending final re-audit
 
 ## PR and closeout
 
-- changed-file review: pending
+- PR: `#94` draft
+- changed-file review: pending final head
 - unresolved review threads: pending
-- related/superseded PRs: none open at task start
-- protected auto-merge: pending
-- merge commit/result: pending
+- merge: pending
+- cross-repository lock exact merged evidence: intentionally deferred until immutable squash merge exists
+- programme transition to FND-03: intentionally finalized in closeout after accepted merge
 - ownership release: pending
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Dedicated FND-02 architecture-only task created from current main after all open PRs were cleared.
-status: investigating
+last_progress: FND-02 candidate contract and machine-readable IDL/registries are complete; first adversarial findings were repaired and PR #94 is validating.
+status: validating
 branch: docs/OTV2-20260808-fnd02-protocol-contract
 head_sha: null
-pr: null
+pr: 94
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
-ci_check_generation: null
+ci_trigger_source: pull_request
+ci_check_generation: pending-final-task-checkpoint
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -165,10 +195,10 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 0
+repair_cycles_for_current_gate: 1
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Freeze the smallest complete FND-02 transport, wire, ordering, reconciliation and resource-limit contract from primary evidence.
+next_action: Re-audit the exact PR head, verify required CI, then merge FND-02 and perform immutable closeout/status/lock reconciliation.
 ```
