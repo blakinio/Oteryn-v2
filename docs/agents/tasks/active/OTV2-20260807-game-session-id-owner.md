@@ -15,22 +15,23 @@ final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-07T20:36:00+02:00
-updated_at: 2026-08-07T20:42:00+02:00
+updated_at: 2026-08-07T20:44:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
   - docs/agents/tasks/active/OTV2-20260807-game-session-id-owner.md
   - docs/architecture/FND-ID-01_GAME_SESSION_ID_OWNER_ISSUER_BASELINE.md
+  - docs/architecture/ADR-0001-native-rust-multichannel-platform.md
   - docs/architecture/ADR-0003-platform-identity-game-gateway-and-admission-boundary.md
 public_contracts:
   - docs/architecture/FND-ID-01_GAME_SESSION_ID_OWNER_ISSUER_BASELINE.md
+  - docs/architecture/ADR-0001-native-rust-multichannel-platform.md
   - docs/architecture/ADR-0003-platform-identity-game-gateway-and-admission-boundary.md
 depends_on:
   - ADR-0001 through ADR-0011
   - docs/architecture/FND-ID-01_MINIMUM_CROSS_BOUNDARY_SCOPE_OWNER_BASELINE.md
   - docs/architecture/FND-ID-01_GAME_SESSION_RECONNECT_GENERATION_OWNER_BASELINE.md
   - docs/architecture/FND-ID-01_ACCOUNT_SINGLE_ONLINE_CHARACTER_OWNER_BASELINE.md
-  - docs/architecture/ADR-0003-platform-identity-game-gateway-and-admission-boundary.md
 blocks:
   - complete FND-ID-01 contract must consume this GameSessionId decision before FND-02/FND-04 freeze dependent fields and state machines
 cross_repository_coordination_id: OTV2-NATIVE-FOUNDATION
@@ -44,12 +45,13 @@ Record the owner-accepted `GameSessionId` foundation identity decision without i
 
 The canonical result separates Platform authorization-to-attempt from the existence of an authoritative gameplay session, preserves reconnect continuity, and prevents Gateway, ChannelRuntime, transport or deployment topology from becoming the semantic owner of a logical game session.
 
-The package also narrowly reconciles ADR-0003 terminology so its older generic “Game Session” wording cannot be misread as Platform ownership of the canonical `GameSessionId`.
+The package also narrowly reconciles ADR-0001 and ADR-0003 so older generic “Game Session issuance” wording cannot be misread as Platform ownership of the canonical `GameSessionId`.
 
 ## Architecture and source of truth
 
 - `PROVEN` — ADR-0003 keeps Identity, Game Login Ticket, Game Gateway and World Registry in Platform while the authoritative game server validates admission and owns gameplay authority.
-- `PROVEN` — ADR-0003 previously used generic “Game Session” terminology for material produced before Rust game-server admission, creating a semantic ambiguity once `GameSessionId` ownership is frozen.
+- `PROVEN` — ADR-0001 previously placed generic “Game Session issuance” under Platform in its stack diagram and used generic fresh-session wording for channel change.
+- `PROVEN` — ADR-0003 previously used generic “Game Session” terminology for material produced before Rust game-server admission.
 - `PROVEN` — the minimum `FND-ID-01` scope includes `GameSessionId` because downstream protocol/runtime/admission contracts cannot be unambiguous without its semantic owner and lifetime.
 - `PROVEN` — the reconnect baseline already preserves one logical `GameSessionId` across eligible transport reconnects while advancing transport/connection generation.
 - `PROVEN` — the project owner accepted that `GameSessionId` belongs to game-domain Game Session / Admission authority, not Platform/Gateway or ChannelRuntime.
@@ -66,6 +68,7 @@ The package also narrowly reconciles ADR-0003 terminology so its older generic �
 - [x] Preserve the same logical `GameSessionId` across eligible reconnect while transport/connection generation advances.
 - [x] Require a new `GameSessionId` after terminal session end and for a fresh channel-session transition.
 - [x] Preserve logical-owner-versus-deployment separation; a dedicated microservice is not required by this decision.
+- [x] Reconcile ADR-0001 so Platform owns pre-admission material while game-domain owns canonical `GameSessionId`, including channel-switch wording.
 - [x] Reconcile ADR-0003 so Platform/Gateway “Game Session” output is explicitly pre-admission session/admission material, not canonical `GameSessionId`.
 - [x] Keep exact admission transaction commit point, credential form, lease transaction mechanics and terminal state machine for `FND-04`.
 - [x] Keep wire encoding/byte order/framing for `FND-02`.
@@ -121,7 +124,7 @@ same logical session + eligible reconnect
     -> same GameSessionId
     -> newer transport/connection generation
 
-terminal session end / fresh session transition
+terminal session end / completed fresh channel-session transition
     -> new GameSessionId
 ```
 
@@ -156,7 +159,7 @@ The exact atomic creation/commit point inside the future admission state machine
 ## Independent audit
 
 - exact head: pending
-- method/auditor: architecture consistency review against accepted FND-ID-01, ADR-0003 and reconnect/session baselines
+- method/auditor: architecture consistency review against accepted FND-ID-01, ADR-0001, ADR-0003 and reconnect/session baselines
 - material findings: pending
 - verdict: pending
 
@@ -171,7 +174,7 @@ The exact atomic creation/commit point inside the future admission state machine
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner-accepted GameSessionId owner/issuer baseline is recorded and ADR-0003 terminology is reconciled so pre-admission material cannot be confused with canonical GameSessionId.
+last_progress: Owner-accepted GameSessionId owner/issuer baseline is recorded and ADR-0001/ADR-0003 terminology is reconciled so Platform pre-admission material cannot be confused with canonical GameSessionId.
 status: validating
 branch: docs/OTV2-20260807-game-session-id-owner
 pr: 82
@@ -192,5 +195,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Review exact PR #82 three-file diff, perform independent architecture audit, and inspect exact-head checks without moving the head unless a material defect is found.
+next_action: Review exact PR #82 four-file diff, perform independent architecture audit, and inspect exact-head checks without moving the head unless a material defect is found.
 ```
