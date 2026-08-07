@@ -4,18 +4,18 @@
 task_id: OTV2-20260807-nodeid-incarnation
 title: Record NodeId process-incarnation semantics
 mode: CONTRACT
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260807-nodeid-incarnation
-pr: null
+pr: 65
 base_sha: 6804f5d67b63f1374a9efa3710bcaad10805c801
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-07T10:56:00+02:00
-updated_at: 2026-08-07T10:56:00+02:00
+updated_at: 2026-08-07T11:00:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -35,67 +35,55 @@ external_repositories: []
 
 ## Outcome
 
-Record the owner-accepted decision that canonical `NodeId` identifies one concrete GameNode process incarnation, uses strongly typed UUIDv7, and changes on every process restart. Stable host, VM, container-orchestrator node, deployment target or logical placement-slot identity is separate and must never be overloaded into `NodeId`.
+Record the owner-accepted decision that canonical `NodeId` identifies one concrete GameNode process incarnation, uses strongly typed UUIDv7, and changes on every process restart. Stable host, VM, pod/container, orchestrator-node or logical deployment-slot identity is separate and must never be overloaded into `NodeId`.
 
 ## Architecture and source of truth
 
-- `PROVEN`: ADR-0001 already defines `NodeId` as the logical identity of one GameNode process runtime and explicitly separates it from physical host/container/orchestrator identity.
-- `PROVEN`: ADR-0009 separates host, container, process, GameNode and ChannelRuntime and allows a channel to move between GameNodes without changing channel identity.
-- `PROVEN`: the durable UUIDv7 baseline lists `GameNodeId` as a candidate durable cross-boundary identity but leaves exact catalogue ownership/lifecycle to `FND-ID-01`.
-- `OWNER_ACCEPTED`: on 2026-08-07 the repository owner accepted that canonical `NodeId` is a UUIDv7 process-incarnation identity and every GameNode process restart receives a new `NodeId`; stable infrastructure/placement identity, when needed, is separate.
+- `PROVEN`: ADR-0001 defines `NodeId` as the identity of one GameNode process runtime rather than physical infrastructure.
+- `PROVEN`: ADR-0009 separates host, container, process, GameNode and ChannelRuntime and allows a channel to move between nodes without changing channel identity.
+- `OWNER_ACCEPTED`: on 2026-08-07 the repository owner accepted `NodeId = strongly typed UUIDv7 process incarnation`, with a fresh `NodeId` on every process restart/replacement.
+- `CONSTRAINT`: exact UUID generator/registration handshake and any stable placement-ID type remain deliberately unresolved.
 
-The canonical project term remains `NodeId` to match ADR-0001. `GameNodeId` may appear in historical/candidate wording but must not become a second semantic identifier for the same process-incarnation concept without an explicit rename/migration decision.
+Canonical project terminology remains `NodeId`; historical/candidate `GameNodeId` wording must not create a second identifier for the same concept.
 
 ## Acceptance criteria
 
-- [x] Define `NodeId` as one GameNode process incarnation.
-- [x] Use strongly typed UUIDv7 as canonical representation.
-- [x] Require a new `NodeId` for every process restart/new incarnation.
-- [x] Keep `NodeId` separate from host, VM, pod/container, orchestrator-node and stable deployment-slot identity.
-- [x] Keep `NodeId` out of semantic `WorldId + ChannelId` channel identity.
-- [x] State that possession of `NodeId` grants no gameplay or mutation authority by itself.
-- [x] Preserve recovery/fencing semantics: a replacement process is a new node incarnation while the channel may retain the same `WorldId + ChannelId` with newer ownership generation/fence.
-- [x] Avoid prematurely freezing the exact NodeId generator/registration handshake or the final name/owner of stable placement identity.
-- [x] Do not implement runtime, orchestrator, protocol, persistence or production behavior.
-- [ ] Review the final diff and exact-head checks before merge readiness.
+- [x] `NodeId` identifies one GameNode process incarnation.
+- [x] `NodeId` uses strongly typed UUIDv7 preserving 128 bits.
+- [x] Every start/restart/replacement creates a new `NodeId`.
+- [x] Infrastructure and stable placement identity remain separate concepts.
+- [x] `NodeId` is not part of semantic `WorldId + ChannelId` identity.
+- [x] `NodeId` grants no mutation authority without current assignment/fencing.
+- [x] Exact generator/registration handshake is not prematurely frozen.
+- [x] No runtime/orchestrator/protocol/persistence implementation is included.
+- [ ] Exact-head documentation/governance checks and independent audit before merge readiness.
 
 ## Excluded scope
 
-- no Rust runtime implementation;
-- no orchestrator integration;
-- no heartbeat/lease/registration API;
-- no exact `NodeId` wire encoding beyond full UUIDv7 preservation requirements already owned by later contracts;
-- no stable host/placement identifier final naming or ownership decision;
-- no `ChannelId`/`WorldId` lifecycle changes;
-- no production deployment or activation;
-- no completion of the full `FND-ID-01` catalogue.
+No Rust runtime, orchestrator integration, heartbeat/registration API, persistence, protocol encoding, stable placement-ID final contract, production deployment or completion of the full `FND-ID-01` catalogue.
 
 ## Implementation / findings
 
-The decision intentionally distinguishes process incarnation from durable topology identity. A replacement GameNode is a different `NodeId`; a recovered channel is not therefore a different `ChannelId`. This gives diagnostics, stale-registration rejection, recovery and fencing a precise process identity without coupling application identity to mutable infrastructure.
+The dedicated owner baseline records the accepted distinction between process incarnation and durable topology identity. A replacement GameNode gets a new `NodeId`, while a recovered channel may retain the same `WorldId + ChannelId` under a newer ownership generation/fence.
 
-Exact UUID generation location and registration/attestation protocol are deliberately left open. `NodeId` must be newly established for every process incarnation, but `FND-ID-01`/`FND-03`/operations contracts will assign exact generator, registration authority and failure semantics.
+PR #65 owns only the two declared documentation paths. PRs #63 and #64 are separate architecture packages and do not overlap these paths.
 
 ## Validation
 
 ### Focused
-
 - command/run: pending exact-head documentation/governance workflow
 - result: pending
 
 ### Component/integration
-
 - command/run: `NOT_APPLICABLE` — architecture documentation only
 - result: `NOT_APPLICABLE`
 
 ### E2E
-
 - scenario: `NOT_APPLICABLE` — no executable runtime behavior changes
 - result: `NOT_APPLICABLE`
 
 ### Exact-head CI
-
-- final head: recorded in immutable PR/check evidence after final content commit
+- final head: recorded in immutable PR/check evidence after this final content commit
 - trigger source: pull_request
 - workflow/run/job: pending
 - runner assignment: pending
@@ -111,9 +99,9 @@ Exact UUID generation location and registration/attestation protocol are deliber
 
 ## PR and closeout
 
-- changed-file review: pending
+- changed-file review: pending final diff review
 - unresolved review threads: pending
-- related/superseded PRs: PR #63 and PR #64 are separate architecture decisions and own no paths in this task
+- related/superseded PRs: #63 and #64 are separate and non-overlapping
 - protected auto-merge: pending
 - merge commit/result: pending
 - ownership release: pending
@@ -121,14 +109,14 @@ Exact UUID generation location and registration/attestation protocol are deliber
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner accepted NodeId as a UUIDv7 GameNode process-incarnation identity that changes on every process restart.
-status: implementing
+last_progress: Owner NodeId decision is recorded in the dedicated baseline and PR #65 is open with only two declared documentation paths.
+status: validating
 branch: docs/OTV2-20260807-nodeid-incarnation
 head_sha: null
-pr: null
+pr: 65
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
+ci_trigger_source: pull_request
 ci_check_generation: null
 ci_checks_for_current_head: 0
 ci_run_ids: []
@@ -143,5 +131,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Add the owner-accepted NodeId process-incarnation architecture baseline and open a bounded documentation PR.
+next_action: Review the exact two-file diff and exact-head CI for PR #65 without moving the head unless a material defect is found.
 ```
