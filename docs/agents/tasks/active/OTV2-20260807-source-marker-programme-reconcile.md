@@ -10,12 +10,12 @@ base_branch: main
 branch: docs/OTV2-20260807-source-marker-programme-reconcile
 pr: 60
 base_sha: 283fceeecc55c85f8b0d34459732f27c74a77de7
-head_sha: null
+head_sha: 4544d65bf5dd0e59ac77a18d95d1f1843995f2d7
 final_head_sha: null
 final_head_frozen_at: null
 owner: GPT-5.6-Sol-architecture-coordinator
 created_at: 2026-08-07T09:17:00+02:00
-updated_at: 2026-08-07T09:17:00+02:00
+updated_at: 2026-08-07T09:44:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -60,10 +60,10 @@ Make the live Oteryn-v2 foundation programme state truthful after the required s
 - [x] The non-owning foundation programme checkpoint no longer claims the source marker is pending or blocks `FND-ID-01` on it.
 - [x] Context routing makes the current-status overlay mandatory for foundation/architecture continuation.
 - [x] Stale progress-only wording in older shared registers is explicitly reconciled without rewriting accepted architecture semantics.
-- [ ] Full changed-file review contains only declared paths.
-- [ ] Independent audit finds zero material issues.
-- [ ] Exact-head required GitHub checks pass.
-- [ ] No unresolved review threads/requested changes remain.
+- [x] Full changed-file review contains only declared paths.
+- [x] Independent audit finds zero material issues on the completed architecture content head.
+- [ ] Exact-head required GitHub checks pass on the final lifecycle-evidence head.
+- [x] No unresolved review threads/requested changes remain at the completed-content audit point.
 - [ ] PR squash-merges and this task is archived separately.
 
 ## Excluded scope
@@ -79,13 +79,16 @@ Make the live Oteryn-v2 foundation programme state truthful after the required s
 - Updated `CONTEXT_ROUTING.md` so every foundation/architecture continuation reads the current-status overlay before interpreting long-lived register progress text.
 - Reconciled and compacted the non-owning foundation programme checkpoint around canonical sources of truth, completed VSL-02 source closeout and `FND-ID-01` as the next ordered gate.
 - No runtime, protocol, persistence, product implementation, external repository or production state changed.
+- The first PR-triggered Agent governance run failed only because its event payload predated the corrected PR body headings. The corrected body was then validated successfully by trusted manual dispatch run `31158778829` on exact content head `4544d65bf5dd0e59ac77a18d95d1f1843995f2d7`.
+- GitHub branch protection still associated the required check with the older failing PR-triggered check, so this task record is being substantively updated with the completed validation/recovery evidence. That lifecycle update intentionally produces a normal `pull_request/synchronize` event; no no-op commit, branch rewind, close/reopen cycle or replacement PR is used.
 
 ## Validation
 
 ### Focused
 
 - command/run: full changed-file/diff review and exact evidence reconciliation
-- result: pending final-head review
+- completed-content head: `4544d65bf5dd0e59ac77a18d95d1f1843995f2d7`
+- result: `PASS`; changed paths limited to the four declared architecture/programme paths
 
 ### Component/integration
 
@@ -99,53 +102,56 @@ Make the live Oteryn-v2 foundation programme state truthful after the required s
 
 ### Exact-head CI
 
-- final head: pending
-- trigger source: pull_request
-- workflow/run/job: pending
-- runner assignment: pending
-- classification: pending
-- result: pending
+- completed-content head: `4544d65bf5dd0e59ac77a18d95d1f1843995f2d7`
+- Dependency review run `31157445847`: `PASS`
+- CodeQL run `31157445817`: `PASS`
+- trusted Agent governance workflow_dispatch run `31158778829`: `PASS`
+- required PR-context Agent governance: pending regeneration on the lifecycle-evidence synchronize head because branch protection does not treat the successful dispatch as replacement for the older failed PR-context check
+- final lifecycle-evidence head: pending
 
 ## Independent audit
 
-- exact head: pending
+- exact completed-content head: `4544d65bf5dd0e59ac77a18d95d1f1843995f2d7`
 - method/auditor: adversarial architecture/programme-state consistency review
-- material findings: pending
-- verdict: pending
+- material findings: `0` after correcting one pre-freeze UUIDv7 baseline filename reference
+- verdict: `PASS_ZERO_MATERIAL_FINDINGS`
 
 ## PR and closeout
 
-- changed-file review: pending
-- unresolved review threads: pending
+- changed-file review: `PASS`
+- unresolved review threads: `0` at completed-content audit point
 - related/superseded PRs: none
-- protected auto-merge: pending
+- protected auto-merge: enabled
 - merge commit/result: pending
-- ownership release: pending
+- ownership release: pending separate archive PR after merge
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Current-status overlay, context routing and non-owning programme checkpoint are reconciled on PR #60; implementation content is complete pending final diff audit and exact-head CI.
+last_progress: Completed architecture content on PR #60 passed review/audit and exact-head Dependency Review, CodeQL and trusted manual Agent governance; lifecycle evidence is now recorded so a normal PR synchronize can regenerate the branch-protection-authoritative governance check with the corrected PR body.
 status: validating
 branch: docs/OTV2-20260807-source-marker-programme-reconcile
-head_sha: null
+head_sha: 4544d65bf5dd0e59ac77a18d95d1f1843995f2d7
 pr: 60
 final_head_sha: null
 final_head_frozen_at: null
 ci_trigger_source: pull_request
-ci_check_generation: null
+ci_check_generation: lifecycle-evidence-synchronize
 ci_checks_for_current_head: 0
-ci_run_ids: []
+ci_run_ids:
+  - 31157445847
+  - 31157445817
+  - 31158778829
 ci_job_ids: []
-runner_assignment_state: unknown
+runner_assignment_state: pending_new_head
 terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
-identical_failure_retries: 0
+identical_failure_retries: 1
 repair_cycles_for_current_gate: 0
-ci_recovery_actions_for_current_head: 0
+ci_recovery_actions_for_current_head: 1
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Review and audit the complete PR #60 diff, then freeze the exact head and run required CI without further content churn.
+next_action: Verify required checks on the new lifecycle-evidence synchronize head; if green and review state remains clean, squash-merge PR #60 and archive this task in a separate lifecycle PR.
 ```
