@@ -4,11 +4,11 @@
 task_id: OTV2-20260807-source-marker-programme-reconcile
 title: Reconcile foundation programme after source-marker closeout
 mode: COORDINATE
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260807-source-marker-programme-reconcile
-pr: null
+pr: 60
 base_sha: 283fceeecc55c85f8b0d34459732f27c74a77de7
 head_sha: null
 final_head_sha: null
@@ -46,8 +46,8 @@ Make the live Oteryn-v2 foundation programme state truthful after the required s
 - Oteryn-v2 atomic destination cutover PR #50 merged as `78988f72a80cc904aa9176ae850c50d4efa0b0f0`.
 - `blakinio/otclient` source-marker PR #274 passed exact-head Rust Client and repository CI and squash-merged as `8c56c45c6c25147470ce3ca23e639a31d9085e47`.
 - `blakinio/otclient` lifecycle archive PR #275 passed repository CI and squash-merged as `26f7646ea26b27c9ac4bf617b8cb0d63c89bdfda`.
-- `blakinio/otclient/main` now points at the terminal archive merge.
-- Oteryn-v2 has no open PR at task start and `main` is `283fceeecc55c85f8b0d34459732f27c74a77de7`.
+- `blakinio/otclient/main` points at the terminal archive merge.
+- Oteryn-v2 had no open PR at task start and `main` was `283fceeecc55c85f8b0d34459732f27c74a77de7`.
 
 ### DERIVED
 
@@ -56,10 +56,10 @@ Make the live Oteryn-v2 foundation programme state truthful after the required s
 
 ## Acceptance criteria
 
-- [ ] Canonical current-status documentation records exact source-marker and archive evidence.
-- [ ] The non-owning foundation programme checkpoint no longer claims the source marker is pending or blocks `FND-ID-01` on it.
-- [ ] Context routing makes the current-status overlay mandatory for foundation/architecture continuation.
-- [ ] Stale progress-only wording in older shared registers is explicitly reconciled without rewriting accepted architecture semantics.
+- [x] Canonical current-status documentation records exact source-marker and archive evidence.
+- [x] The non-owning foundation programme checkpoint no longer claims the source marker is pending or blocks `FND-ID-01` on it.
+- [x] Context routing makes the current-status overlay mandatory for foundation/architecture continuation.
+- [x] Stale progress-only wording in older shared registers is explicitly reconciled without rewriting accepted architecture semantics.
 - [ ] Full changed-file review contains only declared paths.
 - [ ] Independent audit finds zero material issues.
 - [ ] Exact-head required GitHub checks pass.
@@ -75,14 +75,17 @@ Make the live Oteryn-v2 foundation programme state truthful after the required s
 
 ## Implementation / findings
 
-The source-marker closeout is complete. This package reconciles current programme state and introduces a narrow execution-status overlay so large historical/shared registers can preserve their accepted architecture content while stale `pending source marker` progress sentences are no longer interpreted as live blockers.
+- Added `FOUNDATION_PROGRAMME_CURRENT_STATUS.md` as a narrow canonical execution-status overlay. It supersedes only stale progress statements, not accepted architecture semantics.
+- Updated `CONTEXT_ROUTING.md` so every foundation/architecture continuation reads the current-status overlay before interpreting long-lived register progress text.
+- Reconciled and compacted the non-owning foundation programme checkpoint around canonical sources of truth, completed VSL-02 source closeout and `FND-ID-01` as the next ordered gate.
+- No runtime, protocol, persistence, product implementation, external repository or production state changed.
 
 ## Validation
 
 ### Focused
 
 - command/run: full changed-file/diff review and exact evidence reconciliation
-- result: pending
+- result: pending final-head review
 
 ### Component/integration
 
@@ -122,14 +125,14 @@ The source-marker closeout is complete. This package reconciles current programm
 ## Context checkpoint
 
 ```yaml
-last_progress: Source marker and lifecycle archive are merged in blakinio/otclient; Oteryn-v2 programme reconciliation branch is claimed.
-status: implementing
+last_progress: Current-status overlay, context routing and non-owning programme checkpoint are reconciled on PR #60; implementation content is complete pending final diff audit and exact-head CI.
+status: validating
 branch: docs/OTV2-20260807-source-marker-programme-reconcile
 head_sha: null
-pr: null
+pr: 60
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
+ci_trigger_source: pull_request
 ci_check_generation: null
 ci_checks_for_current_head: 0
 ci_run_ids: []
@@ -144,5 +147,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Add the canonical foundation current-status overlay and reconcile the non-owning programme checkpoint and context routing.
+next_action: Review and audit the complete PR #60 diff, then freeze the exact head and run required CI without further content churn.
 ```
