@@ -4,11 +4,11 @@
 task_id: OTV2-20260807-protocol-contract-reconciliation
 title: Reconcile legacy Platform native gameplay contract with Oteryn v2 architecture
 mode: CONTRACT
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260807-protocol-contract-reconciliation
-pr: null
+pr: 63
 base_sha: 6804f5d67b63f1374a9efa3710bcaad10805c801
 head_sha: null
 final_head_sha: null
@@ -49,7 +49,7 @@ Record the repository-owner accepted decision that the existing `blakinio/Oteryn
 - `PROVEN`: ADR-0001 makes the authoritative Rust server and one production `protocol-oteryn` family the Oteryn v2 target.
 - `PROVEN`: ADR-0008 makes `protocol-canary` reference-only and forbids production negotiation, fallback, listener and translation roles.
 - `PROVEN`: ADR-0003 preserves Platform Identity, Game Login Ticket, Game Gateway and World Registry as the external authentication/routing control plane.
-- `PROVEN`: `docs/contracts/CROSS_REPOSITORY_CONTRACT_LOCK.json` currently locks Platform commit `c0b8703d326a04b43ae8e06f6192b0cb91c859b7`, schema revision `2`, but already records `accepted_for_fnd02: false`.
+- `PROVEN`: `docs/contracts/CROSS_REPOSITORY_CONTRACT_LOCK.json` locks Platform commit `c0b8703d326a04b43ae8e06f6192b0cb91c859b7`, schema revision `2`, while recording `accepted_for_fnd02: false`.
 - `CONFLICT`: the locked Platform contract still describes Canary as an offered family, Otheryn as the authoritative gameplay runtime, and a concrete native transport/schema tuple before Oteryn v2 has completed `FND-ID-01` and `FND-02`.
 - `OWNER_ACCEPTED`: on 2026-08-07 the repository owner accepted that this Platform contract remains reconciliation input only and must not be treated as the final `protocol-oteryn` contract; `FND-02` will freeze the final wire contract after `FND-ID-01`.
 
@@ -57,13 +57,13 @@ The Platform repository remains read-only for this task. This task records the O
 
 ## Acceptance criteria
 
-- [ ] Add a dedicated owner-accepted reconciliation baseline under `docs/architecture/`.
-- [ ] Make clear which Platform contract semantics remain valid inputs and which conflicting assumptions are not accepted as final Oteryn-v2 protocol authority.
-- [ ] Preserve `FND-ID-01 -> FND-02 -> FND-03/FND-04` ordering.
-- [ ] Clarify the machine-readable contract lock without pretending an external merged revision disappeared or was rewritten.
-- [ ] Do not mutate `blakinio/Oteryn-Platform`.
-- [ ] Do not implement protocol, runtime, admission, persistence or production behavior.
-- [ ] Review the complete diff and run applicable documentation/governance validation on the exact final head.
+- [x] Add a dedicated owner-accepted reconciliation baseline under `docs/architecture/`.
+- [x] Make clear which Platform contract semantics remain valid inputs and which conflicting assumptions are not accepted as final Oteryn-v2 protocol authority.
+- [x] Preserve `FND-ID-01 -> FND-02 -> FND-03/FND-04` ordering.
+- [x] Clarify the machine-readable contract lock without pretending an external merged revision disappeared or was rewritten.
+- [x] Do not mutate `blakinio/Oteryn-Platform`.
+- [x] Do not implement protocol, runtime, admission, persistence or production behavior.
+- [ ] Review the final complete diff and verify applicable documentation/governance validation on the exact final head.
 
 ## Excluded scope
 
@@ -78,15 +78,21 @@ The Platform repository remains read-only for this task. This task records the O
 
 ## Implementation / findings
 
-The existing Platform contract is useful evidence for fail-closed authentication/admission concepts, ticket/session binding, World Registry policy, downgrade prevention and exact compatibility checks. Those concepts remain candidate inputs where consistent with accepted Oteryn-v2 architecture.
+The existing Platform contract is useful evidence for fail-closed authentication/admission concepts, ticket/session binding, World Registry policy, downgrade prevention and bounded compatibility checks. Those concepts remain inputs where consistent with accepted Oteryn-v2 architecture and are re-expressed by their owning gates.
 
-The same document cannot be accepted wholesale as `FND-02` because it also freezes assumptions that conflict with accepted Oteryn-v2 architecture or gate ordering. The reconciliation must therefore be selective and explicit rather than treating the entire external contract as either canonical or discarded.
+The same document cannot be accepted wholesale as `FND-02` because it also freezes assumptions that conflict with accepted Oteryn-v2 architecture or gate ordering. The reconciliation is therefore selective and explicit rather than treating the entire external contract as either canonical Oteryn-v2 protocol authority or discarded evidence.
+
+Implemented Oteryn-v2-side records:
+
+- `docs/architecture/FND-02_PLATFORM_PROTOCOL_RECONCILIATION_OWNER_BASELINE.md` records the owner-accepted interpretation and preserve/evidence/reject classification;
+- `docs/architecture/FOUNDATION_PROGRAMME_CURRENT_STATUS.md` records that the external Platform contract is reconciliation input only while `FND-ID-01` remains the next ordered gate;
+- `docs/contracts/CROSS_REPOSITORY_CONTRACT_LOCK.json` preserves the immutable external revision but marks its Oteryn-v2 disposition `RECONCILIATION_INPUT_ONLY`, `reconciliation_required: true` and `accepted_for_fnd02: false`.
 
 ## Validation
 
 ### Focused
 
-- command/run: pending
+- command/run: pending exact-head documentation/governance workflow evidence
 - result: pending
 
 ### Component/integration
@@ -101,8 +107,8 @@ The same document cannot be accepted wholesale as `FND-02` because it also freez
 
 ### Exact-head CI
 
-- final head: pending
-- trigger source: pending
+- final head: recorded in immutable PR/workflow evidence after final commit
+- trigger source: pull request/push workflow event if emitted
 - workflow/run/job: pending
 - runner assignment: pending
 - classification: pending
@@ -110,15 +116,15 @@ The same document cannot be accepted wholesale as `FND-02` because it also freez
 
 ## Independent audit
 
-- exact head: pending
-- method/auditor: pending
+- exact head: pending immutable PR evidence
+- method/auditor: pending independent review
 - material findings: pending
 - verdict: pending
 
 ## PR and closeout
 
-- changed-file review: pending
-- unresolved review threads: pending
+- changed-file review: initial full diff reviewed; final-head recheck pending after this metadata commit
+- unresolved review threads: pending final-head inspection
 - related/superseded PRs: none found in Oteryn-v2 at task start
 - protected auto-merge: pending
 - merge commit/result: pending
@@ -127,11 +133,11 @@ The same document cannot be accepted wholesale as `FND-02` because it also freez
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner accepted that the existing Platform native gameplay contract is reconciliation input only and not the final Oteryn-v2 protocol contract.
-status: implementing
+last_progress: PR #63 now contains the owner-accepted reconciliation baseline, current-status clarification and machine-readable reconciliation-only contract-lock disposition.
+status: validating
 branch: docs/OTV2-20260807-protocol-contract-reconciliation
 head_sha: null
-pr: null
+pr: 63
 final_head_sha: null
 final_head_frozen_at: null
 ci_trigger_source: null
@@ -149,5 +155,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Record the owner-accepted reconciliation baseline and machine-readable FND-02 disposition.
+next_action: Freeze the final diff and verify exact-head documentation/governance checks and independent audit state.
 ```
