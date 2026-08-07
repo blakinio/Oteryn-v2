@@ -12,11 +12,11 @@ on:
   workflow_dispatch:
     inputs:
       pull_request_number:
-        description: Open PR number, e.g. 58 (a pasted "pull_request_number: 58" is also accepted)
+        description: 'Open PR number, e.g. 58 (a pasted "pull_request_number: 58" is also accepted)'
         required: true
         type: string
       expected_head_sha:
-        description: Exact 40-character PR head SHA (a pasted "expected_head_sha: ..." is also accepted)
+        description: 'Exact 40-character PR head SHA (a pasted "expected_head_sha: ..." is also accepted)'
         required: true
         type: string
 
