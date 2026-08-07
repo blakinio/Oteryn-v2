@@ -67,7 +67,7 @@
     {
       "coordination_id": "OTV2-NATIVE-FOUNDATION",
       "contract_name": "protocol-oteryn-v1-foundation",
-      "status": "FND02_ACCEPTED_MERGED_LOCAL_AUTHORITY",
+      "status": "LOCKED",
       "canonical_repository": "blakinio/Oteryn-v2",
       "canonical_commit": "769ecd2ce2dfe0a7644d8dc1d67c54d40da5d202",
       "canonical_contract_revision": 1,
