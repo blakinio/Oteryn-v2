@@ -4,18 +4,18 @@
 task_id: OTV2-20260807-architecture-audit-refinements
 title: Apply whole-foundation architecture review refinements
 mode: CONTRACT
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260807-architecture-audit-refinements
-pr: null
+pr: 92
 base_sha: 10392eb89d11de2ea260c82587b4b1ef22ddd7e6
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-07T23:23:00+02:00
-updated_at: 2026-08-07T23:23:00+02:00
+updated_at: 2026-08-07T23:30:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -65,7 +65,7 @@ Persist the owner-approved whole-foundation review without reopening sound archi
 - [x] Architecture decisions require `Must decide now?`, blocked work, future constraint and supersession evidence.
 - [x] A new continuation prompt consumes the strengthened decision discipline.
 - [x] No Rust runtime, protocol codec, persistence schema, Platform repository or production state is changed.
-- [ ] Complete changed-file review passes.
+- [x] Complete changed-file review passes: six declared paths only before task metadata update; the seventh change is this task checkpoint update.
 - [ ] Independent architecture/governance audit reports zero material findings.
 - [ ] Exact-head required GitHub checks pass.
 
@@ -118,7 +118,7 @@ The package uses one partial supersession ADR instead of rewriting ADR-0004 hist
 
 ## PR and closeout
 
-- changed-file review: pending
+- changed-file review: `PASS`; only declared architecture/governance/task paths are present
 - unresolved review threads: pending
 - related/superseded PRs: PR #91 reviewed as `FIX`; no path overlap with this package
 - protected auto-merge: pending
@@ -128,15 +128,15 @@ The package uses one partial supersession ADR instead of rewriting ADR-0004 hist
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner-approved review refinements drafted as one bounded architecture/governance package on the current main base.
-status: implementing
+last_progress: PR #92 is open as a draft with the bounded owner-approved architecture review refinements; complete diff scope is clean.
+status: validating
 branch: docs/OTV2-20260807-architecture-audit-refinements
 head_sha: null
-pr: null
+pr: 92
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
-ci_check_generation: null
+ci_trigger_source: pull_request
+ci_check_generation: pending task-metadata commit
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -150,5 +150,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Commit the bounded package, inspect its complete diff and open the task PR.
+next_action: Inspect the exact PR head, run adversarial architecture/governance audit and verify required GitHub checks.
 ```
