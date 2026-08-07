@@ -43,7 +43,9 @@ This is the starting production-policy target for later `FND-04` implementation 
 
 The exact server-side instant from which the 15-second window is measured remains `FND-04` work because it depends on the accepted liveness/transport-loss state machine. The value must not be measured from an untrusted client-supplied timestamp.
 
-No separate combat/PZ-specific grace duration is accepted yet. Whether combat/PZ/logout-locked sessions should use the same 15-second value or a different explicit policy remains a separate decision. Until such a decision exists, later contracts must not invent a combat-specific override.
+The same initial **15-second reconnect grace window applies while the character has an active combat/PZ/logout lock**. Combat/PZ state does not create a longer reconnect grace window and does not create a shorter one.
+
+The grace window controls continuity of the logical `GameSessionId`; it does **not** override the separate combat/logout-presence rules. Expiry of the reconnect grace window must not by itself despawn, safe-log, teleport, protect or otherwise remove a combat/PZ/logout-locked actor from mandatory world presence. Exact post-expiry recovery/admission behavior remains `FND-04` work.
 
 ## Logical session versus transport binding
 
@@ -139,6 +141,7 @@ A different `CharacterId` does not use this reconnect path while the incumbent c
 - GameNode/channel routing changes during reconnect;
 - reconnect while combat/PZ/logout lock remains active;
 - reconnect racing with death or session termination;
+- reconnect grace expiry while combat/PZ/logout lock remains active;
 - retry/replay of admission or reconnect requests;
 - process crash while establishing the new transport generation.
 
@@ -167,6 +170,7 @@ Accepted now:
 ```text
 short eligible reconnect != new logical GameSession
 initial reconnect grace window = 15 seconds
+combat/PZ/logout-locked reconnect grace window = same 15 seconds
 same GameSessionId may survive transport loss
 accepted rebind creates a newer transport/connection generation
 older transport generations lose command authority
@@ -178,11 +182,11 @@ Still unresolved:
 - exact `GameSessionId` representation and issuer;
 - exact transport-generation field name/representation;
 - exact server-authoritative start/measurement semantics for the 15-second window;
-- whether combat/PZ/logout-locked sessions later receive a different explicit grace policy;
 - heartbeat/liveness thresholds;
 - reconnect credential/token construction;
 - transport cryptographic re-key behavior;
 - exact terminal-state enumeration;
+- exact post-grace behavior while a combat/PZ/logout-locked actor remains in mandatory world presence;
 - persistence requirements for reconnect/session fencing;
 - final protocol/wire encoding.
 
