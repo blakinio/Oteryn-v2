@@ -8,9 +8,11 @@ status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260807-account-single-online-character
+pr: 70
 base_sha: 52588b36adaffd1e86bf705dfae14a0832630d91
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-07T12:43:00+02:00
+updated_at: 2026-08-07T12:47:00+02:00
 execution_budget_minutes: 30
 owned_paths:
   - docs/agents/tasks/active/OTV2-20260807-account-single-online-character.md
@@ -54,5 +56,7 @@ Record the owner-accepted invariant that one Platform-owned `AccountId` may have
 - [ ] Exact-head checks and independent audit before merge readiness.
 
 ## Validation
+
+PR #70 owns exactly the two declared documentation files. The initial governance run reached PR metadata validation before checkout and failed because the PR body omitted the required `## Scope` heading; the PR metadata was corrected without changing architecture semantics. This task metadata update records the live PR number and triggers a fresh exact-head pull-request validation generation.
 
 Documentation-only architecture change. Exact-head repository checks and independent audit are required before merge readiness.
