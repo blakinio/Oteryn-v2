@@ -11,7 +11,7 @@
 
 Record the owner-accepted semantic distinction between a logical gameplay session and the concrete transport currently bound to that session.
 
-This baseline freezes reconnect identity/fencing semantics only. It does not choose the final transport, grace-window duration, heartbeat interval, reconnect token format, database schema, wire field names or cryptographic construction.
+This baseline freezes reconnect identity/fencing semantics and the initial reconnect grace-window policy value. It does not choose the final transport, heartbeat interval, reconnect token format, database schema, wire field names or cryptographic construction.
 
 ## Owner-accepted model
 
@@ -28,6 +28,22 @@ GameSessionId S1
 ```
 
 A transient transport loss is therefore **not by itself a new gameplay session**.
+
+## Initial reconnect grace-window policy
+
+The owner-accepted **initial default reconnect grace window is 15 seconds**.
+
+Conceptually:
+
+```text
+reconnect_grace_window = 15 seconds
+```
+
+This is the starting production-policy target for later `FND-04` implementation design, not an immutable protocol constant. It may be tuned later through an explicit architecture/product decision informed by testing, gameplay safety and telemetry.
+
+The exact server-side instant from which the 15-second window is measured remains `FND-04` work because it depends on the accepted liveness/transport-loss state machine. The value must not be measured from an untrusted client-supplied timestamp.
+
+No separate combat/PZ-specific grace duration is accepted yet. Whether combat/PZ/logout-locked sessions should use the same 15-second value or a different explicit policy remains a separate decision. Until such a decision exists, later contracts must not invent a combat-specific override.
 
 ## Logical session versus transport binding
 
@@ -150,6 +166,7 @@ Accepted now:
 
 ```text
 short eligible reconnect != new logical GameSession
+initial reconnect grace window = 15 seconds
 same GameSessionId may survive transport loss
 accepted rebind creates a newer transport/connection generation
 older transport generations lose command authority
@@ -160,7 +177,8 @@ Still unresolved:
 
 - exact `GameSessionId` representation and issuer;
 - exact transport-generation field name/representation;
-- reconnect grace-window duration;
+- exact server-authoritative start/measurement semantics for the 15-second window;
+- whether combat/PZ/logout-locked sessions later receive a different explicit grace policy;
 - heartbeat/liveness thresholds;
 - reconnect credential/token construction;
 - transport cryptographic re-key behavior;
