@@ -64,7 +64,7 @@ The source-marker prerequisite is complete, but `FND-ID-01` itself is **not comp
 Existing owner-accepted inputs include at least:
 
 - `FND-ID-01_OWNER_ACCEPTED_BASELINE.md` — semantic identity classes and accepted world/channel/instance/party scope;
-- `UUIDV7_DURABLE_IDENTITY_OWNER_ACCEPTED_BASELINE.md` — strongly typed UUIDv7 direction for Oteryn-owned durable cross-boundary identities plus runtime/session/content handle separation;
+- `UUIDV7_DURABLE_IDENTITY_OWNER_BASELINE.md` — strongly typed UUIDv7 direction for Oteryn-owned durable cross-boundary identities plus runtime/session/content handle separation;
 - `INSTANCE_SCOPE_AND_RUNTIME_OWNER_BASELINE.md` — instance identity and runtime-ownership consequences;
 - other accepted owner baselines that constrain privacy, presence and cross-boundary identity exposure.
 
