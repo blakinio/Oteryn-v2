@@ -4,18 +4,18 @@
 task_id: OTV2-20260807-world-channel-uuidv7
 title: Record WorldId and ChannelId UUIDv7 representation
 mode: CONTRACT
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260807-world-channel-uuidv7
-pr: null
+pr: 64
 base_sha: 6804f5d67b63f1374a9efa3710bcaad10805c801
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-07T10:49:00+02:00
-updated_at: 2026-08-07T10:49:00+02:00
+updated_at: 2026-08-07T10:53:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -74,11 +74,13 @@ Record the owner-accepted decision that the canonical target representation of `
 
 A dedicated owner baseline records the representation decision without rewriting earlier evidence. The later decision resolves only the previous conditional representation wording for `WorldId` and `ChannelId`; all prior issuer, scope, fencing and cross-repository authority rules remain in force.
 
+PR #64 contains only the two declared documentation paths and intentionally does not edit `FOUNDATION_PROGRAMME_CURRENT_STATUS.md`, avoiding overlap with the still-open PR #63.
+
 ## Validation
 
 ### Focused
 
-- command/run: pending
+- command/run: pending exact-head documentation/governance workflow
 - result: pending
 
 ### Component/integration
@@ -93,8 +95,8 @@ A dedicated owner baseline records the representation decision without rewriting
 
 ### Exact-head CI
 
-- final head: pending
-- trigger source: pending
+- final head: recorded in immutable PR/check evidence after final content commit
+- trigger source: pull_request
 - workflow/run/job: pending
 - runner assignment: pending
 - classification: pending
@@ -102,14 +104,14 @@ A dedicated owner baseline records the representation decision without rewriting
 
 ## Independent audit
 
-- exact head: pending
+- exact head: pending immutable PR/check evidence
 - method/auditor: pending
 - material findings: pending
 - verdict: pending
 
 ## PR and closeout
 
-- changed-file review: pending
+- changed-file review: pending final diff review
 - unresolved review threads: pending
 - related/superseded PRs: PR #63 is separate `FND-02` reconciliation scope and owns no files in this task
 - protected auto-merge: pending
@@ -119,14 +121,14 @@ A dedicated owner baseline records the representation decision without rewriting
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner accepted strongly typed full-128-bit UUIDv7 for WorldId and ChannelId while retaining WorldId + ChannelId semantic channel scope.
-status: implementing
+last_progress: Owner decision is recorded in a dedicated baseline and PR #64 is open with only the two declared paths.
+status: validating
 branch: docs/OTV2-20260807-world-channel-uuidv7
 head_sha: null
-pr: null
+pr: 64
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
+ci_trigger_source: pull_request
 ci_check_generation: null
 ci_checks_for_current_head: 0
 ci_run_ids: []
@@ -141,5 +143,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Open a bounded documentation PR and validate the exact diff.
+next_action: Review the exact two-file diff and exact-head CI for PR #64 without moving the head unless a material defect is found.
 ```
