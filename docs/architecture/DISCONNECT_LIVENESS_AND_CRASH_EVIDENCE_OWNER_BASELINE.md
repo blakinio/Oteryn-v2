@@ -5,7 +5,7 @@
 - Decision owner: Oteryn project owner
 - Coordination ID: `OTV2-NATIVE-FOUNDATION`
 - Applies to: disconnect protection, client/GameNode diagnostics, later `FND-02`, `FND-03`, `FND-04`, operations, QA/E2E and Game Intelligence contracts
-- Related: `LAG_DISCONNECT_PROTECTION_OWNER_BASELINE.md`, `LAG_DISCONNECT_REENTRY_ACTION_POLICY_OWNER_BASELINE.md`, ADR-0006, ADR-0009
+- Related: `LAG_DISCONNECT_PROTECTION_OWNER_BASELINE.md`, `LAG_DISCONNECT_REENTRY_ACTION_POLICY_OWNER_BASELINE.md`, `CLIENT_CRASH_DIAGNOSTICS_PRIVACY_OWNER_BASELINE.md`, ADR-0006, ADR-0009
 
 ## Purpose
 
@@ -74,7 +74,9 @@ Missing client crash evidence must never by itself revoke otherwise valid discon
 
 When the native client crashes, hangs fatally or is terminated by an internal fatal condition, the client-side diagnostics layer should preserve a bounded local crash package when technically possible.
 
-On a later successful client start, an approved diagnostics uploader **automatically submits** eligible pending crash packages to the Oteryn diagnostics/Game Intelligence ingestion boundary. Per-crash interactive confirmation is not required.
+On a later successful client start, an approved diagnostics uploader **automatically submits** eligible pending crash packages to the Oteryn diagnostics/Game Intelligence ingestion boundary when client diagnostics upload is enabled. Per-crash interactive confirmation is not required.
+
+The owner also accepts a global privacy opt-out for client-originated diagnostics. The detailed privacy behavior is defined by `CLIENT_CRASH_DIAGNOSTICS_PRIVACY_OWNER_BASELINE.md`.
 
 Automatic submission is owner-accepted only under the following safety boundary:
 
@@ -84,7 +86,8 @@ Automatic submission is owner-accepted only under the following safety boundary:
 - secrets, reusable credentials, tokens, private chat content and unrelated personal data are excluded before upload;
 - the client records whether a package was successfully accepted so the same crash does not upload indefinitely;
 - transient upload failure may use bounded retry/backoff, but crash upload must never block normal client startup or gameplay admission indefinitely;
-- client crash uploads remain untrusted diagnostic evidence and never become gameplay authority.
+- client crash uploads remain untrusted diagnostic evidence and never become gameplay authority;
+- disabling client diagnostic upload prevents transmission of client-originated crash packages but does not disable required server-side operational or authoritative evidence.
 
 The package may contain, subject to later privacy and resource-limit contracts:
 
@@ -210,7 +213,8 @@ Later contracts must define:
 - role-based access for operators, developers and security investigators;
 - integrity/deduplication of repeated reports;
 - treatment of potentially malicious client payloads;
-- separation from low-cardinality operational metrics.
+- separation from low-cardinality operational metrics;
+- user-facing privacy controls and disclosures for client-originated diagnostics.
 
 Raw player/session identifiers must not be exported as ordinary Prometheus labels.
 
@@ -236,13 +240,14 @@ Future contracts and implementation must prove at minimum:
 3. a client cannot self-declare lag/disconnect protection;
 4. stale heartbeat/ack evidence from an older transport generation cannot recover authority;
 5. isolated packet loss/jitter does not deterministically trigger protection before the accepted liveness policy says it should;
-6. client crash evidence can be retained locally and is automatically submitted after restart when available;
+6. client crash evidence can be retained locally and is automatically submitted after restart when available and permitted by the client privacy setting;
 7. automatic upload applies local redaction, allowlisted schema and hard size limits before transmission;
 8. upload failure cannot indefinitely block normal client startup/gameplay admission and retry behavior remains bounded;
-9. absence of client crash evidence does not revoke valid protection;
-10. GameNode crash evidence survives process/container death through an external collector/supervisor path;
-11. correlated mass infrastructure failures can be distinguished from isolated client incidents;
-12. automated diagnostic/AI analysis remains outside authoritative mutation and cannot ban, alter gameplay or decide protection.
+9. disabling client-originated diagnostics prevents automatic client crash-package upload without disabling server-authoritative protection/evidence;
+10. absence of client crash evidence does not revoke valid protection;
+11. GameNode crash evidence survives process/container death through an external collector/supervisor path;
+12. correlated mass infrastructure failures can be distinguished from isolated client incidents;
+13. automated diagnostic/AI analysis remains outside authoritative mutation and cannot ban, alter gameplay or decide protection.
 
 ## Programme effect
 
@@ -255,10 +260,12 @@ socket-open state alone != sufficient liveness proof
 client self-report != authority
 2.0-second PvE protection timer starts from last sufficient server-authoritative liveness evidence
 crash/log evidence is collected and analysed after/around the incident when available
-client crash -> bounded local evidence -> automatic upload after restart when possible
+client crash -> bounded local evidence -> automatic upload after restart when possible and enabled
 per-crash user confirmation is not required
+client diagnostics -> global privacy opt-out available
 upload -> local redaction + allowlisted/versioned schema + hard size limits + bounded retry
 crash-upload failure must not indefinitely block normal startup/gameplay admission
+client opt-out != disabling required server-side operational/authoritative evidence
 GameNode crash -> external supervisor/collector preserves evidence
 network/infrastructure incidents -> correlated with player and node evidence
 Game Intelligence performs deterministic + read-only AI-assisted analysis outside ChannelRuntime
