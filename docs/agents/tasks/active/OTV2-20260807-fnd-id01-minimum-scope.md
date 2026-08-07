@@ -4,18 +4,18 @@
 task_id: OTV2-20260807-fnd-id01-minimum-scope
 title: Freeze the minimum scope of the final FND-ID-01 contract
 mode: CONTRACT
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260807-fnd-id01-minimum-scope
-pr: null
+pr: 80
 base_sha: 7194f510a09bb5aba6ceab94841f9a48d95e57da
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-07T19:57:00+02:00
-updated_at: 2026-08-07T19:57:00+02:00
+updated_at: 2026-08-07T20:01:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -137,14 +137,14 @@ The canonical architecture result is stored in `docs/architecture/FND-ID-01_MINI
 ## Context checkpoint
 
 ```yaml
-last_progress: Dedicated documentation branch created and task scope claimed for the owner-accepted minimum FND-ID-01 boundary.
-status: implementing
+last_progress: Owner-accepted minimum FND-ID-01 boundary is recorded in the canonical architecture baseline and draft PR #80 is open with only the two declared documentation paths.
+status: validating
 branch: docs/OTV2-20260807-fnd-id01-minimum-scope
 head_sha: null
-pr: null
+pr: 80
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
+ci_trigger_source: pull_request
 ci_check_generation: null
 ci_checks_for_current_head: 0
 ci_run_ids: []
@@ -159,5 +159,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Add the canonical minimum cross-boundary scope owner baseline and open the bounded documentation PR.
+next_action: Review the exact final two-file diff, perform the independent architecture audit, and inspect exact-head documentation/governance checks without moving the head unless a material defect is found.
 ```
