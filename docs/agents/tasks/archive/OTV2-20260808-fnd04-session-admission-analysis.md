@@ -53,7 +53,7 @@ premature_closeout_disposition: CLOSED_UNMERGED_SUPERSEDED_BY_REPAIR
 repair_pr: 107
 repair_exact_head: 7ebb0818b771692de36c3b5323f68e7bb8d011fe
 repair_squash_merge: bcf975f215e9aa86a544e158b9e3d42ece1bc642
-closeout_pr: pending
+closeout_pr: 108
 closeout_branch: docs/OTV2-20260808-fnd04-session-admission-analysis-closeout-v2
 completed_at: 2026-08-08T21:17:00+02:00
 ownership_released: true
