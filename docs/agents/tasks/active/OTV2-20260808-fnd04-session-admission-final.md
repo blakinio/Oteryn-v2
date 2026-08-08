@@ -1,0 +1,241 @@
+# OTV2-20260808-fnd04-session-admission-final
+
+```yaml
+task_id: OTV2-20260808-fnd04-session-admission-final
+title: Finalize FND-04 identity Game Session admission and character lease contract
+mode: CONTRACT
+status: validating
+repository: blakinio/Oteryn-v2
+base_branch: main
+branch: docs/OTV2-20260808-fnd04-session-admission-final
+pr: 109
+base_sha: 27f7f647f04e3b1a4151f9b124401986910f03d8
+head_sha: null
+final_head_sha: null
+final_head_frozen_at: null
+owner: GPT-5.6 Sol architecture continuation session
+created_at: 2026-08-08T21:22:00+02:00
+updated_at: 2026-08-08T21:42:00+02:00
+execution_budget_minutes: 60
+large_budget_reason: null
+owned_paths:
+  - docs/agents/tasks/active/OTV2-20260808-fnd04-session-admission-final.md
+  - docs/architecture/FND-04_IDENTITY_GAME_SESSION_ADMISSION_CHARACTER_LEASE_CONTRACT.md
+  - docs/architecture/FND-04_HEALTHY_BINDING_REBIND_SECURITY_REFINEMENT.md
+  - docs/contracts/FND-04_PRE_ADMISSION_GRANT_PROFILE_V1.md
+  - docs/contracts/FND-04_REAUTHENTICATED_RECOVERY_GRANT_PROFILE_V1.md
+  - docs/contracts/FOUNDATION_FAILURE_SCENARIOS.md
+  - docs/architecture/FOUNDATION_PROGRAMME_CURRENT_STATUS.md
+public_contracts:
+  - docs/architecture/FND-04_IDENTITY_GAME_SESSION_ADMISSION_CHARACTER_LEASE_CONTRACT.md
+  - docs/architecture/FND-04_HEALTHY_BINDING_REBIND_SECURITY_REFINEMENT.md
+  - docs/contracts/FND-04_PRE_ADMISSION_GRANT_PROFILE_V1.md
+  - docs/contracts/FND-04_REAUTHENTICATED_RECOVERY_GRANT_PROFILE_V1.md
+depends_on:
+  - docs/architecture/FND-04_SESSION_ADMISSION_LEASE_ANALYSIS_BASELINE.md
+  - docs/architecture/FND-04_PLATFORM_PRE_ADMISSION_RECONCILIATION_REFINEMENT.md
+  - docs/architecture/ADR-0003-platform-identity-game-gateway-and-admission-boundary.md
+  - docs/architecture/ADR-0012-character-authority-and-platform-lifecycle-boundary.md
+  - docs/architecture/FND-ID-01_FOUNDATION_IDENTIFIER_CONTRACT.md
+  - docs/architecture/FND-02_PROTOCOL_OTERYN_V1_CONTRACT.md
+  - docs/architecture/FND-03_RUNTIME_EXECUTION_CONTRACT.md
+  - docs/architecture/DISCONNECT_REENTRY_PVE_PROTECTION_OWNER_DECISION.md
+  - docs/contracts/FOUNDATION_ERROR_VOCABULARY.md
+  - docs/contracts/FOUNDATION_FAILURE_SCENARIOS.md
+  - blakinio/Oteryn-Platform@216f5b2817e9d102337608609e344518512c2a0d:docs/contracts/OTERYN_V2_PRE_ADMISSION_HANDOFF_CONTRACT.md
+  - blakinio/Oteryn-Platform@216f5b2817e9d102337608609e344518512c2a0d:docs/contracts/OTERYN_V2_RUNTIME_STATUS_PROJECTION_CONTRACT.md
+blocks:
+  - production Game Session admission and reconnect implementation
+  - character lease/account presence implementation
+  - Platform native admission/recovery producer rollout
+  - production protocol-oteryn admission/reconnect/recovery traffic
+cross_repository_coordination_id: OTV2-NATIVE-FOUNDATION
+external_repositories:
+  - blakinio/Oteryn-Platform (read-only reconciliation evidence)
+```
+
+## Outcome
+
+Deliver the complete architecture-only FND-04 contract needed before native identity/admission/reconnect/lease implementation can be designed without guessing security or authority semantics.
+
+Acceptance completes the FND-04 architecture gate only. It does not authorize runtime, Platform, persistence, protocol codec, key or production implementation.
+
+## Architecture and source of truth
+
+- **PROVEN:** FND-04 analysis baseline plus Platform reconciliation refinement are canonical on `main` after #104/#107 and closeout #108.
+- **PROVEN:** duplicate/superseded PR #106 is closed unmerged and contributes no separate authority.
+- **PROVEN:** current external Platform evidence is pinned read-only at `216f5b2817e9d102337608609e344518512c2a0d`.
+- **PROVEN:** Platform Identity/Gateway authorizes bounded attempts; Oteryn-v2 remains final admission/GameSession/CharacterLease authority.
+- **PROVEN:** FND-02 fixes TLS/bootstrap, GameSessionId issuance boundary, connection_generation and command/reconciliation semantics.
+- **PROVEN:** FND-03 fixes runtime owner/fencing/time semantics and executes accepted 2s/5s/4s effects after FND-04 classifications.
+- **PROVEN current standard:** RFC 9864 registers fully specified JOSE `Ed25519` and deprecates polymorphic `EdDSA`; both FND-04 grant profiles use exact `alg=Ed25519` and reject `EdDSA` fallback.
+- **DERIVED AND FROZEN BY CANDIDATE:** fresh entry and reauthenticated existing-actor recovery use mutually exclusive signed profiles so Channel-bound fresh-entry authority cannot be reused to move a current actor.
+- **DERIVED AND FROZEN BY CANDIDATE:** reconnect uses a two-phase PREPARE/COMMIT transition; COMMIT revalidates current incumbent/session/lease/runtime/reconciliation eligibility and proof-class security state before any authority switch.
+- **DERIVED AND FROZEN BY CANDIDATE:** Platform account-security validity is bounded by signed generation + <=5-second trusted security-projection freshness for new admission/recovery; this does not grant Platform post-admission gameplay mutation authority.
+- **DERIVED AND FROZEN BY CANDIDATE:** the normative FND-04 refinement now records mandatory decision timing plus full retry/terminal/idempotency/public progression for every contract-owned cross-component failure code.
+- **DEFERRED BY EVIDENCE:** production liveness probe cadence/anti-flap hysteresis and CharacterLease TTL/renew/safety-margin values require measured fault/performance evidence before implementation acceptance.
+
+## Acceptance criteria
+
+### Authority and lifecycle
+
+- [x] Freeze AccountPresenceClaim, CharacterLease, GameSession, TransportBinding and RuntimeScopeAuthority relationship.
+- [x] Freeze fresh admission linearization and no-partial-authority rule.
+- [x] Freeze duplicate-login / healthy-incumbent / intentional-takeover semantics.
+- [x] Freeze GameSession terminality versus mandatory actor presence and same-character post-grace fresh-session attachment.
+- [x] Freeze Channel↔Instance continuous-session and Channel↔Channel fresh-session continuity classes.
+
+### Admission / recovery security profiles
+
+- [x] Freeze exact v1 JWS Compact JWT profiles using fully specified JOSE `alg=Ed25519`, independent from application library/vendor.
+- [x] Freeze exact protected-header allowlists, explicit `typ`, issuer/audience/purpose, required claims, parser/size limits and rejection of token-directed key discovery.
+- [x] Enforce FND-ID UUIDv7 + RFC-variant semantics for AdmissionAttemptRef, CharacterId, WorldId and ChannelId claims while preserving Platform-owned AccountId representation.
+- [x] Freeze fresh-entry and recovery validators as mutually exclusive credential purposes.
+- [x] Freeze AdmissionAttemptRef versus GrantNonce/RecoveryGrantNonce semantics and bounded replay/idempotency retention.
+- [x] Freeze post-issuance Platform account-security generation/revocation freshness semantics.
+- [x] Freeze fresh-entry route/runtime observation/ownership-generation binding and default stale-grant invalidation after owner-generation change.
+- [x] Freeze key-purpose separation, rotation/emergency revocation and no-downgrade behavior.
+
+### Reconnect / liveness
+
+- [x] Freeze 32-byte game-domain reconnect secret properties.
+- [x] Freeze reconnect PREPARE/COMMIT state machine, successor proof and lost-response/crash reconciliation.
+- [x] Require atomic COMMIT-time revalidation so a prepared successor cannot preempt a recovered healthy incumbent or outlive session/lease/runtime/recovery-security eligibility.
+- [x] Freeze one-winner connection_generation transition semantics.
+- [x] Freeze exact 15-second same-session grace from the accepted 2-second loss declaration; keep 5-second transport cleanup independent.
+- [x] Freeze actor/session ControlLossEpoch so routine rebind/session replacement cannot manufacture duplicate 4-second protection.
+- [x] Freeze Platform-reauthenticated same-session recovery and current game-domain placement resolution.
+- [x] Freeze post-grace same-character fresh GameSession attachment to the exact existing `PRESENT_UNCONTROLLED` actor without reset/recreation.
+- [x] Define measured liveness cadence/hysteresis evidence gate instead of guessing production values.
+- [x] Define measured CharacterLease TTL/renew/safety-margin evidence gate instead of guessing production values.
+
+### Failure, compatibility and progression
+
+- [x] Add stable `FS-ADMISSION-GRANT-REPLAY` and `FS-RECONNECT-CREDENTIAL-REPLAY` scenarios.
+- [x] Freeze stable internal symbolic error codes and safe public presentation classes without leaking security/fencing details.
+- [x] Freeze `RETRYABLE` / `TERMINAL` / `SECURITY_TERMINAL`, exact retry authority and mutation/idempotency outcome for every FND-04 cross-component error code.
+- [x] Freeze producer/consumer compatibility matrix and independent fixture requirements.
+- [x] Record mandatory decision timing, blocked downstream work and evidence required to supersede each material FND-04 choice.
+- [x] Synchronize `FOUNDATION_PROGRAMME_CURRENT_STATUS.md` through FND-03 completion, repaired FND-04 analysis and current final FND-04 delivery.
+
+### Governance
+
+- [x] No open PR existed at final-task start after duplicate #106 was closed.
+- [x] No Rust/runtime/protocol codec/persistence schema/Platform write/key deployment/production activation introduced by this package.
+- [x] Initial PR #109 metadata governance failure was diagnosed as title length `77 > 72`; PR title was shortened to `docs: finalize FND-04 session admission and lease contract` before final-head validation.
+- [x] Declared task ownership now matches the PR's exact seven documentation paths.
+- [ ] Full exact-head seven-path architecture/security review has zero material conflicts.
+- [ ] Exact-head Agent governance, Dependency review and CodeQL pass.
+- [ ] Independent exact-head architecture/security audit passes with zero open material findings.
+- [ ] Zero unresolved review threads.
+- [ ] Squash merge only after final-head gates; archive/release ownership separately.
+
+## Excluded scope
+
+This task does not implement or authorize Oteryn-v2 GameSession/admission/reconnect/lease Rust code; protocol listener/codec/schema registration; PostgreSQL/Redis schema; Platform/Gateway code; recovery-locator code; KMS/HSM/vendor/library selection; production keys; production liveness/lease values; deployment or live traffic.
+
+## Implementation / findings
+
+### Final authority model
+
+```text
+AccountPresenceClaim -> AccountId-global one playable/mandatory-presence CharacterId
+CharacterLease -> CharacterId writer/control fence + generation
+GameSession -> one logical player-control lifecycle
+TransportBinding -> GameSessionId + current connection_generation
+RuntimeScopeAuthority -> current FND-03 ChannelRuntime/InstanceRuntime owner generation
+```
+
+### Signed Platform capabilities
+
+Fresh entry uses `oteryn-pre-admission-v1`; reauthenticated recovery uses `oteryn-reauth-recovery-v1`. Both are strict JWS Compact JWT profiles with fully specified `alg=Ed25519`, 30-second maximum token lifetime, 5-second verifier skew, <=5-second current Platform-security evidence and explicit replay/idempotency state. CharacterId/WorldId/ChannelId and producer attempt references enforce their accepted UUIDv7/RFC-variant semantics.
+
+### Reconnect ambiguity and stale-authority elimination
+
+Reconnect PREPARE reserves one candidate generation/successor secret but grants no transport authority. COMMIT after successor proof revalidates current GameSession, predecessor generation/liveness, AccountPresenceClaim, CharacterLease, runtime ownership/placement and reconciliation state. Recovery-grant PREPARE additionally requires the JWT, RecoveryGrantNonce and current Platform-security validity to remain acceptable through COMMIT. Only then does one atomic transition change connection_generation/current transport/current reconnect verifier and fence predecessor.
+
+### Grace / recovery
+
+```text
+T0 last sufficient control
+T0+2s control loss declared
+T0+5s stale concrete transport cleanup
+loss declaration + 15s same-session grace expiry
+```
+
+Protection is one activation per eligible ControlLossEpoch. Post-grace mandatory actor becomes `PRESENT_UNCONTROLLED`; same-character reauthenticated recovery may create a new GameSession attached to the same actor, never respawn/reset it. Different CharacterId remains blocked until legal actor absence.
+
+### Review repair disposition
+
+The final-package repair closes the material review classes observed on prior heads:
+
+- UUIDv7/version/variant validation is explicit in both grant profiles;
+- the normative refinement records mandatory architecture decision timing;
+- PREPARE no longer acts as authorization escrow: COMMIT revalidates current authority and proof-class security before switching control;
+- every contract-owned error now has one foundation category, disposition, retry-authority rule, mutation/idempotency outcome and bounded public class.
+
+## Validation
+
+### Focused
+
+- accepted-input reconciliation: complete pending exact-head seven-path diff audit;
+- standards review: RFC 9864 fully specified `Ed25519`; deprecated `EdDSA` explicit negative fixture;
+- profile separation/UUID/replay/route/security-freshness/reconnect/lease/liveness/error-progression review: repaired; pending fresh independent exact-head audit.
+
+### Component/integration
+
+- `NOT_APPLICABLE` — architecture contract delivery only.
+
+### E2E
+
+- `NOT_APPLICABLE` for this documentation delivery. Future implementation evidence is explicitly defined by the profiles/contract/refinement.
+
+### Exact-head CI
+
+- historical pre-repair head `4bb02e5b211cd791b88610d540c80b0ce14e4126`: Dependency review `PASS`, CodeQL `PASS`, Agent governance `FAIL` only because original PR title exceeded 72 characters; historical and not reusable as final evidence.
+- historical reviewed head `6ea04ac8cd7587e3416160de2ad0639cf8415745`: CI green, but later material Codex findings invalidate terminal readiness.
+- post-review repair generation: pending exact-head checks after the final task-sync commit.
+- trigger source: `pull_request:synchronize`
+- result: pending
+
+## Independent audit
+
+- exact final head: pending
+- verdict: pending; the prior PASS cannot be terminal evidence because later material review findings were opened on the reviewed generation.
+
+## PR and closeout
+
+- final delivery PR: 109
+- current title: `docs: finalize FND-04 session admission and lease contract`
+- changed-file review: expected exactly seven owned documentation paths
+- unresolved review threads: pending repair reconciliation/fresh review
+- merge policy: squash after exact-head validation
+- ownership release: separate lifecycle closeout after delivery merge
+
+## Context checkpoint
+
+```yaml
+last_progress: Reconciled concurrent profile repairs and completed the third evidence-based review repair: UUIDv7 claim validation, package decision timing, COMMIT-time revalidation and full error progression are now explicit without expanding runtime or Platform authority.
+status: validating
+branch: docs/OTV2-20260808-fnd04-session-admission-final
+head_sha: null
+pr: 109
+final_head_sha: null
+final_head_frozen_at: null
+ci_trigger_source: pull_request
+ci_check_generation: post-material-review-repair
+ci_checks_for_current_head: 0
+ci_run_ids: []
+ci_job_ids: []
+runner_assignment_state: unknown
+terminal_ci_wait_started_at: null
+terminal_ci_checks_for_current_generation: 0
+unchanged_state_checks: 0
+identical_failure_retries: 0
+repair_cycles_for_current_gate: 3
+ci_recovery_actions_for_current_head: 0
+stall_warnings: 0
+owner_action_required: null
+blocker: null
+next_action: Review the exact seven-path head, require fresh Agent governance/Dependency review/CodeQL and a fresh independent architecture/security review with zero material findings, then resolve threads and squash merge only if the exact head remains unchanged.
+```
