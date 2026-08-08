@@ -34,6 +34,8 @@ During the full four-second window:
 - the player may consume health potions;
 - the player may consume mana/resource potions required for recovery;
 - all allowed healing and potion actions still consume their normal resources/items and obey the normal cooldown, exhaustion and legality rules;
+- the protected player may not heal another player;
+- another player may heal the protected character under the healer's normal legality, resource, range, cooldown and exhaustion rules;
 - the player may not initiate offensive combat against PvE monsters;
 - offensive input is not buffered for execution after the protection expires.
 
@@ -62,6 +64,14 @@ An attempted offensive command during the protected interval must never be queue
 
 Healing and potion use remain normal authoritative gameplay actions rather than free restoration granted by reconnect.
 
+The protected character may heal itself and may receive healing from another player. The protected character may not target another player with a healing action while the four-second protection remains active.
+
+A healing attempt by the protected character whose authoritative target is another player must be rejected or otherwise prevented and must not be buffered for execution after protection expires.
+
+Incoming healing from another player is not blocked merely because the recipient has re-entry protection. The healing player's action remains subject to the ordinary authoritative rules for legality, resources, range, cooldown, exhaustion and any later combat/support restrictions.
+
+This decision concerns healing direction only. It does not implicitly allow or prohibit non-healing buffs, cleanses, shields, resource transfers or other support effects; those remain for the owning combat/action contract.
+
 The protection window itself does not:
 
 - restore HP;
@@ -75,7 +85,7 @@ The protection window itself does not:
 - restore encounter state;
 - rewind committed damage or other authoritative effects.
 
-The player may survive by spending the resources and consumables already legitimately available to the same authoritative character.
+The player may survive by spending the resources and consumables already legitimately available to the same authoritative character or by receiving legal healing from another player.
 
 ## Previously committed effects
 
@@ -109,7 +119,7 @@ The owner accepts the four-second defensive window despite the fact that an indi
 
 Abuse prevention therefore has two layers:
 
-1. immediate mechanical restriction: no offensive PvE action can be executed during protection;
+1. immediate mechanical restriction: no offensive PvE action and no healing of another player can be executed by the protected character during protection;
 2. longitudinal evidence: repeated suspicious disconnect/re-entry patterns remain observable through the accepted Game Intelligence / disconnect-forensics architecture and may feed a separately governed human-reviewed enforcement policy.
 
 Game Intelligence remains observational/investigative and cannot autonomously ban players or mutate gameplay state.
@@ -122,6 +132,7 @@ This decision is mandatory input to:
 - `FND-04` reconnect/re-entry session state machine;
 - combat/action classification;
 - PvE monster AI targeting/attack eligibility;
+- player-to-player healing eligibility during re-entry protection;
 - QA/E2E disconnect and reconnect scenarios;
 - disconnect-forensics and later security analytics;
 - client presentation if a visible re-entry protection indicator is introduced later.
@@ -135,11 +146,14 @@ Future implementation evidence must prove at minimum that:
 3. self-healing remains legal subject to normal cost/cooldown rules;
 4. health and mana/resource potion use remains legal subject to normal item/cooldown rules;
 5. movement remains legal under the previously accepted movement rule;
-6. no offensive action against a PvE monster can execute while protection is active;
-7. offensive input attempted during protection is not buffered and does not burst-execute at expiry;
-8. already committed pre-protection effects are not rolled back;
-9. protection expiry restores normal combat eligibility without resetting authoritative character state;
-10. session-generation, one-character-per-account, item/economy and instance-recovery invariants remain intact.
+6. the protected character cannot heal another player while protection is active;
+7. another player can legally heal the protected character subject to ordinary healer-side rules;
+8. prohibited outgoing healing input is not buffered for execution after protection expires;
+9. no offensive action against a PvE monster can execute while protection is active;
+10. offensive input attempted during protection is not buffered and does not burst-execute at expiry;
+11. already committed pre-protection effects are not rolled back;
+12. protection expiry restores normal combat eligibility without resetting authoritative character state;
+13. session-generation, one-character-per-account, item/economy and instance-recovery invariants remain intact.
 
 ## Deliberately unresolved
 
@@ -147,8 +161,8 @@ This decision does not yet decide:
 
 - PvP re-entry behavior;
 - exact client UI/countdown presentation;
-- exact protocol error/result for temporarily prohibited offensive actions;
-- whether support/healing actions targeting other players are permitted during the four seconds;
+- exact protocol error/result for temporarily prohibited offensive or outgoing-healing actions;
+- non-healing support actions such as buffs, cleanses, shields or resource transfers;
 - whether non-combat interactions such as loot, containers, switches or NPC interaction are permitted;
 - whether the player may voluntarily cancel protection early;
 - sanction thresholds for deliberate disconnect abuse.
@@ -163,9 +177,11 @@ valid re-entry
 -> movement allowed
 -> self-healing allowed
 -> health/mana/resource potions allowed
+-> protected player cannot heal other players
+-> protected player can receive legal healing from other players
 -> normal costs/cooldowns still apply
 -> no offensive action against PvE monsters
--> offensive input is never buffered
+-> prohibited outgoing actions are never buffered
 -> no automatic heal/reset/teleport/state rollback
 -> after 4 seconds normal PvE combat resumes
 ```
