@@ -15,6 +15,8 @@ Record the accepted direction for using bounded client-side and operating-system
 
 The goal is not to prove from one event that a player intentionally disabled a network adapter, killed the client, removed power or caused a crash. The goal is to collect multiple independent, privacy-bounded signals that allow Oteryn Security Analytics and Game Intelligence to distinguish incident classes and detect repeated abuse patterns with materially higher confidence.
 
+The primary abuse concern motivating this direction is automation that intentionally causes loss of connectivity or termination of the game process during dangerous combat in order to obtain the accepted defensive reconnect window. The architecture therefore focuses on observable incident evidence and longitudinal behavioral correlation rather than attempting to infer human intent from one low-level event.
+
 ## 1. Authority model
 
 The binding trust order is:
@@ -53,6 +55,8 @@ Each classification must carry evidence references and confidence rather than pr
 
 For example, `GAME_PROCESS_ABRUPT_EXIT` means that the game process disappeared without an accepted graceful-exit path while other evidence suggests the operating system remained alive. It does not by itself mean `USER_KILLED_PROCESS`.
 
+Likewise, `NETWORK_INTERFACE_ADMIN_STATE_CHANGED` means the operating system exposed a local administrative/interface-state transition correlated with the incident. It does not by itself prove that a player deliberately disabled the adapter to obtain protection.
+
 ## 3. Preferred client evidence shape
 
 The client should not upload the full Windows Event Viewer or arbitrary machine logs.
@@ -65,6 +69,7 @@ Candidate evidence includes:
 - graceful shutdown marker when available;
 - crash-diagnostic marker when available;
 - local network-interface operational-state transitions;
+- local network-interface administrative-state transitions where safely observable;
 - local network-connectivity transitions;
 - local monotonic timestamps around process/network changes;
 - client build/revision identity;
@@ -91,12 +96,15 @@ Exact providers, event IDs, APIs, permissions and retention are implementation d
 
 The implementation must not depend on one Windows event ID as a universal proof of cause.
 
+The Windows Event Log is a potential bounded evidence source; the Event Viewer UI itself is not an architectural dependency.
+
 ## 5. No full Event Log ingestion
 
 The accepted privacy and minimization rule is:
 
 ```text
 no unrestricted Event Viewer upload
+no unrestricted Windows Event Log export
 no arbitrary Windows log collection
 no unrelated application/system event collection
 ```
@@ -111,6 +119,7 @@ provider_class
 event_class
 interface_state_before
 interface_state_after
+interface_admin_state_changed
 process_state_before
 process_state_after
 boot_continuity_changed
@@ -131,6 +140,8 @@ The client may keep a small in-memory rolling buffer covering only the recent, a
 Normal operation overwrites the buffer and does not persist it indefinitely.
 
 When a material disconnect occurs, the relevant bounded slice may be frozen locally and sent after a valid reconnect, subject to privacy and telemetry policy.
+
+A later implementation should prefer capturing live state transitions into this bounded ring and use post-incident Event Log queries only as complementary evidence rather than depending entirely on retrospective log scraping.
 
 Candidate horizons and byte/count limits remain for the later resource contract.
 
@@ -177,6 +188,8 @@ This is a diagnostic correlation mechanism only.
 
 The exact necessity, cadence, bandwidth, abuse resistance and privacy cost must be measured before acceptance into runtime architecture.
 
+The guardian heartbeat must never become a hidden second gameplay authority or a prerequisite that can stall the authoritative combat loop.
+
 ## 9. Force-close versus genuine crash
 
 The architecture should preserve enough evidence to distinguish, where evidence exists, between:
@@ -192,6 +205,8 @@ However, a single abrupt exit is still not automatic proof of deliberate abuse.
 
 Longitudinal repetition and server-side combat context remain necessary for high-confidence investigation.
 
+The absence of ordinary crash evidence may increase suspicion for an abrupt process-loss episode, but absence alone is not proof because crash reporting can itself fail or be unavailable.
+
 ## 10. Power loss, hard reset and system crash
 
 A true power interruption or hard reset can remove the game, guardian and network path at the same moment, leaving little or no real-time client evidence.
@@ -206,6 +221,8 @@ Candidate evidence includes:
 - absence of an accepted graceful client/system shutdown marker.
 
 Such evidence supports the classification `SYSTEM_CRASH` or `SYSTEM_POWER_LOSS_OR_HARD_RESET` with an appropriate confidence level; it must not overclaim the exact physical cause when the OS itself cannot establish it.
+
+A genuine system-wide interruption is expected to have a different evidence shape from a game-only force-close because the independent guardian, network path and machine continuity may disappear together.
 
 ## 11. Network-interface abuse investigation
 
@@ -228,6 +245,8 @@ is a strong investigative signal even though one incident does not prove that th
 
 The same principle applies to cable removal, Wi-Fi loss or other local link transitions: classify the observable state change, not the unobservable intent.
 
+A physically removed cable and an administratively disabled interface can produce different local evidence on some systems, but the architecture does not assume those differences are universally available or impossible to spoof.
+
 ## 12. Longitudinal disconnect-abuse model
 
 Game Intelligence should combine client/OS evidence with canonical server evidence and historical patterns.
@@ -249,9 +268,29 @@ Candidate features include:
 - consistency of client/guardian/OS corroborating evidence;
 - detector/model version.
 
-Repeated, unusually deterministic timing may raise suspicion of automation, but analytics output remains investigative evidence rather than autonomous enforcement authority.
+Repeated, unusually deterministic timing may raise suspicion of automation, for example repeated disconnects occurring near similar HP/risk thresholds or shortly after sharply increasing incoming damage. Analytics should look for repeated behavior patterns that are difficult to explain as ordinary random outages while remaining aware that correlation is not proof of intent.
 
-## 13. Protection must not depend on client evidence arriving in time
+The goal is to detect **abuse of disconnect protection**, not necessarily to identify the exact physical or software mechanism used to cause the disconnect.
+
+Analytics output remains investigative evidence rather than autonomous enforcement authority.
+
+## 13. Infrastructure and population correlation
+
+Player-side classification must be compared with Oteryn-side and population-wide evidence.
+
+Later analysis should correlate, where available:
+
+- GameNode tick/event-loop health;
+- channel/runtime overload and backpressure;
+- deployment/restart/OOM/failure context;
+- database/shared-service degradation;
+- simultaneous disconnects on the same node/channel/region;
+- broader clusters of affected players;
+- repeated isolated incidents limited to one actor versus correlated infrastructure events.
+
+A mass or correlated Oteryn-side/regional failure must not accumulate as independent adverse evidence against affected players.
+
+## 14. Protection must not depend on client evidence arriving in time
 
 The accepted four-second re-entry protection remains governed by authoritative server-side reconnect/liveness rules.
 
@@ -261,7 +300,9 @@ This prevents a real outage from losing protection merely because the machine co
 
 Client evidence is for correlation, classification and abuse investigation after the fact.
 
-## 14. Anti-tamper limits
+An episode may therefore receive the mechanical protection and later become suspicious through forensic analysis; protection and retrospective abuse investigation are deliberately separate concerns.
+
+## 15. Anti-tamper limits
 
 The user controls the client machine.
 
@@ -278,7 +319,7 @@ Authenticating a client build or signing a diagnostic capsule can establish prov
 
 Server-side evidence and longitudinal behavior remain primary.
 
-## 15. Privacy and security constraints
+## 16. Privacy and security constraints
 
 Any later implementation must satisfy:
 
@@ -294,9 +335,13 @@ Any later implementation must satisfy:
 - observable evidence-loss conditions;
 - client diagnostics cannot silently become a general surveillance subsystem.
 
-## 16. Enforcement boundary
+Collection should be incident-scoped and purpose-limited rather than a continuous broad system-audit feed.
+
+## 17. Enforcement boundary
 
 No single client/OS event may automatically ban or punish a player.
+
+No single disconnect episode, including an abrupt process exit or network-interface administrative transition, is sufficient by itself to establish deliberate abuse.
 
 No AI or Game Intelligence model may autonomously:
 
@@ -308,7 +353,7 @@ No AI or Game Intelligence model may autonomously:
 
 Sanctions require a separately accepted enforcement policy and human-review boundary consistent with ADR-0006.
 
-## 17. Required future proof
+## 18. Required future proof
 
 Later contracts and implementation should prove at minimum that:
 
@@ -324,8 +369,10 @@ Later contracts and implementation should prove at minimum that:
 10. client-side evidence cannot synchronously block the authoritative combat loop;
 11. protection eligibility does not require client telemetry to arrive during the outage;
 12. longitudinal analysis can trace any risk score back to named canonical and corroborating evidence;
-13. no single client event can trigger an automatic sanction;
-14. privacy/redaction and evidence-loss behavior are observable and testable.
+13. unusually deterministic combat-correlated disconnect patterns can be represented without hard-coding one simplistic threshold as guilt;
+14. Oteryn-side or correlated regional failures can be separated from isolated actor evidence where evidence exists;
+15. no single client event can trigger an automatic sanction;
+16. privacy/redaction and evidence-loss behavior are observable and testable.
 
 ## Programme effect
 
@@ -335,14 +382,18 @@ Accepted now:
 server evidence remains authoritative
 client/OS evidence is corroborating only
 classify observable incident evidence, not presumed intent
-no full Event Viewer ingestion
+focus on abuse-of-protection patterns, not exact physical disconnect mechanism
+no full Event Viewer/Event Log ingestion
 bounded allowlisted incident capsule
 client-side rolling evidence buffer is preferred
+live local network/process observations may supplement bounded post-incident OS evidence
 lightweight launcher/guardian is an accepted design direction
 separate guardian heartbeat remains a candidate to benchmark/contract later
-crash / abrupt process loss / NIC loss / path loss / system crash-power loss are separate investigative classes
+crash / abrupt process loss / NIC loss / admin-state change / path loss / system crash-power loss are separate investigative classes
 post-boot evidence may corroborate machine failure
-repeated combat-correlated patterns feed Game Intelligence disconnect-abuse analysis
+repeated combat-correlated and unusually deterministic patterns feed Game Intelligence disconnect-abuse analysis
+infrastructure/population correlation prevents Oteryn-side failures being blamed on players
+mechanical protection and retrospective abuse analysis remain separate
 no single client event -> automatic sanction
 no kernel driver required by this decision
 ```
