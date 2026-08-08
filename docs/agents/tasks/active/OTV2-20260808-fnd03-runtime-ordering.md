@@ -15,14 +15,16 @@ final_head_sha: null
 final_head_frozen_at: null
 owner: GPT-5.6 Sol architecture continuation session
 created_at: 2026-08-08T19:06:00+02:00
-updated_at: 2026-08-08T19:17:00+02:00
+updated_at: 2026-08-08T19:21:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
   - docs/agents/tasks/active/OTV2-20260808-fnd03-runtime-ordering.md
   - docs/architecture/FND-03_AUTHORITATIVE_RUNTIME_EXECUTION_ANALYSIS_BASELINE.md
+  - docs/architecture/FND-03_RUNTIME_LIFECYCLE_FAILURE_AND_REPLAY_ANALYSIS_BASELINE.md
 public_contracts:
   - docs/architecture/FND-03_AUTHORITATIVE_RUNTIME_EXECUTION_ANALYSIS_BASELINE.md
+  - docs/architecture/FND-03_RUNTIME_LIFECYCLE_FAILURE_AND_REPLAY_ANALYSIS_BASELINE.md
 depends_on:
   - FND-ID-01 accepted and merged
   - FND-02 accepted and merged
@@ -40,9 +42,9 @@ external_repositories:
 
 ## Outcome
 
-Persist the owner-directed FND-03 runtime-execution analysis as a bounded architecture package and resolve only the runtime invariants that genuinely block the later FND-03 contract. The package defines a safe authoritative execution model for ChannelRuntime and InstanceRuntime without implementing the runtime or prematurely choosing benchmark-sensitive libraries, worker counts, tick rates, orchestration products or persistence technology.
+Persist the owner-directed FND-03 runtime-execution analysis as one bounded package with two companion architecture baselines. The first baseline resolves the authoritative execution/ordering kernel; the second extends that analysis into NodeRuntime/WorldServices responsibilities, lifecycle, timer catch-up, noisy-neighbor fairness, failure containment, dependency delay/loss, deterministic randomness/replay, event cut points and foundation failure-scenario ownership.
 
-This task is analysis input to the later complete FND-03 contract; it does not itself claim that FND-03 is accepted or that runtime implementation is authorized.
+The package remains analysis input to the later complete FND-03 contract. It does not itself claim that FND-03 is accepted or that runtime implementation is authorized, and it deliberately avoids premature selection of benchmark-sensitive libraries, worker counts, tick rates, queue capacities, orchestration products or persistence technology.
 
 ## Architecture and source of truth
 
@@ -57,7 +59,9 @@ This task is analysis input to the later complete FND-03 contract; it does not i
 - **DERIVED:** ChannelRuntime and InstanceRuntime should share one authoritative execution abstraction and differ by owned state scope rather than by scheduler semantics.
 - **DERIVED:** CommandId ordering, runtime input order, authoritative mutation/commit order, state revisions, protocol server sequence, monotonic deadlines and wall-clock time must remain distinct concepts unless a later contract proves exact semantic equivalence.
 - **DERIVED:** cross-session and async-completion ordering should linearize at the current authoritative owner and retain enough normalized-order evidence for deterministic replay rather than pretending OS thread wake-up order is a gameplay contract.
-- **UNKNOWN:** final runtime library, worker topology, simulation quantum, queue capacities, CPU affinity, checkpoint interval and RPO/RTO remain deliberately unresolved until their owning contract or benchmark evidence exists.
+- **DERIVED:** NodeRuntime is process-incarnation supervision/execution hosting, while WorldServices is a typed boundary to independently owned world-shared domains; co-location does not merge semantic authority.
+- **DERIVED:** lifecycle authority, timer catch-up taxonomy, bounded per-scope fairness and fail-stop behavior for unexpected authoritative invariant failure should be explicit before implementation.
+- **UNKNOWN:** final runtime library, worker topology, simulation quantum, queue capacities, CPU affinity, checkpoint interval, RPO/RTO, exact runtime-local counter widths and final replay artifact/storage shape remain deliberately unresolved until their owning contract or benchmark evidence exists.
 
 Canonical inputs:
 
@@ -80,6 +84,8 @@ Canonical inputs:
 
 ## Acceptance criteria
 
+### Ordering and ownership baseline
+
 - [x] Persist the current owner-directed runtime-execution conclusions in one bounded architecture baseline.
 - [x] Separate CommandId order, runtime input order, authoritative mutation/commit order, monotonic deadlines and wall-clock timestamps explicitly.
 - [x] Define one logical authoritative execution model usable by ChannelRuntime and InstanceRuntime.
@@ -88,6 +94,22 @@ Canonical inputs:
 - [x] Define queue/backpressure classes and fail-open/fail-closed principles without guessing benchmark-sensitive numeric capacities.
 - [x] Analyse deterministic ordering for concurrent commands, timers, worker completions and system/runtime events.
 - [x] Apply the mandatory architecture decision timing test to material recommendations.
+
+### Lifecycle/failure/replay companion
+
+- [x] Define NodeRuntime as process-incarnation supervision/execution hosting without making it a second gameplay/world authority.
+- [x] Define WorldServices as typed access to explicit world-shared owners rather than an untyped process-global singleton.
+- [x] Preserve and refine ADR-0009 lifecycle vocabulary with authority/readiness semantics per state.
+- [x] Define an explicit bounded timer catch-up/coalescing taxonomy rather than implicit unlimited missed-tick replay.
+- [x] Define non-starvation/bounded-yield requirements across hosted authoritative scopes without freezing scheduler implementation.
+- [x] Define fail-stop containment for unexpected authoritative panic/invariant failure and wider GameNode failure when corruption cannot be isolated.
+- [x] Define asynchronous dependency pending/revalidation direction without allowing remote/database I/O to block authoritative mutation execution.
+- [x] Define deterministic-authoritative-randomness/replay separation from analytics event replay and retain Game Intelligence read-only authority boundaries.
+- [x] Map applicable foundation failure scenarios to FND-03 expected behavior or the accepted downstream owner.
+- [x] Enumerate FND-03 resource-limit categories that need concrete registered maxima before implementation acceptance while deliberately not guessing the numbers.
+
+### Governance
+
 - [x] Keep runtime implementation, library selection and production activation explicitly unauthorized.
 - [ ] Complete documentation/governance validation and an independent architecture audit on the final unchanged head before merge.
 
@@ -113,29 +135,38 @@ multithreaded GameNode
 -> multiple independent scopes may execute concurrently
 -> one logical ordered owner per ChannelRuntime/InstanceRuntime
 -> logical writer is not a dedicated OS-thread contract
+-> NodeRuntime supervises process/runtime capacity, not gameplay semantics
+-> WorldServices exposes typed world-domain owners, not shared mutable globals
 -> CommandId order stays FND-02-owned
 -> normalized runtime inputs are linearized at the authoritative owner
 -> monotonic deadlines are distinct from wall clock and protocol sequencing
 -> mutation-capable timers re-enter through the owner
+-> timer families declare bounded catch-up/coalescing semantics
 -> worker/service completions are proposals/results, not mutation callbacks
 -> stale generation/revision/local-handle work fails closed
 -> control/fence work cannot be starved by ordinary gameplay backlog
+-> hosted scopes receive bounded scheduling opportunity; one noisy scope cannot starve unrelated scopes
 -> all queue classes are bounded with explicit overload behavior
 -> benchmark-sensitive numeric capacities wait for measured implementation evidence
+-> unexpected authoritative invariant failure is fail-stop for the affected scope unless safe isolation cannot be proven, in which case the GameNode fails stop
+-> external dependency waits are explicit asynchronous pending operations with generation/revision revalidation
 -> replacement process gets a fresh NodeId while semantic channel/instance identity may survive under a newer ownership generation
--> deterministic replay records normalized authoritative input/commit evidence rather than original CPU/thread interleaving
+-> deterministic simulation replay uses normalized inputs/clocks/randomness and authoritative order evidence rather than original CPU/thread interleaving
+-> analytics/event replay cannot replay gameplay mutation
 ```
 
-The analysis also preserves a modular-monolith initial placement: one GameNode may host multiple channels/instances and in-process WorldServices integration, while semantic ownership remains explicit and independently extractable later.
+The analysis preserves a modular-monolith initial placement: one GameNode may host multiple channels/instances and in-process WorldServices integration, while semantic ownership remains explicit and independently extractable later.
 
 A parallel final-contract PR #99 was created after this earlier task was already authoritative. It was closed unmerged as `SUPERSEDED / PREMATURE` so the final FND-03 contract cannot outrun its own analysis gate. No #99 content is canonical.
+
+One synchronization issue was found when the lifecycle/failure/replay companion appeared on the branch: the active task still declared only the original two owned paths. This task update claims the third companion path and its public architecture artifact before final validation; no runtime scope or authority is expanded.
 
 ## Validation
 
 ### Focused
 
-- changed-path review: pending final exact-head audit
-- accepted-input consistency review: in progress; no material contradiction identified so far
+- changed-path review: pending final exact-head audit after companion-path synchronization
+- accepted-input consistency review: in progress; no material architecture contradiction identified so far
 
 ### Component/integration
 
@@ -151,14 +182,14 @@ A parallel final-contract PR #99 was created after this earlier task was already
 
 - final head: pending
 - trigger source: pull_request
-- workflow/run/job: pending
+- workflow/run/job: pending for post-synchronization head
 - runner assignment: pending
 - classification: pending
 - result: pending
 
 ## Independent audit
 
-- exact head: pending
+- exact head: pending after companion-path synchronization
 - method/auditor: pending
 - material findings: pending
 - verdict: pending
@@ -176,7 +207,7 @@ A parallel final-contract PR #99 was created after this earlier task was already
 ## Context checkpoint
 
 ```yaml
-last_progress: PR #98 now contains the bounded FND-03 authoritative runtime execution analysis baseline; ordering/time domains, shared ChannelRuntime/InstanceRuntime execution semantics, control lane, timers, stale auxiliary work, generational handles, bounded overload policy, liveness integration and recovery direction are persisted without freezing benchmark-sensitive implementation choices; later duplicate PR #99 was closed unmerged.
+last_progress: PR #98 now owns two companion FND-03 analysis baselines: the authoritative execution/ordering kernel plus lifecycle/failure/replay continuation covering NodeRuntime/WorldServices, scope lifecycle, timer catch-up, fairness, fail-stop containment, dependency loss, replay/randomness, resource classes and failure-scenario ownership; duplicate #99 remains closed unmerged.
 status: validating
 branch: docs/OTV2-20260808-fnd03-runtime-ordering
 head_sha: null
@@ -193,10 +224,10 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 0
+repair_cycles_for_current_gate: 1
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Freeze the PR #98 head, perform independent full-diff architecture audit against accepted FND-03 inputs, and require exact-head repository checks before squash merge.
+next_action: Freeze the new PR #98 head, audit all three changed paths against accepted FND-03 inputs, and require fresh exact-head repository checks before squash merge.
 ```
