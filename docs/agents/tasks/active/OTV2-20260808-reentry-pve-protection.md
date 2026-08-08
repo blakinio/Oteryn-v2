@@ -12,7 +12,7 @@ pr: 96
 base_sha: 19756eab0a66db37cb6f27ec367aaf2e4986df69
 owner: Oteryn project owner
 created_at: 2026-08-08T13:30:00+02:00
-updated_at: 2026-08-08T13:33:00+02:00
+updated_at: 2026-08-08T13:34:00+02:00
 execution_budget_minutes: 30
 owned_paths:
   - docs/architecture/DISCONNECT_REENTRY_PVE_PROTECTION_OWNER_DECISION.md
@@ -59,12 +59,12 @@ Documentation-only architecture change. No runtime, protocol, persistence, datab
 ## Context checkpoint
 
 ```yaml
-last_progress: PR #96 is open with the owner-accepted four-second defensive PvE re-entry decision and explicit narrow conflict resolution.
+last_progress: PR #96 metadata now contains required Summary, Scope and Validation sections; a synchronization commit was pushed to re-run exact-head governance.
 status: validating
 branch: docs/OTV2-20260808-reentry-pve-protection
 pr: 96
 owned_paths:
   - docs/architecture/DISCONNECT_REENTRY_PVE_PROTECTION_OWNER_DECISION.md
   - docs/agents/tasks/active/OTV2-20260808-reentry-pve-protection.md
-next_action: Run exact-head governance and independent architecture review on PR #96 before merge.
+next_action: Verify exact-head governance and independent architecture review on PR #96 before merge.
 ```
