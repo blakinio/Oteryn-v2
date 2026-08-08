@@ -447,7 +447,6 @@ Tests must reproduce:
 - liveness recovery racing protection activation;
 - drain/fence/recovery boundaries;
 - bounded catch-up after artificial scheduler delay.
-
 Production builds do not expose test time-travel authority to gameplay clients or untrusted inputs.
 
 ## 12. Auxiliary parallel work
@@ -804,8 +803,9 @@ FND-03 preserves the accepted rules:
 - protected character cannot heal another player;
 - another player may legally heal the protected character under ordinary rules;
 - no outgoing offensive PvE action executes;
+- for the full four-second protection interval, no PvE monster may issue a new offensive attack against the protected character, including a monster that already targeted the character before re-entry;
 - prohibited outgoing actions are never buffered for post-protection burst;
-- committed prior effects are not rolled back;
+- effects already committed before protection activation may still resolve; this does not authorize any new monster attack during the protection interval;
 - HP/resources/position/conditions/cooldowns/combat/PZ/logout/threat/encounter state are not automatically reset.
 
 Runtime-health evidence is retained so local overload/stall is not mislabeled as player-side disconnect behavior.
@@ -957,6 +957,7 @@ A later FND-03 implementation package cannot claim `PROVEN` until exact revision
 18. authoritative panic/invariant failure does not continue ordinary mutation blindly;
 19. concrete runtime hard limits are registered with boundary tests and evidence in `RESOURCE_LIMITS_REGISTRY.json`;
 20. Tier 1 E2E/fault scenarios cover at least stale generation, queue saturation, slow client, clock skew, drain/recovery and split-owner behavior; Tier 2/3 follow ADR-0007 where user-visible client behavior is part of the claim.
+21. re-entry tests prove the full 4.0-second inbound PvE suppression against all monsters, including an already-targeting monster, while effects committed before protection activation may still resolve and ordinary monster attacks resume only after protection expires.
 
 ## 31. Downstream ownership after FND-03
 
