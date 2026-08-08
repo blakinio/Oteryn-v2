@@ -4,16 +4,32 @@
 - Date: 2026-08-08
 - Decision owner: Oteryn project owner
 - Coordination ID: `OTV2-NATIVE-FOUNDATION`
-- Applies to: valid reconnect/re-entry after connectivity loss, client crash, power loss or equivalent loss of playable control
+- Applies to: valid reconnect/re-entry after unexpected loss of playable control such as connectivity loss, client crash, power loss or equivalent failure
 - Related baselines:
   - `LAG_DISCONNECT_PROTECTION_OWNER_BASELINE.md`
   - `LAG_DISCONNECT_REENTRY_ACTION_POLICY_OWNER_BASELINE.md`
   - `FND-ID-01_ACCOUNT_SINGLE_ONLINE_CHARACTER_OWNER_BASELINE.md`
+  - `DISCONNECT_FORENSIC_EVIDENCE_OWNER_BASELINE.md`
+  - `DISCONNECT_CLIENT_OS_FORENSICS_OWNER_DIRECTION.md`
 - Does not authorize: runtime, protocol, persistence, client, Platform or production implementation
 
 ## Purpose
 
-Freeze the owner decision for the player-visible PvE behavior immediately after a valid return to playable control and remove the remaining ambiguity between the reconnect anti-reset invariant and the previously accepted defensive re-entry window.
+Freeze the owner decision for the player-visible PvE behavior immediately after a valid return to playable control and remove the remaining ambiguity between the reconnect anti-reset invariant and the accepted defensive re-entry window.
+
+## Eligibility boundary
+
+The protection window is for recovery from an **unexpected loss of playable control**. It is not a benefit attached to an ordinary voluntary logout/login cycle.
+
+Binding direction:
+
+- an accepted graceful logout does not create the four-second PvE re-entry protection window;
+- a normal login after an accepted graceful logout is an ordinary admission/login flow, not protected re-entry;
+- a client crash, abrupt process loss, connectivity loss, network-path loss, system crash, power interruption or equivalent unexpected loss may enter the reconnect/re-entry path according to the later authoritative `FND-04` state machine;
+- protection eligibility must remain server-authoritative and must not depend synchronously on client/OS evidence proving the cause of the loss;
+- suspicious abrupt exits or network-interface transitions may still receive the mechanically required protection when the authoritative reconnect rules say so, while the incident is preserved for later forensic and longitudinal abuse analysis.
+
+This prevents voluntary logout/login from becoming a trivial way to manufacture the protection window while avoiding false denial of protection to a genuine outage whose cause cannot be proved in real time.
 
 ## Accepted rule
 
@@ -37,7 +53,7 @@ During the full four-second window:
 - the protected player may not heal another player;
 - another player may heal the protected character under the healer's normal legality, resource, range, cooldown and exhaustion rules;
 - the player may not initiate offensive combat against PvE monsters;
-- offensive input is not buffered for execution after the protection expires.
+- prohibited outgoing input is not buffered for execution after the protection expires.
 
 At the end of the four-second interval, normal PvE attack eligibility resumes according to the ordinary authoritative combat rules.
 
@@ -117,10 +133,13 @@ This decision does not supersede the rule that a healthy combat-locked incumbent
 
 The owner accepts the four-second defensive window despite the fact that an individual connectivity loss cannot always be proven to be accidental from one event alone.
 
-Abuse prevention therefore has two layers:
+Abuse prevention therefore has three layers:
 
-1. immediate mechanical restriction: no offensive PvE action and no healing of another player can be executed by the protected character during protection;
-2. longitudinal evidence: repeated suspicious disconnect/re-entry patterns remain observable through the accepted Game Intelligence / disconnect-forensics architecture and may feed a separately governed human-reviewed enforcement policy.
+1. **eligibility boundary** — ordinary graceful logout/login does not create protected re-entry;
+2. **immediate mechanical restriction** — no offensive PvE action and no healing of another player can be executed by the protected character during protection;
+3. **longitudinal evidence** — repeated suspicious disconnect/re-entry patterns remain observable through the accepted Game Intelligence / disconnect-forensics architecture and may feed a separately governed human-reviewed enforcement policy.
+
+The accepted client/OS forensic direction may add corroborating evidence for abrupt process loss, network-interface state changes, path loss, client/system crash, power interruption or similar classes, but server-generated evidence remains authoritative.
 
 Game Intelligence remains observational/investigative and cannot autonomously ban players or mutate gameplay state.
 
@@ -129,7 +148,7 @@ Game Intelligence remains observational/investigative and cannot autonomously ba
 This decision is mandatory input to:
 
 - `FND-03` runtime timers, liveness transitions and command scheduling;
-- `FND-04` reconnect/re-entry session state machine;
+- `FND-04` reconnect/re-entry session state machine and graceful-logout versus unexpected-loss eligibility;
 - combat/action classification;
 - PvE monster AI targeting/attack eligibility;
 - player-to-player healing eligibility during re-entry protection;
@@ -141,19 +160,21 @@ This decision is mandatory input to:
 
 Future implementation evidence must prove at minimum that:
 
-1. valid re-entry starts exactly one four-second PvE defensive protection interval;
-2. PvE monsters cannot begin new offensive attacks against the protected character during that interval;
-3. self-healing remains legal subject to normal cost/cooldown rules;
-4. health and mana/resource potion use remains legal subject to normal item/cooldown rules;
-5. movement remains legal under the previously accepted movement rule;
-6. the protected character cannot heal another player while protection is active;
-7. another player can legally heal the protected character subject to ordinary healer-side rules;
-8. prohibited outgoing healing input is not buffered for execution after protection expires;
-9. no offensive action against a PvE monster can execute while protection is active;
-10. offensive input attempted during protection is not buffered and does not burst-execute at expiry;
-11. already committed pre-protection effects are not rolled back;
-12. protection expiry restores normal combat eligibility without resetting authoritative character state;
-13. session-generation, one-character-per-account, item/economy and instance-recovery invariants remain intact.
+1. a valid unexpected-loss re-entry starts exactly one four-second PvE defensive protection interval;
+2. an accepted graceful logout followed by ordinary login does not create that protection interval;
+3. PvE monsters cannot begin new offensive attacks against the protected character during that interval;
+4. self-healing remains legal subject to normal cost/cooldown rules;
+5. health and mana/resource potion use remains legal subject to normal item/cooldown rules;
+6. movement remains legal under the previously accepted movement rule;
+7. the protected character cannot heal another player while protection is active;
+8. another player can legally heal the protected character subject to ordinary healer-side rules;
+9. prohibited outgoing healing input is not buffered for execution after protection expires;
+10. no offensive action against a PvE monster can execute while protection is active;
+11. offensive input attempted during protection is not buffered and does not burst-execute at expiry;
+12. already committed pre-protection effects are not rolled back;
+13. protection expiry restores normal combat eligibility without resetting authoritative character state;
+14. client/OS diagnostic evidence is not required synchronously for protection eligibility;
+15. session-generation, one-character-per-account, item/economy and instance-recovery invariants remain intact.
 
 ## Deliberately unresolved
 
@@ -165,14 +186,16 @@ This decision does not yet decide:
 - non-healing support actions such as buffs, cleanses, shields or resource transfers;
 - whether non-combat interactions such as loot, containers, switches or NPC interaction are permitted;
 - whether the player may voluntarily cancel protection early;
-- sanction thresholds for deliberate disconnect abuse.
+- exact evidence thresholds or sanction thresholds for deliberate disconnect abuse;
+- exact Windows APIs/providers/event IDs, Guardian process topology or Guardian heartbeat cadence.
 
 Those subjects require their owning later contracts and must not be inferred from this decision.
 
 ## Canonical concise rule
 
 ```text
-valid re-entry
+unexpected loss of playable control
+-> valid same-actor reconnect/re-entry
 -> 4 seconds PvE defensive protection
 -> movement allowed
 -> self-healing allowed
@@ -183,5 +206,10 @@ valid re-entry
 -> no offensive action against PvE monsters
 -> prohibited outgoing actions are never buffered
 -> no automatic heal/reset/teleport/state rollback
+-> client/OS evidence is corroborating, not synchronous authority
 -> after 4 seconds normal PvE combat resumes
+
+accepted graceful logout/login
+-> ordinary login/admission
+-> no 4-second re-entry protection
 ```
