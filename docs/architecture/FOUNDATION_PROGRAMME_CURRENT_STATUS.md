@@ -62,6 +62,35 @@ The accepted foundation identity catalogue remains `AccountId`, `CharacterId`, `
 
 `CROSS_REPOSITORY_CONTRACT_LOCK.json` records the immutable accepted local FND-02 revision while preserving the older Platform protocol revision as `RECONCILIATION_INPUT_ONLY`.
 
+## Current owner clarification package — disconnect/re-entry
+
+PR #96 (`docs/OTV2-20260808-reentry-pve-protection`) is the bounded architecture-only owner-clarification package that resolves the previously identified reconnect-protection ambiguity before `FND-03`/`FND-04` freeze their dependent semantics.
+
+Canonical package sources on the PR head:
+
+- `docs/architecture/DISCONNECT_REENTRY_PVE_PROTECTION_OWNER_DECISION.md`;
+- `docs/architecture/DISCONNECT_CLIENT_OS_FORENSICS_OWNER_DIRECTION.md`;
+- existing `docs/architecture/DISCONNECT_FORENSIC_EVIDENCE_OWNER_BASELINE.md` remains the server-side forensic authority that the new client/OS direction refines.
+
+Owner-accepted semantics captured by the package:
+
+- valid re-entry after **unexpected loss of playable control** receives exactly four seconds of defensive PvE protection;
+- accepted graceful logout/login does not manufacture that protection window;
+- movement, self-healing and health/mana/resource potion use remain legal under ordinary costs/cooldowns/exhaustion;
+- the protected character cannot execute offensive actions against PvE monsters and prohibited outgoing actions are not buffered;
+- the protected character cannot heal another player but may receive legal healing from another player;
+- reconnect does not reset HP/resources/position/conditions/cooldowns/combat/PZ/logout state, threat/aggro, encounter state or committed effects;
+- client/OS/Launcher/Guardian evidence is corroborating only; server-generated gameplay/liveness/runtime evidence remains authoritative;
+- full Event Viewer/Event Log ingestion is rejected in favor of bounded, allowlisted, normalized incident evidence;
+- separate investigative evidence classes are preserved for graceful exit, client crash, abrupt process loss, NIC/interface loss, administrative interface change, path loss, system crash/power interruption, Oteryn-side infrastructure failure and unknown cases;
+- a bounded client forensic ring and lightweight independent Launcher/Guardian are accepted design directions;
+- a separate Guardian diagnostic heartbeat remains a later candidate requiring its own measurement/contract rather than a frozen runtime requirement;
+- longitudinal Game Intelligence may correlate combat risk, HP/resources, incoming pressure, reconnect timing, protection use, healing/potions, escape outcome, client/OS/Guardian evidence and infrastructure correlation to detect suspicious or unusually deterministic patterns;
+- no single disconnect, client event or analytics score authorizes an automatic sanction; enforcement remains separately governed and human reviewed;
+- no kernel driver or invasive anti-cheat is authorized by this clarification.
+
+Until PR #96 is merged, these semantics are owner-accepted but still in delivery/validation state. `FND-03` remains the next ordered foundation gate, but its final contract must not contradict or bypass this owner clarification package.
+
 ## Current ordered foundation state
 
 | Gate / programme step | Current status | Consequence |
@@ -70,7 +99,8 @@ The accepted foundation identity catalogue remains `AccountId`, `CharacterId`, `
 | `VSL-02` | `COMPLETE` | Canonical migrated client/workspace exists; old source is historical/non-canonical. |
 | `FND-ID-01` | `ACCEPTED AND MERGED` | Cross-boundary foundation identifier semantics are frozen. |
 | `FND-02` | `ACCEPTED AND MERGED` | Native gameplay wire foundation is frozen; no runtime implementation claim is implied. |
-| `FND-03` | `NEXT ORDERED GATE` | Define authoritative Rust runtime execution, scheduling, queueing, ownership/fencing and recovery contract. |
+| Disconnect/re-entry owner clarification | `OWNER-ACCEPTED / PR #96 VALIDATING` | Must be consumed by `FND-03`/`FND-04`; no runtime implementation is authorized. |
+| `FND-03` | `NEXT ORDERED GATE` | Define authoritative Rust runtime execution, scheduling, queueing, ownership/fencing and recovery contract after consuming the disconnect clarification. |
 | `FND-04` | `BLOCKED ON OWN CONTRACT` | Admission/Game Session/lease/reconnect implementation remains unclaimed. |
 | `DUR-01`…`DUR-04`, `ANL-01`… | `LATER GATES` | Existing ordering and architecture requirements remain unchanged. |
 
@@ -111,11 +141,11 @@ A complete cross-repository rollout still requires a separately authorized `blak
 
 Historical ADRs, archived tasks, evidence snapshots and older coordination documents may retain progress-only sentences from before FND-ID/FND-02 completion. Do not mass-rewrite historical evidence merely to make old timestamps read like current status.
 
-For current execution status, this file and live GitHub state are authoritative. For protocol semantics, `FND-02_PROTOCOL_OTERYN_V1_CONTRACT.md` and its machine-readable companions are authoritative.
+`GLOBAL_ARCHITECTURE_DECISION_REGISTER.md` and other long-lived coordination files may still contain stale progress sentences such as `FND-02 is next`. Those sentences are not current execution authority. For current execution status, this file and live GitHub state are authoritative. For protocol semantics, `FND-02_PROTOCOL_OTERYN_V1_CONTRACT.md` and its machine-readable companions are authoritative. For the pending disconnect/re-entry owner clarification, PR #96 and its dedicated architecture documents are the delivery authority until merge.
 
 ## Current next action
 
-Create/continue one bounded **architecture-only `FND-03` Runtime Execution Contract** task in `blakinio/Oteryn-v2`.
+Complete validation/merge of the bounded **disconnect/re-entry owner clarification PR #96**, then create/continue one bounded **architecture-only `FND-03` Runtime Execution Contract** task in `blakinio/Oteryn-v2`.
 
 `FND-03` must consume at minimum:
 
@@ -126,12 +156,15 @@ Create/continue one bounded **architecture-only `FND-03` Runtime Execution Contr
 - `RESOURCE_LIMITS_REGISTRY.json`;
 - `FOUNDATION_ERROR_VOCABULARY.md`;
 - `FOUNDATION_FAILURE_SCENARIOS.md`;
-- accepted instance/runtime, disconnect/liveness and reconnect-generation baselines.
+- accepted instance/runtime, disconnect/liveness and reconnect-generation baselines;
+- `DISCONNECT_REENTRY_PVE_PROTECTION_OWNER_DECISION.md` after delivery;
+- `DISCONNECT_CLIENT_OS_FORENSICS_OWNER_DIRECTION.md` for forensic integration boundaries;
+- `DISCONNECT_FORENSIC_EVIDENCE_OWNER_BASELINE.md` for authoritative server-side evidence semantics.
 
-It must decide runtime execution/ownership boundaries needed to implement the protocol safely without redefining FND-02 wire semantics.
+It must decide runtime execution/ownership boundaries needed to implement the protocol safely without redefining FND-02 wire semantics. Exact client/OS diagnostic APIs, Guardian heartbeat cadence/topology, enforcement thresholds and production telemetry remain outside `FND-03` unless a separately accepted owning contract proves they are required there.
 
 `GAME-VISION-01` analysis may continue in parallel when it does not redefine accepted foundation identity, repository, protocol, Platform or persistence boundaries.
 
 ## Non-authorization
 
-This closeout does **not** authorize implementation of the Rust gameplay server runtime, production `protocol-oteryn` listener/client adapter, Game Session admission/lease, persistence schemas, Platform changes, production deployment or live operations. Those remain behind their own explicit implementation gates.
+This closeout does **not** authorize implementation of the Rust gameplay server runtime, production `protocol-oteryn` listener/client adapter, Game Session admission/lease, persistence schemas, Platform changes, client/Windows diagnostics, Launcher/Guardian, Game Intelligence detectors, sanctions, production deployment or live operations. Those remain behind their own explicit implementation gates.
