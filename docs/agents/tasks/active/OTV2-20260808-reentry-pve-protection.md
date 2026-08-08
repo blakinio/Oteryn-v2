@@ -72,8 +72,8 @@ The re-entry decision explicitly supersedes only the older generic `no protectio
 
 - [x] Preserve server-generated disconnect/gameplay evidence as authoritative and client/OS evidence as corroborating only.
 - [x] Record separate investigative classes for graceful exit, crash, abrupt process loss, NIC/interface loss, administrative interface-state change, network-path loss, system crash/power loss, infrastructure failure and unknown incidents without claiming intent from one event.
-- [x] Reject unrestricted Event Viewer ingestion; allow only bounded, allowlisted, normalized incident evidence around the relevant episode.
-- [x] Preserve native live network/interface-state observation plus bounded post-incident OS evidence as candidate implementation sources without freezing exact Windows APIs/providers/event IDs.
+- [x] Reject unrestricted Event Viewer/Event Log ingestion; allow only bounded, allowlisted, normalized incident evidence around the relevant episode.
+- [x] Preserve native live network/interface/process observation plus bounded post-incident OS evidence as candidate implementation sources without freezing exact Windows APIs/providers/event IDs.
 - [x] Preserve a client-side bounded rolling incident buffer as the preferred direction.
 - [x] Preserve post-reconnect/post-boot submission of a bounded incident capsule when evidence could not be sent during the outage.
 - [x] Preserve a lightweight independent launcher/guardian as an accepted design direction without freezing its process/transport details.
@@ -83,8 +83,10 @@ The re-entry decision explicitly supersedes only the older generic `no protectio
 - [x] Record that abrupt process disappearance without normal crash evidence is suspicious but is not automatic proof of deliberate force-close.
 - [x] Record that repeated local network-interface transitions around high-risk combat are a strong investigative signal but do not alone prove intent.
 - [x] Require longitudinal Game Intelligence analysis combining combat risk, HP/resources, incoming damage, hostile pressure, reconnect timing, protection use, healing/potions, escape outcome, client/guardian/OS evidence and infrastructure correlation.
-- [x] Preserve detection of unusually deterministic disconnect timing (for example repeated disconnects at similar risk/HP thresholds) as evidence potentially consistent with automation.
+- [x] Preserve detection of unusually deterministic disconnect timing, such as repeated disconnects at similar HP/risk thresholds or shortly after incoming damage sharply rises, as evidence potentially consistent with automation.
+- [x] Define the analytical goal as detecting abuse of disconnect protection rather than proving the exact physical/software mechanism that caused one disconnect.
 - [x] Require correlation with GameNode/runtime health and other affected players so Oteryn-side or regional failures are not misclassified as player abuse.
+- [x] Keep mechanical protection and retrospective abuse analysis separate: a suspicious episode may receive protection and still be investigated later.
 - [x] Prohibit automatic sanctions from one client/OS event or one disconnect episode.
 - [x] Preserve Game Intelligence/AI as read-only investigative support; human-reviewed enforcement requires a separate policy.
 - [x] Keep kernel-driver/invasive anti-cheat outside the scope of this decision.
@@ -108,7 +110,7 @@ Documentation-only architecture change. No runtime, protocol, persistence, datab
 ## Context checkpoint
 
 ```yaml
-last_progress: The full 2026-08-08 disconnect/reconnect discussion is captured in canonical architecture and the current programme-status overlay now requires FND-03/FND-04 to consume it. The package includes four-second defensive PvE re-entry behavior, graceful-logout exclusion, healing direction, non-buffering/anti-reset rules, bounded client/OS/Guardian forensics, incident classification, post-boot evidence, longitudinal automation/abuse analysis, privacy and human-review boundaries.
+last_progress: The complete 2026-08-08 disconnect/reconnect discussion is preserved in canonical architecture and programme status. It includes the four-second PvE recovery rule, graceful-logout exclusion, directional healing rules, non-buffering/anti-reset semantics, bounded client/OS/Guardian evidence, Event Log minimization, crash/force-close/network/power incident classes, post-boot evidence, longitudinal automation/abuse analysis, infrastructure correlation, privacy and human-review boundaries.
 status: validating
 branch: docs/OTV2-20260808-reentry-pve-protection
 pr: 96
