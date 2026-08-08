@@ -12,24 +12,28 @@ pr: 96
 base_sha: 19756eab0a66db37cb6f27ec367aaf2e4986df69
 owner: Oteryn project owner
 created_at: 2026-08-08T13:30:00+02:00
-updated_at: 2026-08-08T17:51:00+02:00
+updated_at: 2026-08-08T18:48:00+02:00
 execution_budget_minutes: 30
 owned_paths:
   - docs/architecture/DISCONNECT_REENTRY_PVE_PROTECTION_OWNER_DECISION.md
   - docs/architecture/DISCONNECT_CLIENT_OS_FORENSICS_OWNER_DIRECTION.md
+  - docs/architecture/DISCONNECT_CLIENT_OS_FORENSICS_PRIVACY_TIMING_REFINEMENT.md
   - docs/architecture/FOUNDATION_PROGRAMME_CURRENT_STATUS.md
   - docs/agents/tasks/active/OTV2-20260808-reentry-pve-protection.md
 public_contracts:
   - docs/architecture/DISCONNECT_REENTRY_PVE_PROTECTION_OWNER_DECISION.md
   - docs/architecture/DISCONNECT_CLIENT_OS_FORENSICS_OWNER_DIRECTION.md
+  - docs/architecture/DISCONNECT_CLIENT_OS_FORENSICS_PRIVACY_TIMING_REFINEMENT.md
 depends_on:
   - LAG_DISCONNECT_PROTECTION_OWNER_BASELINE.md
   - LAG_DISCONNECT_REENTRY_ACTION_POLICY_OWNER_BASELINE.md
   - FND-ID-01_ACCOUNT_SINGLE_ONLINE_CHARACTER_OWNER_BASELINE.md
   - DISCONNECT_FORENSIC_EVIDENCE_OWNER_BASELINE.md
+  - CLIENT_CRASH_DIAGNOSTICS_PRIVACY_OWNER_BASELINE.md
+  - docs/agents/ARCHITECTURE_DECISION_DISCIPLINE.md
 blocks:
   - FND-03/FND-04 must consume the reconciled re-entry protection semantics
-  - later client diagnostics and ANL contracts must consume the client/OS corroborating-evidence direction
+  - later client diagnostics and ANL contracts must consume the client/OS corroborating-evidence direction and privacy/timing refinement
 cross_repository_coordination_id: OTV2-NATIVE-FOUNDATION
 external_repositories: []
 ```
@@ -44,9 +48,13 @@ An accepted graceful logout followed by ordinary login does not create this prot
 
 Also preserve the owner-accepted direction for bounded client/OS disconnect forensics so later contracts can distinguish observable evidence consistent with graceful exit, client crash, abrupt process loss, local network-interface loss, network-path loss, system crash/power interruption and Oteryn-side infrastructure failure without treating client evidence as authoritative proof of intent.
 
+The audit refinement binds that direction to the already accepted client-diagnostics privacy control and architecture decision-timing discipline. It does not add a new telemetry entitlement, mandatory companion process or Guardian heartbeat.
+
 ## Conflict resolved
 
 The re-entry decision explicitly supersedes only the older generic `no protection / no invulnerability window` reconnect wording for this exact four-second PvE defensive window. All anti-reset, anti-duplication, session fencing, one-character-per-account and combat/PZ/logout invariants remain binding.
+
+The privacy/timing refinement does not supersede `CLIENT_CRASH_DIAGNOSTICS_PRIVACY_OWNER_BASELINE.md`; it makes that existing baseline explicitly binding on automatic client-originated disconnect-diagnostic upload paths and narrows the Launcher/Guardian wording to an extension point rather than a mandatory first implementation.
 
 ## Acceptance criteria
 
@@ -76,7 +84,7 @@ The re-entry decision explicitly supersedes only the older generic `no protectio
 - [x] Preserve native live network/interface/process observation plus bounded post-incident OS evidence as candidate implementation sources without freezing exact Windows APIs/providers/event IDs.
 - [x] Preserve a client-side bounded rolling incident buffer as the preferred direction.
 - [x] Preserve post-reconnect/post-boot submission of a bounded incident capsule when evidence could not be sent during the outage.
-- [x] Preserve a lightweight independent launcher/guardian as an accepted design direction without freezing its process/transport details.
+- [x] Preserve an independent client-side observer/launcher/guardian capability boundary without requiring a separate process in the first implementation.
 - [x] Keep a separate guardian diagnostic heartbeat as a candidate for later benchmark/contract rather than a frozen runtime requirement.
 - [x] Record that guardian alive + game process lost + network alive is materially different evidence from simultaneous game/guardian/path loss.
 - [x] Record that post-boot evidence may corroborate system crash, hard reset or power interruption where available without overclaiming the exact physical cause.
@@ -91,10 +99,15 @@ The re-entry decision explicitly supersedes only the older generic `no protectio
 - [x] Preserve Game Intelligence/AI as read-only investigative support; human-reviewed enforcement requires a separate policy.
 - [x] Keep kernel-driver/invasive anti-cheat outside the scope of this decision.
 - [x] Preserve privacy minimization: no arbitrary files, unrestricted process inventory, full Event Log export, unrelated SSID/MAC/device data, credentials or secrets.
+- [x] Bind automatic client-originated incident-capsule uploads, including client/OS/Launcher/Guardian-produced diagnostics, to the existing global diagnostics opt-out.
+- [x] Preserve that diagnostics opt-out or missing client evidence is not adverse evidence and cannot weaken server-authoritative incident visibility.
+- [x] Require any future independent Guardian heartbeat to receive a separate purpose/privacy/retention/resource contract and prohibit using it as a silent opt-out bypass.
+- [x] Apply the architecture decision-timing test: trust/privacy/authority boundaries are required now; concrete Launcher/Guardian topology, privileges, transport and cadence are deferred.
 
 ### Coordination
 
 - [x] Synchronize `FOUNDATION_PROGRAMME_CURRENT_STATUS.md` so PR #96 is an explicit required input before `FND-03`/`FND-04` finalize dependent reconnect/runtime semantics.
+- [x] Make the current-status wording transition-safe so it remains correct both while PR #96 is open and after it is merged.
 - [x] Preserve live/current-status precedence over stale long-lived coordination wording such as older `FND-02 is next` sentences.
 
 ### Governance
@@ -110,14 +123,15 @@ Documentation-only architecture change. No runtime, protocol, persistence, datab
 ## Context checkpoint
 
 ```yaml
-last_progress: The complete 2026-08-08 disconnect/reconnect discussion is preserved in canonical architecture and programme status. It includes the four-second PvE recovery rule, graceful-logout exclusion, directional healing rules, non-buffering/anti-reset semantics, bounded client/OS/Guardian evidence, Event Log minimization, crash/force-close/network/power incident classes, post-boot evidence, longitudinal automation/abuse analysis, infrastructure correlation, privacy and human-review boundaries.
+last_progress: Audit findings were converted into a bounded consistency refinement: existing diagnostics opt-out and non-adverse-evidence rules now govern all automatic client-originated disconnect capsules; Launcher/Guardian is an extension point rather than a mandatory first process; a Guardian heartbeat remains separately gated; current-status wording is being made merge-transition-safe.
 status: validating
 branch: docs/OTV2-20260808-reentry-pve-protection
 pr: 96
 owned_paths:
   - docs/architecture/DISCONNECT_REENTRY_PVE_PROTECTION_OWNER_DECISION.md
   - docs/architecture/DISCONNECT_CLIENT_OS_FORENSICS_OWNER_DIRECTION.md
+  - docs/architecture/DISCONNECT_CLIENT_OS_FORENSICS_PRIVACY_TIMING_REFINEMENT.md
   - docs/architecture/FOUNDATION_PROGRAMME_CURRENT_STATUS.md
   - docs/agents/tasks/active/OTV2-20260808-reentry-pve-protection.md
-next_action: Validate the exact PR head and obtain independent architecture review before squash merge.
+next_action: Complete the privacy/timing reconciliation and transition-safe status update, then freeze the exact head for audit and CI.
 ```
