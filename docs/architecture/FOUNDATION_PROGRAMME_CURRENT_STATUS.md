@@ -86,6 +86,8 @@ Owner-accepted semantics captured by the package:
 - a bounded client forensic ring and lightweight independent Launcher/Guardian are accepted design directions;
 - a separate Guardian diagnostic heartbeat remains a later candidate requiring its own measurement/contract rather than a frozen runtime requirement;
 - longitudinal Game Intelligence may correlate combat risk, HP/resources, incoming pressure, reconnect timing, protection use, healing/potions, escape outcome, client/OS/Guardian evidence and infrastructure correlation to detect suspicious or unusually deterministic patterns;
+- the analytical target is abuse of disconnect protection, not proof of one exact physical/software disconnect mechanism;
+- mechanical protection and retrospective abuse analysis are intentionally separate: an episode may receive protection and still be investigated later;
 - no single disconnect, client event or analytics score authorizes an automatic sanction; enforcement remains separately governed and human reviewed;
 - no kernel driver or invasive anti-cheat is authorized by this clarification.
 
