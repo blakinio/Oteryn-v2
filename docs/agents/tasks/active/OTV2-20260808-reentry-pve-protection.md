@@ -12,7 +12,7 @@ pr: 96
 base_sha: 19756eab0a66db37cb6f27ec367aaf2e4986df69
 owner: Oteryn project owner
 created_at: 2026-08-08T13:30:00+02:00
-updated_at: 2026-08-08T18:48:00+02:00
+updated_at: 2026-08-08T18:53:00+02:00
 execution_budget_minutes: 30
 owned_paths:
   - docs/architecture/DISCONNECT_REENTRY_PVE_PROTECTION_OWNER_DECISION.md
@@ -123,7 +123,7 @@ Documentation-only architecture change. No runtime, protocol, persistence, datab
 ## Context checkpoint
 
 ```yaml
-last_progress: Audit findings were converted into a bounded consistency refinement: existing diagnostics opt-out and non-adverse-evidence rules now govern all automatic client-originated disconnect capsules; Launcher/Guardian is an extension point rather than a mandatory first process; a Guardian heartbeat remains separately gated; current-status wording is being made merge-transition-safe.
+last_progress: The reconnect package is content-complete for validation. Privacy ambiguity is reconciled against the existing global diagnostics opt-out and non-adverse-evidence policy; Launcher/Guardian is preserved only as an extension point; Guardian heartbeat remains separately gated; current-status wording is merge-transition-safe; PR scope/body are synchronized.
 status: validating
 branch: docs/OTV2-20260808-reentry-pve-protection
 pr: 96
@@ -133,5 +133,5 @@ owned_paths:
   - docs/architecture/DISCONNECT_CLIENT_OS_FORENSICS_PRIVACY_TIMING_REFINEMENT.md
   - docs/architecture/FOUNDATION_PROGRAMME_CURRENT_STATUS.md
   - docs/agents/tasks/active/OTV2-20260808-reentry-pve-protection.md
-next_action: Complete the privacy/timing reconciliation and transition-safe status update, then freeze the exact head for audit and CI.
+next_action: Freeze the exact PR head, perform independent architecture audit, and validate required exact-head GitHub checks before squash merge.
 ```
