@@ -4,18 +4,18 @@
 task_id: OTV2-20260808-fnd04-session-admission-analysis
 title: Analyze FND-04 identity session admission and lease semantics
 mode: CONTRACT
-status: repairing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260808-fnd04-session-admission-analysis-repair
-pr: null
+pr: 107
 base_sha: c638ad524772f227dabc90e88a1381cc01e907ce
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: GPT-5.6 Sol architecture continuation session
 created_at: 2026-08-08T20:46:00+02:00
-updated_at: 2026-08-08T21:13:00+02:00
+updated_at: 2026-08-08T21:15:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -81,18 +81,18 @@ The repair remains architecture-analysis only. It does not authorize runtime, pr
 
 ### Platform reconciliation repair
 
-- [ ] Define Platform account-security change after grant issuance as an explicit FND-04 final-contract decision and testable failure boundary.
-- [ ] Preserve at least one reviewed mechanism family: sufficiently short bounded risk window, account-security generation binding/current projection, emergency revocation/introspection, or another explicit accepted design; do not silently assume nominal expiry is enough.
-- [ ] Define issuance-time runtime observation / route generation / ownership-generation applicability and the conditions under which a generation change invalidates an otherwise unexpired grant.
-- [ ] Preserve final game-domain current-owner validation even when Platform grant contains issuance-time runtime evidence.
-- [ ] Preserve a distinct Platform `AdmissionAttemptRef`-class producer operation/correlation identity for issuance idempotency/reconciliation, without promoting it to a canonical foundation entity ID unless proven necessary.
-- [ ] Keep `AdmissionAttemptRef` distinct from game-domain grant nonce / consume replay key and from GameSessionId.
-- [ ] Add required race/failure tests for account-security revocation, stale runtime owner generation and ambiguous grant issuance.
+- [x] Define Platform account-security change after grant issuance as an explicit FND-04 final-contract decision and testable failure boundary.
+- [x] Preserve reviewed mechanism families: bounded lifetime/risk window, account-security generation/current validation, revocation projection/emergency deny, online introspection or equivalent; nominal expiry alone is not silently assumed sufficient.
+- [x] Define issuance-time runtime observation / route generation / ownership-generation applicability and the conditions under which generation change invalidates an otherwise unexpired grant by default.
+- [x] Preserve final game-domain current-owner validation even when Platform grant contains issuance-time runtime evidence.
+- [x] Preserve a distinct Platform `AdmissionAttemptRef`-class producer operation/correlation identity for issuance idempotency/reconciliation without promoting it to a foundation entity ID.
+- [x] Keep `AdmissionAttemptRef` distinct from game-domain `GrantNonce` consume/replay key and from GameSessionId.
+- [x] Add required race/failure cases for post-issuance account-security revocation, stale runtime owner generation and ambiguous grant issuance.
 
 ### Governance
 
 - [x] Closeout PR #105 is closed unmerged and non-authoritative.
-- [ ] Add one bounded companion refinement rather than rewriting unrelated baseline content.
+- [x] Add one bounded companion refinement rather than rewriting unrelated baseline content.
 - [ ] Exact-head changed-path review finds zero unresolved material conflicts.
 - [ ] Exact-head Agent governance, Dependency review and CodeQL pass.
 - [ ] Independent exact-head architecture/security audit passes with zero open material findings.
@@ -113,20 +113,23 @@ This repair does not:
 
 ## Implementation / findings
 
-The merged baseline remains valid except where the companion refinement explicitly narrows or supersedes Platform pre-admission semantics.
+The merged baseline remains valid except where `FND-04_PLATFORM_PRE_ADMISSION_RECONCILIATION_REFINEMENT.md` explicitly narrows or supersedes Platform pre-admission semantics.
 
-The repair must make three distinctions binding for the final contract:
+The repair makes three distinctions binding final-contract inputs:
 
-1. **Account-security freshness/revocation:** successful Platform issuance is not indefinite proof that the account remains eligible until nominal grant expiry. FND-04 must select a bounded testable post-issuance security-change disposition.
-2. **Runtime observation applicability:** a Platform grant may carry issuance-time current-owner evidence, but that evidence is not self-refreshing authority. Current Oteryn-v2 route/runtime ownership is revalidated at final admission; final contract must state which observed generation/revision changes invalidate the grant.
-3. **Producer attempt vs consumer nonce:** Platform issuance retry/idempotency has an operation/correlation identity distinct from the game-domain consume nonce. They may be correlated but not silently treated as one lifecycle object.
+1. **Account-security freshness/revocation:** successful Platform issuance is not indefinite proof that the account remains eligible until nominal grant expiry. FND-04 must select a bounded testable post-issuance security-change disposition and maximum staleness/risk window.
+2. **Runtime observation applicability:** issuance-time runtime owner/generation evidence is immutable applicability evidence, not self-refreshing authority. Current Oteryn-v2 owner/readiness/revisions are revalidated at final admission; by default an advanced target ownership generation invalidates the fresh-entry grant and requires fresh routing/grant unless equivalent safe carry-forward is separately proven.
+3. **Producer attempt vs consumer nonce:** Platform `AdmissionAttemptRef` identifies issuance retry/reconciliation; `GrantNonce` identifies one capability's game-domain consume/replay lifecycle. They may be correlated but are never aliases for one another or for GameSessionId.
+
+The refinement recommends evaluating a normal-path design of short-lived signed grants + account-security generation/revision binding + trusted bounded-staleness game-side security-revocation/generation projection, with fail-closed new admission when required freshness cannot be established and optional exceptional introspection if security evidence requires it. This is an architecture-analysis direction, not a transport/cache/database choice.
 
 ## Validation
 
 ### Focused
 
-- current Platform contract reconciliation: in progress
-- exact repair scope: active task + one companion refinement expected
+- current Platform contract reconciliation: companion refinement covers both accepted current contracts pinned at `216f5b2817e9d102337608609e344518512c2a0d`.
+- exact repair scope: active task update + one companion refinement.
+- result: `PASS` pending exact-head independent audit.
 
 ### Component/integration
 
@@ -138,7 +141,7 @@ The repair must make three distinctions binding for the final contract:
 
 ### Exact-head CI
 
-- final repair head: pending
+- final repair head: pending after this synchronization commit
 - trigger source: pull_request
 - result: pending
 
@@ -152,21 +155,21 @@ The repair must make three distinctions binding for the final contract:
 - original delivery PR: 104, merged
 - original delivery merge: c638ad524772f227dabc90e88a1381cc01e907ce
 - superseded premature closeout PR: 105, closed unmerged
-- repair PR: pending
+- repair PR: 107
 - ownership release: blocked until repair merge + replacement closeout
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Delayed exact-head review of merged PR #104 exposed a material current-Platform reconciliation gap. Premature closeout #105 was closed unmerged; the active FND-04 analysis task now owns one bounded companion refinement to resolve post-issuance account-security changes, runtime ownership-generation applicability and producer issuance-attempt idempotency.
-status: repairing
+last_progress: Current Platform pre-admission/runtime-status contracts are now reconciled through one bounded companion refinement in repair PR #107. The repair freezes the missing analysis constraints without implementing any producer/consumer/runtime mechanism.
+status: validating
 branch: docs/OTV2-20260808-fnd04-session-admission-analysis-repair
 head_sha: null
-pr: null
+pr: 107
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
-ci_check_generation: repair-pending
+ci_trigger_source: pull_request
+ci_check_generation: repair-final-pending
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -180,5 +183,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Add and review the Platform pre-admission reconciliation refinement, then open the bounded repair PR and rerun exact-head CI/audit.
+next_action: Freeze PR #107 exact head, inspect both repair paths, require fresh Agent governance/Dependency review/CodeQL and exact-head architecture/security audit before squash merge.
 ```
