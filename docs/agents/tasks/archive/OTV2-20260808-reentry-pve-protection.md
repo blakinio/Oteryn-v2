@@ -11,6 +11,8 @@ base_sha: 19756eab0a66db37cb6f27ec367aaf2e4986df69
 delivery_pr: 96
 delivery_exact_head: ddf62ec48443fb4ce119eed0900662e222a99726
 delivery_squash_merge: 496f0b9ad5231d24325e937a3f09ba221cf5c86b
+closeout_pr: 97
+closeout_branch: docs/OTV2-20260808-reentry-pve-protection-closeout
 completed_at: 2026-08-08T18:55:00+02:00
 ownership_released: true
 next_gate: FND-03
