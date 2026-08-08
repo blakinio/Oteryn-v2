@@ -5,211 +5,244 @@
 - Gate: `FND-04`
 - Coordination ID: `OTV2-NATIVE-FOUNDATION`
 - Repository: `blakinio/Oteryn-v2`
-- Consumes: ADR-0003, ADR-0012, FND-ID-01, FND-02, accepted FND-03, reconnect/duplicate-login/disconnect owner baselines, foundation error vocabulary and failure catalogue
+- Consumes: ADR-0003, ADR-0012, FND-ID-01, FND-02, accepted FND-03, reconnect/duplicate-login/disconnect owner baselines, foundation error vocabulary and foundation failure catalogue
 - External reconciliation evidence: `blakinio/Oteryn-Platform@c0b8703d326a04b43ae8e06f6192b0cb91c859b7` remains read-only/reconciliation-only and cannot override later Oteryn-v2 semantics
-- Does not authorize: Rust/runtime/protocol implementation, PostgreSQL schema, Platform writes, key deployment, production traffic, production heartbeat/lease settings or live account/session mutation
+- Does not authorize: Rust/runtime/protocol implementation, PostgreSQL schema, Platform writes, production key deployment, production traffic, production heartbeat/lease values or live account/session mutation
 
 ## 1. Purpose
 
-`FND-04` is the point where several already accepted truths must become one coherent authority state machine:
+`FND-04` must turn already accepted identity, protocol, runtime, reconnect and duplicate-login decisions into one coherent security/authority state model.
+
+The minimum distinction is:
 
 ```text
 Platform authentication
-    != authorization to attempt admission
+    != authorization to attempt gameplay admission
     != canonical GameSessionId
-    != player-control authority
-    != character world presence
-    != concrete transport
+    != account-global presence exclusion
+    != character writer/control lease
+    != concrete transport binding
+    != runtime scope ownership
 ```
 
-The architecture is unsafe if these concepts collapse into one generic "session token" or one database row whose semantics change depending on caller.
+Collapsing these concepts into one generic "session token" would make replay, reconnect, takeover, combat presence, channel handoff and crash recovery ambiguous.
 
-This baseline therefore analyzes the final contract before freezing security-sensitive mechanisms. It identifies what the final FND-04 contract must decide, recommends one coherent model, and explicitly leaves benchmark/library/schema details open where accepted architecture does not force them yet.
+This baseline is deliberately analysis-only. It recommends a direction, identifies mandatory final-contract decisions, records failure/race constraints and preserves implementation choices that do not need to be frozen yet.
 
-## 2. Accepted constraints — not open for redesign in FND-04
+## 2. Accepted constraints — not open for redesign here
 
-### 2.1 Identity/control-plane boundary
+### 2.1 Platform and identity
 
-- Platform Identity owns reusable account credentials, OAuth/PKCE, MFA, recovery and Game Login Ticket issuance.
-- Game Gateway remains in Oteryn Platform and owns route/offer orchestration, not gameplay authority.
-- The game domain owns final gameplay admission, Game Session lifecycle and canonical `GameSessionId` issuance.
-- `GameSessionId` is identity only, never a bearer credential.
-- Character Authority owns the authoritative `AccountId <-> CharacterId` relation and admission must revalidate it.
+- Oteryn Platform Identity owns reusable account credentials, OAuth/PKCE, MFA, recovery and Game Login Ticket issuance.
+- Game Gateway remains a Platform control-plane component responsible for bounded route/offer orchestration, not gameplay state.
+- The game-domain Game Session / Admission authority establishes final gameplay admission and issues canonical `GameSessionId` only after successful authoritative admission.
+- `GameSessionId` is identity, never a bearer credential.
+- Character Authority owns canonical `CharacterId`, authoritative character lifecycle and current `AccountId <-> CharacterId` ownership relation.
+- Final admission must revalidate the current game-owned account/character relation; browser/client/Platform projections are not final ownership proof.
 
-### 2.2 Protocol boundary
+### 2.2 Protocol
 
 FND-02 already fixes:
 
-- TLS 1.3 + ALPN `oteryn-game/1`;
-- bounded opaque admission and reconnect material;
+- TCP + TLS 1.3 and ALPN `oteryn-game/1`;
+- bounded opaque admission/reconnect material;
 - no client-created canonical `GameSessionId` during bootstrap;
 - game-issued `GameSessionId` after admission;
 - `connection_generation` as a `uint64` fence scoped to one `GameSessionId`;
 - generation zero only before admission/resume authority;
-- strictly newer non-zero generation on every accepted transport rebind;
-- `(GameSessionId, CommandId)` command identity and ordered ingress;
-- stale generation cannot command, restore liveness or apply state;
-- `LivenessProbe` / `LivenessAck` as authenticated application liveness primitives.
+- a strictly newer non-zero generation on every accepted transport rebind;
+- `(GameSessionId, CommandId)` as command identity/order;
+- stale connection generations cannot command, advance liveness or alter reconciliation;
+- authenticated `LivenessProbe` / `LivenessAck` primitives;
+- bounded snapshot/replay reconciliation after admission/rebind.
 
-FND-04 may define meanings carried by admission/reconnect material and may register later admission/session messages under FND-02 rules, but it cannot redefine the wire foundation silently.
+FND-04 may define admission/reconnect credential semantics and later register typed messages under FND-02 rules. It may not silently redefine the protocol foundation.
 
-### 2.3 Runtime/liveness boundary
+### 2.3 Runtime and timing
 
-FND-03 already fixes that:
+Accepted FND-03 semantics remain binding:
 
-- FND-04 decides which current-generation evidence counts as sufficient control/liveness evidence;
-- FND-03 records accepted evidence against a process-monotonic clock;
-- after the accepted boundary, FND-03 executes 2-second disconnect protection, 5-second stale concrete transport cleanup and 4-second defensive PvE re-entry effects;
-- stale-generation evidence cannot advance liveness;
-- runtime/server-health evidence must distinguish GameNode stall from isolated client/path loss.
+- FND-04 decides what current-generation evidence counts as sufficient playable-control/liveness evidence;
+- FND-03 timestamps accepted evidence using process-local monotonic time;
+- FND-03 executes the accepted `2.0 s` disconnect-protection boundary, `5.0 s` stale concrete-transport cleanup and `4.0 s` defensive PvE re-entry effect;
+- stale-generation evidence cannot restore liveness;
+- GameNode/runtime-health evidence is considered so local server stalls are not mislabeled as player path loss.
 
-### 2.4 Account and combat-presence boundary
+### 2.4 Account, combat and takeover
 
-- one `AccountId` may have at most one authoritative online `CharacterId`;
-- a healthy combat/PZ/logout-locked incumbent cannot be kicked or revoked merely because a second client authenticated;
+- one `AccountId` may have at most one authoritative playable/mandatory-presence `CharacterId` at a time;
+- a healthy combat/PZ/logout-locked incumbent cannot be kicked, fenced or revoked merely because a second client authenticates;
 - a genuinely unavailable incumbent may be recovered through same-character reconnect/recovery;
-- a different character remains blocked while the incumbent actor has mandatory world presence;
-- reconnect/takeover cannot reset HP/resources/position/conditions/cooldowns/combat/PZ/threat/encounter state or committed effects.
+- a different `CharacterId` remains blocked while the incumbent actor has mandatory world presence;
+- reconnect/takeover cannot reset HP/resources/position/conditions/cooldowns/combat/PZ/logout/threat/encounter state or already committed effects;
+- graceful logout/intentional takeover does not create disconnect re-entry protection.
 
-### 2.5 Identifier boundary
+### 2.5 Identifier discipline
 
-FND-ID-01 intentionally did **not** add `AdmissionId` or `CharacterLeaseId`.
+FND-ID-01 intentionally did not add `AdmissionId` or `CharacterLeaseId`.
 
-FND-04 must not invent either unless its final state machine proves that an admission attempt or lease is a separately addressable durable semantic entity that cannot safely be represented by existing identities plus scoped generation/state.
+FND-04 must prefer existing identities plus scoped state/generation values unless a separately addressable durable semantic entity is proven necessary.
 
 ## 3. Decision timing
 
-### Must decide now — YES
+### 3.1 Must decide before FND-04 final acceptance — YES
 
-Before any production admission/session/lease implementation can be accepted, FND-04 must freeze:
+The final contract must freeze:
 
-- exact semantic authority model for account presence, character authority, Game Session and transport binding;
-- fresh admission and final commit linearization point;
-- pre-admission credential class: signed, opaque or hybrid;
-- issuer/audience/key-purpose boundaries and key rotation/revocation semantics;
-- replay prevention and consumed-credential behavior;
-- reconnect credential semantics, rotation and replay handling;
-- initial and rebind `connection_generation` commit semantics;
-- account-global exclusion and character-lease generation/fencing semantics;
-- same-session reconnect, full reauthentication recovery and intentional takeover behavior;
-- exact server-authoritative start/end semantics of the accepted 15-second reconnect grace;
-- relationship among 2-second loss protection, 5-second transport cleanup and 15-second logical grace;
-- fresh-session recovery of the same in-world actor after old GameSession terminality;
-- failure behavior for Platform/Gateway/lease/key/revision/race scenarios;
-- public/internal error categorization and credential redaction.
+- semantic ownership and state transitions for account presence, character lease/control, GameSession and transport binding;
+- fresh-admission linearization point;
+- signed/opaque/hybrid pre-admission credential class;
+- credential purpose/type, issuer, audience and minimum route/revision bindings;
+- one-time/replay-prevention semantics;
+- reconnect credential semantics, rotation and replay/lost-response behavior;
+- `connection_generation` commit rules;
+- account-global exclusion and character lease fencing semantics;
+- same-session reconnect, reauthenticated recovery and intentional takeover behavior;
+- exact start/end semantics of the accepted 15-second same-GameSession reconnect grace;
+- relationship among the accepted 2-second, 5-second, 15-second and 4-second behaviors;
+- post-grace same-character recovery while an actor remains in mandatory world presence;
+- reconnect routing/current-placement authority;
+- Channel↔Instance and Channel↔Channel session-continuity rules;
+- key-purpose, discovery, rotation and emergency-revocation invariants;
+- failure/error mappings and credential redaction requirements.
 
-### Must decide now — NO
+### 3.2 Must be concrete before implementation, but need not be guessed in this analysis
 
-The following should remain open until a bounded implementation/security/performance spike or owning later gate provides evidence:
+The final FND-04 delivery must either freeze or explicitly gate a concrete, versioned **cross-language admission-grant security/interchange profile** before Platform/game implementation begins. That profile must define canonical credential encoding, signature/verification algorithm profile, required claims/fields and independent fixtures.
 
-- JWS/JWT versus PASETO/COSE or another exact signed-container library/encoding, provided the accepted signed-capability semantics are preserved;
-- exact asymmetric algorithm/library and key-storage product;
-- exact pre-admission TTL and verification-key cache staleness values;
-- exact liveness-probe cadence below the already accepted 2-second behavior boundary;
-- exact lease TTL, renewal cadence and safety margin;
+The exact application libraries, KMS/HSM/vendor products and internal APIs do **not** need to be architecture constants. They remain implementation/security choices as long as they implement the accepted profile and pass the required evidence.
+
+Likewise, the following numeric values require measured/security evidence before implementation acceptance and should not be invented in this analysis:
+
+- pre-admission credential TTL and bounded wall-clock skew;
+- verification-key refresh/cache-staleness windows;
+- reconnect-secret length/primitive and verifier-retention window;
+- liveness-probe cadence/hysteresis inside the accepted two-second behavioral boundary;
+- character-lease TTL, renewal cadence and local safety margin;
+- admission/reconnect/takeover rate limits.
+
+### 3.3 Deliberately not decided here
+
 - PostgreSQL table/index/locking/isolation representation;
-- whether Redis, PostgreSQL or another later accepted component physically accelerates non-authoritative caches;
-- concrete rate limits and abuse thresholds;
-- client proof-of-possession as a first-release requirement;
-- final user-facing wording/UX for blocked takeover and reconnect states.
+- exact Rust/Go cryptographic/token library;
+- KMS/HSM/cloud-vendor product;
+- Redis or any other non-authoritative cache product;
+- deployment/orchestrator topology;
+- client proof-of-possession as a mandatory first-release feature;
+- final player-facing UX wording.
 
-These values must still be concrete before their corresponding implementation is accepted; they are not permission for unlimited/default-library behavior.
+### 3.4 Why the semantic model must be correct now
 
-### What becomes hard if the model is wrong
+A wrong model could create:
 
-A wrong authority model can create:
-
-- two playable characters for one account;
+- two playable characters under one account;
 - two transports commanding one GameSession;
-- stale GameNode/session writers overwriting current state;
-- replayable login capabilities;
+- stale session/runtime writers overwriting newer authority;
+- replayable admission grants;
 - second-client combat disconnect abuse;
-- inability to recover a character after an ambiguous successful admission;
-- session identity tied incorrectly to current socket, GameNode or channel placement;
-- cross-repository coupling that forces Platform to become gameplay authority.
+- character/account release when an uncontrolled actor still exists;
+- unsafe automatic writer replacement after lease uncertainty;
+- stale Platform/client route data becoming gameplay authority;
+- inability to recover an ambiguous admission/rebind safely.
 
-### Evidence that may supersede later
+### 3.5 Evidence that may justify supersession
 
-A later contract may reopen a FND-04 choice only with named evidence such as:
+A later contract may reopen a choice only with named evidence such as:
 
-- admission/reconnect penetration-test findings;
-- cross-language token-library security/maintenance evidence;
-- measured key-distribution or introspection latency/availability evidence;
-- failover/fault-injection showing a lease model cannot fence split ownership;
-- player telemetry showing accepted reconnect timing materially harms fairness or recovery;
-- a product requirement for sender-constrained credentials, device binding or stronger takeover authentication.
+- penetration-test/security-review findings;
+- cross-language interoperability or library-maintenance evidence;
+- measured key-distribution/introspection latency or availability evidence;
+- lease/fencing fault injection revealing a split-owner window;
+- reconnect-storm/liveness false-positive evidence;
+- player fairness/abuse telemetry;
+- a new product requirement for sender-constrained credentials, device binding or stronger takeover authentication.
 
-## 4. Recommended semantic authority model
+## 4. Recommended authority model
 
-The final contract should separate four nested authority layers.
+Use four distinct semantic authority layers plus runtime scope ownership.
 
 ```text
 A. AccountPresenceClaim
    scope: AccountId
-   value: current CharacterId (or none)
-   purpose: account-global one-online-character exclusion / mandatory presence
+   value: CharacterId or none
+   meaning: the account's one current playable/mandatory-presence character
 
-B. CharacterAuthorityLease
+B. CharacterLease
    scope: CharacterId
-   binds: AccountId + current character_lease_generation + current authoritative actor/runtime context
-   purpose: fence stale character authority and durable writes
+   binds: AccountId + character_lease_generation + current authoritative actor/runtime context
+   meaning: exclusive current character writer/control fence consumed by session/runtime/persistence rules
 
 C. GameSession
    identity: GameSessionId
-   binds: AccountId + CharacterId + current character lease + world/placement/revisions
-   purpose: logical player-control lifecycle
+   binds: AccountId + CharacterId + current CharacterLease + current world/placement/revisions
+   meaning: one logical player-control lifecycle
 
 D. TransportBinding
    scope: GameSessionId
    fence: connection_generation
-   purpose: exactly one current concrete transport may submit player commands/liveness/resync authority
+   meaning: one current concrete transport may submit gameplay/liveness/reconciliation authority
+
+E. RuntimeScopeAuthority
+   scope: current ChannelRuntime/InstanceRuntime ownership generation
+   meaning: the current simulation owner executes authoritative actor mutation
 ```
 
-The names are semantic. The final implementation may physically store them together where atomicity and ownership remain explicit.
+These may be co-located physically but must remain semantically distinct.
 
-### Why account presence and GameSession must be separate
+### 4.1 Why AccountPresenceClaim is separate
 
-A GameSession can become terminal after reconnect-grace expiry while the actor remains in mandatory combat/PZ/logout world presence.
+After the 15-second same-session reconnect grace expires, the old GameSession may become terminal while combat/PZ/logout rules still require the actor to remain in the world.
 
 Therefore:
 
 ```text
 GameSession terminal
 != actor absent
-!= account free to play another CharacterId
+!= AccountId free for another CharacterId
 ```
 
-The account presence claim must follow authoritative world-presence eligibility, not socket lifetime or GameSession lifetime alone.
+`AccountPresenceClaim` remains held while the actor is `PRESENT_CONTROLLED` or `PRESENT_UNCONTROLLED`, and is released only after an authoritative lifecycle transition proves the actor is legally absent/replaced.
 
-### Why character authority and GameSession must be separate
+Socket close, GameSession terminality, client process death or reconnect-grace expiry do not release it by themselves.
 
-Server-driven simulation may still need to commit damage, death, conditions or other authoritative effects after player control is lost. A character authority fence therefore cannot be synonymous with "current TCP connection exists".
+### 4.2 Why CharacterLease is separate from GameSession
 
-The current GameSession controls player input. The authoritative runtime/character lease continues to protect server-originated character mutation according to FND-03/DUR ownership while the actor exists.
+Server-driven simulation may continue to apply damage, death, conditions or other authoritative effects after player control is lost. A character writer fence therefore cannot be equivalent to “current TCP connection exists.”
 
-## 5. Recommended generation vocabulary
+The lease remains tied to the authoritative actor/runtime lifecycle and can outlive one transport or, where post-grace recovery is accepted, one GameSession.
 
-The final contract should prefer scoped generation/fencing values over new durable entity IDs.
+Player-originated durable mutations must still be attributable to a current accepted GameSession/command context in addition to a current character/runtime fence; reusing the same character lease does not resurrect a terminal GameSession.
 
-### 5.1 `account_presence_generation`
+### 4.3 Character Authority remains authoritative
 
-Conceptual scope:
+The lease protocol does not transfer ownership of the character aggregate away from Character Authority.
 
-```text
-AccountId + account_presence_generation
-```
+Recommended responsibility split:
+
+- Character Authority remains semantic owner of CharacterId, character state and AccountId↔CharacterId ownership;
+- Game Session / Admission authority coordinates player-session admission, account exclusion and lease transitions;
+- ChannelRuntime/InstanceRuntime owns current simulation under FND-03 scope ownership;
+- DUR later defines physical persistence/fencing/transaction enforcement.
+
+## 5. Recommended scoped fencing values
+
+### 5.1 Account presence revision/generation
+
+A current account-presence claim requires a stale-safe revision/fence scoped to `AccountId`.
 
 Recommended semantics:
 
-- non-zero monotonically increasing `uint64` class-4 fencing value;
-- advances when a new authoritative account-presence claim replaces a prior released/invalid claim;
-- protects account-global exclusion from stale admission/takeover attempts;
-- does not necessarily advance when the same continuously present actor receives a fresh GameSession after reconnect-grace expiry;
-- never wraps/reuses; exhaustion fails safe.
+- non-zero monotonic `uint64` generation or equivalent linearizable CAS revision;
+- advances when a released/replaced account-presence claim is superseded;
+- stale admission/takeover work cannot replace a newer claim;
+- continuous presence of the same CharacterId may retain the claim across transport reconnect or a fresh GameSession attached to the same actor;
+- no wrap/reuse; exhaustion fails safe.
+
+This value does not need to become a public/wire foundation identifier.
 
 ### 5.2 `character_lease_generation`
 
-Conceptual scope:
+Recommended scope:
 
 ```text
 CharacterId + character_lease_generation
@@ -217,257 +250,269 @@ CharacterId + character_lease_generation
 
 Recommended semantics:
 
-- non-zero monotonically increasing `uint64` class-4 fencing value;
-- fences stale character/session/process durable writes;
-- may survive transport reconnect and GameSession replacement while the same authoritative actor/lease remains current;
-- must advance when authoritative character lease ownership is replaced/recovered in a way that must fence a stale former holder;
-- never wraps/reuses; exhaustion fails safe.
+- non-zero monotonic `uint64` class-4 fence;
+- stale session/runtime/durable writes from an older lease generation fail closed;
+- may survive transport reconnect and may survive GameSession replacement while the same authoritative actor/lease remains current;
+- advances when authoritative character writer ownership is actually replaced/recovered such that a former holder must be fenced;
+- no wrap/reuse; exhaustion fails safe.
 
 ### 5.3 `connection_generation`
 
-Already fixed by FND-02:
-
-```text
-GameSessionId + connection_generation
-```
+FND-02 already fixes its type/scope.
 
 Recommended FND-04 commit semantics:
 
-- first successful GameSession transport binding starts at `1`;
-- every accepted same-GameSession rebind atomically establishes one strictly newer generation;
-- simple `+1` is preferred unless implementation evidence proves a gap-based allocator is required;
-- failed/rejected rebind does not consume/advance the generation unless a commit actually replaced authority;
-- wrap/reuse is session-terminal.
+- initial admitted transport uses generation `1`;
+- each accepted same-GameSession rebind commits exactly one strictly newer value;
+- simple `current + 1` is preferred unless implementation evidence proves a different allocator is required;
+- a rejected/uncommitted rebind does not change current authority;
+- no wrap/reuse; exhaustion makes that GameSession terminal.
 
-### 5.4 No new `AdmissionId` / `CharacterLeaseId` recommendation
+### 5.4 No new AdmissionId / CharacterLeaseId
 
-Current analysis finds no requirement for a new canonical foundation entity.
+Current analysis finds no need for either durable entity identity.
 
-A credential-scoped random nonce and scoped lease generation are sufficient for:
+Use:
 
-- one-time grant replay prevention;
-- bounded admission correlation;
-- idempotent/fenced state transitions;
-- lease fencing.
+- a credential-scoped cryptographically random grant nonce for admission replay/correlation;
+- GameSessionId for admitted logical sessions;
+- scoped account/character generations for exclusion/fencing.
 
-The final contract should keep `AdmissionId` and `CharacterLeaseId` absent unless later detailed crash-recovery design proves otherwise.
+A later narrow FND-ID amendment remains possible only if detailed crash/recovery design proves a separately addressable durable entity is necessary.
 
-## 6. Fresh admission — recommended linearization
+## 6. Fresh admission linearization
 
-The safe conceptual flow is:
+Recommended conceptual sequence:
 
 ```text
 Platform Identity
     -> one-time Game Login Ticket
 Game Gateway
     -> redeem ticket
-    -> choose authorized WorldId + ChannelId + protocol/revisions
-    -> obtain/issue bounded pre-admission grant
-Rust game admission boundary
-    -> cryptographically validate grant
-    -> validate current route/revisions
-    -> revalidate AccountId owns CharacterId
+    -> choose authorized entry route / protocol / revisions
+    -> obtain dedicated PreAdmissionGrant
+Game Session / Admission authority
+    -> validate grant type/signature/issuer/audience/time/bindings
+    -> validate current route/revisions/scope authority
+    -> revalidate AccountId currently owns CharacterId
     -> evaluate account presence / duplicate-login state
-    -> acquire or transition account presence claim
-    -> acquire current CharacterAuthorityLease
+    -> establish/transition AccountPresenceClaim
+    -> establish current CharacterLease
     -> generate candidate GameSessionId
     -> atomically commit:
-         grant consumption
-         account/character fences
+         one-time grant consumption
+         account-presence fence/revision
+         character lease generation/state
          logical GameSession
          connection_generation = 1
-         initial reconnect-credential verifier
-    -> only then publish successful admission
-    -> FND-02 initial authoritative snapshot boundary
+         initial reconnect credential verifier/state
+    -> only then publish admission success
+    -> establish FND-02 initial snapshot boundary
 ```
 
-`GameSessionId` may be generated before the transaction/linearization point, but it becomes canonical only if the authoritative admission commit succeeds. A generated-but-uncommitted value is discarded and never reused.
+A generated candidate GameSessionId is not canonical until the admission commit succeeds. An uncommitted candidate is discarded and never reused.
 
-### Required atomic invariant
+### 6.1 Required atomic invariant
 
-Fresh admission must behave as one logical linearizable commit even if later DUR-02 maps it to multiple rows/records:
+Fresh admission must behave as one linearizable authority transition even if DUR later maps it across multiple physical records:
 
 ```text
 consume grant
 + prove account exclusion
-+ prove character authority
-+ create one GameSession
-+ create first transport generation
-= one externally unambiguous admission outcome
++ prove character writer authority
++ create exactly one GameSession
++ create first current transport binding
+= one externally unambiguous admission result
 ```
 
-External success must never precede that commit.
+No client-visible success may precede this point.
 
-## 7. Pre-admission credential options
+## 7. Pre-admission credential alternatives
 
-### Option A — opaque credential with online introspection/consume
+### 7.1 Opaque + online introspection/consume
 
-**Benefits**
+Benefits:
 
 - immediate central revocation;
-- simple claim confidentiality;
-- replay state naturally centralized.
+- hidden claims;
+- centralized one-time state.
 
-**Costs/risks**
+Costs:
 
-- every gameplay admission depends synchronously on Platform/admission service availability and latency;
-- game admission correctness becomes coupled to a remote online lookup;
-- failure after Game Login Ticket redemption becomes more operationally complex.
+- every normal admission depends synchronously on a Platform-side service;
+- higher coupling of game admission latency/availability to Platform;
+- more ambiguous failure after Game Login Ticket redemption.
 
-### Option B — purely self-contained signed credential
+### 7.2 Pure self-contained signed credential
 
-**Benefits**
+Benefits:
 
-- game server validates without synchronous Platform call;
-- easy horizontal verification and route-local admission.
+- local cryptographic verification by game nodes/admission service;
+- easy horizontal verification.
 
-**Costs/risks**
+Costs:
 
-- signature validity alone does not provide one-time semantics;
-- emergency revocation and replay still require explicit state/policy;
-- token-type/key/audience confusion becomes security-sensitive.
+- signature validity alone is not one-time consumption;
+- replay and emergency revocation need additional state/policy;
+- token/key/audience confusion is security-sensitive.
 
-### Option C — hybrid signed capability + stateful one-time consumption
+### 7.3 Hybrid signed capability + game-domain one-time consumption
 
-**Benefits**
+Benefits:
 
-- no synchronous Platform introspection on the normal game-server admission path;
-- issuer/audience/route/revision claims are cryptographically authenticated;
-- a random grant nonce can be atomically consumed with admission/lease state;
-- replay and ambiguous retry behavior are explicit rather than assumed from token expiry alone;
-- Platform and game domains retain their accepted authority split.
+- no synchronous Platform introspection on the normal verification path;
+- cryptographically authenticated issuer/audience/route/revision bindings;
+- replay state is explicit and atomically tied to game admission;
+- Platform remains authorization issuer while game remains final admission/session authority.
 
-**Costs/risks**
+Costs:
 
-- requires verification-key distribution plus a game-side one-time consumption record/window;
-- key rotation/revocation and replay retention must be governed;
-- exact cross-language token format needs independent fixture/security evidence.
+- requires key-distribution/revocation plus bounded game-domain grant-consumption state;
+- requires a versioned cross-language security/interchange profile and independent fixtures.
 
-### Recommendation
+### 7.4 Recommendation
 
-Use **Option C: hybrid signed pre-admission capability + stateful one-time consumption** as the final-contract direction unless a bounded security/availability spike disproves it.
+Use **hybrid signed PreAdmissionGrant + authoritative game-domain one-time consumption** as the final-contract direction unless a bounded security/availability evaluation disproves it.
 
-This is a semantic recommendation, not selection of JWT/PASETO/COSE or a library yet.
+This recommendation selects the semantic class, not a token library.
 
-## 8. Recommended pre-admission grant ownership and key purpose
+## 8. Grant issuer and key-purpose separation
 
-The pre-admission grant should be issued by a **Platform-owned Game Admission Grant issuer** invoked through the Game Gateway flow.
-
-It must be distinct semantically from:
-
-- reusable account/OAuth credentials;
-- the one-time Game Login Ticket;
-- the canonical game-domain GameSessionId;
-- reconnect credentials.
-
-Recommended key-purpose model:
+Recommended trust model:
 
 ```text
-Platform Identity credentials/tickets -> their own keys/purpose
-Platform Game Admission Grant         -> dedicated asymmetric signing key purpose
-Game reconnect credential             -> game-domain secret/verifier; not the Platform signing key
+Platform Identity credentials / Game Login Ticket
+    -> Platform Identity purpose/keys
+
+PreAdmissionGrant
+    -> dedicated Platform-owned Game Admission Grant issuer/key purpose
+    -> invoked by Gateway flow
+
+Reconnect credential
+    -> game-domain secret/verifier purpose
 ```
 
-The Game Gateway process should not gain broad reusable account-signing authority merely because it orchestrates issuance.
+The Gateway should orchestrate grant issuance without obtaining broad reusable-account signing authority merely because it handles routes.
 
-If a JWT/JWS-style container is later selected, current IETF JWT security guidance requires strict algorithm allowlisting, issuer/audience validation, explicit typing and mutually exclusive validation rules for different token kinds. FND-04 should preserve those properties independent of final library/format.
+The game side receives verification capability, never Platform signing secrets.
 
-## 9. Minimum pre-admission grant bindings
+Any later signed-container profile must enforce strict algorithm/profile allowlisting, explicit credential typing, trusted issuer/audience validation and mutually exclusive validation rules for distinct credential purposes. If JWT/JWS is selected, RFC 8725-style BCP controls are the minimum reference direction; the exact library remains an implementation choice.
 
-The signed/authenticated grant should carry or authenticate at minimum:
+## 9. PreAdmissionGrant minimum semantics
 
-- explicit token/credential type and contract revision;
-- trusted issuer identifier;
-- exact game-admission audience/purpose;
-- `AccountId`;
-- `CharacterId`;
-- `WorldId`;
-- `ChannelId`;
-- selected protocol major and transport profile;
-- required ruleset/content/map/world-policy/server compatibility revisions needed by current accepted contracts;
-- issue/not-before/expiry timestamps under bounded wall-clock skew policy;
+The grant must authenticate at minimum:
+
+- explicit credential type and contract/security-profile revision;
+- issuer;
+- exact admission audience/purpose;
+- AccountId;
+- CharacterId;
+- WorldId;
+- fresh-entry ChannelId/route binding where the grant purpose is fresh entry;
+- protocol major + transport profile;
+- required ruleset/content/map/world-policy/offer compatibility revisions when those are authoritative gates;
+- issue/not-before/expiry under bounded trusted wall-clock skew;
 - cryptographically random one-time grant nonce;
-- key identifier/version from an allowlisted issuer key set;
-- any exact route/offer revision required to prevent stale offer substitution.
+- allowlisted signing-key identifier/version;
+- route/offer revision where required to prevent stale offer substitution.
 
-The grant should **not** contain or imply:
+It must not contain or imply:
 
 - canonical GameSessionId;
 - connection_generation;
 - character lease authority;
-- NodeId as a substitute for current ChannelRuntime ownership;
-- reusable account credential material;
-- arbitrary verifier/JWK URLs supplied by the token itself;
-- client-chosen issuer/audience/route authority.
+- NodeId as a substitute for current scope ownership;
+- reusable account/OAuth credentials;
+- arbitrary token-selected key/JWK URLs;
+- client-selected issuer/audience/routing authority.
 
-NodeId binding is not recommended by default because NodeId is process-incarnation placement, not channel identity. Current channel ownership must be validated independently.
+### 9.1 Credential purposes must not be interchangeable
 
-## 10. Pre-admission validation order
+If final FND-04 accepts a Platform-reauthenticated same-character recovery path, **fresh entry** and **same-character recovery** must use explicit, non-confusable validation purposes.
 
-The final contract should fail closed in an order that bounds attacker-controlled work before expensive/game-state work.
+A fresh-entry grant bound to ChannelId must never be interpreted as permission to move an already-present actor to that channel.
 
-Recommended sequence:
+A recovery-purpose credential may authenticate AccountId/CharacterId/WorldId intent, but the game domain must resolve the actor's **current authoritative placement** and session/lease state. Stale client/Platform placement is never authority.
 
-1. FND-02 frame/material size and structural limits;
-2. explicit credential type/version parsing;
-3. allowlisted issuer/key selection and signature verification;
+The final contract must define how the client is routed to that current authority without making Platform the owner of gameplay/session state.
+
+## 10. Validation order
+
+Recommended fail-closed order:
+
+1. FND-02 material/frame size and structural bounds;
+2. explicit credential type/security-profile revision;
+3. allowlisted issuer/key selection and cryptographic verification;
 4. issuer/audience/time/skew validation;
-5. protocol/transport/revision/route binding validation;
-6. one-time grant nonce replay/consumption eligibility check;
+5. protocol/route/revision binding validation appropriate to the credential purpose;
+6. grant nonce replay/consumption eligibility;
 7. authoritative AccountId -> CharacterId ownership revalidation;
-8. account-presence/duplicate-login eligibility;
-9. current character/world/channel/lifecycle eligibility;
-10. atomic admission/lease/GameSession commit.
+8. current account-presence/duplicate-login eligibility;
+9. current character lifecycle + current runtime placement/scope authority validation;
+10. atomic admission/lease/GameSession transition.
 
-No failure before step 10 may leave a partial active GameSession or player-control authority.
+No failure before step 10 may leave player-control authority or a partially active GameSession.
 
-## 11. Grant replay and ambiguous response policy
+## 11. One-time grant replay and retention
 
-### Recommendation: consumed means consumed
+### 11.1 Consumed means consumed
 
-The same pre-admission grant must never create a second GameSession or a second admission commit.
+One PreAdmissionGrant may create at most one successful admission transition.
 
-After successful consumption, replay of the same grant is classified as `SESSION_REJECTED` with a narrower stable code such as `ADMISSION_GRANT_REPLAYED`/`ADMISSION_GRANT_CONSUMED` in the final registry.
+Replay of an already consumed grant must not create another GameSession, lease or transport binding and maps to `SESSION_REJECTED` with a stable narrower final code.
 
-### Lost `ServerAccepted` response
+### 11.2 Consumption key and retention
 
-Do **not** weaken one-time grant semantics merely to recover an ambiguous network response.
+The replay key should be semantically at least:
 
-If the client cannot determine whether admission succeeded:
+```text
+trusted issuer/security-profile + grant nonce
+```
 
-1. establish a fresh Platform/Gateway admission attempt and fresh grant;
-2. game admission re-evaluates current account/character state;
-3. if an existing same-character GameSession is genuinely reconnectable, the fresh authenticated attempt may enter the controlled reauthenticated-recovery path described below;
-4. it must not create a second actor/session blindly.
+Consumption evidence must remain authoritative for at least the full period during which the grant could still pass time/skew validation. Evicting replay evidence while the credential can still be accepted is forbidden.
 
-This separates replay prevention from recovery and avoids making a consumed admission grant a long-lived reconnect credential.
+Exact retention/storage is later DUR/security implementation work.
 
-## 12. Reconnect credential — recommended model
+### 11.3 Lost admission response
 
-Reconnect material should be a game-domain-issued **high-entropy opaque rotating secret**, not GameSessionId and not a Platform token.
+If the admission commit succeeded but `ServerAccepted` was lost, the original consumed grant does not become reusable.
 
-Recommended properties:
+Recommended recovery:
 
-- bound server-side to exactly one GameSessionId and current reconnect-credential generation/state;
-- transmitted only over the accepted TLS channel;
-- server stores a one-way verifier/digest or equivalent secret-safe representation where practical;
+1. client obtains a fresh Platform/Gateway authorization/grant;
+2. game-domain admission re-evaluates current state;
+3. if an existing same-character GameSession is genuinely eligible for the accepted reauthenticated-recovery path, recover it through that distinct path;
+4. otherwise return the bounded current state or a fresh-session path as permitted;
+5. never blindly create a second actor/session.
+
+## 12. Reconnect credential recommendation
+
+Use a **game-domain-issued high-entropy opaque rotating reconnect secret** rather than GameSessionId or a Platform token.
+
+Required semantic properties:
+
+- bound to exactly one current GameSession and reconnect-credential state/generation;
+- sent only over accepted TLS;
+- stored server-side as a verifier/digest or equivalent secret-safe representation where practical;
 - never logged or exported to analytics;
-- rotated on every successful authoritative rebind;
-- predecessor becomes unusable after the new binding commits, except for a narrowly defined idempotent crash/retry reconciliation record if later required;
-- replay outside the accepted transition returns `SESSION_REJECTED` or `STALE_GENERATION` with no authority change;
-- expiration/terminality follows GameSession lifecycle and the accepted 15-second fast-resume policy.
+- rotated when a new transport binding successfully commits;
+- predecessor cannot authorize an unrelated/later rebind;
+- replay fails closed without changing current authority;
+- terminal GameSession invalidates reconnect authority.
 
-The exact secret byte length and cryptographic primitive must be fixed before implementation acceptance, with at least modern cryptographic entropy and library review; this analysis does not invent a number without that implementation/security evidence.
+### 12.1 Lost rebind response is a mandatory final-contract decision
 
-### Proof-of-possession
+A simple rotate-and-forget design is insufficient if the server commits generation `N+1` and a new reconnect secret but the response is lost: the client still knows only the predecessor.
 
-Client-held proof-of-possession keys could reduce bearer-secret replay risk, and standards such as DPoP demonstrate the general sender-constraining pattern. This analysis does **not** make PoP mandatory for the first native vertical slice because it adds key lifecycle/client-storage/recovery complexity. The final credential envelope should not prevent a later sender-constrained revision if threat evidence justifies it.
+The final contract must choose a bounded idempotent reconciliation mechanism that never restores generation `N` and never makes the old reconnect secret generally valid again. Possible implementation shapes include a narrowly scoped predecessor verifier tied to the exact committed rebind attempt or a reauthenticated recovery path. This baseline does not freeze the storage shape.
 
-## 13. GameSession lifecycle — recommended state vocabulary
+### 12.2 Proof-of-possession extension
 
-Keep GameSession lifecycle separate from actor world presence.
+Sender-constrained reconnect/admission credentials could later reduce bearer-secret replay risk. The first native vertical slice does not require a client-held PoP key by architecture because that introduces key storage/recovery complexity; the final profile should remain extensible if threat evidence later justifies it.
 
-Recommended logical session states:
+## 13. GameSession state model
+
+Recommended logical states:
 
 ```text
 ACTIVE
@@ -478,47 +523,45 @@ TERMINATING
 TERMINAL
 ```
 
-### `ACTIVE`
+### ACTIVE
 
 - one current non-zero connection_generation;
-- current liveness evidence is sufficient;
-- player commands may be accepted subject to FND-02/FND-03/gameplay rules.
+- accepted sufficient-control evidence is current;
+- player commands may be accepted subject to protocol/runtime/gameplay rules.
 
-### `CONTROL_SUSPECTED`
+### CONTROL_SUSPECTED
 
-- sufficient-control evidence is late but terminal loss is not yet established;
+- sufficient-control evidence is late but the session has not crossed the accepted loss boundary;
 - no new GameSession is created;
-- exact gameplay protection follows accepted FND-03 timing, not this state name alone.
+- player-visible protection follows FND-03 timing, not the state name alone.
 
-### `RECONNECTABLE`
+### RECONNECTABLE
 
-- unexpected control loss is server-authoritatively established;
-- old concrete transport may already be closed;
-- logical GameSession remains eligible for same-session rebind inside the accepted grace window;
-- actor state is not reset or recreated.
+- unexpected playable-control loss is server-authoritatively classified;
+- old concrete transport may be closed independently;
+- logical GameSession is eligible for same-session recovery within its grace;
+- actor state is preserved.
 
-### `TAKEOVER_DRAINING`
+### TAKEOVER_DRAINING
 
-- an intentional authenticated newcomer takeover is allowed only because incumbent is logout-eligible;
-- old session remains the only authority until its defined fence/logout boundary;
-- a fresh destination/new session is not granted before the old authority is revoked safely.
+- an intentional authenticated newcomer transition is allowed only because incumbent state is logout-eligible;
+- incumbent remains the only current authority until the explicit fence/logout boundary;
+- no second player-control session becomes authoritative before that boundary.
 
-### `TERMINATING`
+### TERMINATING
 
-- no new ordinary command admission;
-- session reaches a bounded terminal boundary while preserving required actor/world state semantics.
+- no new ordinary player commands;
+- the session progresses to one bounded terminal outcome while preserving required world-presence semantics.
 
-### `TERMINAL`
+### TERMINAL
 
 - GameSessionId can never regain authority;
-- later gameplay control requires a new GameSessionId;
-- terminality alone does not imply the actor is absent if combat/PZ/logout rules require continued world presence.
+- later player control requires a fresh GameSessionId;
+- terminality does not imply actor absence.
 
-The final contract may refine names, but it should preserve this separation.
+## 14. Actor/account-presence state
 
-## 14. Actor/account-presence state — separate from GameSession
-
-Recommended conceptual world-presence states:
+Keep actor presence distinct from GameSession state:
 
 ```text
 ABSENT
@@ -526,493 +569,532 @@ PRESENT_CONTROLLED
 PRESENT_UNCONTROLLED
 ```
 
-`PRESENT_UNCONTROLLED` is required for combat-X-log/disconnect semantics: the actor remains authoritative in world simulation even when no playable client transport or resumable GameSession currently exists.
+`PRESENT_UNCONTROLLED` means the actor remains authoritative in world simulation while no playable controller/GameSession is currently usable.
 
-AccountPresenceClaim remains occupied for both `PRESENT_CONTROLLED` and `PRESENT_UNCONTROLLED` until the actor is legally removed/terminally resolved under gameplay rules.
+`AccountPresenceClaim` remains held in `PRESENT_CONTROLLED` and `PRESENT_UNCONTROLLED`.
+
+This is the required model for combat-X-log and post-grace actor continuity.
 
 ## 15. Sufficient-control/liveness evidence
 
-### Recommended authority
+### 15.1 Primary evidence
 
-The primary sufficient liveness evidence should be a **valid current-generation response to a recent server-issued authenticated liveness probe**.
+Recommend a valid **current-generation response to a recent server-issued authenticated liveness probe** as the primary evidence.
 
-Binding requirements:
+It must be tied to:
 
 - current GameSessionId;
 - current connection_generation;
 - current probe ID;
-- server-observed receive time;
+- server-observed receipt/progress;
 - server-side runtime-health context.
 
-Client wall-clock timestamps, self-declared lag/disconnect state, socket-open state and stale-generation acknowledgements never count.
+Client wall-clock timestamps, self-declared lag/disconnect flags, socket-open state and stale-generation acknowledgements never count.
 
-### Gameplay traffic
+### 15.2 Other traffic
 
-Ordinary gameplay-command silence is not evidence of disconnect.
+Gameplay-command silence is never disconnect evidence.
 
-The final contract may allow a small explicitly enumerated set of current-generation bidirectional control exchanges to count as equivalent sufficient-control evidence only if they prove the same property as a liveness probe. Arbitrary inbound bytes or one-way command traffic should not reset the authoritative loss timer.
+The final contract may enumerate other current-generation **bidirectional** control exchanges as equivalent sufficient-control evidence only when they prove the same property as a probe round-trip. Arbitrary inbound bytes or one-way commands must not reset the loss timer.
 
-### Probe cadence
+### 15.3 Cadence
 
-Because the accepted player-facing protection boundary begins after 2.0 seconds without sufficient control evidence, healthy-idle evidence must be refreshed comfortably inside that interval.
+Healthy idle evidence must be refreshable comfortably within the accepted 2-second behavior boundary. Exact cadence/hysteresis must be selected from bounded latency/load/fault evidence before implementation acceptance; this analysis does not guess a production number.
 
-The exact cadence should be selected by a bounded latency/load/fault spike before implementation acceptance. A candidate range such as sub-second to one-second probing may be measured, but this analysis does not freeze a number without evidence.
+## 16. Reconnect grace timing recommendation
 
-## 16. Exact reconnect grace timing — recommended semantic choice
+The accepted initial same-GameSession reconnect grace is 15 seconds.
 
-The accepted initial reconnect grace is **15 seconds**.
-
-Recommended definition:
+Recommend:
 
 ```text
 last_sufficient_control_at = T0
 control_loss_declared_at   = T0 + 2.0 s
 stale_transport_cleanup    = T0 + 5.0 s
-reconnect_grace_expires    = control_loss_declared_at + 15.0 s
+same_session_grace_expires = control_loss_declared_at + 15.0 s
 ```
 
-Therefore the logical same-GameSession grace is a full 15 seconds from the server-authoritative control-loss boundary, not 15 seconds from the last good probe.
+This gives a full 15-second logical grace after server-authoritative loss classification while keeping the 5-second concrete-transport cleanup independent.
 
-Reasons:
+The final contract must explicitly accept/reject this composition.
 
-- it gives the stated grace duration after loss is actually classified;
-- it keeps liveness detection and reconnect policy conceptually separate;
-- it does not let client timestamps influence the window;
-- 5-second concrete transport cleanup remains independent and does not end the logical GameSession.
+### 16.1 Rebind before the 2-second loss boundary
 
-The final contract should explicitly accept or reject this timing composition; leaving it ambiguous is unsafe.
+A legitimate transport replacement may complete before `control_loss_declared_at` when the old transport is otherwise proven stale/lost.
 
-## 17. Same-GameSession fast reconnect
+Such a rebind may preserve the same GameSession and advance connection_generation, but **does not receive the 4-second defensive PvE re-entry effect merely because a connection generation changed**.
 
-Recommended eligible path inside the 15-second grace:
+Re-entry protection requires a server-classified eligible unexpected loss-of-playable-control episode under the accepted owner policy.
+
+## 17. Fast same-GameSession reconnect
+
+Inside the accepted same-session window, recommend:
 
 ```text
 existing GameSessionId S
-+ actor still belongs to same AccountId/CharacterId
++ same AccountId/CharacterId ownership still valid
 + session not terminal/revoked
-+ current CharacterAuthorityLease still compatible
-+ reconnect credential valid
-+ old transport classified stale/lost
-+ current route/revisions valid
++ current CharacterLease compatible
++ accepted reconnect proof valid
++ old transport proven stale/lost
++ current runtime placement/revisions valid
     -> atomically commit newer connection_generation
-    -> rotate reconnect credential
+    -> rotate/reconcile reconnect credential
     -> old generation immediately loses authority
-    -> same GameSessionId S continues
-    -> FND-03 starts accepted 4-second defensive PvE re-entry effect
+    -> same GameSessionId continues
 ```
 
-The rebind commit is the authority linearization point. TLS connection establishment alone is not.
+The rebind commit is the authority linearization point. TLS establishment alone is not authority.
 
-If the rebind commit crashes after authority changes but before the client receives the result, later retry handling must never restore the old generation. The final contract/DUR design must preserve or terminally reconcile enough state to return one unambiguous outcome.
+If and only if this rebind belongs to an eligible **classified unexpected control-loss episode**, FND-03 activates the accepted 4-second defensive PvE re-entry effect. A routine transport replacement or pre-loss-boundary rebind does not manufacture protection.
 
-## 18. Reauthenticated same-character recovery
+### 17.1 Concurrent reconnect race
 
-A fresh Platform/Gateway admission grant may be used as strong account/character authentication when a client lacks the old reconnect credential, but it must not bypass incumbent protection.
+Two reconnect attempts using the same current proof/secret must not both become successful current bindings.
 
-Recommended policy:
+The first accepted linearized rebind replaces current authority and rotates/reconciles the reconnect proof; later contenders observe stale/consumed state and fail without fencing the winner.
 
-### Existing incumbent is healthy
+### 17.2 GameNode replacement
 
-- do not use fresh authentication as a forced reconnect/takeover shortcut;
-- healthy combat/PZ/logout-locked incumbent remains authoritative;
-- logout-eligible intentional takeover follows the takeover state machine and creates a fresh logical session after the old one terminates.
+Same-GameSession recovery across process/GameNode replacement may be claimed only when the system can preserve or safely reconstruct all state required by FND-02/FND-03/FND-04, including:
 
-### Existing incumbent has server-proven control loss and old GameSession is still reconnectable
+- GameSession terminal/current state;
+- current connection_generation;
+- reconnect-proof state;
+- CommandId high-water/pending/result reconciliation state;
+- required server-sequence/snapshot boundary;
+- account/character lease fences.
 
-A fresh, valid Platform-authenticated same-character attempt may be allowed to recover the **existing GameSessionId** inside the same 15-second grace, provided all normal same-session safety checks pass and a new connection_generation is committed.
+If that cannot be proven, the old GameSession terminates safely and recovery uses a fresh-session path. Runtime convenience may not weaken no-double-execution or stale-generation guarantees.
 
-This is an alternate authentication path into the same recovery state, not a second GameSession.
+## 18. Platform-reauthenticated same-character recovery
 
-Benefits:
+A fresh Platform/Gateway credential can prove current account/character authorization but cannot by itself preempt a healthy session.
 
-- recovers from lost/never-received reconnect material;
-- supports device/application restart after genuine network/process failure;
-- avoids turning admission-grant replay into a reconnect mechanism.
+### 18.1 Healthy incumbent
 
-The final contract must decide whether additional MFA/risk policy is required for this path; Platform owns that policy.
+- no forced reconnect/takeover shortcut;
+- healthy combat/PZ/logout-locked incumbent remains fully authoritative;
+- logout-eligible intentional takeover follows the explicit takeover flow and produces a fresh GameSession after old authority ends.
 
-## 19. Recovery after reconnect-grace expiry while actor remains present
+### 18.2 Server-proven control loss inside same-session grace
 
-The old GameSession becomes terminal when the same-session reconnect grace expires.
+A reauthenticated same-character recovery path is useful when the client lost/never received reconnect material, but it introduces routing and account-compromise trade-offs.
 
-However, if combat/PZ/logout policy still requires the actor to remain in world simulation:
+Recommendation: allow this path in the final contract **only if** it uses an explicit recovery credential purpose, current server-side session/actor state, current authoritative placement resolution and any Platform-owned step-up/risk policy required by security review.
+
+It must not reinterpret an ordinary fresh-entry ChannelId grant as permission to move the actor.
+
+A successful reauthenticated recovery still commits a single newer connection_generation on the existing GameSession; it does not create a parallel GameSession.
+
+After one recovery succeeds and the session returns to healthy `ACTIVE`, concurrent/late recovery contenders fail rather than repeatedly steal control.
+
+## 19. Post-grace same-character recovery while actor remains present
+
+When same-session grace expires:
 
 ```text
 old GameSessionId -> TERMINAL
-actor             -> PRESENT_UNCONTROLLED
-AccountPresenceClaim remains held for CharacterId
-CharacterAuthorityLease/runtime actor remains authoritative
 ```
 
-### Recommended same-character behavior
+If combat/PZ/logout rules still require the actor in world:
 
-A later fresh fully authenticated admission for the **same CharacterId** may attach a **new GameSessionId** to that existing in-world actor after proving:
+```text
+actor                  -> PRESENT_UNCONTROLLED
+AccountPresenceClaim   -> remains held for the same CharacterId
+CharacterLease/runtime -> remains under the current authoritative actor path
+```
 
-- old GameSession is terminal;
-- no current playable controller exists;
-- AccountId still owns CharacterId;
-- AccountPresenceClaim still points to that character;
-- current CharacterAuthorityLease/runtime actor state is valid;
-- route/placement/revision checks pass.
+A later fully authenticated admission for the **same CharacterId** may create a fresh GameSessionId and attach control to that exact existing actor if the final contract accepts and proves:
 
-This is a fresh logical GameSession, **not** a respawn or reset.
+- old GameSession terminality;
+- no current playable controller;
+- current AccountId still owns CharacterId;
+- account presence still points to that CharacterId;
+- current CharacterLease/runtime scope is valid;
+- current actor placement is resolved from game-domain authority, not stale client/Platform route data;
+- protocol/ruleset/content/current-placement revisions are compatible.
 
-It must preserve all authoritative actor state and use a new connection_generation namespace beginning at 1.
+This path must not respawn, teleport, duplicate, heal or reset the actor. The new GameSession starts its own connection_generation namespace at `1`.
 
-### Re-entry protection
+### 19.1 Re-entry protection across GameSession replacement
 
-If this fresh-session attachment is still classified as re-entry after the same unexpected loss of playable control, the accepted defensive PvE re-entry policy should apply. The final contract should bind protection eligibility to server-owned control-loss episode state so session-identity replacement does not accidentally erase or duplicate the policy decision.
+Protection eligibility must be actor/control-loss-episode state, not a side effect of GameSession identity.
 
-### Different CharacterId
+If this fresh session is the first valid re-entry for the same eligible unexpected loss episode, FND-03 may apply the accepted 4-second protection. Replacing GameSessionId must not erase, restart or duplicate an already-consumed protection decision.
 
-A different character remains blocked while the incumbent actor has mandatory world presence. Only legal actor removal/release frees the account presence claim for another CharacterId.
+A small actor-scoped control-loss episode revision/state may be used internally; no new foundation entity ID is justified by this analysis.
+
+### 19.2 Different CharacterId
+
+A different character remains blocked while the incumbent actor has mandatory world presence. AccountPresenceClaim is released only after the authoritative actor lifecycle reaches legal absence/removal.
 
 ## 20. Intentional duplicate-login takeover
 
-### Healthy incumbent + combat/PZ/logout blocker
+### 20.1 Healthy combat/PZ/logout-locked incumbent
 
-Binding direction from accepted owner baseline:
+Binding accepted behavior:
 
 ```text
 new login authenticated
--> no fence
--> no close
--> no revoke
--> no second CharacterId admission
--> incumbent remains fully authoritative
+-> do not fence incumbent
+-> do not close incumbent transport
+-> do not revoke incumbent session
+-> do not admit another CharacterId
+-> incumbent remains authoritative
 ```
 
-Return a bounded `CONFLICT`/`SESSION_REJECTED`-mapped outcome without exposing sensitive combat/session details beyond product policy.
+Return a bounded `CONFLICT`/session outcome without leaking unnecessary combat/session detail.
 
-### Healthy incumbent + logout-eligible
+### 20.2 Healthy logout-eligible incumbent
 
-Recommended safe transition:
+Recommended transition:
 
 1. authenticate/authorize newcomer;
-2. establish takeover eligibility;
-3. move incumbent to `TAKEOVER_DRAINING`;
-4. stop accepting new ordinary incumbent commands at the committed fence boundary;
-5. complete legal logout/removal or another explicitly accepted handoff boundary;
-6. release/advance applicable account/character authority generations;
-7. create a **fresh GameSessionId** for the newcomer;
-8. do not grant disconnect/re-entry protection merely because this was an intentional takeover.
+2. prove takeover eligibility;
+3. move incumbent GameSession to `TAKEOVER_DRAINING`;
+4. establish a committed fence boundary for new incumbent commands;
+5. complete legal logout/removal or an accepted same-character/channel handoff boundary;
+6. update/release account/character authority as appropriate;
+7. create a fresh GameSessionId for the newcomer only after old player authority is gone;
+8. do not grant disconnect/re-entry protection for this intentional transition.
 
 No interval may contain two player-controlled authoritative characters.
 
-## 21. Account presence and character lease atomicity
+### 20.3 Races
 
-Fresh admission of a character must atomically prove both:
+Concurrent takeover/fresh-admission requests serialize through the account-presence claim/revision and character/session state. A stale contender cannot revoke a newer healthy winner.
+
+## 21. Account-global exclusion and character lease atomicity
+
+Fresh admission must atomically prove:
 
 ```text
-AccountId may claim this CharacterId as the one online/present character
+AccountId may hold this CharacterId as its one playable/mandatory-presence character
 AND
-CharacterId may acquire current authoritative character lease/control binding
+CharacterId may hold the current accepted character writer/control lease
 ```
 
-Two different CharacterIds for the same AccountId racing on different worlds/channels must not independently succeed.
+Two different CharacterIds for the same AccountId racing across worlds/channels cannot both succeed.
 
-Physical implementation may use transactions/locks/CAS in DUR-02, but FND-04 must require linearizable equivalent semantics.
-
-Recommended deterministic acquisition order for later implementation design:
+Recommended semantic acquisition order:
 
 ```text
-account exclusion/presence claim
--> character authority lease
--> GameSession binding
+account presence/exclusion
+-> character lease/fence
+-> GameSession
+-> transport binding
 ```
 
-A later physical schema may optimize this, but it must not invert safety or expose partial success.
+DUR may optimize the physical transaction, but no partial authority may become externally visible.
 
 ## 22. Character lease lifecycle
 
-### Semantic owner
+### 22.1 Ownership
 
-The game-domain Character/Game Session admission boundary owns the logical character lease contract. Current runtime scope ownership and DUR persistence provide the physical/fencing mechanisms needed to enforce it.
+Character Authority remains owner of the character aggregate. FND-04 defines the lease/exclusion protocol by which Game Session/Admission and runtime obtain current player-control/writer authority. DUR/OPS later provide physical persistence/renewal/recovery mechanisms.
 
-### Acquire
+### 22.2 Acquire
 
-- only after credential/route/ownership checks;
-- current account presence claim must be compatible;
-- acquire/advance generation atomically with the authoritative transition;
-- stale previous generation can never commit after replacement.
+- after credential/route/current-ownership checks;
+- only with compatible current AccountPresenceClaim;
+- generation/state transition is atomic with the authoritative admission/handoff path;
+- stale former generation cannot commit after replacement.
 
-### Renew
+### 22.3 Renew
 
-- only current generation/session/runtime authority may renew;
-- renewal extends authority only after the lease authority accepts it;
-- a local request sent before expiry but not committed is not proof of renewal;
-- lease store time/authority, not client time, defines authoritative expiry.
+- only current authorized lease/runtime/session path may request renewal;
+- a sent renewal request is not proof of renewal;
+- authoritative lease-store time/state, not client time, determines acceptance;
+- current generation remains explicit.
 
-### Grace / local safety margin
+### 22.4 Safety margin
 
-The GameNode must stop relying on a lease **before** there is any possibility that another authority can legitimately acquire a newer generation.
+The holder must stop relying on the lease before another holder could legitimately acquire a newer generation.
 
-A local safety deadline shorter than the external/authoritative lease expiry is recommended so network/clock uncertainty cannot create overlap.
+A local safety deadline shorter than authoritative expiry is recommended. Exact TTL/cadence/margin require bounded fault-injection/security evidence before implementation acceptance.
 
-Exact TTL, renewal cadence and safety margin require DUR/OPS/fault-injection evidence before implementation acceptance.
+### 22.5 Renewal uncertainty / expiry
 
-### Expiry / renewal uncertainty
+Lease expiry or renewal uncertainty is **not automatic replacement authority**.
 
-When renewal cannot be proven in time:
+When current lease authority cannot be proven safely:
 
-- current player command authority fails closed;
-- stale durable writes under the old character lease generation are prohibited;
-- scope/session enters a non-authoritative/suspected/fenced path appropriate to FND-03;
-- server-driven actor presence may continue only under an independently current runtime/character authority path that cannot overlap a newer writer;
-- a newer lease generation is not granted until the old generation is safely fenced according to the durable authority contract.
+- new player commands fail closed at the appropriate session/runtime boundary;
+- old-generation durable writes are prohibited;
+- the affected state moves toward suspected/fenced/recovery semantics;
+- AccountPresenceClaim is not released merely because renewal is uncertain while an actor may still exist;
+- no newer CharacterLease generation is granted until the old writer/runtime authority is safely fenced/recovered under the accepted DUR/OPS contract;
+- server-driven in-memory actor simulation may continue only under an independently current runtime-scope authority and only in a form that cannot race a newer character writer; durable reconciliation remains a DUR decision.
 
-### Release
+This avoids a split writer while also preventing lease failure from becoming a combat-escape primitive.
 
-Release is explicit on clean terminal lifecycle where possible, but correctness must not rely on receiving a release from a crashed/stale owner. Generation fencing and expiry/recovery must handle omission safely.
+### 22.6 Release
+
+Clean lifecycle transitions explicitly release where possible, but correctness cannot depend on a crashed holder sending release. Fencing/recovery must handle omission safely.
 
 ## 23. Key discovery, rotation and emergency revocation
 
-The final contract should require:
+The final contract/security profile should require:
 
-- asymmetric verification so game nodes do not need Platform signing secrets;
-- dedicated admission-grant key purpose separate from other Platform token types;
-- allowlisted issuer/key-set source; never follow arbitrary key URLs from untrusted credential headers;
+- asymmetric verification on the game side;
+- dedicated admission-grant key purpose;
+- allowlisted issuer/key-set source;
+- no arbitrary key URL from untrusted token headers;
 - stable key identifier/version;
-- current and bounded retiring verification-key overlap sufficient for already-issued unexpired grants;
-- no grant accepted after its own expiry even if a key remains trusted;
-- emergency revocation capable of invalidating a compromised key before normal overlap completes;
-- bounded cached-key staleness and explicit failure behavior when key status cannot be trusted;
-- exact rotation/revocation E2E fixtures before production enablement.
+- bounded current/retiring-key overlap only for still-valid grants;
+- grant expiry remains binding even if verification key is retained;
+- emergency revocation can invalidate a compromised key before normal overlap ends;
+- cached-key staleness is bounded and has explicit fail behavior;
+- exact current/retiring/revoked-key fixtures and rollout/rollback tests before production.
 
-Exact KMS/HSM/provider and key algorithm remain implementation/security choices until the bounded spike.
+Exact KMS/HSM/provider/library remains outside architecture unless later evidence makes it contract-relevant.
 
-## 24. Revision and route binding
+## 24. Route and current-placement binding
 
-Admission must fail closed when grant bindings and current authority disagree.
+Fresh entry and recovery have different routing semantics and must not be confused.
 
-At minimum reject:
+### 24.1 Fresh entry
 
-- wrong WorldId/ChannelId;
-- retired/stale route revision where the current contract requires freshness;
-- incompatible protocol major/transport profile;
-- incompatible ruleset/content/map/world-policy/server revision fences;
-- wrong audience/issuer;
-- expired/not-yet-valid credential outside accepted skew;
-- current GameNode not holding accepted authority for the target scope.
+A fresh-entry grant may bind exact `WorldId + ChannelId + route/offer revision`. The selected GameNode must additionally prove that it currently holds accepted scope authority; possession of a grant does not create that ownership.
 
-There is no silent fallback to another channel, protocol family, Canary listener or downgraded route using the same credential.
+Wrong/stale route, wrong world/channel, incompatible protocol/revisions or non-current scope ownership fail closed. The same credential is never silently downgraded or moved to Canary/another channel.
+
+### 24.2 Existing actor/session recovery
+
+An existing actor's **current game-domain placement** is authority.
+
+A stale client/Platform ChannelId cannot move that actor to another channel or pull it out of an InstanceRuntime.
+
+The final FND-04 contract must define a bounded session/recovery route-resolution mechanism that can direct an authenticated reconnect/recovery attempt to the current authoritative owner without making Platform the owner of GameSession/actor state. A read-only/authorized route projection or game-domain resolver is acceptable conceptually; its exact API/deployment is later design.
+
+Until this routing is defined, reauthenticated recovery across changed runtime placement remains a conditional recommendation rather than an implementation-ready claim.
 
 ## 25. Channel/instance handoff interaction
 
-FND-04 should not redesign FND-03 handoff execution.
+FND-04 consumes FND-03 handoff execution and FND-ID HandoffId semantics.
 
-Recommended session-level rules:
+Recommended session rules:
 
-- `HandoffId` identifies one authorized ownership transition;
-- source GameSession/lease/account presence remain explicit bindings;
-- source and destination may prepare concurrently but at most one current gameplay owner may accept player mutation;
-- Channel -> Instance handoff can preserve the same GameSessionId when the accepted activity transition is continuous logical session control and the relevant contract says so;
-- a Channel -> Channel transition already accepted as a fresh logical Game Session receives a fresh GameSessionId;
-- source authority is not released until destination commit/fence is established;
-- stale/replayed HandoffId or generation cannot commit;
-- failure before commit returns/preserves the source-safe state; failure after commit recovers destination authority evidence rather than client claims.
+- one `HandoffId` identifies one ownership transition lifecycle;
+- account presence, CharacterId, GameSessionId and current source/destination generations remain explicit bindings;
+- source and destination may prepare concurrently, but only one current gameplay owner may accept player mutation;
+- Channel -> Instance and Instance -> Channel may preserve the same GameSessionId when the accepted gameplay transition is one continuous logical player-control session;
+- an accepted Channel -> Channel transition that establishes a fresh logical GameSession uses a fresh GameSessionId;
+- account presence for the same CharacterId remains continuously held through a legal same-character handoff, avoiding a race window for another CharacterId;
+- source player authority is not released until the destination commit/fence is established;
+- stale/replayed HandoffId/generation cannot commit;
+- failure before commit preserves/recovers source-safe authority; failure after commit recovers from destination authority evidence.
 
-The final contract must reconcile these rules with the accepted FND-ID statement that channel transitions establishing a fresh GameSession use a fresh GameSessionId.
+The final contract must state exactly which transition families preserve versus replace GameSessionId.
 
 ## 26. Disconnect/re-entry abuse boundary
 
-The session contract must not accidentally create unlimited protection by treating every socket flap as a new semantic event.
+Re-entry protection is not a reward for changing sockets or connection_generation.
 
-Required analysis result for the final contract:
+The final contract must ensure:
 
-- re-entry protection eligibility is server-owned state associated with a classified unexpected loss of playable control;
-- graceful logout/intentional takeover never creates that protection;
-- connection_generation changes alone do not automatically grant protection;
-- stale/replayed reconnect attempts cannot restart the timer;
-- same control-loss episode must not receive duplicate overlapping protection because the GameSession identity changed during recovery;
-- repeated genuine later loss episodes remain observable/auditable for Game Intelligence under the accepted non-automatic-sanction policy.
+- eligibility belongs to a server-classified unexpected playable-control-loss episode;
+- graceful logout/intentional takeover never creates it;
+- rebind before loss classification does not manufacture it;
+- stale/replayed reconnect attempts cannot restart it;
+- GameSession replacement during the same loss episode cannot duplicate/restart it;
+- concurrent recovery contenders cannot each create protection windows;
+- repeated later genuine loss episodes remain observable/auditable under Game Intelligence policy.
 
-This baseline does **not** introduce an unapproved punishment, cooldown or sanction for repeated disconnects. Whether a minimum healthy interval/hysteresis is needed before a later loss is treated as a new protection-eligible episode remains a final FND-04/product decision.
+This analysis introduces no punishment, disconnect cooldown or automatic sanction.
 
-## 27. Foundation failure-scenario disposition
+Whether a minimum healthy-control interval/hysteresis is required before a new loss is treated as a distinct protection-eligible episode remains a final FND-04/product decision backed by abuse/fault evidence.
 
-These are architecture-analysis dispositions, not executable proof.
+## 27. Candidate foundation failure dispositions
 
-| Scenario | FND-04 analysis disposition | Required final-contract behavior |
+These are analysis recommendations. The final FND-04 contract must use the exact normative status vocabulary from `FOUNDATION_FAILURE_SCENARIOS.md`.
+
+| Scenario | Candidate classification | FND-04 requirement |
 |---|---|---|
-| `FS-PLATFORM-UNAVAILABLE` | `PASS direction` | no alternate credential authority; fresh login/admission requiring Platform fails/holds boundedly; already active gameplay/session continuity is not invalidated merely by Platform outage |
-| `FS-GATEWAY-AFTER-REDEEM` | `PASS direction` | no reuse/downgrade of redeemed ticket; client obtains a fresh bounded Platform flow; no GameSession unless final game admission committed |
-| `FS-POSTGRES-UNAVAILABLE` | `DEFERRED_BY_ACCEPTED_GATE` | DUR-02 decides physical dependency; FND-04 requires no admission/lease transition that cannot prove atomic/fenced state |
-| `FS-LEASE-RENEW-TIMEOUT` | `PASS direction` | old player/durable authority stops before a newer lease generation may commit; no split authority |
-| `FS-DUPLICATE-LOGIN` | `PASS direction` | account-global exclusion + character/session fencing yields at most one player-controlled authoritative character; healthy combat-locked incumbent cannot be kicked |
-| `FS-STALE-GENERATION` | `PASS direction` | stale connection/account/character/ownership generation cannot command, renew, reconnect or commit |
-| `FS-DUPLICATE-COMMAND` | `NOT_APPLICABLE/consumed` | FND-02 command high-water semantics remain authoritative once a GameSession exists |
-| `FS-CHANNEL-SPLIT-OWNER` | `DEFERRED_BY_ACCEPTED_GATE` | FND-03/OPS own runtime scope fence; FND-04 validates current scope/lease before admission/handoff |
-| `FS-CHANNEL-DRAIN` | `DEFERRED_BY_ACCEPTED_GATE` | FND-03/OPS own drain; FND-04 blocks new admission/handoff to non-open destination and preserves session safety |
-| `FS-QUEUE-SATURATION` | `DEFERRED_BY_ACCEPTED_GATE` | FND-03/resource registry owns queue limits; admission/session work remains bounded and fails before partial authority |
-| `FS-SLOW-CLIENT` | `DEFERRED_BY_ACCEPTED_GATE` | FND-02/FND-03 own bounded resync/transport behavior; FND-04 owns logical reconnect eligibility after transport loss |
-| `FS-CLOCK-SKEW` | `PASS direction` | credential timestamps use bounded trusted wall-clock skew; liveness/reconnect duration uses server monotonic state, not client time |
-| `FS-KEY-ROTATION` | `PASS direction` | bounded current/retiring verification overlap + emergency revocation; no acceptance outside key/credential policy |
-| `FS-REVISION-MISMATCH` | `PASS direction` | no implicit downgrade or mixed authoritative state |
-| `FS-SNAPSHOT-DELTA-MISMATCH` | `NOT_APPLICABLE/consumed` | FND-02/FND-03 reconciliation after accepted admission/rebind |
-| `FS-DB-OUTBOX-BOUNDARY` | `DEFERRED_BY_ACCEPTED_GATE` | DUR-02/ANL-01 own atomic durable event boundary; FND-04 must not announce success before required durable admission/session commit |
-| `FS-WORLD-BUNDLE-CORRUPT` | `NOT_APPLICABLE/consumed` | invalid world/content activation must already prevent routable target scope |
+| `FS-PLATFORM-UNAVAILABLE` | `PASS` | no alternate credential authority; new Platform-dependent admission fails/holds boundedly; already valid gameplay/fast reconnect does not become invalid merely because Platform is unavailable |
+| `FS-GATEWAY-AFTER-REDEEM` | `PASS` | redeemed ticket is not silently reused/downgraded; fresh bounded authorization flow; no GameSession without game admission commit |
+| `FS-POSTGRES-UNAVAILABLE` | `DEFERRED_BY_ACCEPTED_GATE` | DUR owns physical dependency; FND-04 forbids admission/lease transition when required atomic/fenced authority cannot be proven |
+| `FS-LEASE-RENEW-TIMEOUT` | `PASS` | old player/durable authority stops before newer lease writer may commit; expiry alone never self-grants replacement |
+| `FS-DUPLICATE-LOGIN` | `PASS` | account-global exclusion + lease/session fencing; healthy combat-locked incumbent cannot be kicked |
+| `FS-STALE-GENERATION` | `PASS` | stale connection/account/lease/runtime generation cannot command/renew/reconnect/commit |
+| `FS-DUPLICATE-COMMAND` | `NOT_APPLICABLE` | FND-02 remains authority once a GameSession exists |
+| `FS-CHANNEL-SPLIT-OWNER` | `DEFERRED_BY_ACCEPTED_GATE` | FND-03/OPS own scope fencing; FND-04 validates current target scope before admission/handoff |
+| `FS-CHANNEL-DRAIN` | `DEFERRED_BY_ACCEPTED_GATE` | FND-03/OPS own drain; no admission/handoff into non-open destination |
+| `FS-QUEUE-SATURATION` | `DEFERRED_BY_ACCEPTED_GATE` | FND-03/resource limits own runtime queues; FND-04 transitions remain bounded and fail before partial authority |
+| `FS-SLOW-CLIENT` | `DEFERRED_BY_ACCEPTED_GATE` | FND-02/FND-03 own bounded resync/transport behavior; FND-04 owns resulting logical reconnect eligibility |
+| `FS-CLOCK-SKEW` | `PASS` | credentials use bounded trusted wall-clock skew; liveness/reconnect durations use server-monotonic state, never client time |
+| `FS-KEY-ROTATION` | `PASS` | bounded current/retiring overlap + emergency revocation; no acceptance outside credential/key policy |
+| `FS-REVISION-MISMATCH` | `PASS` | fail closed; no implicit downgrade/mixed authoritative state |
+| `FS-SNAPSHOT-DELTA-MISMATCH` | `NOT_APPLICABLE` | FND-02/FND-03 reconciliation after admission/rebind |
+| `FS-DB-OUTBOX-BOUNDARY` | `DEFERRED_BY_ACCEPTED_GATE` | DUR/ANL own physical atomic evidence; FND-04 cannot announce success before required durable admission/session commit |
+| `FS-WORLD-BUNDLE-CORRUPT` | `NOT_APPLICABLE` | invalid world activation must already make target unroutable |
 | `FS-CLIENT-CUTOVER-ROLLBACK` | `NOT_APPLICABLE` | historical migration lifecycle |
-| `FS-ANALYTICS-TELEMETRY-OVERFLOW` | `NOT_APPLICABLE/consumed` | telemetry cannot become session/admission authority |
-| `FS-AUDIT-OUTBOX-BACKLOG` | `DEFERRED_BY_ACCEPTED_GATE` | ANL/DUR own durable audit backlog; security-required admission/takeover audit may not silently downgrade |
-| `FS-EVENT-DUPLICATE-DELIVERY` | `NOT_APPLICABLE/consumed` | analytics replay cannot alter session authority |
-| `FS-EVENT-OUT-OF-ORDER` | `NOT_APPLICABLE/consumed` | analytics order cannot alter session authority |
-| `FS-AUDIT-MUTATION-MISMATCH` | `DEFERRED_BY_ACCEPTED_GATE` | final durable admission/takeover/audit atomicity remains ANL/DUR-owned |
-| `FS-ANALYTICS-PRIVACY-POLICY` | `NOT_APPLICABLE/consumed` | session credentials never enter analytics payloads |
+| `FS-ANALYTICS-TELEMETRY-OVERFLOW` | `NOT_APPLICABLE` | telemetry never becomes admission/session authority |
+| `FS-AUDIT-OUTBOX-BACKLOG` | `DEFERRED_BY_ACCEPTED_GATE` | ANL/DUR own required audit backlog semantics; security-required takeover/lease audit cannot silently downgrade |
+| `FS-EVENT-DUPLICATE-DELIVERY` | `NOT_APPLICABLE` | analytics replay cannot alter session authority |
+| `FS-EVENT-OUT-OF-ORDER` | `NOT_APPLICABLE` | analytics order cannot alter session authority |
+| `FS-AUDIT-MUTATION-MISMATCH` | `DEFERRED_BY_ACCEPTED_GATE` | ANL/DUR own atomic audit/mutation boundary |
+| `FS-ANALYTICS-PRIVACY-POLICY` | `NOT_APPLICABLE` | credentials/secrets are never analytics payloads |
 | `FS-DETECTOR-FALSE-POSITIVE` | `NOT_APPLICABLE` | analytics cannot revoke/sanction autonomously |
 | `FS-INVESTIGATION-MUTATION-ATTEMPT` | `NOT_APPLICABLE` | investigation cannot mutate session/runtime authority |
 
-### Candidate missing scenarios
+### 27.1 Recommended new scenario IDs for final FND-04 delivery
 
-The existing catalogue can express most FND-04 safety through current IDs, but two attack/failure cases deserve explicit consideration before the final contract freezes the catalogue:
+Two FND-04-specific races are important enough to deserve explicit stable E2E/audit names rather than hiding under broader categories:
 
-1. replay of a consumed/expired/wrong-bound **pre-admission grant** without a simultaneous duplicate-login race;
-2. replay/loss-race of an old **reconnect credential** during transport rebind.
+- `FS-ADMISSION-GRANT-REPLAY` — consumed/expired/wrong-bound PreAdmissionGrant is replayed; no second admission/lease/GameSession results.
+- `FS-RECONNECT-CREDENTIAL-REPLAY` — predecessor/stolen/stale reconnect proof races a valid rebind; only one current generation wins and loser cannot fence winner.
 
-They can technically map to `FS-GATEWAY-AFTER-REDEEM`, `FS-STALE-GENERATION`, `SESSION_REJECTED` and existing replay invariants. The final FND-04 review should decide whether distinct stable failure IDs improve E2E/audit clarity enough to justify adding them. This analysis does not expand the global catalogue yet.
+The analysis does not edit the shared catalogue; the final FND-04 package should add them if independent review agrees.
 
 ## 28. Error mapping direction
 
-Recommended category mapping:
-
 | Condition | Foundation category |
 |---|---|
-| malformed admission/reconnect payload | `INVALID_INPUT` |
-| bad signature/proof/unknown trusted issuer | `AUTHENTICATION_FAILED` |
-| expired, consumed, replayed, wrong-audience or wrong-bound credential | `SESSION_REJECTED` |
-| protocol/ruleset/content/route revision mismatch | `UNSUPPORTED_REVISION` |
-| stale connection/account/character/ownership generation | `STALE_GENERATION` |
-| healthy incumbent or current lifecycle prevents takeover | `CONFLICT` |
-| admission/session resource bound reached | `CAPACITY_EXCEEDED` |
+| malformed admission/reconnect input | `INVALID_INPUT` |
+| bad cryptographic proof or untrusted issuer/key purpose | `AUTHENTICATION_FAILED` |
+| expired/consumed/replayed/wrong-audience/wrong-purpose credential | `SESSION_REJECTED` |
+| incompatible protocol/ruleset/content/route/security-profile revision | `UNSUPPORTED_REVISION` |
+| stale connection/account/character/runtime generation | `STALE_GENERATION` |
+| healthy incumbent/current lifecycle blocks takeover | `CONFLICT` |
+| registered admission/session bound reached | `CAPACITY_EXCEEDED` |
 | required Platform/key/lease/persistence authority unavailable | `DEPENDENCY_UNAVAILABLE` |
-| bounded admission/reconnect/takeover deadline expired | `TIMEOUT` |
+| named bounded admission/reconnect/takeover deadline expires | `TIMEOUT` |
 | explicit safe cancellation before commit | `CANCELLED` |
-| unexpected internal state where safe authority cannot be proven | `INTERNAL_UNAVAILABLE` |
+| unexpected state where current authority cannot be proven | `INTERNAL_UNAVAILABLE` |
 
-The final public numeric codes should be narrower and stable but must never expose raw SQL errors, key IDs beyond safe diagnostics, token contents, secret hashes, internal stack traces or exact combat state unless product/privacy policy explicitly allows it.
+Final numeric/narrow codes must not expose raw SQL errors, secret/token contents, verifier hashes, stack traces or sensitive combat/session details.
 
 ## 29. Security and privacy requirements
 
-The final contract should require:
+The final contract must require:
 
-- no reusable account password/OAuth bearer token sent to the game server;
-- admission and reconnect credentials redacted from logs/traces/crash reports;
+- no reusable account password/OAuth bearer credential sent to gameplay server;
+- strict credential type/key-purpose/audience separation;
+- no arbitrary token-supplied verification endpoint;
+- admission/reconnect credentials redacted from logs/traces/crash reports/analytics;
 - GameSessionId alone never authorizes control;
-- AccountId/CharacterId ownership revalidated at current authority, not trusted from UI/cache alone;
+- authoritative AccountId/CharacterId ownership revalidation;
 - no client timestamp as expiry/liveness authority;
-- no token-selected arbitrary verification URL/key source;
-- key purpose separation and explicit credential typing;
 - bounded replay records and credential material size;
-- rate limits for repeated admission/reconnect/takeover attempts defined before production implementation;
-- auditable takeover, lease replacement and security-terminal failures;
-- high-cardinality session/player IDs excluded from ordinary metrics labels;
-- current generation/fence evidence included in authorized diagnostic correlation without credential contents.
+- bounded admission/reconnect/takeover attempts before production;
+- auditable takeover/lease-replacement/security-terminal outcomes;
+- no high-cardinality session/player IDs as ordinary metrics labels;
+- diagnostic correlation may include IDs/generations only under privacy/access policy and never include credentials.
 
 ## 30. Player-facing consequences
 
-The recommended model aims to provide:
+The recommended model aims for:
 
-- fast same-session recovery for genuine brief connection loss;
-- no surprise logout merely because the concrete socket is closed at five seconds;
-- no combat escape by switching characters;
+- fast same-session recovery after genuine brief loss;
+- no session death just because the concrete socket closes at five seconds;
+- no combat escape by changing characters;
 - no malicious second-client kick of a healthy combat-locked player;
-- the ability to recover the same in-world actor even after the old GameSession expires, using a fresh session when safe;
-- no hidden heal/teleport/reset from reconnect;
-- clear bounded rejection instead of ambiguous dual-login behavior.
+- same-actor recovery even after old GameSession terminality when mandatory presence continues;
+- no hidden heal/teleport/reset on reconnect;
+- one clear current controller rather than ambiguous dual login;
+- no protection farming from routine socket/generation churn.
 
-Risk to watch: excessive liveness false positives or repeated disconnect-protection farming. Those require measured fault tests and player-behavior evidence before production values are frozen.
+Main player-risk areas requiring later evidence are false-positive loss detection, reconnect storms and repeated-loss protection abuse.
 
-## 31. Producer/operations consequences
+## 31. Producer and operations consequences
 
-The recommended separation allows:
+The model allows:
 
-- Platform/Gateway outage to block **new** authorization without necessarily killing existing gameplay;
-- GameNodes to validate signed pre-admission grants without a synchronous Platform introspection on every normal admission;
-- key rotation independent from game deployment when compatible key sets are staged;
-- character/account fencing to remain game-domain authority;
-- GameSession recovery to remain independent of concrete NodeId;
-- future proof-of-possession or stronger device security without redefining GameSessionId.
+- Platform/Gateway outage to block new authorization without automatically killing valid active gameplay;
+- fast reconnect using game-domain proof without requiring Platform availability;
+- signed fresh-admission grants to be verified without synchronous Platform introspection on every normal admission;
+- Platform key rotation independent from game deployments when compatible trust sets are staged;
+- game-domain account/character fencing to remain authoritative;
+- GameSession identity to remain independent of NodeId/current process placement.
 
-Costs include explicit key-distribution/revocation operations, bounded grant-consumption state, account/character lease coordination and more failure-state tests than a legacy password login server.
+Costs are explicit replay state, key-distribution/revocation operations, account-global exclusion, lease recovery and significantly more race/fault tests than a legacy password login server.
 
-## 32. Final FND-04 contract inputs still required
+## 32. Required final FND-04 decisions
 
-Before the final contract can be accepted, the package should resolve these remaining items explicitly:
+Before FND-04 can be called complete, the final architecture package must explicitly resolve:
 
-1. accept/reject hybrid signed + one-time-consume grant direction;
-2. select exact signed container/algorithm/library contract through a bounded cross-language security spike or named evidence;
-3. define concrete pre-admission TTL and wall-clock skew limits;
-4. choose exact verification-key refresh/retiring/emergency-revocation windows;
-5. define reconnect secret entropy/representation and bounded verifier retention;
-6. accept/reject reauthenticated same-GameSession recovery inside the 15-second grace;
-7. accept/reject fresh-GameSession attachment to an existing `PRESENT_UNCONTROLLED` actor after grace expiry;
-8. accept the proposed 15-second grace start at `control_loss_declared_at`;
-9. define concrete liveness-probe cadence/hysteresis compatible with the 2-second boundary;
-10. define concrete lease TTL/renewal/safety margin or explicitly assign a pre-implementation measured gate with hard acceptance before production;
-11. decide whether a control-loss episode needs anti-flap hysteresis to prevent repeated 4-second protection farming;
-12. decide whether admission-grant and reconnect-credential replay deserve new stable `FOUNDATION_FAILURE_SCENARIOS` IDs;
-13. reconcile exact Channel↔Instance versus Channel↔Channel GameSession continuity rules;
-14. define final stable session/takeover/admission error codes and their safe client presentation classes.
+1. accept/reject the hybrid signed + one-time-consume PreAdmissionGrant direction;
+2. freeze or reference a concrete versioned cross-language grant security/interchange profile before implementation; do **not** freeze a library/vendor without evidence;
+3. freeze concrete grant TTL/skew/key-overlap/cache-staleness values from security/rollout evidence;
+4. freeze reconnect-secret security profile and the lost-rebind-response reconciliation rule;
+5. accept/reject Platform-reauthenticated same-GameSession recovery and its anti-account-takeover/step-up policy boundary;
+6. define reconnect/current-placement route resolution without making Platform session authority;
+7. accept/reject fresh-GameSession attachment to `PRESENT_UNCONTROLLED` same-character actor after grace expiry;
+8. accept/reject same-session grace expiry at `control_loss_declared_at + 15 s`;
+9. define liveness-probe cadence/hysteresis through a bounded preimplementation evidence gate if not frozen directly;
+10. define character-lease TTL/renewal/safety-margin evidence gate and exact replacement/fencing semantics;
+11. decide actor-scoped control-loss anti-flap/hysteresis required to prevent duplicate 4-second protection windows;
+12. add or reject the two proposed stable replay failure-scenario IDs;
+13. freeze exact Channel↔Instance versus Channel↔Channel GameSession continuity and account-presence continuity;
+14. freeze stable admission/reconnect/takeover error codes/presentation classes;
+15. define same-GameSession recovery requirements across GameNode replacement, with mandatory fresh-session fallback when required FND-02/FND-04 state cannot be reconstructed.
 
 ## 33. Recommended concise model
 
 ```text
-Platform password/OAuth/MFA
+Platform reusable credentials
 -> Platform Identity only
 
 Game Login Ticket
--> one-time Platform identity authorization
--> Gateway redeems it
+-> one-time Platform authorization
+-> Gateway redemption/routing
 
 PreAdmissionGrant
--> Platform-owned dedicated admission issuer
--> short-lived signed capability
--> bound AccountId + CharacterId + WorldId + ChannelId + revisions + audience
--> random one-time grant nonce
--> game-side atomic consume
+-> dedicated Platform-owned admission issuer/key purpose
+-> signed short-lived capability
+-> explicit purpose + AccountId + CharacterId + World/route/revisions + audience
+-> random one-time nonce
+-> game-domain authoritative consume
 -> never GameSessionId
 
 fresh admission commit
--> revalidate current AccountId -> CharacterId ownership
--> atomically establish AccountPresenceClaim
--> establish/fence CharacterAuthorityLease
+-> validate grant + current scope/revisions
+-> revalidate AccountId -> CharacterId
+-> atomically establish account presence
+-> establish current CharacterLease/fence
 -> consume grant
 -> create canonical GameSessionId
 -> connection_generation = 1
--> issue opaque rotating reconnect secret
--> only then publish admission success
+-> create reconnect-proof state
+-> only then publish success
 
-brief unexpected control loss
--> FND-04 accepts sufficient current-generation liveness evidence semantics
--> FND-03 measures T0 monotonic
--> T0 + 2s: accepted disconnect PvE protection
--> T0 + 5s: stale concrete transport may close
--> control_loss_declared_at + 15s: same-GameSession grace expires
+unexpected loss
+-> current-generation sufficient-control evidence stops at T0
+-> T0 + 2 s: server classifies accepted loss boundary / FND-03 disconnect protection
+-> T0 + 5 s: stale concrete transport cleanup may close socket
+-> loss boundary + 15 s: same-GameSession grace expires
 
-eligible fast resume
+same-session rebind
 -> same GameSessionId
--> newer connection_generation
--> rotate reconnect secret
--> old transport generation fenced
--> FND-03 applies accepted 4s defensive PvE re-entry effect
+-> one newer connection_generation wins atomically
+-> reconnect proof rotates/reconciles
+-> old generation fenced
+-> 4 s PvE re-entry protection only if this is an eligible classified unexpected-loss episode
 
-old GameSession grace expired but actor must remain
+post-grace actor still mandatory
 -> old GameSession terminal
 -> actor PRESENT_UNCONTROLLED
--> account presence still occupied by same CharacterId
--> fresh authenticated same-character admission may create new GameSessionId and attach to existing actor if final contract accepts this direction
+-> AccountPresenceClaim remains same CharacterId
 -> different CharacterId remains blocked
+-> fresh same-character GameSession may attach only through current game-domain actor placement if final contract accepts
 
-intentional newcomer takeover
--> healthy combat-locked incumbent: reject/hold, do not kick
--> logout-eligible incumbent: fenced legal logout/transition
--> newcomer gets fresh GameSessionId only after old authority is safely gone
+intentional takeover
+-> healthy combat-locked incumbent: no kick/fence
+-> logout-eligible incumbent: fenced legal drain/logout/handoff
+-> fresh GameSession only after old player authority is safely gone
+
+lease uncertainty
+-> never automatic replacement authority
+-> old player/durable writes fail closed when current lease cannot be proven
+-> new lease generation waits for explicit fence/recovery
 ```
 
-## 34. Gate result of this analysis
+## 34. Gate result
 
-If this analysis baseline passes review and merges, it does **not** complete FND-04.
+If this analysis baseline passes exact-head review/CI/audit and merges, it becomes canonical **analysis input only**.
 
-It authorizes no runtime implementation.
+It does not complete FND-04 and does not authorize runtime, protocol, persistence, Platform or production implementation.
 
-It should become the bounded evidence input for one later final architecture-only `FND-04 Identity, Game Session, Admission and Character Lease Contract` package that freezes only the decisions genuinely required before implementation.
+The next safe package is one final architecture-only `FND-04 Identity, Game Session, Admission and Character Lease Contract` that consumes this analysis and freezes only the decisions genuinely required before implementation.
