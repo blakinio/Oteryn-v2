@@ -17,6 +17,7 @@ execution_budget_minutes: 30
 owned_paths:
   - docs/architecture/DISCONNECT_REENTRY_PVE_PROTECTION_OWNER_DECISION.md
   - docs/architecture/DISCONNECT_CLIENT_OS_FORENSICS_OWNER_DIRECTION.md
+  - docs/architecture/FOUNDATION_PROGRAMME_CURRENT_STATUS.md
   - docs/agents/tasks/active/OTV2-20260808-reentry-pve-protection.md
 public_contracts:
   - docs/architecture/DISCONNECT_REENTRY_PVE_PROTECTION_OWNER_DECISION.md
@@ -89,6 +90,11 @@ The re-entry decision explicitly supersedes only the older generic `no protectio
 - [x] Keep kernel-driver/invasive anti-cheat outside the scope of this decision.
 - [x] Preserve privacy minimization: no arbitrary files, unrestricted process inventory, full Event Log export, unrelated SSID/MAC/device data, credentials or secrets.
 
+### Coordination
+
+- [x] Synchronize `FOUNDATION_PROGRAMME_CURRENT_STATUS.md` so PR #96 is an explicit required input before `FND-03`/`FND-04` finalize dependent reconnect/runtime semantics.
+- [x] Preserve live/current-status precedence over stale long-lived coordination wording such as older `FND-02 is next` sentences.
+
 ### Governance
 
 - [ ] Exact-head governance validation after final synchronization commit.
@@ -102,13 +108,14 @@ Documentation-only architecture change. No runtime, protocol, persistence, datab
 ## Context checkpoint
 
 ```yaml
-last_progress: The full 2026-08-08 disconnect/reconnect discussion is captured in canonical architecture: four-second defensive PvE re-entry behavior, graceful-logout exclusion, healing direction, non-buffering and anti-reset rules, plus bounded client/OS/Guardian forensic evidence, incident classification, post-boot evidence, longitudinal automation/abuse analysis, privacy and human-review boundaries.
+last_progress: The full 2026-08-08 disconnect/reconnect discussion is captured in canonical architecture and the current programme-status overlay now requires FND-03/FND-04 to consume it. The package includes four-second defensive PvE re-entry behavior, graceful-logout exclusion, healing direction, non-buffering/anti-reset rules, bounded client/OS/Guardian forensics, incident classification, post-boot evidence, longitudinal automation/abuse analysis, privacy and human-review boundaries.
 status: validating
 branch: docs/OTV2-20260808-reentry-pve-protection
 pr: 96
 owned_paths:
   - docs/architecture/DISCONNECT_REENTRY_PVE_PROTECTION_OWNER_DECISION.md
   - docs/architecture/DISCONNECT_CLIENT_OS_FORENSICS_OWNER_DIRECTION.md
+  - docs/architecture/FOUNDATION_PROGRAMME_CURRENT_STATUS.md
   - docs/agents/tasks/active/OTV2-20260808-reentry-pve-protection.md
-next_action: Synchronize current programme status with this owner decision package, then validate the exact PR head and obtain independent architecture review before squash merge.
+next_action: Validate the exact PR head and obtain independent architecture review before squash merge.
 ```
