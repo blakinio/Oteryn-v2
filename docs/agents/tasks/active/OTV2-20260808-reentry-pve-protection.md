@@ -12,7 +12,7 @@ pr: 96
 base_sha: 19756eab0a66db37cb6f27ec367aaf2e4986df69
 owner: Oteryn project owner
 created_at: 2026-08-08T13:30:00+02:00
-updated_at: 2026-08-08T13:34:00+02:00
+updated_at: 2026-08-08T16:06:00+02:00
 execution_budget_minutes: 30
 owned_paths:
   - docs/architecture/DISCONNECT_REENTRY_PVE_PROTECTION_OWNER_DECISION.md
@@ -31,7 +31,7 @@ external_repositories: []
 
 ## Outcome
 
-Record the owner-accepted decision that a valid reconnect/re-entry gives the same authoritative character a four-second defensive PvE protection window during which self-healing and health/mana/resource potions remain usable, movement remains allowed under the existing baseline, and no offensive action against PvE monsters may execute or be buffered.
+Record the owner-accepted decision that a valid reconnect/re-entry gives the same authoritative character a four-second defensive PvE protection window during which movement, self-healing, health/mana/resource potions and incoming healing from other players remain allowed, while the protected character may neither execute offensive actions against PvE monsters nor heal another player.
 
 ## Conflict resolved
 
@@ -43,11 +43,14 @@ The new architecture decision explicitly supersedes only the older generic `no p
 - [x] Allow ordinary self-healing subject to normal legality/cost/cooldown rules.
 - [x] Allow health and mana/resource potion use subject to normal item/cooldown rules.
 - [x] Preserve previously accepted movement permission.
+- [x] Prohibit healing another player while the protected character remains inside the four-second window.
+- [x] Allow the protected character to receive legal healing from another player.
+- [x] Keep non-healing support actions unresolved for the owning combat/action contract.
 - [x] Prohibit all offensive actions against PvE monsters during the window.
-- [x] Prohibit buffering offensive input for post-protection execution.
+- [x] Prohibit buffering prohibited outgoing actions for post-protection execution.
 - [x] Preserve already committed pre-protection effects.
 - [x] Resolve the conflict with older generic no-protection reconnect wording explicitly and narrowly.
-- [x] Keep PvP, support-to-other-player actions, non-combat interactions, UI and enforcement thresholds unresolved.
+- [x] Keep PvP, non-healing support, non-combat interactions, UI and enforcement thresholds unresolved.
 - [ ] Exact-head governance validation.
 - [ ] Independent architecture review.
 - [ ] Squash merge and task archive.
@@ -59,7 +62,7 @@ Documentation-only architecture change. No runtime, protocol, persistence, datab
 ## Context checkpoint
 
 ```yaml
-last_progress: PR #96 metadata now contains required Summary, Scope and Validation sections; a synchronization commit was pushed to re-run exact-head governance.
+last_progress: Owner clarified healing direction for PR #96: the protected player cannot heal another player during the four-second window but may receive legal healing from other players; architecture and task records were updated accordingly.
 status: validating
 branch: docs/OTV2-20260808-reentry-pve-protection
 pr: 96
