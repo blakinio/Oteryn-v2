@@ -159,7 +159,7 @@ The entitlement gate must keep these decisions distinct:
 
 FND-04 owns gameplay admission/session/reconnect authority. `PROD-ENTITLEMENTS-01` may consume those semantics but must not redefine GameSession, lease or reconnect ownership.
 
-Deferring forced disconnect policy does not permit entitlement benefit to survive beyond the declared finite authority bound unless a separately accepted product/session contract explicitly authorizes and bounds that behavior.
+Deferring forced disconnect policy does not permit entitlement benefit to survive beyond the declared finite authority bound. A session/reconnect contract may define how authority loss is applied operationally, but it cannot extend or recreate Platform-owned commercial authority beyond that producer-grounded bound.
 
 ### 6.5 Game-affecting delivery
 
