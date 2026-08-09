@@ -4,18 +4,18 @@
 task_id: OTV2-20260809-architecture-continuation-prompt-refresh
 title: Refresh reusable architecture continuation prompt
 mode: GOVERNANCE
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/architecture-continuation-prompt-refresh
-pr: null
+pr: 118
 base_sha: 0dfde85673b985bd00d6f3dcd3690dbf068fdeed
-head_sha: null
+head_sha: 552f3597d7e86bc0c85267ee5098a215aea05556
 final_head_sha: null
 final_head_frozen_at: null
 owner: GPT-5.6-Sol-session
 created_at: 2026-08-09T20:52:00+02:00
-updated_at: 2026-08-09T20:52:00+02:00
+updated_at: 2026-08-09T20:59:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -39,14 +39,15 @@ The existing canonical reusable Oteryn-v2 architecture continuation prompt is re
 - `PROVEN`: repository governance requires a dedicated task/branch/PR for this documentation change.
 - `PROVEN`: the owner-supplied prompt emphasizes full startup PR review, architecture-analysis-only runtime gate, proactive gap detection, player/producer perspectives, AI-maintainable architecture, decision documentation and safe PR close criteria.
 - `PROVEN`: open PR #114 currently owns only FND-04A architecture/contract/task paths and does not overlap this task.
+- `PROVEN`: PR #118 contains only the three owned documentation/task paths.
 
 ## Acceptance criteria
 
-- [ ] Update the canonical architecture continuation prompt without creating a duplicate prompt file.
-- [ ] Preserve accepted Oteryn-v2 architecture, trust boundaries and runtime implementation gate.
-- [ ] Incorporate the material requirements from the owner-supplied prompt that are missing or weaker in the current canonical prompt.
-- [ ] Document one stable short invocation alias: `Oteryn: architektura`.
-- [ ] Evaluate the final prompt against `docs/agents/PROMPT_EVAL_STANDARD.md` with no material ambiguity.
+- [x] Update the canonical architecture continuation prompt without creating a duplicate prompt file.
+- [x] Preserve accepted Oteryn-v2 architecture, trust boundaries and runtime implementation gate.
+- [x] Incorporate the material requirements from the owner-supplied prompt that are missing or weaker in the current canonical prompt.
+- [x] Document one stable short invocation alias: `Oteryn: architektura`.
+- [x] Evaluate the final prompt against `docs/agents/PROMPT_EVAL_STANDARD.md` with no material ambiguity (`PASS_WITH_NOTES`; lifecycle validation/handover are additionally enforced by live governance loaded by the prompt).
 - [ ] Run applicable governance/document validation on the final exact head.
 
 ## Excluded scope
@@ -55,29 +56,29 @@ No runtime code, protocol schema, persistence, architecture decision, production
 
 ## Implementation / findings
 
-The existing prompt is already a condensed, current-repository-aware version of the owner's longer supplied prompt. The change should therefore be a narrow augmentation, not replacement by a second long-form prompt.
+The existing prompt was already a condensed, current-repository-aware version of the owner's longer supplied prompt, so it was augmented in place rather than duplicated. The canonical prompt now carries the stable alias `Oteryn: architektura`; the prompt index explicitly resolves that alias to the live-main file rather than a cached prompt body.
 
 ## Validation
 
 ### Focused
 
-- command/run: pending
-- result: pending
+- command/run: full changed-file/diff review + prompt evaluation against `docs/agents/PROMPT_EVAL_STANDARD.md`
+- result: PASS_WITH_NOTES; no material ambiguity found
 
 ### Component/integration
 
 - command/run: `NOT_APPLICABLE` — documentation-only prompt/governance change
-- result: pending
+- result: `NOT_APPLICABLE`
 
 ### E2E
 
 - scenario: `NOT_APPLICABLE` — no executable runtime/user-product behavior changes
-- result: pending
+- result: `NOT_APPLICABLE`
 
 ### Exact-head CI
 
-- final head: pending
-- trigger source: pending
+- final head: pending after this checkpoint commit
+- trigger source: pull_request
 - workflow/run/job: pending
 - runner assignment: pending
 - classification: pending
@@ -92,8 +93,8 @@ The existing prompt is already a condensed, current-repository-aware version of 
 
 ## PR and closeout
 
-- changed-file review: pending
-- unresolved review threads: pending
+- changed-file review: PR #118 is scoped to the three declared paths
+- unresolved review threads: pending final check
 - related/superseded PRs: #114 reviewed; no overlap
 - protected auto-merge: not requested
 - merge commit/result: pending
@@ -102,14 +103,14 @@ The existing prompt is already a condensed, current-repository-aware version of 
 ## Context checkpoint
 
 ```yaml
-last_progress: canonical prompt and prompting standards inspected; no overlapping open PR found
-status: implementing
+last_progress: canonical prompt refreshed in place, alias documented, PR #118 opened and scope reconciled
+status: validating
 branch: docs/architecture-continuation-prompt-refresh
-head_sha: null
-pr: null
+head_sha: 552f3597d7e86bc0c85267ee5098a215aea05556
+pr: 118
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
+ci_trigger_source: pull_request
 ci_check_generation: null
 ci_checks_for_current_head: 0
 ci_run_ids: []
@@ -124,5 +125,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: update the canonical prompt and prompt index on this branch
+next_action: inspect the exact-head PR diff and repository checks for PR #118
 ```
