@@ -8,13 +8,20 @@
   "serialization": "protobuf-binary",
   "source_idl_syntax": "proto3",
   "application_compression": "none",
+  "protobuf_byte_policy": {
+    "semantic_canonical_serialization_assumed": false,
+    "same_event_id_retry_must_reuse_exact_payload_bytes": true,
+    "payload_hash": "SHA-256 over exact immutable payload bytes",
+    "raw_envelope_serialization_equality_required": false
+  },
   "identity_profiles": {
     "EventId": "strongly-typed UUIDv7, full 128 bits, global, immutable, never reused",
     "OperationId": "strongly-typed UUIDv7 for one independently durable logical operation",
     "TransactionId": "strongly-typed UUIDv7 for one logical atomic durable mutation transaction",
     "CorrelationId": "strongly-typed UUIDv7 for one trusted bounded correlation context",
     "CausationRef": "typed reference to EventId, CommandRef, OperationId or TransactionId; no standalone causation UUID",
-    "AnalyticsActorId": "strongly-typed UUIDv7 scoped by analytics identity domain and identity epoch"
+    "AnalyticsActorId": "strongly-typed UUIDv7 scoped by analytics identity domain and identity epoch",
+    "RuntimeOrderRef": "scope ownership generation + RuntimeExecutionOrdinal; requires concrete WorldId+ChannelId or WorldId+InstanceId scope"
   },
   "durability_classes": [
     {
@@ -61,6 +68,8 @@
     "schema_revision_type": "uint32_nonzero_per_event_type",
     "removed_protobuf_fields_must_be_reserved": true,
     "same_event_id_content_is_immutable": true,
+    "atomic_mutation_evidence_requires_transaction_event_ordinal_and_count": true,
+    "transaction_event_ordinals_are_contiguous_1_to_count": true,
     "durable_unknown_schema_behavior": "quarantine_or_reject_without_loss_or_reinterpretation",
     "best_effort_unknown_schema_behavior": "counted_drop_or_reject; never_claim_complete"
   },
