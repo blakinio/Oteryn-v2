@@ -8,14 +8,14 @@ status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260811-architecture-lifecycle-status-normalization
-pr: null
+pr: 150
 base_sha: 05544969baf58c3a40354f366438d759bfd159e5
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture audit coordinator
 created_at: 2026-08-11T01:36:00+02:00
-updated_at: 2026-08-11T01:48:00+02:00
+updated_at: 2026-08-11T01:51:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -66,8 +66,8 @@ Make current lifecycle/status documentation truthful after merged governance, FN
 - [x] Reconcile `PROD-ENTITLEMENTS-01` with exact Oteryn-Platform #944/#968 producer evidence and preserve the missing Oteryn-v2 consumer/enforcement contract as the activation gate.
 - [x] Preserve issue #115 as open work for the remaining consumer-side contract; do not close it merely because the producer prerequisite is satisfied.
 - [x] Keep all repository edits documentation/governance-only; no runtime, dependency, workflow, Platform or production mutation.
-- [ ] Mandatory exact-head self-review passes with zero material findings.
-- [ ] Exact-head Agent Governance, Dependency Review and CodeQL pass.
+- [ ] Mandatory repaired exact-head self-review passes with zero material findings.
+- [ ] Repaired exact-head Agent Governance, Dependency Review and CodeQL pass.
 - [ ] One independent final review passes because entitlement/security authority wording is changed.
 - [ ] Squash merge succeeds on the unchanged reviewed head.
 
@@ -81,23 +81,24 @@ Make current lifecycle/status documentation truthful after merged governance, FN
 
 ## Implementation / findings
 
-- Archived the stale post-merge task records for PRs #146, #147 and #149 with exact final-head/merge/check evidence; removed their stale `active/` copies.
-- The active-task set is now limited to the long-lived non-owning foundation checkpoint, two intentionally still-active disconnect/forensics analyses, this cleanup task and the directory README.
-- Rewrote the non-owning foundation programme checkpoint as current coordination state: accepted foundation architecture is not reopened; product semantics + bounded DUR-02 discovery + real-boundary vertical slices are the near-term direction.
-- `FOUNDATION_PROGRAMME_CURRENT_STATUS.md` now records FND-ID-01 and NET-TRANSPORT-01 delivery lifecycles closed, while gameplay transport/runtime remains `NOT_STARTED`.
-- `FOUNDATION_PROGRAMME_CURRENT_STATUS.md` also aligns GameNode guidance with ADR-0009/ADR-0015 instead of leaving the older prescriptive modular-monolith wording ambiguous.
-- `PROD-ENTITLEMENTS-01_PLATFORM_GAME_ENFORCEMENT_DEPENDENCY.md` now pins Platform PR #968 / merge `afaa6d1d8340e44b1152b62d6d27e5fd1649804a` as satisfied producer evidence and keeps the game-side consumer contract/runtime activation explicitly unauthorized.
-- No runtime/code/workflow/dependency/external-repository file is changed.
+- Archived stale post-merge task records for PRs #146, #147 and #149 with exact final-head/merge/check evidence; removed their stale `active/` copies.
+- The active-task set is limited to the long-lived non-owning foundation checkpoint, two intentionally still-active disconnect/forensics analyses, this cleanup task and the directory README.
+- Refreshed the non-owning foundation programme checkpoint: accepted foundation architecture is not reopened; product semantics + bounded DUR-02 discovery + real-boundary vertical slices are the near-term direction.
+- `FOUNDATION_PROGRAMME_CURRENT_STATUS.md` records FND-ID-01 and NET-TRANSPORT-01 delivery lifecycles closed while gameplay transport/runtime remains `NOT_STARTED` and aligns GameNode wording with ADR-0009/ADR-0015.
+- `PROD-ENTITLEMENTS-01_PLATFORM_GAME_ENFORCEMENT_DEPENDENCY.md` pins Platform PR #968 / merge `afaa6d1d8340e44b1152b62d6d27e5fd1649804a` as satisfied producer evidence while keeping the Oteryn-v2 consumer contract/runtime activation unauthorized.
+- PR #150 initial head `6b95faab4091646d5147dd343c0b181871a39c17` passed self-review `4901833064`; Agent Governance run `31443386419` then failed **only** at PR metadata validation because the body used `## Safety boundaries` instead of the required literal `## Scope` heading. No repository-content validation step ran. The PR body is corrected before this checkpoint commit; this head movement intentionally triggers a fresh validation generation and invalidates the initial exact-head review/CI as terminal evidence.
+- No Rust/runtime/code/workflow/dependency/external-repository/production file is changed.
 
 ## Validation
 
 ### Focused
 
 - base: `main@05544969baf58c3a40354f366438d759bfd159e5`
-- current diff before final task checkpoint: exactly 10 documentation/task/architecture paths; `behind_by=0`
+- pre-metadata-repair content diff: exactly 10 declared documentation/task/architecture paths; `behind_by=0`
 - active-task directory inspection: merged #146/#147/#149 task records absent; intended live coordination/analysis records preserved
 - direct GitHub evidence: PRs #146/#147/#149 and Oteryn-Platform #944/#968 re-read before normalization
-- result: PASS pending final exact-head recheck
+- initial Agent Governance failure classification: `PR_METADATA`, exact message `PR body is missing ## Scope`; PR body repaired
+- result: PASS pending repaired exact-head recheck
 
 ### Component/integration
 
@@ -109,31 +110,32 @@ Make current lifecycle/status documentation truthful after merged governance, FN
 
 ### Exact-head CI
 
-- final head: pending after this checkpoint commit
-- trigger source: pull_request
-- workflow/run/job: pending
-- runner assignment: pending
+- initial head `6b95faab4091646d5147dd343c0b181871a39c17`: Dependency Review PASS; Agent Governance metadata failure; other results superseded
+- repaired final head: pending this checkpoint commit
+- trigger source: pull_request/synchronize
 - classification: documentation/governance/security-contract status only
 - result: pending
 
 ## Self-review
 
-- exact head: pending final head
+- initial exact head `6b95faab4091646d5147dd343c0b181871a39c17`: self-review `4901833064` PASS, superseded by deliberate task-checkpoint head movement
+- repaired exact head: pending
 - method/reviewer: implementing/coordinating agent full-diff review
-- material findings: none known; final exact-head recheck pending
-- verdict: pending
+- material findings: no content finding known; PR metadata finding repaired
+- verdict: pending repaired exact-head review
 
 ## Independent review
 
 - required: `YES` — cross-repository entitlement/security authority wording is being reconciled
-- exact head: pending
+- exact head: pending repaired head
 - method/auditor: one genuinely independent final reviewer; Codex only for this required gate if it is the available appropriate mechanism
 - material findings: pending
 - verdict: pending
 
 ## PR and closeout
 
-- changed-file review: pending final head
+- PR: #150
+- changed-file review: pending repaired final head
 - unresolved review threads: pending
 - related/superseded PRs: #146, #147, #149 already merged; Platform #968 already merged
 - protected auto-merge: pending
@@ -143,15 +145,15 @@ Make current lifecycle/status documentation truthful after merged governance, FN
 ## Context checkpoint
 
 ```yaml
-last_progress: Normalized merged task lifecycle, current programme progression and exact Platform entitlement producer-remediation evidence; no runtime/product authority changed.
+last_progress: Repaired PR #150 governance metadata after exact failure evidence; repository content remains unchanged except this task checkpoint, which intentionally triggers a new exact-head validation generation.
 status: validating
 branch: docs/OTV2-20260811-architecture-lifecycle-status-normalization
 head_sha: null
-pr: null
+pr: 150
 final_head_sha: null
 final_head_frozen_at: null
 ci_trigger_source: pull_request
-ci_check_generation: final-head-pending
+ci_check_generation: metadata-repaired-head-pending
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -160,10 +162,10 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 0
+repair_cycles_for_current_gate: 1
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Freeze the final documentation-only head, open one PR, perform exact-head self-review, run required CI and obtain one independent entitlement/security review before squash merge.
+next_action: Freeze the repaired exact head, perform mandatory full-diff self-review, verify exact-head CI and obtain one independent entitlement/security review; squash-merge only if the head remains unchanged and clean.
 ```
