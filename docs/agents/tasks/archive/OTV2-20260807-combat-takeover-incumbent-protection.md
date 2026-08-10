@@ -6,8 +6,8 @@ status: completed
 repository: blakinio/Oteryn-v2
 branch: docs/OTV2-20260807-combat-takeover-incumbent-protection
 pr: 72
-final_head_sha: 69c90a8797bc0c36e48c06991997137a3b15fb0f
-merge_commit: 97b29cc9165db0ca9d1c2763f2b10d6f0d664ae2
+final_head_sha: 69c90db12736f44f6deecc831a68d4709759e8c2
+merge_commit: 97b29e5c927f319ed03fb5583614d5fe0366d134
 ownership_released: true
 ```
 
@@ -23,7 +23,7 @@ No architecture, runtime, production or cross-repository behavior is changed.
 last_progress: Merged PR #72 task archived and advisory ownership released.
 status: completed
 pr: 72
-final_head_sha: 69c90a8797bc0c36e48c06991997137a3b15fb0f
+final_head_sha: 69c90db12736f44f6deecc831a68d4709759e8c2
 blocker: null
 next_action: No further action; ownership released.
 ```
