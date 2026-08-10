@@ -11,9 +11,14 @@ message CommandRef {
 }
 
 message AnalyticsActorRef {
-  string identity_domain = 1;  // bounded registered ASCII key
-  uint64 identity_epoch = 2;   // non-zero policy epoch/revision
+  string identity_domain = 1;   // bounded registered ASCII key
+  uint64 identity_epoch = 2;    // non-zero policy epoch/revision
   bytes analytics_actor_id = 3; // exactly 16-byte non-nil UUIDv7
+}
+
+message RuntimeOrderRef {
+  uint64 scope_ownership_generation = 1; // non-zero FND-03 ownership generation
+  uint64 runtime_execution_ordinal = 2;  // non-zero, scoped to the same owner generation
 }
 
 message CausationRef {
@@ -56,12 +61,12 @@ message EventEnvelope {
 
   optional bytes game_session_id = 13;   // 16-byte UUIDv7 when present
   optional uint64 connection_generation = 14; // requires game_session_id; non-zero
-  optional uint64 runtime_execution_ordinal = 15; // owner-local evidence only
+  optional RuntimeOrderRef runtime_order = 15; // requires a concrete world+channel/instance runtime scope
   optional uint64 command_id = 16;        // requires game_session_id; non-zero
 
   optional bytes operation_id = 17;       // OperationId UUIDv7
   optional bytes transaction_id = 18;     // TransactionId UUIDv7
-  optional uint32 transaction_event_ordinal = 19; // requires transaction_id; starts at 1
+  optional uint32 transaction_event_ordinal = 19; // with transaction_event_count; starts at 1
   optional bytes correlation_id = 20;     // CorrelationId UUIDv7
   optional CausationRef causation = 21;
   optional AnalyticsActorRef analytics_actor = 22;
@@ -71,8 +76,9 @@ message EventEnvelope {
   optional string content_revision = 25;
   string server_build_id = 26;
 
-  bytes payload = 27;                     // registered protobuf payload bytes
-  bytes payload_sha256 = 28;              // exactly 32 bytes, SHA-256(payload)
+  bytes payload = 27;                     // exact immutable registered protobuf payload bytes
+  bytes payload_sha256 = 28;              // exactly 32 bytes, SHA-256(exact payload bytes)
+  optional uint32 transaction_event_count = 29; // required with transaction_event_ordinal for atomic mutation evidence
 
-  reserved 29 to 63;
+  reserved 30 to 63;
 }
