@@ -2,31 +2,36 @@ syntax = "proto3";
 
 package oteryn.events.v1;
 
-// ANL-01 source IDL. This schema defines event interchange semantics only.
-// It does not select a broker, database schema or gameplay protocol payload.
+// ANL-01 source IDL. Event interchange only; no broker/DB/gameplay-protocol selection.
 
 message CommandRef {
   bytes game_session_id = 1; // exactly 16-byte non-nil UUIDv7
-  uint64 command_id = 2;     // non-zero; semantics owned by FND-02
+  uint64 command_id = 2;     // non-zero; FND-02 semantics
 }
 
 message AnalyticsActorRef {
-  string identity_domain = 1;   // bounded registered ASCII key
-  uint64 identity_epoch = 2;    // non-zero policy epoch/revision
-  bytes analytics_actor_id = 3; // exactly 16-byte non-nil UUIDv7
+  string identity_domain = 1;
+  uint64 identity_epoch = 2;    // non-zero policy epoch
+  bytes analytics_actor_id = 3; // 16-byte non-nil UUIDv7; fresh across epochs
 }
 
 message RuntimeOrderRef {
-  uint64 scope_ownership_generation = 1; // non-zero FND-03 ownership generation
-  uint64 runtime_execution_ordinal = 2;  // non-zero, scoped to the same owner generation
+  uint64 scope_ownership_generation = 1; // non-zero FND-03 generation
+  uint64 runtime_execution_ordinal = 2;  // non-zero within same owner generation
+}
+
+message TransactionEventRef {
+  bytes transaction_id = 1; // exactly 16-byte non-nil TransactionId UUIDv7
+  uint32 ordinal = 2;       // 1..count
+  uint32 count = 3;         // non-zero, identical for one committed TransactionId event set
 }
 
 message CausationRef {
   oneof cause {
-    bytes event_id = 1;        // EventId UUIDv7
+    bytes event_id = 1;
     CommandRef command = 2;
-    bytes operation_id = 3;    // OperationId UUIDv7
-    bytes transaction_id = 4;  // TransactionId UUIDv7
+    bytes operation_id = 3;
+    bytes transaction_id = 4;
   }
 }
 
@@ -45,40 +50,38 @@ enum EventPrivacyClass {
 }
 
 message EventEnvelope {
-  uint32 envelope_revision = 1;          // exact 1 for this profile
-  bytes event_id = 2;                    // exactly 16-byte non-nil EventId UUIDv7
-  uint32 event_type_id = 3;              // non-zero registered ID
-  uint32 event_schema_revision = 4;      // non-zero registered revision
+  uint32 envelope_revision = 1;
+  bytes event_id = 2;
+  uint32 event_type_id = 3;
+  uint32 event_schema_revision = 4;
   EventDurabilityClass durability_class = 5;
   EventPrivacyClass privacy_class = 6;
-  string retention_profile_id = 7;       // accepted finite policy profile required for production
-  int64 occurred_at_unix_ms = 8;         // trusted server wall-clock correlation only
+  string retention_profile_id = 7;
+  int64 occurred_at_unix_ms = 8;
 
-  optional bytes world_id = 9;           // 16-byte UUIDv7 when present
-  optional bytes channel_id = 10;        // requires world_id; semantic ChannelRef
-  optional bytes instance_id = 11;       // requires world_id; semantic InstanceRef
-  optional bytes node_id = 12;           // GameNode process incarnation UUIDv7
+  optional bytes world_id = 9;
+  optional bytes channel_id = 10;
+  optional bytes instance_id = 11;
+  optional bytes node_id = 12;
 
-  optional bytes game_session_id = 13;   // 16-byte UUIDv7 when present
-  optional uint64 connection_generation = 14; // requires game_session_id; non-zero
-  optional RuntimeOrderRef runtime_order = 15; // requires a concrete world+channel/instance runtime scope
-  optional uint64 command_id = 16;        // requires game_session_id; non-zero
+  optional bytes game_session_id = 13;
+  optional uint64 connection_generation = 14;
+  optional RuntimeOrderRef runtime_order = 15;
+  optional uint64 command_id = 16;
 
-  optional bytes operation_id = 17;       // OperationId UUIDv7
-  optional bytes transaction_id = 18;     // TransactionId UUIDv7
-  optional uint32 transaction_event_ordinal = 19; // with transaction_event_count; starts at 1
-  optional bytes correlation_id = 20;     // CorrelationId UUIDv7
-  optional CausationRef causation = 21;
-  optional AnalyticsActorRef analytics_actor = 22;
+  optional bytes operation_id = 17;
+  optional TransactionEventRef transaction_event = 18;
+  optional bytes correlation_id = 19;
+  optional CausationRef causation = 20;
+  optional AnalyticsActorRef analytics_actor = 21;
 
-  optional uint32 protocol_major = 23;
-  optional string ruleset_revision = 24;
-  optional string content_revision = 25;
-  string server_build_id = 26;
+  optional uint32 protocol_major = 22;
+  optional string ruleset_revision = 23;
+  optional string content_revision = 24;
+  string server_build_id = 25;
 
-  bytes payload = 27;                     // exact immutable registered protobuf payload bytes
-  bytes payload_sha256 = 28;              // exactly 32 bytes, SHA-256(exact payload bytes)
-  optional uint32 transaction_event_count = 29; // required with transaction_event_ordinal for atomic mutation evidence
+  bytes payload = 26;        // exact immutable registered protobuf payload bytes
+  bytes payload_sha256 = 27; // exactly 32 bytes, SHA-256(exact payload bytes)
 
-  reserved 30 to 63;
+  reserved 28 to 63;
 }
