@@ -12,8 +12,8 @@ issue: 135
 trusted_base_sha: ef42fa47ab054ab8aa304c017307c1945f931b59
 owner: GPT-5.6 Sol architecture continuation session
 created_at: 2026-08-10T14:41:00+02:00
-updated_at: 2026-08-10T14:55:00+02:00
-repair_cycles_for_current_gate: 1
+updated_at: 2026-08-10T15:01:00+02:00
+repair_cycles_for_current_gate: 2
 max_repair_cycles_for_current_gate: 3
 blocker: null
 owned_paths:
@@ -28,56 +28,59 @@ owned_paths:
 
 ## Goal
 
-Close `ANL-01 — Game Event and Audit Foundation` after accepted/lifecycle-closed DUR-01 without implementing runtime, DB schema, broker or production analytics.
+Close `ANL-01 — Game Event and Audit Foundation` after accepted/lifecycle-closed DUR-01 without runtime/DB/broker/production implementation.
 
 ## Canonical coordination
 
 - canonical issue: #135;
 - accidental duplicate/placeholder issues #136–#140 are closed and have no architecture authority;
-- PROD-ENTITLEMENTS-01 / #115 remains separate and blocked by Oteryn-Platform#944.
-
-## Accepted inputs
-
-ADR-0006; UUIDv7 durable identity baseline; FND-ID-01; accepted FND-02/FND-03/FND-04; accepted/lifecycle-closed DUR-01; Foundation Error Vocabulary, Failure Scenarios and Resource Limits Registry.
+- #115 entitlement gate remains separate/blocking on Oteryn-Platform#944.
 
 ## Owned decisions
 
-- EventId, OperationId, TransactionId, CorrelationId, typed CausationRef and AnalyticsActorId;
-- protobuf/proto3 event envelope v1 + registry/evolution rules;
-- BEST_EFFORT_TELEMETRY vs DURABLE_AUDIT;
-- privacy/retention production-collection gate;
-- atomic evidence/publication/dedupe/replay semantics;
-- scoped RuntimeOrderRef and transaction event complete-set evidence;
-- shared error/failure/resource-limit integration;
-- deterministic future implementation evidence.
+Event/operation/transaction/correlation identities; typed causation; AnalyticsActorId; protobuf envelope/registry; durability/privacy/retention; immutable event retry; RuntimeOrderRef; TransactionEventRef; atomic audit/publication/dedupe/replay; failure/error/resource limits/evidence.
 
 ## Explicit exclusions
 
-No PostgreSQL table/outbox/checkpoint layout/isolation/locks/migrations/RPO/RTO; no item/currency conservation semantics; no broker/warehouse/lake/dashboard; no collector; no ANL-02/03/04 implementation; no Platform writes; no production collection/deployment/traffic.
+No PostgreSQL layout/isolation/locks/migrations/RPO/RTO; no DUR-03 conservation semantics; no broker/warehouse/lake/dashboard; no runtime collector; no ANL-02/03/04 implementation; no Platform writes; no production collection/deployment/traffic.
 
 ## Repair history
 
-### Cycle 1 — exact byte stability, runtime order scope and transaction event completeness
+### Cycle 1 — byte stability, runtime order scope, transaction completeness
 
-First adversarial review found three material ambiguities:
+Findings:
 
-1. Protobuf does not guarantee a universal canonical byte serialization, so same-EventId retry could reserialize equivalent semantic content into different bytes/hash.
-2. A naked RuntimeExecutionOrdinal loses FND-03 ownership-generation scope after failover/replacement.
-3. Transaction event ordinal without total event count cannot prove a committed transaction event set is complete.
+1. Protobuf alternate valid serializations could make reserialized same-EventId retry drift in bytes/hash.
+2. Naked RuntimeExecutionOrdinal was ambiguous without ownership generation.
+3. Transaction ordinal without total count could not prove complete event set.
 
-Repair:
+Repairs:
 
-- same EventId retry/reconciliation/redelivery reuses exact materialized payload bytes fixed before the first possibly ambiguous durable attempt; SHA-256 is over those bytes and is integrity evidence, not semantic canonicalization;
-- envelope now uses `RuntimeOrderRef(scope_ownership_generation, runtime_execution_ordinal)` and requires explicit WorldId+ChannelId or WorldId+InstanceId scope;
-- registered atomic mutation evidence carries both `transaction_event_ordinal` and `transaction_event_count`; ordinals are exact contiguous `1..count` with one consistent count per TransactionId.
+- exact payload bytes fixed before first ambiguous durable attempt and reused across same-EventId retry/redelivery;
+- RuntimeOrderRef = scope ownership generation + runtime ordinal, with concrete channel/instance scope;
+- count added to transaction event evidence.
 
-## Remaining acceptance plan
+### Cycle 2 — structural transaction binding, epoch unlinkability, full envelope immutability
 
-1. Continue independent review; max total material repair cycles = 3, current `1/3`.
-2. Freeze final head only after no material review finding remains.
+Findings:
+
+1. Independent TransactionId/ordinal/count fields still allowed partial malformed combinations.
+2. Epoch-scoped AnalyticsActorId still allowed the same UUID to be reused across epochs, defeating ordinary unlinkability.
+3. Payload byte immutability did not explicitly freeze all semantic envelope values across same-EventId ambiguous retry.
+
+Repairs:
+
+- one atomic `TransactionEventRef(transaction_id, ordinal, count)`; later observations use CausationRef::Transaction instead of partial membership;
+- same operational actor receives a fresh AnalyticsActorId in each new epoch; ordinary consumers get no implicit cross-epoch join key;
+- EventId now binds all semantic envelope field values plus exact payload bytes; raw protobuf envelope byte ordering is not semantic.
+
+## Final acceptance plan
+
+1. One final adversarial review remains; repair budget `2/3`.
+2. If no material issue remains, freeze final head. If one exists, cycle 3 is the last permitted repair; any later material finding blocks/rotates the gate.
 3. Require exact-head Agent Governance, Dependency Review and CodeQL PASS.
 4. Require zero unresolved material review threads and terminal exact-head architecture/security/privacy/data-integrity PASS.
 5. Squash merge unchanged accepted head.
-6. Separate lifecycle closeout/archive closes Issue #135 and releases ownership.
+6. Separate lifecycle closeout archives task, releases ownership and closes Issue #135.
 
 Runtime/component/browser E2E is `NOT_APPLICABLE` for this architecture-only gate.
