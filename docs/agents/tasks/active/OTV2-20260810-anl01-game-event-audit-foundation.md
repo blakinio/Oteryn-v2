@@ -12,8 +12,8 @@ issue: 135
 trusted_base_sha: ef42fa47ab054ab8aa304c017307c1945f931b59
 owner: GPT-5.6 Sol architecture continuation session
 created_at: 2026-08-10T14:41:00+02:00
-updated_at: 2026-08-10T14:41:00+02:00
-repair_cycles_for_current_gate: 0
+updated_at: 2026-08-10T14:55:00+02:00
+repair_cycles_for_current_gate: 1
 max_repair_cycles_for_current_gate: 3
 blocker: null
 owned_paths:
@@ -28,65 +28,56 @@ owned_paths:
 
 ## Goal
 
-Close `ANL-01 — Game Event and Audit Foundation` as the next Stage-B architecture gate after accepted/lifecycle-closed DUR-01. Freeze only the semantic event/audit foundation needed before DUR-02/DUR-03 can finalize transactional outbox and critical item/currency/security evidence.
+Close `ANL-01 — Game Event and Audit Foundation` after accepted/lifecycle-closed DUR-01 without implementing runtime, DB schema, broker or production analytics.
 
 ## Canonical coordination
 
 - canonical issue: #135;
-- accidental duplicate/placeholder issues #136, #137, #138, #139 and #140 are closed and have **no architecture authority**;
+- accidental duplicate/placeholder issues #136–#140 are closed and have no architecture authority;
 - PROD-ENTITLEMENTS-01 / #115 remains separate and blocked by Oteryn-Platform#944.
 
 ## Accepted inputs
 
-- ADR-0006 Game Intelligence, analytics and audit architecture;
-- UUIDv7 durable identity owner baseline;
-- FND-ID-01 semantic identifiers/scopes;
-- FND-02 CommandId/GameSession/revision semantics;
-- FND-03 RuntimeExecutionOrdinal, owner ordering and bounded telemetry behavior;
-- accepted/lifecycle-closed FND-04;
-- accepted/lifecycle-closed DUR-01 durable representation and ItemInstanceId;
-- Foundation Error Vocabulary, Failure Scenarios and Resource Limits Registry.
-
-These are consumed, not reopened.
+ADR-0006; UUIDv7 durable identity baseline; FND-ID-01; accepted FND-02/FND-03/FND-04; accepted/lifecycle-closed DUR-01; Foundation Error Vocabulary, Failure Scenarios and Resource Limits Registry.
 
 ## Owned decisions
 
-ANL-01 owns:
-
-- EventId, OperationId, TransactionId, CorrelationId, canonical causation-reference semantics and AnalyticsActorId;
-- common event-envelope v1 source IDL and event-type registry rules;
-- durability/privacy/retention binding classes;
-- event schema compatibility and immutable EventId semantics;
-- durable audit publication/delivery/dedup/replay checkpoints at semantic level without selecting physical DUR-02 schema or broker;
-- transaction-local event ordering and causation rules without a global total order;
-- pseudonymization/access/retention/deletion/anonymization/legal-hold contract boundaries;
-- event/audit failure/error dispositions;
-- ANL-owned hard resource ceilings and deterministic implementation evidence.
+- EventId, OperationId, TransactionId, CorrelationId, typed CausationRef and AnalyticsActorId;
+- protobuf/proto3 event envelope v1 + registry/evolution rules;
+- BEST_EFFORT_TELEMETRY vs DURABLE_AUDIT;
+- privacy/retention production-collection gate;
+- atomic evidence/publication/dedupe/replay semantics;
+- scoped RuntimeOrderRef and transaction event complete-set evidence;
+- shared error/failure/resource-limit integration;
+- deterministic future implementation evidence.
 
 ## Explicit exclusions
 
-This task does **not** authorize or select:
+No PostgreSQL table/outbox/checkpoint layout/isolation/locks/migrations/RPO/RTO; no item/currency conservation semantics; no broker/warehouse/lake/dashboard; no collector; no ANL-02/03/04 implementation; no Platform writes; no production collection/deployment/traffic.
 
-- PostgreSQL table/outbox/checkpoint layout, transaction isolation, locks, migrations, backups or RPO/RTO (`DUR-02`);
-- item/currency transfer/conservation semantics (`DUR-03`);
-- broker/stream product (Kafka/NATS/Pulsar/Redpanda/RabbitMQ/etc.);
-- warehouse/lake/object-store/dashboard product topology;
-- runtime collector implementation;
-- ANL-02 balance/world metric definitions;
-- ANL-03 detector/sanction logic;
-- ANL-04 investigation/AI implementation;
-- Platform repository writes;
-- production collection, deployment or traffic.
+## Repair history
 
-## Delivery plan
+### Cycle 1 — exact byte stability, runtime order scope and transaction event completeness
 
-1. Produce bounded ANL-01 analysis.
-2. Produce normative architecture contract, protobuf envelope source IDL and machine-readable registry.
-3. Register ANL-owned hard security/capacity ceilings in the shared resource registry.
-4. Update current programme status transition-safely.
-5. Perform architecture/security/privacy/data-integrity review with max 3 material repair cycles.
-6. Require exact-head Agent Governance, Dependency Review and CodeQL PASS, zero unresolved material threads and terminal exact-head PASS.
-7. Squash merge unchanged accepted head.
-8. Perform separate lifecycle closeout/archive and close Issue #135.
+First adversarial review found three material ambiguities:
 
-Runtime/component/browser E2E is `NOT_APPLICABLE` for this architecture-only gate. Later implementation must provide the contract-required DB/serialization/privacy/replay evidence.
+1. Protobuf does not guarantee a universal canonical byte serialization, so same-EventId retry could reserialize equivalent semantic content into different bytes/hash.
+2. A naked RuntimeExecutionOrdinal loses FND-03 ownership-generation scope after failover/replacement.
+3. Transaction event ordinal without total event count cannot prove a committed transaction event set is complete.
+
+Repair:
+
+- same EventId retry/reconciliation/redelivery reuses exact materialized payload bytes fixed before the first possibly ambiguous durable attempt; SHA-256 is over those bytes and is integrity evidence, not semantic canonicalization;
+- envelope now uses `RuntimeOrderRef(scope_ownership_generation, runtime_execution_ordinal)` and requires explicit WorldId+ChannelId or WorldId+InstanceId scope;
+- registered atomic mutation evidence carries both `transaction_event_ordinal` and `transaction_event_count`; ordinals are exact contiguous `1..count` with one consistent count per TransactionId.
+
+## Remaining acceptance plan
+
+1. Continue independent review; max total material repair cycles = 3, current `1/3`.
+2. Freeze final head only after no material review finding remains.
+3. Require exact-head Agent Governance, Dependency Review and CodeQL PASS.
+4. Require zero unresolved material review threads and terminal exact-head architecture/security/privacy/data-integrity PASS.
+5. Squash merge unchanged accepted head.
+6. Separate lifecycle closeout/archive closes Issue #135 and releases ownership.
+
+Runtime/component/browser E2E is `NOT_APPLICABLE` for this architecture-only gate.
