@@ -15,7 +15,7 @@ final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture closeout coordinator
 created_at: 2026-08-11T00:35:00+02:00
-updated_at: 2026-08-11T00:42:00+02:00
+updated_at: 2026-08-11T00:48:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -59,9 +59,11 @@ Deliver the complete architecture package inherited from exhausted PRs #145/#148
 - `PROVEN`: trusted full-diff base for the inherited package is `main@9794e9a6307b6f9db193ca2ce08607eb065b7d7e`.
 - `PROVEN`: PR #148 exact head `c36e0eb1127c5689a23ea810c802766fe79d8050` passed Agent Governance `31438343486`, Dependency Review `31438343473`, CodeQL `31438343467`, and self-review `4901430400`.
 - `PROVEN`: independent review `4901458913` on that head found exactly two material remaining findings: GameNode topology wording lacked a decision gate, and ADR-0014 `TCP_ONLY remains available` contradicted current runtime-unavailable policy.
-- `PROVEN`: PR #148 is now closed unmerged and its task is archived after repair budget `3/3`; no fourth repair was applied to that task.
+- `PROVEN`: PR #148 is closed unmerged and its task is archived after repair budget `3/3`; no fourth repair was applied to that task.
+- `PROVEN`: initial PR #149 head `b080390b71cb6aa51404c02f28d52afb97a2f308` passed mandatory self-review `4901498075` and exact-head Agent Governance `31439274842`, Dependency Review `31439274845`, CodeQL `31439274868`.
+- `PROVEN`: required independent review on that head found one bounded P2: `FOUNDATION_PROGRAMME_CURRENT_STATUS.md` independently retained prescriptive modular-monolith wording outside ADR-0015's original supersession scope.
 - `OWNER_ACCEPTED`: transport/admission/security architecture already reviewed remains unchanged: one `protocol-oteryn`, TCP profile 1 architecture registration only, QUIC future opt-in target blocked on profile/FND-04/order/resource/fault/measured-benefit evidence, Gateway-only Game Login Ticket redemption, no cross-profile grant reuse, fail-closed fallback, no 0-RTT/DATAGRAM baseline.
-- `OWNER_ACCEPTED`: Codex is not routine; this high-risk inherited package still requires exactly one final independent review after the repaired head is frozen.
+- `OWNER_ACCEPTED`: Codex is not routine; this high-risk inherited package requires one clean final independent review after the repaired head is frozen.
 
 ## Acceptance criteria
 
@@ -70,10 +72,11 @@ Deliver the complete architecture package inherited from exhausted PRs #145/#148
 - [x] Add the two clarifications to the canonical architecture index with explicit supersession precedence.
 - [x] Archive/rotate exhausted PR #148 task without a fourth repair on that task.
 - [x] Close PR #148 unmerged and point it to successor PR #149.
+- [x] Extend ADR-0015's narrow supersession scope to include the exact prescriptive modular-monolith sentence in `FOUNDATION_PROGRAMME_CURRENT_STATUS.md`; the status overlay remains authoritative for status, but not for frozen GameNode topology.
 - [ ] Full trusted-base diff contains only declared documentation/task/contract paths and preserves reviewed invariants.
-- [ ] Mandatory exact-head self-review passes with zero material findings.
-- [ ] Exact-head Agent Governance, Dependency Review and CodeQL pass.
-- [ ] One required independent final review passes on the unchanged head with zero material findings.
+- [ ] Mandatory repaired exact-head self-review passes with zero material findings.
+- [ ] Repaired exact-head Agent Governance, Dependency Review and CodeQL pass.
+- [ ] One clean required independent final review passes on the unchanged repaired head with zero material findings.
 - [ ] Squash merge succeeds on the exact reviewed head.
 
 ## Excluded scope
@@ -92,6 +95,7 @@ Deliver the complete architecture package inherited from exhausted PRs #145/#148
 - `ADR-0016` aligns ADR prose with the machine-readable transport policy: profile registration is not runtime availability; `TCP_ONLY` is future mode vocabulary only until exact-revision implementation/proof exists.
 - The canonical architecture index includes ADR-0015/0016 and states their narrow precedence.
 - PR #148 lifecycle record is archived; PR #148 is closed unmerged and references PR #149.
+- Repair cycle 1 on PR #149 extends ADR-0015 only far enough to cover the canonical status-overlay sentence that repeated the same modular-monolith recommendation; no runtime or topology is selected.
 
 ## Validation
 
@@ -99,8 +103,8 @@ Deliver the complete architecture package inherited from exhausted PRs #145/#148
 
 - trusted full-diff base: `9794e9a6307b6f9db193ca2ce08607eb065b7d7e`
 - inherited exact reviewed head: `c36e0eb1127c5689a23ea810c802766fe79d8050`
-- successor PR: #149
-- full changed-file review: pending frozen head
+- first PR #149 head `b080390b71cb6aa51404c02f28d52afb97a2f308`: self-review + three exact-head checks PASS; one independent-review P2 repaired
+- repaired full changed-file review: pending frozen head
 
 ### Component/integration
 
@@ -112,26 +116,27 @@ Deliver the complete architecture package inherited from exhausted PRs #145/#148
 
 ### Exact-head CI
 
-- final head: pending
-- trigger source: pull_request
+- final head: pending after this checkpoint commit
+- trigger source: pull_request/synchronize
 - result: pending
 
 ## Self-review
 
-- exact head: pending
-- material findings: pending
+- exact head: pending repaired head
+- material findings: previous independent-review P2 repaired in cycle 1
 - verdict: pending
 
 ## Independent review
 
 - required: `YES` — inherited package contains high-risk transport/admission/security architecture
 - auditor: one genuinely independent final reviewer; Codex only for this required gate if no other independent reviewer is available
-- verdict: pending
+- first PR #149 review: one P2 repaired
+- final verdict: pending
 
 ## PR and closeout
 
-- changed-file review: pending
-- unresolved review threads: pending
+- changed-file review: pending repaired head
+- unresolved review threads: one repaired thread to resolve after new content is visible
 - related/superseded PRs: PR #145 and PR #148 closed unmerged/rotated
 - merge commit/result: pending
 - ownership release: pending
@@ -139,7 +144,7 @@ Deliver the complete architecture package inherited from exhausted PRs #145/#148
 ## Context checkpoint
 
 ```yaml
-last_progress: PR #149 is the final successor; PR #148 is archived/closed after 3/3 repairs, and ADR-0015/0016 address its two terminal review findings.
+last_progress: PR #149 repair cycle 1 extends ADR-0015 supersession to the canonical status-overlay modular-monolith sentence; no runtime/topology semantics added.
 status: validating
 branch: docs/OTV2-20260811-dual-transport-closeout-repair
 head_sha: null
@@ -147,7 +152,7 @@ pr: 149
 final_head_sha: null
 final_head_frozen_at: null
 ci_trigger_source: pull_request
-ci_check_generation: final-head-pending
+ci_check_generation: repair-1-head-pending
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -156,10 +161,10 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 0
+repair_cycles_for_current_gate: 1
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Freeze PR #149 head, perform full trusted-base self-review and exact-head CI, then request exactly one required independent final review; merge unchanged head if clean.
+next_action: Freeze repaired PR #149 head, run exact-head self-review and CI, resolve the repaired thread, then request one clean final independent review; squash-merge unchanged head if clean.
 ```
