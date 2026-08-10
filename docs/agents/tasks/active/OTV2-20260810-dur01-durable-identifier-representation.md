@@ -4,16 +4,17 @@
 task_id: OTV2-20260810-dur01-durable-identifier-representation
 title: DUR-01 durable identifier representation
 mode: CONTRACT
-status: active
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/dur01-durable-identifier-representation
 issue: 111
+pr: null
 trusted_base_sha: adb0882a5ddbe42944fe955f5effb78fd5495422
 owner: GPT-5.6 Sol architecture continuation session
 created_at: 2026-08-10T13:56:00+02:00
-updated_at: 2026-08-10T13:56:00+02:00
-repair_cycles_for_current_gate: 0
+updated_at: 2026-08-10T14:09:00+02:00
+repair_cycles_for_current_gate: 1
 max_repair_cycles_for_current_gate: 3
 blocker: null
 owned_paths:
@@ -36,7 +37,7 @@ Close the Stage-B `DUR-01` architecture gate after accepted/lifecycle-closed FND
 - accepted FND-03 runtime/fencing semantics;
 - accepted/lifecycle-closed FND-04 A/B/C contracts;
 - Platform ADR 0028: canonical native `AccountId` is Platform-issued strongly typed UUIDv7, full 128 bits;
-- Platform ADR 0029 for WorldId/ChannelId topology identities where applicable.
+- Platform ADR 0029: canonical native `WorldId`/`ChannelId` are Platform-issued UUIDv7 and ChannelId remains WorldId-scoped semantically.
 
 These inputs are consumed, not reopened.
 
@@ -69,15 +70,23 @@ This task does **not** authorize or select:
 - Platform database migration or Platform repository writes;
 - application/runtime implementation, PostgreSQL schema creation, deployment or production mutation.
 
+## Repair history
+
+### Cycle 1 — stable legacy identity key versus snapshot provenance
+
+Initial candidate used `(source_system, source_revision_or_namespace, source_entity_kind, legacy_identifier)` as the conceptual legacy mapping key. That allowed a later snapshot/revision of the same legacy entity to appear as a new key and potentially receive a second native identity.
+
+Repair: the stable mapping key is now `(source_system, source_namespace, source_entity_kind, legacy_identifier)`. Source revision/snapshot/hash, import-run identity and migration classification are provenance, not mapping identity. A later snapshot of the same stable source key must reuse the same native identity; revision changes alone cannot mint a second identity. A different namespace is permitted only when a separately accepted migration contract proves the source identifier semantics actually form a distinct namespace.
+
 ## Delivery plan
 
-1. Produce a bounded analysis that resolves all Issue #111 representation questions against current accepted authority.
-2. Produce a final DUR-01 contract only for decisions closed by that analysis.
-3. Update current programme status transition-safely.
-4. Perform full architecture/security/data-integrity self-review with max 3 repair cycles.
-5. Require exact-head Agent Governance, Dependency Review and CodeQL PASS.
-6. Require zero unresolved material review threads and terminal exact-head review with zero material findings.
-7. Squash merge unchanged accepted head.
-8. Perform separate lifecycle closeout/archive and close Issue #111.
+1. Bounded analysis resolves all Issue #111 representation questions against current accepted authority.
+2. Final DUR-01 contract includes only decisions closed by that analysis.
+3. Current programme status remains transition-safe.
+4. Full architecture/security/data-integrity self-review uses max 3 repair cycles.
+5. Exact-head Agent Governance, Dependency Review and CodeQL must PASS.
+6. Zero unresolved material review threads and terminal exact-head review with zero material findings are required.
+7. Squash merge only on unchanged accepted head.
+8. Separate lifecycle closeout/archive closes Issue #111 and releases ownership.
 
-Runtime/component/browser E2E is `NOT_APPLICABLE` for this architecture-only gate; the contract defines later implementation evidence.
+Runtime/component/browser E2E is `NOT_APPLICABLE` for this architecture-only gate; later physical persistence implementation requires the database integration evidence defined by the contract.
