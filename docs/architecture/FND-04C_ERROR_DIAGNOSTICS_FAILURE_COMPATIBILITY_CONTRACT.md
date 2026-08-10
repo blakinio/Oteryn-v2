@@ -3,10 +3,10 @@
 - Status: Candidate final integration contract; canonical only when the owning FND-04C delivery merges
 - Gate: `FND-04C`
 - Programme: Issue #112
-- Owning delivery: Issue #130
+- Owning delivery: Issue #130 / PR #131
 - Repository: `blakinio/Oteryn-v2`
 - Trusted base: `main@3d07b3faaca683514fdfe6291e974f9195e2f763`
-- Normative component contracts: accepted FND-04A + FND-04B and their two grant profiles
+- Normative component contracts: accepted FND-04A + FND-04B and their grant profiles
 - Consumes: Foundation Error Vocabulary; Foundation Failure Scenario Catalogue; FND-ID-01; FND-02; accepted FND-03; ADR-0003; ADR-0012; accepted disconnect/re-entry decisions
 - Historical evidence only: superseded PR #109; historical names do not override accepted A/B semantics
 - Does not authorize: runtime/protocol/persistence/Platform/KMS/deployment/production implementation
@@ -18,11 +18,11 @@ FND-04C closes the final integration surface without reopening accepted FND-04A/
 ```text
 FND-04A owns fresh-admission authority/profile semantics.
 FND-04B owns reconnect/recovery/continuity and recovery-profile semantics.
-FND-04C owns cross-component errors/diagnostics, failure-scenario disposition,
+FND-04C owns cross-component errors/diagnostics, Foundation scenario disposition,
 compatibility/rollout obligations, implementation evidence and final FND-04 indexing.
 ```
 
-If C cannot faithfully represent an accepted A/B rule, C is invalid; C never silently rewrites A/B.
+If C cannot faithfully represent an accepted A/B rule, C is invalid. C never silently rewrites A/B.
 
 ## 2. Common Foundation error envelope
 
@@ -63,7 +63,7 @@ Never include raw admission/recovery JWT, GrantNonce/RecoveryGrantNonce, reconne
 - `NO_AUTHORITY_MUTATION` — rejected candidate commits no new presence/lease/session/transport/runtime authority.
 - `COMMITTED_OR_RECONCILE_REQUIRED` — prior transition may already have committed; reconcile exact attempt/current authority before independent retry.
 - `ISSUANCE_RECONCILE_REQUIRED` — producer may already have issued one capability; same-operation reconciliation or deterministic retirement only.
-- `BOUNDED_CURRENT_LEASE_ONLY` — retry may preserve only already-current CharacterLease authority before an evidence-backed fail-safe deadline; it never grants replacement authority.
+- `BOUNDED_CURRENT_LEASE_ONLY` — retry may preserve only already-current CharacterLease authority before an evidence-backed fail-safe deadline; never replacement authority.
 - `CURRENT_AUTHORITY_PRESERVED` — whatever authority is current at revalidation remains current; PREPARE-time state is not restored.
 
 ## 4. Canonical FND-04 error catalogue
@@ -149,34 +149,51 @@ Superseded #109 names are not parallel production codes when accepted A/B/C owns
 
 Implementations MUST NOT expose both an alias and canonical replacement for the same contract revision.
 
-## 6. Failure-scenario disposition
+## 6. Complete Foundation failure-scenario applicability matrix
 
-The disposition column uses exactly the canonical catalogue vocabulary: `PASS`, `NOT_APPLICABLE`, `BLOCKED`, `DEFERRED_BY_ACCEPTED_GATE`.
+The disposition column uses exactly: `PASS`, `NOT_APPLICABLE`, `BLOCKED`, `DEFERRED_BY_ACCEPTED_GATE`.
 
-`PASS` here means **architecture contract coverage exists and names the required future implementation evidence**; it does not claim executable runtime evidence already exists.
+`PASS` at this architecture gate means contract coverage exists and names the required future executable evidence; it does not claim runtime tests already exist.
 
-| Scenario | Disposition | Contract evidence / future proof |
+| Scenario | Disposition | FND-04 evidence / boundary |
 |---|---|---|
-| `FS-PLATFORM-UNAVAILABLE` | `PASS` | no alternate credential authority; A/recovery dependency/security failures; Platform cannot create GameSession |
+| `FS-PLATFORM-UNAVAILABLE` | `PASS` | no alternate credential authority; Platform cannot create GameSession; current game authority not silently replaced |
 | `FS-GATEWAY-AFTER-REDEEM` | `PASS` | AdmissionAttemptRef/GrantNonce reconciliation; no blind second capability |
-| `FS-ADMISSION-VALIDATION-COMMIT-ELIGIBILITY-CHANGE` | `PASS` | A atomic final revalidation; changed predicate creates no partial candidate authority |
-| `FS-DUPLICATE-LOGIN` | `PASS` | account-global exclusion/incumbent protection; one winner |
+| `FS-ADMISSION-VALIDATION-COMMIT-ELIGIBILITY-CHANGE` | `PASS` | A final atomic revalidation; loser creates no partial candidate authority |
 | `FS-ADMISSION-GRANT-REPLAY` | `PASS` | one GrantNonce success maximum + prior-result reconciliation |
 | `FS-RECOVERY-GRANT-ISSUANCE-AMBIGUITY` | `PASS` | same attempt_ref reconciliation; blind second recovery grant forbidden |
 | `FS-RECOVERY-OWNERSHIP-WORLD-CHANGE` | `PASS` | ownership first/world second, repeated at commit; no retarget/recreate |
 | `FS-RECONNECT-CREDENTIAL-REPLAY` | `PASS` | predecessor proof/generation fenced; healthy binding non-preemption |
 | `FS-RECONNECT-PREPARE-COMMIT-ELIGIBILITY-CHANGE` | `PASS` | B COMMIT revalidates generation/grace/controller/lease/runtime/security/revisions |
-| `FS-RECONNECT-COMMIT-RESPONSE-LOSS` | `PASS` | inactive candidate successor proof + same-attempt reconciliation; no predecessor revival |
-| `FS-REENTRY-PROTECTION-REARM-FAILOVER` | `PASS` | loss/grace/protection/re-arm state survives failover; no retry/restart reset/loop extension |
-| `FS-GAMENODE-SESSION-CONTINUITY-AMBIGUOUS` | `PASS` | same GameSession only with complete fenced evidence; otherwise no guessing/restarted deadline |
-| `FS-KEY-ROTATION` | `PASS` | both profiles require source-age <=5s + anti-rollback trust; PREPARE not trust escrow |
-| `FS-CLOCK-SKEW` | `PASS` | bounded signed timestamp skew + server-authoritative monotonic-safe lifecycle deadlines |
-| `FS-REVISION-MISMATCH` | `PASS` | independent revision dimensions; no opaque compatibility/downgrade |
-| `FS-SNAPSHOT-DELTA-MISMATCH` | `PASS` | FND-02 explicit snapshot/delta/resync; no gap guessing |
-| `FS-LEASE-RENEW-TIMEOUT` | `DEFERRED_BY_ACCEPTED_GATE` | stale-writer semantics frozen; exact TTL/renew/safety deadline requires DUR/OPS measured evidence |
-| `FS-POSTGRES-UNAVAILABLE` | `DEFERRED_BY_ACCEPTED_GATE` | physical durable/lease policy belongs DUR; FND-04 forbids unfenced authority assumption |
+| `FS-RECONNECT-COMMIT-RESPONSE-LOSS` | `PASS` | inactive successor proof + same-attempt reconciliation; no predecessor revival |
+| `FS-REENTRY-PROTECTION-REARM-FAILOVER` | `PASS` | loss/grace/protection/re-arm survives failover; no retry/restart reset/loop extension |
+| `FS-GAMENODE-SESSION-CONTINUITY-AMBIGUOUS` | `PASS` | same GameSession only from complete fenced evidence; otherwise no guessing/restarted deadline |
+| `FS-POSTGRES-UNAVAILABLE` | `DEFERRED_BY_ACCEPTED_GATE` | physical durable/lease availability belongs DUR; FND-04 forbids unfenced authority assumption |
+| `FS-LEASE-RENEW-TIMEOUT` | `DEFERRED_BY_ACCEPTED_GATE` | stale-writer semantics frozen; exact TTL/renew/safety deadline requires DUR/OPS evidence |
+| `FS-DUPLICATE-LOGIN` | `PASS` | account-global exclusion/incumbent protection; one authority winner |
+| `FS-STALE-GENERATION` | `PASS` | FND-02 connection generation + FND-03 scope generation + CharacterLease fence reject stale transport/node/lease work |
+| `FS-DUPLICATE-COMMAND` | `PASS` | FND-02 `(GameSessionId, CommandId)` identity survives same-session reconnect; duplicate execution forbidden |
+| `FS-CHANNEL-SPLIT-OWNER` | `PASS` | FND-03 ownership generation remains required at admission/reconnect/recovery commit; no stale owner control attachment |
+| `FS-CHANNEL-DRAIN` | `PASS` | A target readiness + B current owner/handoff/terminal revalidation prevent new/recovered control from reviving draining/stale owner |
+| `FS-QUEUE-SATURATION` | `PASS` | FND-02/03 bounded queues, A capacity rejection and B bounded prepared resources; no unbounded/partial authority |
+| `FS-SLOW-CLIENT` | `PASS` | FND-02 bounded outbound/resync + B liveness/generation fencing; slow consumption cannot become authority proof or gap guessing |
+| `FS-CLOCK-SKEW` | `PASS` | bounded signed-token skew + server-authoritative monotonic-safe lifecycle deadlines |
+| `FS-KEY-ROTATION` | `PASS` | both profiles require source-age <=5s + anti-rollback trust; PREPARE is not trust escrow |
+| `FS-REVISION-MISMATCH` | `PASS` | independent revision dimensions; no opaque compatibility/downgrade/mixed state |
+| `FS-SNAPSHOT-DELTA-MISMATCH` | `PASS` | FND-02 explicit snapshot/delta/resync; no gap guessing after reconnect/recovery |
+| `FS-DB-OUTBOX-BOUNDARY` | `DEFERRED_BY_ACCEPTED_GATE` | durable mutation/outbox atomicity belongs DUR-02 and required ANL-01 audit decisions; FND-04 grants no bypass |
+| `FS-WORLD-BUNDLE-CORRUPT` | `NOT_APPLICABLE` | world bundle encoding/loading belongs DUR-04; FND-04 neither parses nor activates bundles |
+| `FS-CLIENT-CUTOVER-ROLLBACK` | `NOT_APPLICABLE` | VSL-02/source cutover lifecycle, not gameplay admission/session authority |
+| `FS-ANALYTICS-TELEMETRY-OVERFLOW` | `NOT_APPLICABLE` | telemetry queue/drop semantics belong ANL contracts; FND-04 only forbids telemetry becoming authority |
+| `FS-AUDIT-OUTBOX-BACKLOG` | `DEFERRED_BY_ACCEPTED_GATE` | durable audit/outbox behavior belongs ANL-01/DUR-02; FND-04 diagnostics do not claim durable audit implementation |
+| `FS-EVENT-DUPLICATE-DELIVERY` | `NOT_APPLICABLE` | analytics/event consumer semantics belong ANL-01; FND-04 authority does not consume analytical events |
+| `FS-EVENT-OUT-OF-ORDER` | `NOT_APPLICABLE` | analytics/event ordering belongs ANL-01; FND-04 authority uses runtime/protocol authoritative ordering instead |
+| `FS-AUDIT-MUTATION-MISMATCH` | `DEFERRED_BY_ACCEPTED_GATE` | required durable audit/mutation coupling belongs ANL-01/DUR-02/DUR-03; FND-04 does not claim it implemented |
+| `FS-ANALYTICS-PRIVACY-POLICY` | `DEFERRED_BY_ACCEPTED_GATE` | FND-04 prevents secret/high-cardinality leakage now; production dataset purpose/retention/access policy belongs ANL-01 |
+| `FS-DETECTOR-FALSE-POSITIVE` | `NOT_APPLICABLE` | FND-04 contains no detector/enforcement path; ADR-0006/ANL own detector behavior |
+| `FS-INVESTIGATION-MUTATION-ATTEMPT` | `PASS` | accepted read-only Game Intelligence boundary means investigation/AI cannot decide or mutate FND-04 runtime authority; future ANL least-privilege evidence required |
 
-Other Foundation scenarios remain owned by their dedicated contracts unless explicitly referenced.
+This table explicitly accounts for every scenario currently registered in `FOUNDATION_FAILURE_SCENARIOS.md`; newly added catalogue scenarios require an FND-04 applicability review before any later contract claims the matrix remains complete.
 
 ## 7. Cross-repository compatibility model
 
@@ -184,7 +201,7 @@ Compatibility is multidimensional; no credential may use one opaque `compatibili
 
 Fresh admission independently binds profile, protocol_major, transport_profile, ruleset/content/map/world_policy/offer revisions, route/runtime observation and current scope facts.
 
-Recovery independently binds profile, protocol_major, transport_profile, ruleset/content/map/world_policy revisions and current ownership/world/actor/runtime/reconciliation facts. Recovery intentionally carries no ChannelId/InstanceId/NodeId/runtime-owner/HandoffId authority.
+Recovery independently binds profile, protocol_major, transport_profile, ruleset/content/map/world_policy revisions and current ownership/world/actor/runtime/reconciliation facts. Recovery carries no ChannelId/InstanceId/NodeId/runtime-owner/HandoffId authority.
 
 FND-02 `schema_revision` remains diagnostic/build evidence rather than exact gameplay admission/recovery equality.
 
@@ -198,26 +215,24 @@ A separately authorized production rollout MUST prove:
 2. fully specified `Ed25519` interoperation; no deprecated `EdDSA`, negotiation or fallback;
 3. producer emits only claims registered by the exact profile;
 4. consumer rejects unknown/unsupported profile without reinterpretation as another credential type;
-5. Platform security and signing-key/profile trust provide authenticated source provenance + comparable anti-rollback revision;
-6. accepted source-age <=5s ceilings cannot be extended by cache refresh;
+5. Platform security and key/profile trust expose authenticated source provenance + comparable anti-rollback revision;
+6. source-age <=5s ceilings cannot be extended by cache refresh;
 7. every gameplay revision dimension is independently current; no mixed-state rollout;
 8. Canary/fresh/recovery downgrade/alternate authority is impossible;
 9. rollback cannot restore older allow/key/profile/revision after newer deny/revoke/retirement floor;
 10. producer rollback never revives terminal GameSession, consumed nonce, stale proof or old runtime owner.
 
-### Safe staged activation
+Before new profile/revision issuance, consumer support/trust is deployed/validated first, independent golden fixtures pass, key overlap is explicitly bounded and issuance stays disabled until compatibility evidence is green.
 
-Before new profile/revision issuance: deploy/validate consumer support/trust first; pass independent producer/consumer golden fixtures; bound any current/retiring key overlap; keep issuance disabled until compatibility evidence is green.
-
-Retire in reverse safe order: stop new issuance, preserve bounded validation only for still-legally-live capability, prove none remain, then remove support/trust. Emergency revoke may fail closed immediately according to accepted current trust evidence.
+Retirement reverses the safe order: stop issuance, preserve bounded validation only for still-legally-live capabilities, prove none remain, then remove support/trust. Emergency revoke may fail closed immediately under current trust evidence.
 
 ## 9. Implementation acceptance evidence
 
-FND-04 architecture acceptance is not implementation authorization. Future implementation must provide at least:
+Architecture acceptance is not implementation authorization. Future implementation must provide at least:
 
 ### Credential/security
 
-- independent producer/consumer golden fixtures for both grant profiles;
+- independent producer/consumer golden fixtures for both profiles;
 - malformed corpus + algorithm/key/signature/schema/binding/profile/revision precedence;
 - trust/key-discovery negatives;
 - time/skew/lifetime boundaries;
@@ -256,7 +271,7 @@ FND-04 architecture acceptance is not implementation authorization. Future imple
 
 ### Deferred numeric/resource evidence
 
-Before runtime activation, successor registry/OPS/PERF/DUR gates must freeze measured finite values for liveness cadence/hysteresis/control-loss threshold, same-session grace, stale-transport cleanup, stable-control re-arm threshold, prepared candidate/rate/retention limits, CharacterLease TTL/renew/safety/fail-safe deadlines, recovery locator/cache limits and relevant queue/resource caps.
+Before runtime activation, successor registry/OPS/PERF/DUR gates freeze measured finite values for liveness cadence/hysteresis/control-loss threshold, same-session grace, stale-transport cleanup, stable-control re-arm threshold, prepared candidate/rate/retention limits, CharacterLease TTL/renew/safety/fail-safe deadlines, recovery locator/cache limits and relevant queue/resource caps.
 
 ## 10. Security/privacy integration
 
