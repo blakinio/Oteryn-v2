@@ -136,7 +136,7 @@ An independent review is not automatically required for low-risk documentation/n
 
 Independent review may be performed by a qualified human reviewer, a separate agent/session that did not implement or materially author the change, an independent review tool such as Codex, or a dedicated audit workflow that actually evaluates the exact final head. The evidence must identify the reviewer/method and exact SHA.
 
-**Codex is optional, not a mandatory project dependency.** Use it only when an independent review is required and it is the appropriate available mechanism, or when the risk/complexity materially benefits from that additional independent perspective. Do not invoke Codex routinely merely because a PR exists.
+**Codex is optional, not a mandatory project dependency.** Use Codex only when a genuinely independent review is required by this policy, the owner or a governing contract and Codex is the necessary or appropriate available independent mechanism for that requirement. Do not invoke Codex merely for extra assurance when the task does not require independent review, and do not invoke it routinely merely because a PR exists.
 
 If independent review is required but no genuinely independent mechanism is available, stop with that exact blocker. Do not relabel self-review as independent and do not weaken the gate.
 
