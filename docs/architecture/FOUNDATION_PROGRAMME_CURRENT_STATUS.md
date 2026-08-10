@@ -31,7 +31,7 @@ No status row implies runtime implementation unless explicitly stated.
 | `FND-04B` | `ACCEPTED AND LIFECYCLE-CLOSED` | reconnect/recovery/continuity + recovery profile |
 | `FND-04C` | `ACCEPTED AND LIFECYCLE-CLOSED` | errors/diagnostics/failure/compatibility integration |
 | `FND-04` overall | `ACCEPTED AND CLOSED` | A/B/C semantic architecture accepted; programme #112 complete |
-| `DUR-01` | `FINAL DELIVERY / CLOSEOUT_PENDING` | Issue #111; `DUR-01_DURABLE_IDENTIFIER_REPRESENTATION_ANALYSIS.md` + candidate final contract on the owning branch |
+| `DUR-01` | `FINAL DELIVERY / CLOSEOUT_PENDING` | Issue #111; bounded analysis + candidate durable representation contract |
 | `ANL-01` | `NEXT REQUIRED GATE` | must be accepted before DUR-02/DUR-03 finalize transactional outbox/critical audit evidence |
 | `DUR-02` | `BLOCKED ON DUR-01 + ANL-01 INPUTS` | Persistence v1 |
 | `DUR-03` | `BLOCKED ON DUR-01 + ANL-01 INPUTS` | item transaction/anti-duplication invariants |
@@ -40,9 +40,9 @@ No status row implies runtime implementation unless explicitly stated.
 
 ### FND-02
 
-Canonical production protocol family is `oteryn`: TCP + TLS 1.3, ALPN `oteryn-game/1`, verified server identity, no plaintext/0-RTT/Canary fallback, bounded framing/protobuf, exact foundation UUID wire representation, authoritative post-admission GameSessionId, monotonic `connection_generation`, `(GameSessionId, CommandId)` identity, server sequencing/domain revisions, explicit snapshot/delta/resync and authenticated liveness primitives.
+Canonical production protocol family is `oteryn`: TCP + TLS 1.3, ALPN `oteryn-game/1`, verified server identity, no plaintext/0-RTT/Canary fallback, bounded framing/protobuf, exact foundation UUID wire representation, authoritative post-admission GameSessionId, monotonic non-zero `connection_generation`, `(GameSessionId, CommandId)` identity, server sequencing/domain revisions, explicit snapshot/delta/resync and authenticated liveness primitives.
 
-FND-02 `schema_revision` is diagnostic/build evidence, not an opaque gameplay compatibility token.
+FND-02 `CommandId` is a GameSession-scoped monotonic non-zero `uint64`. FND-02 `schema_revision` is diagnostic/build evidence, not an opaque gameplay compatibility token.
 
 ### FND-03
 
@@ -54,11 +54,7 @@ FND-04 is `ACCEPTED AND CLOSED`. Canonical index:
 
 - `docs/architecture/FND-04_IDENTITY_GAME_SESSION_ADMISSION_CHARACTER_LEASE_CONTRACT.md`.
 
-Normative components:
-
-- FND-04A fresh admission contract/profile;
-- FND-04B reconnect/recovery contract/profile;
-- FND-04C error/diagnostics/failure/compatibility integration.
+Normative components are FND-04A fresh admission, FND-04B reconnect/recovery and FND-04C error/diagnostics/failure/compatibility integration.
 
 Important frozen outcomes remain unchanged: ownership-before-world validation, separate AccountPresenceClaim/CharacterLease/GameSession/TransportBinding/runtime authority, purpose-separated Ed25519 grant profiles, independent protocol/transport/ruleset/content/map/world-policy dimensions, authenticated source-age `<=5s` with anti-rollback, PREPARE/COMMIT reconnect, healthy-binding non-preemption, `ControlLossEpoch`, exact 4-second eligible PvE re-entry protection, protection re-arm requiring stable-control evidence, no historical 2s/5s/15s timing authority, and fail-closed GameNode recovery without guessed continuity.
 
@@ -70,15 +66,17 @@ Candidate final decisions are:
 
 - native UUID-backed durable identities use PostgreSQL native `uuid`, preserving all 128 bits;
 - canonical native `AccountId` is Platform-issued UUIDv7 per Platform ADR 0028; Platform local integer IDs and Canary account IDs are not native AccountId;
+- canonical native `WorldId`/`ChannelId` are Platform-issued UUIDv7 per Platform ADR 0029 and ChannelId remains semantically WorldId-scoped;
 - strong semantic types remain distinct even though PostgreSQL physical scalar is shared;
 - nil UUID is invalid; semantic absence uses NULL/typed absence;
 - scoped identities preserve `WorldId + component` and may not drop scope merely because UUID values are globally collision-resistant;
 - UUIDv7 ordering is never authority, causality, fencing or business chronology;
+- when FND-02 `CommandId` is persisted, preserve the full non-zero `uint64` as PostgreSQL `numeric(20,0)` and scope it by `GameSessionId`; signed `bigint` must not silently narrow the legal range;
 - `ItemInstanceId` is introduced as game-owned global durable UUIDv7 identity for one concrete item-instance lifecycle;
 - no generic catch-all DurableEntityId is introduced;
 - EventId/OperationId/TransactionId/CorrelationId/CausationId/AnalyticsActorId remain ANL-01-owned semantic decisions;
 - no cross-database Platform/game foreign keys; Platform-owned IDs remain contract references;
-- legacy numeric IDs stay in an explicit provenance mapping anti-corruption layer and never become native IDs by encoding/hash/re-key;
+- legacy identity mapping uses a stable source namespace key; source revision/snapshot/import-run are provenance and cannot mint a second native identity for the same stable source entity;
 - internal UUIDv7 values are not automatically public identifiers;
 - representation changes require explicit lossless versioned migration and mixed-version evidence.
 
@@ -95,7 +93,8 @@ Acceptance of this candidate does not create tables, migrations or runtime behav
 - AccountId/CharacterId/ItemInstanceId and other high-cardinality IDs are not ordinary Prometheus labels;
 - UUIDv7 creation-time structure is considered before public exposure;
 - migration/import conflicts fail closed rather than overwrite or silently re-key;
-- no code may repair identity ambiguity by choosing the newest-looking UUID.
+- no code may repair identity ambiguity by choosing the newest-looking UUID;
+- CommandId persistence preserves its complete GameSession scope and unsigned range; persistence cannot redefine command identity.
 
 ## 6. Runtime/implementation status
 
@@ -116,7 +115,7 @@ Foundation architecture and DUR-01 representation architecture do **not** author
 After DUR-01 delivery and lifecycle closeout:
 
 1. `ANL-01 — Game Event and Audit Foundation` is the immediate missing prerequisite for durable audit/outbox semantics.
-2. `DUR-02 — Persistence v1` may consume accepted DUR-01 physical identity representation but must wait for required ANL-01 decisions before finalizing transactional outbox/critical audit evidence.
+2. `DUR-02 — Persistence v1` may consume accepted DUR-01 identity/CommandId physical representation but must wait for required ANL-01 decisions before finalizing transactional outbox/critical audit evidence.
 3. `DUR-03 — Item Transaction and Anti-Duplication Invariants` consumes `ItemInstanceId` and also requires ANL-01/DUR-02 integration for atomic provenance evidence.
 4. `DUR-04 — Content, World Detail and Scripting` remains a separate durable-content gate.
 5. `GAME-VISION-01` still blocks broad gameplay/content production.
