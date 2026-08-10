@@ -191,6 +191,31 @@ When semantic ordering matters, the owning contract stores an explicit timestamp
 
 UUID sorting may be a storage/performance optimization only when it cannot change correctness.
 
+### 9.1 CommandId durable scalar profile
+
+FND-02 remains the semantic authority: `CommandId` is a monotonic non-zero `uint64` scoped by `GameSessionId`; command identity is `(GameSessionId, CommandId)`.
+
+When persistence requires CommandId for deduplication, idempotency, recovery or evidence, the canonical durable scalar is:
+
+```text
+Rust/domain:       u64
+PostgreSQL:        numeric(20,0)
+valid range:       1 .. 18446744073709551615
+semantic scope:    GameSessionId
+logical identity:  (GameSessionId, CommandId)
+```
+
+PostgreSQL signed `bigint` is rejected as the canonical representation because it cannot represent the full accepted FND-02 `uint64` range. Also rejected are floating point, canonical text storage, signed-offset/xor remapping, truncation and hash-only replacement.
+
+Rules:
+
+- zero, negative, fractional and above-`uint64` values are invalid;
+- round-trip preserves the exact unsigned integer and ordering;
+- equal numeric CommandId values in distinct GameSessions are distinct command identities;
+- repeated `(GameSessionId, CommandId)` denotes the same command identity; effect/idempotency semantics remain FND-02/DUR-02/DUR-03-owned;
+- a database sequence or surrogate row ID never replaces CommandId;
+- DUR-02 owns exact composite constraint/index/check syntax but may not narrow the FND-02 legal range silently.
+
 ## 10. ItemInstanceId
 
 DUR-01 introduces the minimum new durable-domain identity required by DUR-03 and Game Intelligence:
@@ -337,6 +362,8 @@ DUR-02 chooses exact index definitions, but it must preserve these rules:
 - UUIDv7 order may be used for physical locality/performance only, never semantic correctness;
 - queries needing business chronology use explicit semantic time/order columns.
 
+For persisted CommandId, any index/constraint participating in command identity must preserve the complete `GameSessionId + CommandId` pair; a globally unique CommandId index is semantically wrong.
+
 ## 18. Representation migration/versioning
 
 A future change to durable identity representation is a compatibility/migration event, not an implementation refactor.
@@ -350,7 +377,7 @@ The owning migration contract must provide:
 - reference/FK reconciliation;
 - no minting of alternate identity during retry/rollback;
 - exact consumer compatibility and rollback order;
-- deterministic negative fixtures for truncation, wrong type, wrong scope and conflicting legacy mappings.
+- deterministic negative fixtures for truncation, wrong type, wrong scope, CommandId range loss and conflicting legacy mappings.
 
 The semantic identity remains the same across a representation migration unless a separately accepted domain decision explicitly creates a new entity.
 
@@ -361,6 +388,7 @@ Minimum stable disposition:
 | Condition | Foundation category | Required effect |
 |---|---|---|
 | malformed/nil/wrong-version UUID | `INVALID_INPUT` | no authoritative relation/mutation |
+| invalid/out-of-range persisted CommandId | `INVALID_INPUT` | no authoritative command identity relation/mutation |
 | wrong semantic identity type | `INVALID_INPUT` | no mutation |
 | unsupported durable representation/profile revision | `UNSUPPORTED_REVISION` | no silent downgrade |
 | native uniqueness/collision conflict | `CONFLICT` | no overwrite/collapse |
@@ -374,7 +402,7 @@ Client/public errors may redact restricted identifiers. Correlation evidence mus
 
 Any future persistence implementation claiming DUR-01 conformance must prove at least:
 
-### 20.1 128-bit round trip
+### 20.1 UUID 128-bit round trip
 
 For each implemented UUID-backed identity:
 
@@ -384,23 +412,33 @@ strong domain type -> PostgreSQL uuid -> strong domain type
 
 preserves all 128 bits exactly.
 
-### 20.2 Producer/consumer UUID fixtures
+### 20.2 CommandId full-range round trip
+
+For persisted CommandId:
+
+```text
+u64 -> PostgreSQL numeric(20,0) -> u64
+```
+
+must preserve exact values and scope. Fixtures include `1`, `9223372036854775807`, `9223372036854775808` and `18446744073709551615`; reject `0`, negative, fractional and above-`uint64` values; prove same numeric CommandId in different GameSessions remains distinct.
+
+### 20.3 Producer/consumer UUID fixtures
 
 For Platform-owned native IDs actually consumed by game persistence, exact fixtures prove producer/consumer equivalence and reject Platform local integer/Canary identifiers on native boundaries.
 
-### 20.3 Type-confusion negatives
+### 20.4 Type-confusion negatives
 
 Tests prove semantically different UUID types cannot be interchanged through authoritative repository/domain APIs without explicit invalid conversion.
 
-### 20.4 Nil/version/canonical text
+### 20.5 Nil/version/canonical text
 
 Reject nil, wrong UUID version and malformed/non-canonical text where textual profile applies.
 
-### 20.5 Scoped identity negatives
+### 20.6 Scoped identity negatives
 
 Wrong-world scoped references fail even when a component UUID is well formed.
 
-### 20.6 Legacy import
+### 20.7 Legacy import
 
 Prove:
 
@@ -410,9 +448,9 @@ Prove:
 - collision/ambiguity does not overwrite/collapse native state;
 - Platform-owned identities are not minted by game migration tooling.
 
-### 20.7 Migration compatibility
+### 20.8 Migration compatibility
 
-Any later representation change proves mixed-version expand/backfill/validate/cutover/rollback without identity drift.
+Any later representation change proves mixed-version expand/backfill/validate/cutover/rollback without identity drift or CommandId range loss.
 
 Database integration tests become mandatory when a physical schema implementation is authorized. Runtime/component/browser E2E remains `NOT_APPLICABLE` to this architecture-only delivery.
 
