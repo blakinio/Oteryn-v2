@@ -13,8 +13,8 @@ pr: null
 trusted_base_sha: adb0882a5ddbe42944fe955f5effb78fd5495422
 owner: GPT-5.6 Sol architecture continuation session
 created_at: 2026-08-10T13:56:00+02:00
-updated_at: 2026-08-10T14:09:00+02:00
-repair_cycles_for_current_gate: 1
+updated_at: 2026-08-10T14:17:00+02:00
+repair_cycles_for_current_gate: 2
 max_repair_cycles_for_current_gate: 3
 blocker: null
 owned_paths:
@@ -46,6 +46,7 @@ These inputs are consumed, not reopened.
 DUR-01 owns:
 
 - exact PostgreSQL physical representation of accepted durable UUID identities;
+- lossless physical persistence of FND-02 `CommandId` when durable state requires it, without changing its semantics/scope;
 - Rust/persistence strong-typing and canonicalization obligations;
 - nil/absence rules;
 - scoped composite persistence rules;
@@ -64,7 +65,7 @@ This task does **not** authorize or select:
 - concrete table layout, migration SQL/tooling, transaction isolation, row/advisory locks, retry policy, outbox/checkpoint/RPO/RTO (`DUR-02`);
 - item movement/split/merge/conservation/anti-dup transaction semantics (`DUR-03`);
 - event/audit envelope IDs such as EventId/OperationId/TransactionId/CorrelationId/CausationId/AnalyticsActorId (`ANL-01`, with DUR integration where required);
-- protocol wire changes (`FND-02`);
+- protocol wire/CommandId semantic changes (`FND-02`);
 - runtime-local handles/fencing (`FND-03`);
 - session/admission/lease semantics (`FND-04`);
 - Platform database migration or Platform repository writes;
@@ -76,14 +77,20 @@ This task does **not** authorize or select:
 
 Initial candidate used `(source_system, source_revision_or_namespace, source_entity_kind, legacy_identifier)` as the conceptual legacy mapping key. That allowed a later snapshot/revision of the same legacy entity to appear as a new key and potentially receive a second native identity.
 
-Repair: the stable mapping key is now `(source_system, source_namespace, source_entity_kind, legacy_identifier)`. Source revision/snapshot/hash, import-run identity and migration classification are provenance, not mapping identity. A later snapshot of the same stable source key must reuse the same native identity; revision changes alone cannot mint a second identity. A different namespace is permitted only when a separately accepted migration contract proves the source identifier semantics actually form a distinct namespace.
+Repair: stable mapping key is `(source_system, source_namespace, source_entity_kind, legacy_identifier)`. Source revision/snapshot/hash, import-run identity and migration classification are provenance, not mapping identity. A later snapshot of the same stable source key must reuse the same native identity; revision changes alone cannot mint a second identity.
 
-## Delivery plan
+### Cycle 2 — full-range CommandId persistence
+
+Review found that the initial candidate separated CommandId semantically from UUID identity but failed to freeze its physical persistence when DUR-02 needs durable deduplication/recovery. FND-02 defines CommandId as non-zero `uint64`; PostgreSQL `bigint` is signed and cannot preserve the full legal range.
+
+Repair: persisted CommandId uses PostgreSQL `numeric(20,0)` constrained to `1..18446744073709551615`, and command identity always remains `(GameSessionId, CommandId)`. Signed bigint, floating point, textual canonical storage, offset/xor remapping, truncation and globally unique CommandId semantics are rejected. Boundary fixtures around `INT64_MAX`/`UINT64_MAX` are mandatory for a later persistence implementation.
+
+## Final acceptance plan
 
 1. Bounded analysis resolves all Issue #111 representation questions against current accepted authority.
 2. Final DUR-01 contract includes only decisions closed by that analysis.
 3. Current programme status remains transition-safe.
-4. Full architecture/security/data-integrity self-review uses max 3 repair cycles.
+4. Full architecture/security/data-integrity self-review uses max 3 repair cycles; current usage `2/3`.
 5. Exact-head Agent Governance, Dependency Review and CodeQL must PASS.
 6. Zero unresolved material review threads and terminal exact-head review with zero material findings are required.
 7. Squash merge only on unchanged accepted head.
