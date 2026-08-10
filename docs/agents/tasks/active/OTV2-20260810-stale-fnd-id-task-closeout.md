@@ -15,7 +15,7 @@ final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT coordination session
 created_at: 2026-08-10T22:40:00+02:00
-updated_at: 2026-08-10T22:47:00+02:00
+updated_at: 2026-08-10T22:54:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -68,8 +68,8 @@ Remove ten stale advisory ownership records from `tasks/active/` after proving t
 - [x] Preserve original task IDs plus associated PR, final head and merge commit evidence.
 - [x] Remove the ten matching active records.
 - [x] Do not edit architecture/runtime/contracts or the PR #63 reconciliation task owned by PR #145.
-- [ ] Full-diff self-review reports zero material findings.
-- [ ] Exact-head governance/document checks pass.
+- [ ] Full-diff self-review reports zero material findings on the repaired final head.
+- [ ] Exact-head governance/document checks pass on the repaired final head.
 
 ## Excluded scope
 
@@ -87,14 +87,17 @@ Remove ten stale advisory ownership records from `tasks/active/` after proving t
 - Archive records explicitly state that the operation is lifecycle bookkeeping only and releases advisory ownership.
 - PR #147 changes task lifecycle documentation only. It does not touch architecture, runtime, contracts, workflows, dependencies, Platform state or production state.
 - The PR #63 protocol-reconciliation record and the lag/disconnect analysis checkpoints remain untouched by design.
+- Moving PR #147 from draft to required review-ready state triggered the repository's configured automatic Codex review even though independent review was not required and Codex was not manually invoked. That review surfaced one useful P2: the archived PR #70-#73 delivery evidence contained incorrect final-head and merge SHAs inherited from stale summary data.
+- Repair cycle 1 re-read PR #64-#73 metadata directly from GitHub. PR #64-#69 archive values were confirmed correct. PR #70-#73 final-head and merge SHAs were corrected to direct GitHub evidence. No semantic scope was added.
 
 ## Validation
 
 ### Focused
 
-- merged-delivery evidence: PRs #64-#73 and PR #87 verified through GitHub connector
-- branch comparison after archive operation: ten active removals + ten archive additions + this task record only
-- result: PASS pending final full-diff self-review
+- merged-delivery evidence: PRs #64-#73 and PR #87 verified directly through GitHub connector
+- direct evidence recheck after P2: all ten archive records now match the corresponding GitHub PR `head_sha` and `merge_commit_sha`
+- branch scope remains ten active removals + ten archive additions + this task record only
+- result: PASS pending repaired final full-diff self-review
 
 ### Component/integration
 
@@ -106,29 +109,28 @@ Remove ten stale advisory ownership records from `tasks/active/` after proving t
 
 ### Exact-head CI
 
-- final head: pending after this checkpoint commit
-- trigger source: pull_request
-- result: pending
+- pre-repair head `c5d648aa043aafd5862a9c8a83a86b25efece172`: Agent Governance `31430673674` PASS; Dependency Review `31430673666` PASS; CodeQL `31430673647` PASS; superseded by evidence repair.
+- repaired final head: pending after this checkpoint commit; prior results do not substitute.
 
 ## Self-review
 
-- exact head: pending final head
+- exact head: pending repaired final head
 - method/reviewer: implementing/coordinating agent (mandatory; cannot be delegated away)
-- material findings: pending
+- material findings: P2 evidence mismatch repaired; final adversarial recheck pending
 - verdict: pending
 
 ## Independent review
 
-- required: `NO` — this is exactly low-risk stale-task bookkeeping, changes no semantic/security/authority/runtime contract, and no owner/contract explicitly requires independent review
+- required: `NO` — this is low-risk stale-task bookkeeping, changes no semantic/security/authority/runtime contract, and no owner/contract explicitly requires independent review
 - exact head: `NOT_APPLICABLE`
-- method/auditor: `NOT_APPLICABLE`
-- material findings: `NOT_APPLICABLE`
+- method/auditor: `NOT_APPLICABLE`; automatic repository Codex activity after ready-state transition is not relied on as a required gate
+- material findings: `NOT_APPLICABLE` as an independent-review requirement; its incidental P2 was nevertheless repaired and verified directly
 - verdict: `NOT_APPLICABLE`
 
 ## PR and closeout
 
-- changed-file review: scope matches declared lifecycle paths; final exact-head recheck pending
-- unresolved review threads: pending final check
+- changed-file review: scope matches declared lifecycle paths; repaired final exact-head recheck pending
+- unresolved review threads: one automatic-review P2 to resolve after confirming repaired head
 - related/superseded PRs: PR #145 depends on this cleanup but owns no overlapping path except the intentionally excluded PR #63 task
 - protected auto-merge: not required
 - merge commit/result: pending
@@ -137,7 +139,7 @@ Remove ten stale advisory ownership records from `tasks/active/` after proving t
 ## Context checkpoint
 
 ```yaml
-last_progress: Ten proven-merged FND-ID support tasks archived and removed from active; draft PR #147 opened.
+last_progress: Corrected PR #70-#73 archive evidence from direct GitHub metadata after an automatic-review P2.
 status: validating
 branch: docs/OTV2-20260810-stale-fnd-id-task-closeout
 head_sha: null
@@ -145,7 +147,7 @@ pr: 147
 final_head_sha: null
 final_head_frozen_at: null
 ci_trigger_source: pull_request
-ci_check_generation: final-head-pending
+ci_check_generation: repaired-head-pending
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -154,10 +156,10 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 0
+repair_cycles_for_current_gate: 1
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Perform mandatory exact-head self-review and verify required GitHub checks for PR #147; merge without Codex if clean.
+next_action: Perform repaired exact-head self-review, resolve the evidence thread and verify required GitHub checks; merge without manually invoking Codex if clean.
 ```
