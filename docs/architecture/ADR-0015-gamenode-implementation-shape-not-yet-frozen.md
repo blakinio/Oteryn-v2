@@ -3,13 +3,13 @@
 - Status: Accepted clarification
 - Date: 2026-08-11
 - Decision ID: `GAMENODE-SHAPE-01`
-- Supersedes: only the **binding interpretation** of `ARCHITECTURE_REVIEW_REFINEMENTS_2026-08-10.md` statements that the first GameNode "should be a domain-modular monolith" and that the programme should "build a modular-monolith GameNode".
+- Supersedes: only the **binding interpretation** of (a) `ARCHITECTURE_REVIEW_REFINEMENTS_2026-08-10.md` statements that the first GameNode "should be a domain-modular monolith" and that the programme should "build a modular-monolith GameNode", and (b) `FOUNDATION_PROGRAMME_CURRENT_STATUS.md` Section 3 wording that the first GameNode implementation "should remain a domain-modular monolith until real deployment/security/data/failure boundaries justify separation". In all three locations the modular-monolith shape is a **nonbinding preferred starting hypothesis**, not frozen process/service topology.
 - Preserves: FND-03 authoritative runtime ownership, domain/transport/persistence separation, bounded queues, one logical authoritative writer per scope, and the rule against speculative empty services/crates.
 - Does not authorize: runtime implementation, microservice decomposition, Kubernetes, process topology, deployment changes, or production activation.
 
 ## Problem
 
-The 2026-08-10 architecture review correctly identified a modular monolith as the most conservative **working hypothesis** for the first GameNode, but its wording can be read as a binding topology decision.
+The 2026-08-10 architecture review and current-status overlay correctly identify a modular monolith as the most conservative **working hypothesis** for the first GameNode, but their wording can be read as a binding topology decision.
 
 That would freeze a process/service shape before the implementation programme has measured real scaling, failure-isolation, security-boundary and data-ownership pressures. Oteryn needs to preserve the recommendation without turning it into premature architecture authority.
 
@@ -80,7 +80,7 @@ The current programme recommendation is:
 
 > Start implementation discovery from a domain-modular monolith unless evidence demonstrates a stronger boundary.
 
-This recommendation is **NONBINDING**. It must not be treated as accepted runtime topology merely because the 2026-08-10 refinement uses prescriptive wording.
+This recommendation is **NONBINDING**. It must not be treated as accepted runtime topology merely because either the 2026-08-10 refinement or the canonical current-status overlay uses prescriptive wording.
 
 Before any implementation task freezes GameNode process/service shape, its owning decision must explicitly answer:
 
@@ -109,4 +109,4 @@ Until that later gate exists:
 
 ## Consequence
 
-`ARCHITECTURE_REVIEW_REFINEMENTS_2026-08-10.md` remains useful programme guidance, but for GameNode topology this ADR takes precedence: **modular monolith is the preferred starting hypothesis, not a frozen architecture requirement**.
+`ARCHITECTURE_REVIEW_REFINEMENTS_2026-08-10.md` and `FOUNDATION_PROGRAMME_CURRENT_STATUS.md` remain useful programme/status guidance, but for GameNode process/service topology this ADR takes precedence over their prescriptive modular-monolith wording: **modular monolith is the preferred starting hypothesis, not a frozen architecture requirement**.
