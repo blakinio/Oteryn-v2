@@ -8,7 +8,7 @@ status: completed
 repository: blakinio/Oteryn-v2
 delivery_issue: 135
 delivery_pr: 141
-closeout_pr: null
+closeout_pr: 142
 trusted_base_sha: ef42fa47ab054ab8aa304c017307c1945f931b59
 final_delivery_head_sha: b398d8866ad8a8abb74ffc8f9801252573993924
 delivery_merge_sha: af2fa495c1126080ffc1d0717b7d0ef54f6b29ca
@@ -64,6 +64,12 @@ Cycle 1 fixed Protobuf retry byte drift, runtime ordinal ownership-generation sc
 Cycle 2 structurally bound TransactionId+ordinal+count, required fresh AnalyticsActorId across epochs and froze the full semantic envelope across same-EventId retry/redelivery.
 
 No third material repair cycle was required.
+
+## Lifecycle closeout
+
+- closeout PR: #142;
+- closeout changes lifecycle/status only and do not alter accepted ANL-01 semantics;
+- exact closeout head/CI/review evidence is represented by immutable PR/merge history rather than a self-referential archive commit.
 
 ## Next dependency
 
