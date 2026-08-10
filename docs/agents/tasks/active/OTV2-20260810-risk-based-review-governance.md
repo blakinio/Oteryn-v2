@@ -15,7 +15,7 @@ final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT governance coordinator
 created_at: 2026-08-10T22:10:00+02:00
-updated_at: 2026-08-10T22:27:00+02:00
+updated_at: 2026-08-10T22:31:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -43,7 +43,7 @@ external_repositories: []
 
 ## Outcome
 
-Replace the universal independent-audit requirement with a risk-based review policy without weakening self-review, exact-head CI/E2E, ownership, branch protection or high-risk review. Every task gets mandatory full-diff self-review. Independent review is required when a governing contract/owner explicitly requires it, for high-risk security/authority/data/production changes, for safety/governance reductions or authority expansion, or when unresolved uncertainty/material complexity makes a second perspective necessary. Codex is one optional independent-review mechanism, never a named mandatory dependency.
+Replace the universal independent-audit requirement with a risk-based review policy without weakening self-review, exact-head CI/E2E, ownership, branch protection or high-risk review. Every task gets mandatory full-diff self-review by its implementing/coordinating agent. Independent review is required when a governing contract/owner explicitly requires it, for high-risk security/authority/data/production changes, for safety/governance reductions or authority expansion, or when unresolved uncertainty/material complexity makes a second perspective necessary. Codex is one optional independent-review mechanism, never a named mandatory dependency.
 
 ## Architecture and source of truth
 
@@ -57,7 +57,7 @@ Replace the universal independent-audit requirement with a risk-based review pol
 
 ## Acceptance criteria
 
-- [x] Require full-diff self-review for every task before readiness.
+- [x] Require full-diff self-review by the implementing/coordinating agent for every task before readiness; it cannot be delegated away.
 - [x] Define explicit conditions that require independent review.
 - [x] Keep independent review mandatory for high-risk authority/security/durable-data/production and safety-reducing governance changes.
 - [x] State that Codex is optional and may be invoked only when independent review is actually required by policy/owner/contract and Codex is the necessary or appropriate available independent mechanism for that requirement.
@@ -82,8 +82,10 @@ Replace the universal independent-audit requirement with a risk-based review pol
 - `DELIVERY_COMPLETENESS_AND_CLOSEOUT.md` applies the distinction to final-head evidence and merge readiness.
 - `ANTI_STALL_AND_EXECUTION_BUDGET.md`, `EXECUTION_PROTOCOL.md` and `TASK_TEMPLATE.md` no longer contain a conflicting universal-audit requirement.
 - Independent mechanisms may be human, separate non-authoring agent/session, Codex or a dedicated audit workflow; Codex is optional by name and cannot be used merely for extra assurance when independent review is not required.
-- Initial exact-head Codex review on `910ee7ff53394748caba9a630f10cea8467d960d` found one P2: three additional policies/template still imposed/assumed a universal independent audit. Repair cycle 1 aligned those files.
-- Owner-instruction reconciliation then tightened the wording so Codex itself may be invoked only to satisfy an actually required independent-review gate. This is repair cycle 2 and does not change which high-risk areas require independence.
+- Initial Codex review found one P2: three additional policies/template still imposed/assumed universal independent audit. Repair cycle 1 aligned those files.
+- Owner-instruction reconciliation then tightened Codex wording so it may be invoked only to satisfy an actually required independent-review gate. Repair cycle 2 preserved all high-risk requirements.
+- Codex review on repair-cycle-2 head found one P2: the task template allowed implementer self-review to be delegated away. Repair cycle 3 removes that escape hatch; independent review can be delegated to a separate mechanism, mandatory implementer self-review cannot.
+- This is the maximum repair cycle for the gate. No further content repair is permitted in this task; a new material finding must block/rotate instead of being patched here.
 - This governance change is itself safety-sensitive because it narrows when independent review is mandatory. The owner explicitly authorized it, but the trusted-base rules governing this task still require independent review. Therefore Codex is necessary for PR #146 even though the resulting steady-state policy avoids routine Codex use.
 
 ## Validation
@@ -91,7 +93,7 @@ Replace the universal independent-audit requirement with a risk-based review pol
 ### Focused
 
 - final scope is seven declared governance/task/template paths.
-- self-review: no runtime/architecture/production authority change; exact-head CI/E2E/no-bypass rules remain mandatory; high-risk and safety-reducing changes retain independent-review requirement; Codex use is stricter than the initial candidate and matches the explicit owner instruction.
+- self-review: no runtime/architecture/production authority change; exact-head CI/E2E/no-bypass rules remain mandatory; high-risk and safety-reducing changes retain independent-review requirement; implementer self-review is mandatory and nondelegable; Codex use matches explicit owner instruction.
 - result: PASS pending final exact-head repository checks.
 
 ### Component/integration
@@ -104,29 +106,28 @@ Replace the universal independent-audit requirement with a risk-based review pol
 
 ### Exact-head CI
 
-- pre-repair head `910ee7ff53394748caba9a630f10cea8467d960d`: Agent Governance `31428208991` PASS; Dependency Review `31428211275` PASS; CodeQL `31428208971` PASS; superseded.
-- repair-cycle-1 head `245e07ce7d0095dedd4b0756de3bc792ef44a805`: checks started but are superseded by owner-instruction wording repair.
+- all earlier head results are superseded by review-driven repairs.
 - final head: pending after this checkpoint commit; previous results do not substitute.
 
 ## Self-review
 
 - exact head: pending final head
-- method/reviewer: implementing governance coordinator full-diff adversarial review
-- material findings: zero known after owner-instruction reconciliation; final recheck pending
+- method/reviewer: implementing governance coordinator full-diff adversarial review; nondelegable
+- material findings: zero known after repair cycle 3; final recheck pending
 - verdict: pending exact-head recheck
 
 ## Independent review
 
 - required: `YES` — trusted-base governance plus safety-gate reduction
-- exact head: initial review on `910ee7ff53394748caba9a630f10cea8467d960d` found one P2 and is superseded by repairs
+- exact head: earlier reviews found repairable P2 findings and are superseded
 - method/auditor: Codex independent PR review because an independent mechanism is required for this governance change
-- material findings: one P2 repaired; final-head review pending
+- material findings: final-head review pending
 - verdict: pending
 
 ## PR and closeout
 
 - changed-file review: final seven-path scope pending exact-head recheck
-- unresolved review threads: initial P2 resolved after repair; final review pending
+- unresolved review threads: prior findings repaired/resolved; final review pending
 - related/superseded PRs: PR #145 is independent architecture work and does not overlap these governance paths
 - protected auto-merge: pending
 - merge commit/result: pending
@@ -135,7 +136,7 @@ Replace the universal independent-audit requirement with a risk-based review pol
 ## Context checkpoint
 
 ```yaml
-last_progress: Repair cycle 2 enforces the owner's stricter rule that Codex is used only to satisfy an actually required independent-review gate.
+last_progress: Repair cycle 3 makes implementer self-review mandatory and nondelegable while keeping independent review separately risk-based.
 status: validating
 branch: docs/OTV2-20260810-risk-based-review-governance
 head_sha: null
@@ -152,10 +153,10 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 2
+repair_cycles_for_current_gate: 3
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Verify final exact-head CI and obtain one final independent review for PR #146; merge only if no material finding remains.
+next_action: Verify final exact-head CI and obtain the required final independent review; merge only if no material finding remains, otherwise block because the repair budget is exhausted.
 ```
