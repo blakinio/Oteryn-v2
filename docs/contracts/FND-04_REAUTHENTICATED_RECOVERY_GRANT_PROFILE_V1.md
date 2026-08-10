@@ -47,7 +47,7 @@ aud     = urn:oteryn:game:recovery
 
 Failure under one profile never causes reinterpretation as the other. Recovery contains no ChannelId/InstanceId/NodeId/runtime-owner authority.
 
-## 3. Exact cryptographic profile and precedence
+## 3. Exact cryptographic profile
 
 Recovery v1 uses JWS Compact JWT and exact JOSE `alg=Ed25519`.
 
@@ -72,17 +72,17 @@ Canonical successful header:
 
 Pre-signature structural/security processing:
 
-- protected members exactly `alg`, `kid`, `typ`; duplicate/missing/unknown/extra members are malformed;
+- protected members are exactly `alg`, `kid`, `typ`; duplicate/missing/unknown/extra members are malformed;
 - malformed `alg` representation -> `RECOVERY_GRANT_MALFORMED`; well-formed non-exact `alg` -> `RECOVERY_GRANT_AUTHENTICATION_FAILED`;
-- `kid` string 1..64 ASCII `[A-Za-z0-9._-]+`; malformed representation -> `RECOVERY_GRANT_MALFORMED`; well-formed unknown/untrusted `kid` in the fixed recovery trust set -> `RECOVERY_GRANT_AUTHENTICATION_FAILED`;
-- `typ` present as non-empty string <=64 visible ASCII bytes with no control/whitespace; malformed/missing/null/non-string/out-of-bound -> `RECOVERY_GRANT_MALFORMED`;
-- reject `jku`, `x5u`, `x5c`, embedded `jwk`, `crit`, `cty`, `zip`, `b64=false` and token-controlled key discovery as malformed protected-header shapes.
+- `kid` is a string of 1..64 ASCII matching `[A-Za-z0-9._-]+`; malformed representation -> `RECOVERY_GRANT_MALFORMED`; well-formed unknown/untrusted `kid` inside the fixed recovery trust set -> `RECOVERY_GRANT_AUTHENTICATION_FAILED`;
+- `typ` is a non-empty string <=64 visible ASCII bytes with no control/whitespace; malformed/missing/null/non-string/out-of-bound -> `RECOVERY_GRANT_MALFORMED`;
+- `jku`, `x5u`, `x5c`, embedded `jwk`, `crit`, `cty`, `zip`, `b64=false` and token-controlled key discovery are forbidden malformed protected-header shapes.
 
-The semantic exact `typ=oteryn-recovery+jwt` comparison occurs only **after successful signature verification**. A correctly signed but semantically different well-formed `typ` maps to `RECOVERY_GRANT_BINDING_MISMATCH`. Failed algorithm/key/trust/signature must not disclose whether untrusted `typ` would have matched.
+The semantic exact `typ=oteryn-recovery+jwt` comparison occurs only **after successful signature verification and authenticated payload structural-schema validation**. A correctly signed but semantically different well-formed `typ` maps to `RECOVERY_GRANT_BINDING_MISMATCH`. Failed algorithm/key/trust/signature must not disclose whether untrusted `typ` would have matched.
 
 ## 5. Verifier-anchored trust context
 
-Before reading token semantics as authority, the recovery verifier fixes the expected context from endpoint/configuration:
+Before token semantics can influence trust, the verifier fixes this expected endpoint/configuration context:
 
 ```text
 expected issuer = urn:oteryn:platform:game-recovery
@@ -92,61 +92,68 @@ expected purpose = existing_actor_recovery
 expected key purpose = dedicated recovery signing for that context
 ```
 
-Unauthenticated `iss`, `aud`, `profile`, `purpose`, `typ` or other token text MUST NOT choose/broaden/retarget the trusted issuer/profile/key-purpose domain. A well-formed `kid` only selects a candidate key within that fixed trusted set.
+Unauthenticated `iss`, `aud`, `profile`, `purpose`, `typ` or other token text MUST NOT choose, broaden or retarget the trusted issuer/profile/key-purpose domain. A well-formed `kid` selects only a candidate key inside that already-fixed trusted set.
 
-## 6. Canonical issuer and audience
+## 6. Canonical semantic bindings
 
 ```text
-iss = urn:oteryn:platform:game-recovery
-aud = urn:oteryn:game:recovery
+iss     = urn:oteryn:platform:game-recovery
+aud     = urn:oteryn:game:recovery
+typ     = oteryn-recovery+jwt
+profile = oteryn-reauth-recovery-v1
+purpose = existing_actor_recovery
 ```
 
-Both exact and case-sensitive. Recovery key purpose is distinct from fresh admission, OAuth, Game Login Ticket and service authentication.
+`iss`, `aud`, `typ` and `purpose` are binding semantics. A correctly authenticated well-formed mismatch maps to `RECOVERY_GRANT_BINDING_MISMATCH`.
 
-## 7. Required authenticated payload schema
+`profile` is a version/profile semantic. A correctly authenticated well-formed but unsupported profile maps to `RECOVERY_GRANT_REVISION_UNSUPPORTED`; it is never reinterpreted as another credential purpose.
 
-After successful signature verification, a v1 payload is a JSON object containing exactly the claims below. Unknown claims reject in v1.
+Recovery signing-key purpose is distinct from fresh admission, OAuth, Game Login Ticket and service authentication.
+
+## 7. Authenticated payload structural schema
+
+After successful signature verification, the payload MUST be one JSON object containing exactly the registered claims below. This stage validates **membership, type and canonical lexical shape**, not semantic equality to the expected binding/profile/revision values handled later.
+
+Unknown claims reject as `RECOVERY_GRANT_MALFORMED`.
 
 ### 7.1 Standard claims
 
-| Claim | Type | Rule |
-|---|---|---|
-| `iss` | string | exact Section 6 issuer |
-| `aud` | string | exact single Section 6 audience; arrays rejected |
-| `iat` | integer | whole-second NumericDate |
-| `nbf` | integer | whole-second; `iat - 1 <= nbf <= iat + 1` |
-| `exp` | integer | `exp > iat`; `exp - iat <=30s` |
-| `jti` | string | 32 random bytes base64url-no-padding; exactly 43 chars |
+| Claim | Structural type / shape |
+|---|---|
+| `iss` | non-empty string <=128 visible ASCII bytes |
+| `aud` | non-empty string <=128 visible ASCII bytes; arrays rejected |
+| `iat` | whole-second integer NumericDate |
+| `nbf` | whole-second integer NumericDate |
+| `exp` | whole-second integer NumericDate |
+| `jti` | string, exactly 43 base64url-no-padding chars encoding 32 bytes |
 
 ### 7.2 Oteryn claims
 
-| Claim | Type | Rule |
-|---|---|---|
-| `profile` | string | exact `oteryn-reauth-recovery-v1` |
-| `purpose` | string | exact `existing_actor_recovery` |
-| `attempt_ref` | string | canonical lowercase RFC UUIDv7 |
-| `account_id` | string | canonical lowercase non-nil authoritative Platform UUID representation accepted by FND-ID-01 |
-| `character_id` | string | canonical lowercase non-nil RFC UUIDv7 |
-| `world_id` | string | canonical lowercase non-nil RFC UUIDv7 |
-| `account_security_generation` | string | decimal non-zero uint64 string |
-| `protocol_major` | integer | exact `1` |
-| `transport_profile` | integer | exact `1` |
-| `ruleset_revision` | string | ASCII 1..64 `[A-Za-z0-9._:-]+` |
-| `content_revision` | string | ASCII 1..64 `[A-Za-z0-9._:-]+` |
-| `map_revision` | string | ASCII 1..64 `[A-Za-z0-9._:-]+` |
-| `world_policy_revision` | string | ASCII 1..64 `[A-Za-z0-9._:-]+` |
+| Claim | Structural type / shape |
+|---|---|
+| `profile` | non-empty string <=64 visible ASCII bytes |
+| `purpose` | non-empty string <=64 visible ASCII bytes |
+| `attempt_ref` | canonical lowercase non-nil RFC UUIDv7 |
+| `account_id` | canonical lowercase non-nil authoritative Platform UUID representation accepted by FND-ID-01 |
+| `character_id` | canonical lowercase non-nil RFC UUIDv7 |
+| `world_id` | canonical lowercase non-nil RFC UUIDv7 |
+| `account_security_generation` | decimal non-zero uint64 string |
+| `protocol_major` | non-negative integer within registered protocol-major range |
+| `transport_profile` | non-negative integer within registered transport-profile range |
+| `ruleset_revision` | ASCII 1..64 `[A-Za-z0-9._:-]+` |
+| `content_revision` | ASCII 1..64 `[A-Za-z0-9._:-]+` |
+| `map_revision` | ASCII 1..64 `[A-Za-z0-9._:-]+` |
+| `world_policy_revision` | ASCII 1..64 `[A-Za-z0-9._:-]+` |
 
-No opaque `compatibility_revision` exists. The independent dimensions above MUST NOT be collapsed into one token.
+The semantic current/supported values for `profile`, protocol, transport and gameplay revisions are evaluated only after this structural stage.
 
-FND-02 `schema_revision` is diagnostic/build evidence rather than exact recovery identity and is deliberately absent.
+All UUID values MUST parse and round-trip exact canonical lowercase hyphenated form; nil rejects. `attempt_ref`, `character_id` and `world_id` require UUIDv7 + RFC variant. `account_id` remains Platform-owned and is not silently redefined as Oteryn UUIDv7.
 
-The profile MUST NOT contain `channel_id`, `instance_id`, `node_id`, runtime owner identity, scope ownership generation, `GameSessionId` as bearer authority or `HandoffId`. Oteryn-v2 resolves current placement/session authority.
+The profile MUST NOT contain `channel_id`, `instance_id`, `node_id`, runtime owner identity, scope ownership generation, `GameSessionId` as bearer authority, `HandoffId` or opaque `compatibility_revision`.
 
-All UUIDs parse/round-trip exact canonical lowercase hyphenated form; nil rejects. `attempt_ref`, `character_id` and `world_id` additionally require UUIDv7 + RFC variant. `account_id` remains Platform-owned and is not silently redefined as Oteryn UUIDv7.
+FND-02 `schema_revision` remains diagnostic/build evidence rather than exact recovery identity and is deliberately absent.
 
-Generation values are strings to avoid uint64 precision loss >2^53.
-
-## 8. Safe parser/material bounds
+## 8. Safe pre-authentication parser/material bounds
 
 Before signature verification enforce only bounded safe parsing/authentication prerequisites:
 
@@ -154,58 +161,63 @@ Before signature verification enforce only bounded safe parsing/authentication p
 - exactly 3 JWS segments;
 - decoded header <=512 bytes;
 - decoded payload <=3072 bytes;
-- header/payload bounded JSON objects with nesting <=2;
+- header/payload decode as bounded JSON objects with nesting <=2;
 - duplicate JSON members reject;
 - invalid UTF-8 reject;
 - malformed/noncanonical/padded base64url reject;
 - decompression unsupported;
 - protected-header rules from Sections 3–4.
 
-Semantic exact payload claim membership/types/canonical encodings are classified only after successful authentication. Thus a well-formed invalid-signature token with an otherwise semantic missing/extra/wrong-bound claim remains an authentication failure rather than a payload-schema/binding oracle.
+Pre-authentication parsing MUST NOT use semantic payload membership/value differences to reveal binding/profile/revision state. Therefore an invalid-signature token with an otherwise well-formed missing/extra/wrong-bound/unsupported semantic payload remains an authentication failure when the token was structurally parseable enough to authenticate.
 
-Stricter FND-02 outer bound wins.
+Stricter FND-02 outer bounds win.
 
-## 9. Time policy
-
-```text
-maximum lifetime: 30s from iat to exp
-maximum verifier skew: 5s
-```
-
-At trusted server time `now`:
-
-```text
-now + 5s >= nbf
-now - 5s < exp
-exp > iat
-exp - iat <=30s
-abs(iat - now) <=35s
-```
-
-Client clocks never affect validity.
-
-Before accepted `nbf` boundary -> `RECOVERY_GRANT_NOT_YET_VALID`. After expiry -> `RECOVERY_GRANT_EXPIRED`.
-
-## 10. Complete credential-classification precedence
+## 9. Complete credential-classification precedence
 
 Normative order:
 
 1. outer/JWS/JSON/base64/protected-header malformed shape -> `RECOVERY_GRANT_MALFORMED`;
 2. well-formed non-exact `alg` -> `RECOVERY_GRANT_AUTHENTICATION_FAILED`;
 3. fixed-scope `kid`/key/trust failure or signature failure -> `RECOVERY_GRANT_AUTHENTICATION_FAILED`;
-4. after successful signature, missing/unknown/wrong-type/noncanonical payload schema -> `RECOVERY_GRANT_MALFORMED`;
-5. after schema success, wrong exact `iss`, `aud`, `typ` or `purpose` -> `RECOVERY_GRANT_BINDING_MISMATCH`;
-6. after schema success, structurally valid unsupported `profile` -> `RECOVERY_GRANT_REVISION_UNSUPPORTED`;
-7. then evaluate time and current game-domain/security/revision predicates.
+4. after successful signature, exact payload claim membership/type/canonical-shape failure -> `RECOVERY_GRANT_MALFORMED`;
+5. after structural schema success, wrong exact `iss`, `aud`, `typ` or `purpose` -> `RECOVERY_GRANT_BINDING_MISMATCH`;
+6. after structural schema success, well-formed unsupported `profile` -> `RECOVERY_GRANT_REVISION_UNSUPPORTED`;
+7. then evaluate time policy;
+8. then Platform-security/trust freshness, ownership/world/current-target state and independent authoritative revisions.
 
 Consequences:
 
 - invalid signature + wrong well-formed binding -> authentication failed;
-- invalid signature + unsupported profile -> authentication failed;
-- invalid signature + otherwise well-formed semantic schema defect -> authentication failed;
-- correctly signed schema defect -> malformed;
+- invalid signature + unsupported profile/revision -> authentication failed;
+- invalid signature + otherwise well-formed semantic payload defect -> authentication failed;
+- correctly signed structural schema defect -> malformed;
 - correctly signed wrong binding -> binding mismatch;
 - correctly signed unsupported profile -> revision unsupported.
+
+## 10. Time policy
+
+Security ceilings:
+
+```text
+maximum lifetime: 30s from iat to exp
+maximum verifier skew: 5s
+```
+
+After authenticated structural schema validation, require:
+
+```text
+iat/nbf/exp are whole-second NumericDate values
+exp > iat
+exp - iat <=30s
+iat - 1 <= nbf <= iat + 1
+now + 5s >= nbf
+now - 5s < exp
+abs(iat - now) <=35s
+```
+
+Before the accepted `nbf` boundary -> `RECOVERY_GRANT_NOT_YET_VALID`. After expiry -> `RECOVERY_GRANT_EXPIRED`. Invalid intrinsic time structure/range such as `exp <= iat` or lifetime >30s is malformed/invalid input, not a retryable future-valid credential.
+
+Client clocks never affect validity.
 
 ## 11. RecoveryGrantNonce and producer attempt
 
@@ -294,13 +306,13 @@ After successful credential/security validation, recovery resolves current state
 2. only if ownership is valid, current `CharacterId -> WorldId` / world eligibility against signed `world_id`;
 3. current actor/session/controller placement and runtime authority.
 
-Invalid ownership must fail without using world/actor/controller state as an oracle.
+Invalid ownership fails without using world/actor/controller state as an oracle.
 
 Valid ownership + stale/mismatched world -> `RECOVERY_GRANT_WORLD_STALE`; no nonce/authority mutation, no retarget to another world, require newly authorized recovery attempt for current state.
 
 ## 16. Independent authoritative revisions
 
-Before either same-session or post-grace recovery can become authoritative, validate independently against the current transition boundary:
+Recovery binds and validates independently:
 
 ```text
 protocol_major
@@ -311,9 +323,11 @@ map_revision
 world_policy_revision
 ```
 
-A change to any dimension invalidates the older grant even when all others remain unchanged. No silent downgrade/retarget/mixed state.
+For v1, `protocol_major=1` and `transport_profile=1` are currently supported exact values; a correctly authenticated structurally valid unsupported value is `RECOVERY_GRANT_REVISION_UNSUPPORTED`, not malformed input.
 
-Unsupported/mismatched dimension -> `RECOVERY_GRANT_REVISION_UNSUPPORTED`, no RecoveryGrantNonce consumption or authority mutation.
+Every gameplay revision is compared independently against the current actor/session/runtime transition boundary. A change to any one dimension invalidates the older grant even when the others remain unchanged.
+
+No silent downgrade, retarget or mixed authoritative state. Unsupported/mismatched dimension -> `RECOVERY_GRANT_REVISION_UNSUPPORTED`, no RecoveryGrantNonce consumption or authority mutation.
 
 ## 17. Ordered recovery dispatch
 
@@ -369,7 +383,7 @@ Success creates a fresh GameSession/connection-generation namespace and new reco
 | `RECOVERY_GRANT_MALFORMED` | `INVALID_INPUT` | `TERMINAL` | new valid grant | none | `RETRY_LOGIN` | `recovery grant malformed` |
 | `RECOVERY_GRANT_AUTHENTICATION_FAILED` | `AUTHENTICATION_FAILED` | `SECURITY_TERMINAL` | fresh authenticated recovery | none | `AUTHENTICATION_REQUIRED` | `recovery credential authentication failed` |
 | `RECOVERY_GRANT_BINDING_MISMATCH` | `SESSION_REJECTED` | `SECURITY_TERMINAL` | new correct-bound grant | none | `RETRY_LOGIN` | `recovery credential bound to a different context` |
-| `RECOVERY_GRANT_NOT_YET_VALID` | `SESSION_REJECTED` | `RETRYABLE` within same unconsumed credential/current state | wait only to accepted nbf boundary | none | `TEMPORARILY_UNAVAILABLE` | `recovery grant not yet active` |
+| `RECOVERY_GRANT_NOT_YET_VALID` | `SESSION_REJECTED` | `RETRYABLE` while same unconsumed credential/current state remains valid | wait only to accepted nbf boundary | none | `TEMPORARILY_UNAVAILABLE` | `recovery grant not yet active` |
 | `RECOVERY_GRANT_EXPIRED` | `SESSION_REJECTED` | `TERMINAL` | fresh recovery attempt | none | `RETRY_LOGIN` | `recovery grant expired` |
 | `RECOVERY_GRANT_REPLAYED` | `SESSION_REJECTED` | `SECURITY_TERMINAL` | reconcile prior result; never reuse | prior success may exist; no duplicate | `SESSION_UNAVAILABLE` | `recovery grant already consumed or replayed` |
 | `RECOVERY_ATTEMPT_RECONCILIATION_REQUIRED` | `DEPENDENCY_UNAVAILABLE` | `RETRYABLE` | same attempt_ref reconciliation | issuance ambiguity only | `TEMPORARILY_UNAVAILABLE` | `recovery issuance outcome requires reconciliation` |
@@ -384,16 +398,17 @@ Correlation is credential-free. Before authentication, diagnostics never reveal 
 
 ## 21. Required implementation fixtures
 
-### Crypto/schema/binding
+### Crypto/schema/binding/revision
 
 - canonical Ed25519 positive;
 - malformed vs well-formed non-exact alg precedence;
 - malformed vs unknown/untrusted kid precedence;
 - forbidden/extra protected members and token-directed key discovery;
-- invalid signature + wrong binding/profile/schema -> authentication failure;
-- authenticated schema defect -> malformed;
+- invalid signature + wrong binding/profile/schema/revision -> authentication failure;
+- authenticated structural schema defect -> malformed;
 - authenticated wrong iss/aud/typ/purpose -> binding mismatch;
-- authenticated unsupported profile -> revision unsupported;
+- authenticated unsupported profile/protocol/transport -> revision unsupported;
+- each ruleset/content/map/world-policy revision changed independently -> revision unsupported;
 - nbf/expiry/lifetime/skew boundaries.
 
 ### Security evidence
@@ -408,11 +423,10 @@ Independently for Platform-security and recovery-key/profile trust:
 - restart without provable current non-rollback floor cannot authorize;
 - revocation after earlier validation but before authority commit fails before nonce/authority mutation.
 
-### Ownership/revisions/transition
+### Ownership/transition
 
 - invalid ownership before world/actor/controller classification;
 - valid ownership + stale world -> world stale/no retarget;
-- each independent revision changes alone after issuance -> reject;
 - healthy controller -> dedicated conflict;
 - same-session recovery PREPARE then current facts change -> COMMIT rejects;
 - post-grace actor becomes ABSENT or controlled before commit -> reject;
