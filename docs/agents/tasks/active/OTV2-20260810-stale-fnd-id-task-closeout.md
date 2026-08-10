@@ -4,18 +4,18 @@
 task_id: OTV2-20260810-stale-fnd-id-task-closeout
 title: Archive stale merged FND-ID support task records
 mode: COORDINATE
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260810-stale-fnd-id-task-closeout
-pr: null
+pr: 147
 base_sha: 8f5f20274aa8c886695fb36dfe14025f38f1ee1b
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT coordination session
 created_at: 2026-08-10T22:40:00+02:00
-updated_at: 2026-08-10T22:40:00+02:00
+updated_at: 2026-08-10T22:47:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -58,16 +58,16 @@ Remove ten stale advisory ownership records from `tasks/active/` after proving t
 
 - `PROVEN`: PRs #64 through #73 are merged and their feature/contract changes already live in `main` history.
 - `PROVEN`: FND-ID-01 lifecycle closeout PR #87 is merged.
-- `PROVEN`: the ten corresponding support task records still remain under `docs/agents/tasks/active/`, so they retain stale advisory ownership despite terminal delivery.
+- `PROVEN`: the ten corresponding support task records remained under `docs/agents/tasks/active/` after terminal delivery.
 - `DERIVED`: archiving these records removes stale coordination locks and makes the current lifecycle-closed FND-ID status truthful without changing any accepted semantic contract.
 - `PROVEN`: PR #145 independently owns the stale PR #63 protocol-reconciliation record, so this cleanup deliberately does not touch that path.
 
 ## Acceptance criteria
 
-- [ ] Archive exactly the ten proven-merged stale task records listed in `owned_paths`.
-- [ ] Preserve original task IDs plus associated PR, final head and merge commit evidence.
-- [ ] Remove the ten matching active records.
-- [ ] Do not edit architecture/runtime/contracts or the PR #63 reconciliation task owned by PR #145.
+- [x] Archive exactly the ten proven-merged stale task records listed in `owned_paths`.
+- [x] Preserve original task IDs plus associated PR, final head and merge commit evidence.
+- [x] Remove the ten matching active records.
+- [x] Do not edit architecture/runtime/contracts or the PR #63 reconciliation task owned by PR #145.
 - [ ] Full-diff self-review reports zero material findings.
 - [ ] Exact-head governance/document checks pass.
 
@@ -82,14 +82,19 @@ Remove ten stale advisory ownership records from `tasks/active/` after proving t
 
 ## Implementation / findings
 
-Pending archive/delete operation.
+- Created one concise archive record for each of PRs #64 through #73, preserving the task ID, original branch, PR number, final delivery head and merge commit.
+- Removed exactly the ten matching stale files from `tasks/active/` in one coherent tree commit.
+- Archive records explicitly state that the operation is lifecycle bookkeeping only and releases advisory ownership.
+- PR #147 changes task lifecycle documentation only. It does not touch architecture, runtime, contracts, workflows, dependencies, Platform state or production state.
+- The PR #63 protocol-reconciliation record and the lag/disconnect analysis checkpoints remain untouched by design.
 
 ## Validation
 
 ### Focused
 
 - merged-delivery evidence: PRs #64-#73 and PR #87 verified through GitHub connector
-- result: PASS for task selection
+- branch comparison after archive operation: ten active removals + ten archive additions + this task record only
+- result: PASS pending final full-diff self-review
 
 ### Component/integration
 
@@ -101,13 +106,13 @@ Pending archive/delete operation.
 
 ### Exact-head CI
 
-- final head: pending
+- final head: pending after this checkpoint commit
 - trigger source: pull_request
 - result: pending
 
 ## Self-review
 
-- exact head: pending
+- exact head: pending final head
 - method/reviewer: implementing/coordinating agent (mandatory; cannot be delegated away)
 - material findings: pending
 - verdict: pending
@@ -122,25 +127,25 @@ Pending archive/delete operation.
 
 ## PR and closeout
 
-- changed-file review: pending
-- unresolved review threads: pending
+- changed-file review: scope matches declared lifecycle paths; final exact-head recheck pending
+- unresolved review threads: pending final check
 - related/superseded PRs: PR #145 depends on this cleanup but owns no overlapping path except the intentionally excluded PR #63 task
-- protected auto-merge: pending
+- protected auto-merge: not required
 - merge commit/result: pending
-- ownership release: pending
+- ownership release: pending merge/archive of this cleanup task itself
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Created bounded stale-task lifecycle cleanup after risk-based governance became authoritative on main.
-status: implementing
+last_progress: Ten proven-merged FND-ID support tasks archived and removed from active; draft PR #147 opened.
+status: validating
 branch: docs/OTV2-20260810-stale-fnd-id-task-closeout
 head_sha: null
-pr: null
+pr: 147
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
-ci_check_generation: null
+ci_trigger_source: pull_request
+ci_check_generation: final-head-pending
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -154,5 +159,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Archive and delete exactly the ten proven-merged stale support task records in one coherent cleanup.
+next_action: Perform mandatory exact-head self-review and verify required GitHub checks for PR #147; merge without Codex if clean.
 ```
