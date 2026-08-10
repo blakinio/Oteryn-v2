@@ -77,7 +77,7 @@ A commit cannot contain its own SHA. Record the final exact head in immutable PR
 ## Self-review
 
 - exact head: pending
-- method/reviewer: implementing/coordinating agent unless explicitly delegated
+- method/reviewer: implementing/coordinating agent (mandatory; cannot be delegated away)
 - material findings: pending
 - verdict: pending
 
