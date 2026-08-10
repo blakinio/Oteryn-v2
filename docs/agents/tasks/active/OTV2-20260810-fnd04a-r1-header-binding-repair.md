@@ -10,14 +10,14 @@ base_branch: main
 branch: docs/fnd04a-r1-header-binding-repair
 issue: 120
 programme_issue: 112
-pr: null
+pr: 125
 supersedes_delivery_pr: 114
 superseded_delivery_head: 79678485d009c22ece2736c822d6b75b6d235ad2
 trusted_base_sha: 43ca28f1f0f259c08a275c92946aa35f05d4d112
 reconstruction_squash_sha: 6c34e48e868b604b824f079920694d007f7eb493
 owner: GPT-5.6 Sol architecture continuation session
 created_at: 2026-08-10T11:05:00+02:00
-updated_at: 2026-08-10T11:05:00+02:00
+updated_at: 2026-08-10T11:10:00+02:00
 repair_cycles_for_current_gate: 1
 max_repair_cycles_for_current_gate: 3
 final_head_sha: null
@@ -43,7 +43,8 @@ Deliver the bounded successor repair authorized by the product owner after PR #1
 - reviewed but unmerged exhausted candidate: PR #114 exact head `79678485d009c22ece2736c822d6b75b6d235ad2`;
 - staging reconstruction was squashed once onto the fresh current-main branch as `6c34e48e868b604b824f079920694d007f7eb493`, preserving content without importing #114's 11-commit history;
 - all previously repaired #114 semantics remain candidate evidence unless explicitly changed by the single R1 finding below;
-- Issue #120 records the owner disposition and bounded successor acceptance criteria.
+- Issue #120 records the owner disposition and bounded successor acceptance criteria;
+- delivery PR: #125.
 
 ## Material terminal finding carried from #114
 
@@ -120,7 +121,7 @@ Runtime/component/browser E2E: `NOT_APPLICABLE` because this gate changes archit
 
 ```yaml
 status: validating
-last_progress: FND-04A candidate reconstructed onto current main; terminal typ-order contradiction repaired in both public contracts; stale #114 active task removed and successor task registered.
+last_progress: PR #125 bound into successor task; FND-04A candidate reconstructed onto current main; terminal typ-order contradiction repaired in both public contracts; stale #114 active task removed.
 repair_cycles_for_current_gate: 1
-next_action: open bounded successor PR to main, bind its number into this task before final freeze, then run full diff review and exact-head validation.
+next_action: freeze the resulting exact head on the immutable PR surface, then run full diff review, exact-head CI and terminal review without moving the branch.
 ```
