@@ -89,6 +89,6 @@ SIM-DETERMINISM-01
 
 `ADR-0016` clarifies that transport mode names such as `TCP_ONLY` are future mode vocabulary until their transport/runtime path is separately implemented and proven; the machine-readable transport policy remains authoritative for current runtime availability.
 
-`ADR-0015` clarifies that the modular-monolith GameNode wording in the 2026-08-10 programme refinement is a preferred starting hypothesis, not frozen process/service topology.
+`ADR-0015` clarifies that the modular-monolith GameNode wording in the 2026-08-10 programme refinement is a preferred starting hypothesis for **internal module/crate decomposition**, not a frozen decomposition. It explicitly preserves ADR-0009's accepted boundary that one `GameNode` is the logical identity of one game-server process; any separately deployed adjacent service remains a distinct process/authority boundary unless a future dedicated ADR explicitly supersedes ADR-0009.
 
 Functional gameplay networking requires later implementation authority and proof. Functional QUIC admission/recovery additionally requires a later accepted delivery that registers a stable QUIC transport profile and reconciles both FND-04 fresh-admission and reauthenticated-recovery grant contracts. No QUIC adapter, library choice, endpoint rollout or production traffic is authorized by ADR-0014 alone.
