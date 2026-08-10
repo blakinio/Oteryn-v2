@@ -4,62 +4,45 @@
 - Date: 2026-08-10
 - Gate: `ANL-01`
 - Issue: #135
-- Repository: `blakinio/Oteryn-v2`
 - Trusted base: `main@ef42fa47ab054ab8aa304c017307c1945f931b59`
 - Scope: event/audit semantics, interchange, privacy and evidence foundation only
 
 ## 1. Purpose and authority
 
-This contract freezes the smallest complete Oteryn game-event/audit foundation required by ADR-0006 before DUR-02/DUR-03 may finalize transactional outbox and critical economy/security evidence.
+ANL-01 freezes the event/audit evidence contract required by ADR-0006 before DUR-02/DUR-03 may finalize transactional outbox and critical economy/security evidence.
 
-It is not event sourcing. It does not replace authoritative game state, FND-02 command identity, FND-03 execution order, FND-04 session/lease authority, DUR-02 persistence or DUR-03 conservation invariants.
-
-Canonical authority chain:
+It is not event sourcing and never becomes a second gameplay authority.
 
 ```text
-authoritative gameplay mutation
-  -> owning gameplay/FND/DUR contract
-
-required evidence semantics
-  -> ANL-01
-
-physical transaction/outbox/checkpoint
-  -> DUR-02
-
-item/currency conservation and anti-duplication
-  -> DUR-03
-
-analytical/security consumers
-  -> ANL-02/ANL-03
-
-investigation/AI
-  -> ANL-04, read-only
+gameplay/runtime/session authority -> FND/gameplay owners
+physical persistence/transactions  -> DUR-02
+item/currency conservation         -> DUR-03
+event/audit evidence semantics     -> ANL-01
+analytics/security consumers       -> ANL-02/03
+investigation/AI                   -> ANL-04 read-only
 ```
 
 ## 2. Event interchange profile v1
-
-Canonical common event interchange uses:
 
 ```text
 family:             oteryn-game-events
 envelope revision:  1
 serialization:      Protocol Buffers binary
-source IDL:         proto3
-source:             docs/contracts/game-events/v1/foundation.proto
+source IDL syntax:  proto3
+source IDL:         docs/contracts/game-events/v1/foundation.proto
 registry:           docs/contracts/GAME_EVENT_FOUNDATION_REGISTRY.json
-compression:        none at application event-interchange boundary
+application compression: none
 ```
 
-This profile is independent from `protocol-oteryn`; it shares schema technology, not protocol message identity or compatibility negotiation.
+The event family is independent from `protocol-oteryn`. No broker, DB schema, warehouse, lake or dashboard product is selected.
 
-No broker, message bus, database table, warehouse, lake or dashboard product is selected.
+Protobuf serialization is **not treated as canonical semantic serialization**. The committed exact event bytes are immutable delivery evidence; see Section 10.
 
 ## 3. Canonical identities
 
-### 3.1 EventId
+### EventId
 
 ```text
-EventId
 representation: UUIDv7, full 128 bits
 owner/issuer: authoritative event producer boundary
 scope: global one-event identity
@@ -67,510 +50,420 @@ nil: invalid
 reuse: never
 ```
 
-One EventId always means one immutable event. Delivery retry, redelivery, consumer replay and projection rebuild reuse the same EventId.
+One EventId denotes one immutable event. Delivery retry/redelivery/replay reuses EventId. Same EventId with different immutable record bytes/bindings is an integrity conflict, never an update.
 
-Same EventId with different event type, schema revision, immutable envelope context or payload is an integrity conflict. Last-write-wins is prohibited.
+A best-effort observation dropped before event admission need not mint EventId. A durable audit EventId is fixed before/inside the owning transaction.
 
-Best-effort observations rejected/sampled before event admission need not mint EventId; their loss is represented by bounded counters. Once admitted as an event, EventId is present.
-
-Durable audit EventId is fixed before/inside the authoritative transaction that commits the required audit record.
-
-### 3.2 OperationId
+### OperationId
 
 ```text
-OperationId
 representation: UUIDv7
-owner/issuer: owner of the logical operation
-scope: one independently durable multi-step/retry-capable logical operation
+owner/issuer: authoritative owner of the logical operation
+scope: one independently durable multi-step/retry-capable operation
 ```
 
-OperationId is optional and only exists when the operation needs durable independent correlation. It is not automatically created for every command.
+Optional; not every command gets one. Same-operation retries/reconciliation reuse it. A new independent operation receives a new ID. `CommandRef` remains distinct.
 
-Retries/reconciliation of the same logical operation retain OperationId. A new independent operation receives a new ID.
-
-`CommandRef` and OperationId may coexist and are not aliases.
-
-### 3.3 TransactionId
+### TransactionId
 
 ```text
-TransactionId
 representation: UUIDv7
 owner/issuer: authoritative durable transaction coordinator/owner
 scope: one logical atomic durable mutation transaction
 ```
 
-TransactionId is stable while resolving an ambiguous commit/retry of the same logical transaction. Physical SQL/backend attempts do not receive new canonical TransactionIds merely because a retry occurs.
+Ambiguous commit/retry of the same logical transaction retains TransactionId. Physical DB attempts are not canonical TransactionIds. A new TransactionId requires the prior logical transaction to be proven terminal and a new logical transaction intentionally started.
 
-A new TransactionId requires proof that the prior transaction is terminal and the domain has intentionally begun a new logical transaction.
-
-### 3.4 CorrelationId
+### CorrelationId
 
 ```text
-CorrelationId
 representation: UUIDv7
 owner/issuer: trusted Oteryn root/workflow boundary
 scope: one bounded correlation context
 ```
 
-CorrelationId is optional unless a family explicitly requires it. It provides grouping, never authorization, causality, order or transaction identity.
+Optional unless a family requires it. It is grouping only, never authorization, causality or order. Untrusted external trace/correlation input does not become canonical CorrelationId by assertion.
 
-Untrusted external/client correlation text is not canonical CorrelationId authority. External tracing context is treated as separate bounded diagnostic input.
+### CausationRef
 
-### 3.5 Canonical causation
-
-ANL-01 **does not define a separately generated CausationId UUID**.
-
-Canonical immediate causation is a typed `CausationRef`:
+ANL-01 intentionally defines **no separately minted CausationId UUID**.
 
 ```text
-Event(EventId)
-Command(GameSessionId, CommandId)
-Operation(OperationId)
-Transaction(TransactionId)
+CausationRef =
+  Event(EventId)
+  | Command(GameSessionId, CommandId)
+  | Operation(OperationId)
+  | Transaction(TransactionId)
+  | absent for a genuine root event
 ```
 
-A genuine root event has no CausationRef.
+The existing typed cause identity is the causal reference.
 
-This supersedes any earlier conceptual field that implied causation required a new independent identifier. The cause's existing typed identity is the reference.
-
-### 3.6 AnalyticsActorId
+### AnalyticsActorId
 
 ```text
-AnalyticsActorId
 representation: UUIDv7
 owner/issuer: analytics privacy-identity authority
 scope: analytics_identity_domain + identity_epoch + AnalyticsActorId
 ```
 
-AnalyticsActorId is a pseudonymous analytical identity and is never AccountId/CharacterId/public identity.
+It is pseudonymous analytical identity, never AccountId/CharacterId/public identity.
 
 Mandatory rules:
 
-- no reversible/truncated formatting of AccountId, CharacterId, name or email;
-- purpose/domain-scoped pseudonyms instead of one universal cross-purpose analytics identity;
-- explicit non-zero identity epoch/policy revision;
-- protected mapping to operational identity under least privilege;
-- every privileged mapping lookup is audited;
-- pseudonymous family cannot fall back to raw CharacterId when mapping is unavailable;
-- raw operational identities needed by critical audit use `RESTRICTED_PLAYER_LINKED` or `SECURITY_SENSITIVE` instead.
+- no reversible/truncated derivation from operational identity/name/email;
+- purpose/domain-scoped pseudonyms, not one universal cross-purpose ID;
+- nonzero explicit identity epoch;
+- mapping to operational identity is separately protected and every privileged lookup audited;
+- pseudonymous event families never fall back to raw CharacterId if mapping is unavailable;
+- durable audit needing operational identity uses a restricted privacy class instead.
 
-Exact epoch duration is privacy-policy owned. Production requires a concrete accepted policy.
+Exact epoch duration is privacy-policy owned; production requires an accepted concrete policy.
 
-## 4. Physical durability representation
+## 4. Durable physical representation
 
-Where the above canonical UUIDv7 identities are stored in native game PostgreSQL, DUR-01 applies unchanged:
+Where ANL-owned UUIDv7 identities are stored in native game PostgreSQL, DUR-01 applies unchanged: PostgreSQL `uuid`, full 128 bits, strong type, nil invalid, no reuse.
 
-```text
-PostgreSQL scalar = uuid
-full 128 bits
-strong semantic type preserved
-nil invalid
-no reuse
-```
+FND-02 CommandId remains nonzero full uint64 scoped by GameSessionId; DUR-01 `numeric(20,0)` applies if persisted.
 
-ANL-01 does not design tables or indexes.
-
-FND-02 CommandId remains full non-zero uint64 scoped by GameSessionId; if persisted, DUR-01 `numeric(20,0)` applies.
+ANL-01 does not design tables/indexes.
 
 ## 5. Durability classes
 
-### 5.1 BEST_EFFORT_TELEMETRY
+### BEST_EFFORT_TELEMETRY
 
-Purpose: high-volume gameplay/world analytical facts where bounded loss is acceptable.
+- bounded asynchronous collection;
+- registered sampling/aggregation/drop policy permitted;
+- gameplay fails open when analytics dependency is unavailable;
+- accepted/dropped/retried/lag evidence is counted;
+- gaps remain explicit;
+- never sole proof of item/currency/security conservation.
 
-Rules:
-
-- asynchronous bounded collection;
-- may sample/aggregate/drop only under registered family policy;
-- producer/runtime continues gameplay when analytics dependency is unavailable;
-- accepted/dropped/retried/lag evidence is observable;
-- data gaps are explicit and no completeness claim is allowed;
-- never used as sole proof of item/currency conservation or security-authoritative state.
-
-### 5.2 DURABLE_AUDIT
-
-Purpose: critical economy/security/state-transition evidence requiring durable provenance.
-
-Rules:
+### DURABLE_AUDIT
 
 - never sampled or silently dropped;
-- when evidence is mandatory for an authoritative mutation, mutation + audit/outbox record share one accepted atomic transaction boundary;
-- publication occurs only after commit;
-- publication is at-least-once;
-- EventId and immutable content are stable across retries;
-- every durable consumer deduplicates by EventId and verifies family invariants;
-- replay cannot reapply gameplay mutation;
+- mandatory mutation evidence participates in the same accepted atomic transaction as the authoritative mutation;
+- publication only after commit;
+- at-least-once delivery;
+- immutable EventId/content across retry;
+- consumer EventId dedupe required;
+- replay never replays gameplay mutation;
 - committed backlog is never discarded to satisfy an in-memory limit.
 
-A non-mutating security decision/rejection may be durable audit without TransactionId only if the registered family declares `atomic_mutation_evidence=false`.
+A non-mutating security decision/rejection may be DURABLE_AUDIT without TransactionId only when its registered event type says `atomic_mutation_evidence=false`.
 
-Operational Prometheus/OpenTelemetry/logging remains separate and is not a third event durability class.
+Operational observability is separate, not a third event durability class.
 
 ## 6. Envelope v1
 
-Normative source is `docs/contracts/game-events/v1/foundation.proto`.
+Normative source: `docs/contracts/game-events/v1/foundation.proto`.
 
-### 6.1 Required fields
-
-Every admitted event requires:
+### Required
 
 - `envelope_revision = 1`;
 - EventId;
-- registered nonzero `event_type_id`;
-- registered nonzero `event_schema_revision`;
+- registered nonzero event type ID;
+- registered nonzero event schema revision;
 - durability class;
 - privacy class;
-- non-empty accepted `retention_profile_id` for production use;
-- trusted server `occurred_at_unix_ms` wall timestamp;
-- bounded `server_build_id`;
-- registered protobuf payload;
-- exact 32-byte SHA-256 of the payload bytes.
+- accepted non-empty retention profile ID before production collection;
+- trusted-server wall timestamp;
+- bounded server build ID;
+- registered protobuf payload bytes;
+- exact SHA-256 of those exact payload bytes.
 
-### 6.2 Optional typed context
-
-When semantically applicable:
+### Optional typed context
 
 - WorldId;
-- ChannelId with WorldId;
-- InstanceId with WorldId;
+- WorldId + ChannelId;
+- WorldId + InstanceId;
 - NodeId;
 - GameSessionId;
 - connection_generation with GameSessionId;
-- RuntimeExecutionOrdinal;
+- RuntimeOrderRef;
 - CommandId with GameSessionId;
 - OperationId;
 - TransactionId;
-- transaction_event_ordinal with TransactionId;
+- transaction event ordinal/count;
 - CorrelationId;
 - CausationRef;
 - AnalyticsActorRef;
 - protocol major;
 - ruleset/content revisions.
 
-### 6.3 Validation invariants
+Generic actor/subject/object IDs and arbitrary metadata maps are excluded. Domain identities belong to typed payloads.
 
-- UUID identity fields are exact 16-byte non-nil canonical values and UUIDv7 where their owning contract requires it;
-- ChannelId/InstanceId do not erase WorldId scope;
-- CommandId is nonzero and cannot appear without GameSessionId;
-- connection_generation is nonzero and cannot appear without GameSessionId;
-- transaction_event_ordinal cannot appear without TransactionId;
-- revision strings and registry/policy keys are bounded canonical ASCII according to registry/resource limits;
-- `payload_sha256 == SHA-256(payload)`;
-- credentials, tickets, reconnect material, private keys, secrets and raw authorization proofs are forbidden in envelope/payload;
-- no arbitrary free-form metadata map is provided by the foundation envelope.
+## 7. RuntimeOrderRef
 
-`occurred_at_unix_ms` is correlation evidence, never causality/fencing/order authority.
+FND-03 RuntimeExecutionOrdinal is meaningful only in its exact owner-generation scope. Therefore the event envelope never carries a naked ordinal.
 
-## 7. Typed payload rule
+```text
+RuntimeOrderRef =
+  scope_ownership_generation (nonzero)
+  + runtime_execution_ordinal (nonzero)
+```
 
-Generic `actor_id`, `subject_id`, `object_id` or untyped UUID fields are not part of the common envelope.
+Validation additionally requires a concrete semantic runtime scope in the envelope:
 
-Event families use explicit payload types such as CharacterId, ItemInstanceId, content keys and domain revisions under their owning contract. This prevents UUID type erasure and privacy policy from depending on undocumented metadata conventions.
+```text
+WorldId + ChannelId
+OR
+WorldId + InstanceId
+```
 
-Pseudonymous analytical families use AnalyticsActorRef where required. Restricted durable families may carry raw operational typed identity only under their declared privacy class/purpose.
+RuntimeOrderRef is internal evidence. It is stripped from ordinary public/pseudonymous projections unless their accepted purpose explicitly requires it. It never becomes protocol/client authority and never creates cross-generation/global order.
 
-## 8. Event type registry
+## 8. Transaction event completeness
 
-`GAME_EVENT_FOUNDATION_REGISTRY.json` is the machine-readable allocation/evolution registry.
+When a registered `atomic_mutation_evidence=true` event carries TransactionId, it also carries:
+
+```text
+transaction_event_ordinal
+transaction_event_count
+```
 
 Rules:
 
-1. `event_type_id = 0` invalid.
-2. Event type IDs are positive uint32 and never reused.
-3. Every concrete event type declares owner, payload schema/message, current schema revision, durability class, privacy floor, retention profile and whether it is atomic mutation evidence.
-4. Every event type maintains a nonzero monotonic schema revision.
-5. Removed protobuf field numbers/names are reserved.
-6. Additive fields are allowed only when older compatible consumers can safely ignore them.
-7. Semantics that cannot be safely interpreted by older consumers require a new event type or explicit reviewed family-major transition.
-8. Producer may not emit an unregistered event type/schema as canonical production data.
-9. Durable unknown/unsupported schema is quarantined/rejected without deletion/reinterpretation.
-10. Best-effort unsupported schema may be counted/dropped and cannot be described as complete.
-11. EventId immutable content never changes merely because registry revision advances.
+- both are nonzero;
+- `1 <= ordinal <= count`;
+- every event for the same committed TransactionId declares the same count;
+- committed ordinals are exactly contiguous `1..count`;
+- an ordinal cannot occur twice in one TransactionId;
+- count/ordinal are immutable;
+- count/ordinal never create cross-transaction order.
 
-The initial registry contains no gameplay-domain event IDs intentionally. Domain owners add them later.
+This lets consumers distinguish “event 2 has not arrived yet” from a complete one-event transaction and detect incomplete sets deterministically.
 
-## 9. Ordering model
+Non-atomic observation families may omit both.
 
-ANL-01 defines **no global event total order**.
+## 9. Event type registry and schema evolution
 
-Use the correct existing order evidence:
+`GAME_EVENT_FOUNDATION_REGISTRY.json` is the machine-readable allocation/evolution registry.
+
+- event type ID 0 invalid;
+- positive uint32 IDs are never reused;
+- every event type declares owner, payload schema/message, current schema revision, durability, privacy floor, retention profile and atomic-mutation-evidence flag;
+- per-type schema revision is nonzero and monotonic;
+- removed protobuf field numbers/names are reserved;
+- compatible additive evolution is allowed only when older consumers can safely ignore additions;
+- unsafe semantic change requires a new event type or reviewed family-major transition;
+- unregistered production emission is forbidden;
+- unsupported durable schema is quarantined/rejected without deletion/reinterpretation;
+- unsupported best-effort schema may be counted/dropped but never presented as complete.
+
+The initial registry intentionally contains no gameplay-domain event IDs; owning domain gates add them.
+
+## 10. Exact byte stability and payload hash
+
+Protobuf does not provide a universal canonical byte serialization. ANL-01 therefore does **not** define semantic equality by “decode then reserialize”.
+
+For each admitted event:
+
+1. the producer materializes the exact registered payload bytes once;
+2. `payload_sha256 = SHA-256(exact payload bytes)`;
+3. EventId, event type/schema and exact payload bytes become one immutable event record before the first possibly-ambiguous durable commit/publication attempt;
+4. retry/reconciliation/redelivery of the same EventId reuses those exact payload bytes; it must not reconstruct/reserialize the event from mutable domain objects;
+5. a durable implementation must retain exact bytes or an equivalently proven byte-preserving representation sufficient to reproduce the same committed bytes;
+6. the hash is integrity/conflict evidence, not event identity and not a substitute for EventId/type/schema validation.
+
+This rule prevents a valid protobuf alternative encoding from creating an accidental “same EventId, new event” during retry.
+
+Envelope serialization itself may vary in field ordering, so conflict validation compares registered immutable field values plus exact payload bytes/hash, not raw serialized envelope byte equality.
+
+## 11. Ordering model
+
+There is no global event total order.
 
 ```text
 (GameSessionId, CommandId)           per-session command identity/order
-RuntimeExecutionOrdinal              scope-owner/generation-local execution evidence
-TransactionId + transaction ordinal one atomic transaction's emitted-event order
-CausationRef                         immediate causal graph edge
+RuntimeOrderRef                      scope + ownership-generation-local runtime order
+TransactionId + ordinal/count       one transaction event set/order
+CausationRef                         immediate causal edge
 CorrelationId                        grouping only
-state/domain revisions               authoritative domain progression
-wall timestamp                       cross-system correlation only
-EventId UUIDv7 sorting               storage/locality only
+state/domain revisions               authoritative state progression
+wall timestamp                       correlation only
+EventId UUIDv7 ordering              storage/locality only
 ```
 
-### 9.1 transaction_event_ordinal
+Cross-transaction operation order uses causation and owning domain/state revisions. ANL-01 deliberately creates no global/operation-wide synchronized ordinal.
 
-If one logical committed TransactionId emits N ordered durable events:
+## 12. Atomic mutation/audit boundary
 
-- ordinals are exactly `1..N`;
-- unique and contiguous inside that transaction;
-- immutable;
-- never used as cross-transaction/global order.
+For an operation whose owning contract requires durable audit, before commit the TransactionId, required EventIds, exact event bytes, event count/ordinals and immutable type/schema/scope/privacy/retention bindings are fixed.
 
-Cross-transaction ordering uses causation and domain revisions. No generic globally coordinated operation ordinal is introduced.
-
-## 10. Atomic mutation/audit boundary
-
-For every operation whose owning contract requires durable audit:
-
-### Prepare
-
-- applicable TransactionId is fixed;
-- required EventIds are fixed;
-- audit event set and transaction ordinals are deterministically defined;
-- event type/schema/privacy/retention/scope/payload bindings are fixed.
-
-### Commit invariant
+Valid commit is:
 
 ```text
-(authoritative mutation + all mandatory durable audit records) commit
-OR
-(neither becomes authoritative)
+authoritative mutation + every mandatory durable audit record
 ```
 
-Mutation committed with missing mandatory audit evidence is invalid and must not remain silent.
+or neither becomes authoritative.
 
-DUR-02/DUR-03 define the concrete transaction/isolation/outbox mechanics that prove this invariant.
+Mutation committed while mandatory evidence is absent is invalid and must not remain silent. DUR-02/DUR-03 define physical transaction/isolation/outbox proof.
 
-## 11. Publication and delivery
+## 13. Publication, duplicate delivery and replay
 
-Durable publication semantics are:
+Canonical durable publication is:
 
 ```text
 committed record -> publish at least once -> idempotent consumer
 ```
 
-Rules:
+- only committed records publish;
+- lost ack may cause redelivery;
+- EventId/exact event content never changes across attempts;
+- transport delivery IDs are not EventId;
+- consumer applies at most one derived effect per identical EventId;
+- checkpoint advances only after the consumer projection effect is safely accepted;
+- exact checkpoint persistence belongs to consumer/DUR implementation;
+- no broker-level exactly-once guarantee is required or claimed.
 
-- unpublished records remain recoverable backlog;
-- only committed records are publishable;
-- lost publication acknowledgement may cause redelivery;
-- EventId does not change across delivery attempts;
-- transport/broker delivery ID is not canonical EventId;
-- delivery replay never reissues the original gameplay CommandId;
-- consumer applies at most one derived effect per EventId;
-- consumer checkpoint advances only after the consumer's own projection effect is safely accepted;
-- checkpoint storage/locking is implementation-owned;
-- no architecture claim of broker-level exactly-once is made or required.
+Same EventId + same immutable record is an idempotent duplicate. Same EventId + conflicting immutable record is `ANL_EVENT_ID_CONFLICT`; never overwrite/last-write-wins.
 
-## 12. Duplicate/conflict semantics
+Replay is read-only toward authoritative gameplay. It never reissues original commands/credentials or mutates canonical game state.
 
-### Identical redelivery
+## 14. Out-of-order behavior
 
-Same EventId + same immutable event content:
+Consumers use transaction count/ordinals, CausationRef and domain revisions to buffer, defer, quarantine/reject or rebuild from an explicit derived checkpoint. They never invent missing authoritative state.
 
-```text
-idempotent duplicate
--> no second consumer projection/provenance effect
-```
+Any buffer/replay work remains under registered hard limits.
 
-### Conflicting redelivery
+## 15. Privacy classes
 
-Same EventId + different immutable content:
+1. `INTERNAL_NON_PERSONAL` — internal facts without player-linked identity.
+2. `PSEUDONYMOUS_ANALYTICS` — ordinary analytics through approved AnalyticsActorRef; raw AccountId/CharacterId forbidden by family contract.
+3. `RESTRICTED_PLAYER_LINKED` — operational player/session/item-linked audit/admin evidence; least privilege + access audit.
+4. `SECURITY_SENSITIVE` — abuse/recovery/security evidence; strongest role separation/export/redaction/access auditing.
 
-```text
-ANL_EVENT_ID_CONFLICT / CONFLICT
--> never overwrite or merge silently
--> affected path quarantines/fails safe
--> integrity evidence retained
-```
+Privacy class is a minimum protection floor and cannot be silently downgraded by projections.
 
-Content equality includes event type, schema revision, required immutable envelope bindings and payload SHA-256/bytes. Hash comparison is an optimization/evidence; collision-sensitive semantic validation must not rely solely on a truncated hash.
+## 16. Retention/production collection gate
 
-## 13. Out-of-order and replay
+Every concrete event type binds a non-empty retention profile before production collection. The accepted profile defines at minimum:
 
-Related events arriving outside expected transaction/causal/domain revision order are handled by registered consumer policy:
-
-- buffer within registered limits;
-- defer awaiting predecessor;
-- quarantine/reject if reconciliation cannot prove safety;
-- rebuild from a known checkpoint/snapshot when consumer supports it.
-
-Consumers never fabricate missing authoritative state.
-
-Replay is permitted only for read-only/derived consumers and deterministic test fixtures. Replaying an EventId never invokes gameplay mutation or original credentials/commands.
-
-## 14. Privacy classes
-
-### INTERNAL_NON_PERSONAL
-
-Internal non-player-linked service/content facts. No direct or pseudonymous player identity required.
-
-### PSEUDONYMOUS_ANALYTICS
-
-Ordinary gameplay/world analytical data linked through approved AnalyticsActorId. Raw AccountId/CharacterId is forbidden by family contract unless the class is raised.
-
-### RESTRICTED_PLAYER_LINKED
-
-Operational player/session/item-linked evidence required for durable audit, administration or authorized investigation. Least privilege and access audit required.
-
-### SECURITY_SENSITIVE
-
-Security/recovery/abuse evidence whose disclosure materially increases privacy or attack risk. Strongest role separation, export/redaction and access audit requirements.
-
-A transformation may raise privacy protection; it cannot silently downgrade below the source family/privacy obligations.
-
-## 15. Retention and production collection gate
-
-Every concrete event family must bind a `retention_profile_id` before production collection.
-
-The referenced accepted profile must define:
-
-- explicit purpose;
+- purpose;
 - privacy class;
-- finite ordinary retention duration or ceiling;
+- finite ordinary retention duration/ceiling;
 - allowed roles/consumers;
 - aggregation/anonymization transition if used;
 - deletion/anonymization behavior;
 - export/redaction behavior;
-- legal-hold authorization/audit behavior;
-- profile revision and rollout/rollback.
+- explicit legal-hold authorization/audit;
+- policy revision/rollout/rollback.
 
-`UNBOUNDED` ordinary retention is prohibited. Legal hold is an explicitly authorized exception, not a default profile.
+Ordinary `UNBOUNDED` retention is forbidden. Legal hold is an explicit exceptional state, not the default.
 
-If purpose/privacy/retention/access cannot be resolved to an accepted current profile, production collection/projection for that family is rejected. Privacy does not fail open merely because telemetry is best-effort.
+Unresolved purpose/privacy/retention/access => production collection/projection rejected. Privacy never fails open because telemetry is best-effort.
 
-ANL-01 does not freeze jurisdiction-specific duration numbers. Product/privacy policy must provide them before activation.
+ANL-01 intentionally does not guess jurisdiction/product-specific duration values.
 
-## 16. Pseudonym mapping boundary
+## 17. Pseudonym/access boundary
 
-The mapping from AnalyticsActorId to operational identity:
+AnalyticsActorId mapping:
 
-- is not stored in ordinary analytics datasets;
-- is not available to all balance analysts/operators by default;
-- uses least-privilege authorized lookup;
-- audits requester/purpose/time/affected mapping reference;
+- is separated from ordinary analytics datasets;
+- is not available to every analyst/operator;
+- requires least-privilege purpose authorization;
+- every privileged lookup is audited;
 - never grants gameplay authority;
-- may be destroyed/rotated/anonymized according to accepted retention/deletion policy;
-- does not allow an old identity epoch to be silently reused as the new epoch.
+- follows accepted deletion/rotation/anonymization policy;
+- never silently reuses an old epoch as a new epoch.
 
-If pseudonym resolution is unavailable for a `PSEUDONYMOUS_ANALYTICS` best-effort family, policy may count/drop the event. It may not replace the pseudonym with raw identity.
+If pseudonym resolution is unavailable for best-effort pseudonymous telemetry, policy may count/drop. It may never substitute raw identity.
 
-## 17. Observability/cardinality boundary
+ANL-04 investigation/AI credentials remain read-only and cannot mutate runtime/database, sanction, balance, rollback or deploy.
 
-Prometheus/OpenTelemetry operational metrics do not use AccountId, CharacterId, AnalyticsActorId, ItemInstanceId, TransactionId, EventId, GameSessionId or similar high-cardinality identity as ordinary labels.
+## 18. Observability/cardinality boundary
 
-Operational logs may contain bounded redacted correlation references only under their logging policy. Secrets and raw event payloads are never logged merely to debug an event failure.
+AccountId, CharacterId, AnalyticsActorId, ItemInstanceId, TransactionId, EventId, GameSessionId and similar high-cardinality/player-linked IDs are forbidden as ordinary Prometheus labels.
 
-## 18. Error contract
+Operational logging uses bounded/redacted correlation references only under logging policy. Credentials/private event payloads are never logged merely for debugging.
 
-ANL-01 adds narrower codes mapped to existing Foundation Error Vocabulary categories:
+## 19. Error contract
 
-| Code | Foundation category | Retry/mutation meaning |
+| Code | Foundation category | Required disposition |
 |---|---|---|
 | `ANL_TELEMETRY_CAPACITY_DROPPED` | `CAPACITY_EXCEEDED` | best-effort counted loss; gameplay unchanged |
-| `ANL_AUDIT_DEPENDENCY_UNAVAILABLE` | `DEPENDENCY_UNAVAILABLE` | no downgrade; owning durable operation follows DUR policy |
+| `ANL_AUDIT_DEPENDENCY_UNAVAILABLE` | `DEPENDENCY_UNAVAILABLE` | no downgrade; owning DUR policy decides fail/hold |
 | `ANL_EVENT_MALFORMED` | `INVALID_INPUT` | no consumer effect |
 | `ANL_EVENT_SCHEMA_UNSUPPORTED` | `UNSUPPORTED_REVISION` | no reinterpretation/downgrade |
 | `ANL_EVENT_ID_CONFLICT` | `CONFLICT` | no overwrite/merge |
-| `ANL_EVENT_ORDER_BLOCKED` | `CONFLICT` | buffer/defer/quarantine within bounds |
-| `ANL_REPLAY_CONFLICT` | `CONFLICT` | affected replay/projection stops; gameplay unchanged |
-| `ANL_PRIVACY_POLICY_REJECTED` | `INVALID_INPUT`/`CONFLICT` as boundary-specific mapping | no collection/disclosure |
-| `ANL_INVESTIGATION_ACCESS_DENIED` | `AUTHENTICATION_FAILED`/`CONFLICT` as authn/authz-specific mapping | no evidence disclosure |
-| `ANL_EVIDENCE_INTEGRITY_FAILURE` | `INTERNAL_UNAVAILABLE` | fail safe; preserve bounded evidence |
+| `ANL_EVENT_ORDER_BLOCKED` | `CONFLICT` | bounded defer/quarantine; no invented state |
+| `ANL_REPLAY_CONFLICT` | `CONFLICT` | stop affected replay/projection; gameplay unchanged |
+| `ANL_PRIVACY_POLICY_REJECTED` | `CONFLICT` | no collection/projection/disclosure |
+| `ANL_INVESTIGATION_ACCESS_DENIED` | `CONFLICT` after caller authentication | no evidence disclosure |
+| `ANL_EVIDENCE_INTEGRITY_FAILURE` | `INTERNAL_UNAVAILABLE` | fail safe; retain bounded evidence |
 
-Concrete public messages are redacted and do not contain private payloads/credentials.
+Authentication failure at an investigation boundary remains the existing `AUTHENTICATION_FAILED`; `ANL_INVESTIGATION_ACCESS_DENIED` is the authenticated-but-not-authorized policy denial.
 
-## 19. Resource limits
+Diagnostics redact restricted IDs/payloads and never contain credentials.
 
-The shared `RESOURCE_LIMITS_REGISTRY.json` carries the normative ANL-01 hard ceilings.
+## 20. Resource limits
 
-Principles:
+`RESOURCE_LIMITS_REGISTRY.json` is normative for ANL-01 ceilings.
 
-- ceilings are security/allocation boundaries, not capacity guarantees or recommended tuned defaults;
-- implementation/OPS may configure lower values;
-- peer/event controlled sizes are checked before allocation/decode/work amplification;
-- no application-level event compression in v1;
-- arbitrary metadata maps are absent;
+- limits are security/allocation ceilings, not capacity guarantees or tuned defaults;
+- implementations may configure lower values;
+- sizes/counts checked before allocation/decode/amplification;
+- no application event compression in v1;
+- no arbitrary metadata maps;
 - committed durable backlog is not dropped to enforce in-memory limits;
-- large replay/export work is paged/batched under limits.
+- replay/query/export is paged/batched.
 
-## 20. Foundation failure scenarios
+## 21. Failure scenarios
 
-| Scenario | Status | ANL-01 invariant |
+| Scenario | Status | Invariant |
 |---|---|---|
-| `FS-ANALYTICS-TELEMETRY-OVERFLOW` | `PASS` | bounded best-effort queue, counted loss, no completeness claim/gameplay change |
-| `FS-AUDIT-OUTBOX-BACKLOG` | `PASS` semantic / DUR-02 physical | committed evidence not silently dropped; retryable publication |
-| `FS-EVENT-DUPLICATE-DELIVERY` | `PASS` | EventId dedupe; no gameplay replay |
-| `FS-EVENT-OUT-OF-ORDER` | `PASS` | transaction ordinal/causation/domain revisions; no invented state |
-| `FS-AUDIT-MUTATION-MISMATCH` | `PASS` semantic / DUR-02+DUR-03 physical | mandatory mutation+audit atomicity |
-| `FS-ANALYTICS-PRIVACY-POLICY` | `PASS` | missing purpose/privacy/retention/access blocks production collection |
-| `FS-DETECTOR-FALSE-POSITIVE` | `DEFERRED_BY_ACCEPTED_GATE` | ANL-03; ADR-0006 still forbids automatic sanction |
+| `FS-ANALYTICS-TELEMETRY-OVERFLOW` | `PASS` | bounded counted best-effort loss, no gameplay effect/completeness claim |
+| `FS-AUDIT-OUTBOX-BACKLOG` | `PASS` semantic / DUR-02 physical | committed evidence never silently dropped; retryable publication |
+| `FS-EVENT-DUPLICATE-DELIVERY` | `PASS` | immutable EventId dedupe, no gameplay replay |
+| `FS-EVENT-OUT-OF-ORDER` | `PASS` | count/ordinal + causation + revisions, no invented state |
+| `FS-AUDIT-MUTATION-MISMATCH` | `PASS` semantic / DUR-02+03 physical | mandatory mutation+audit atomicity |
+| `FS-ANALYTICS-PRIVACY-POLICY` | `PASS` | unresolved policy blocks production collection |
+| `FS-DETECTOR-FALSE-POSITIVE` | `DEFERRED_BY_ACCEPTED_GATE` | ANL-03; ADR-0006 forbids automatic sanction |
 | `FS-INVESTIGATION-MUTATION-ATTEMPT` | `DEFERRED_BY_ACCEPTED_GATE` | ANL-04 must prove read-only least privilege |
-| `FS-DB-OUTBOX-BOUNDARY` | `PASS` semantic / DUR-02 physical | no valid mutation commit without mandatory audit record |
+| `FS-DB-OUTBOX-BOUNDARY` | `PASS` semantic / DUR-02 physical | no valid mutation commit without mandatory audit set |
 
-Architecture PASS is not implementation evidence.
+Architecture PASS does not claim runtime implementation evidence.
 
-## 21. Required implementation evidence
+## 22. Required implementation evidence
 
-A later implementation may claim ANL-01 conformance only after deterministic evidence covers:
+Before ANL-01 implementation conformance claim:
 
-- protobuf envelope/payload golden fixtures and cross-language round-trip;
-- malformed/oversized/nesting/resource limit negative corpus;
-- fuzz/property tests for cross-component decoders;
-- UUID type/version/nil/scoped-identity negatives;
-- CommandId/GameSession scoping;
-- payload SHA-256 validation;
-- EventId duplicate identical and conflict paths;
-- transaction_event_ordinal contiguity and duplicate/gap rejection;
-- crash before/after durable commit and publication acknowledgement;
-- at-least-once redelivery with one consumer effect;
+- protobuf golden/cross-language envelope and payload fixtures;
+- malformed/oversized/nesting/resource-limit negative corpus + fuzz/property tests;
+- UUID type/version/nil/scope tests and CommandId/GameSession scope tests;
+- exact payload-byte preservation across ambiguous commit/publication retry and SHA-256 verification;
+- same EventId identical redelivery idempotency + conflicting redelivery rejection;
+- RuntimeOrderRef requires scope + ownership generation and survives generation transitions without ordinal ambiguity;
+- transaction event count/ordinal complete-set, duplicate/gap/inconsistent-count tests;
+- crash before/after transaction commit and publication ack;
 - consumer checkpoint crash recovery;
-- out-of-order causal/transaction/domain revision handling;
-- unsupported schema behavior per durability class;
-- best-effort overflow/drop counters;
-- durable backlog without evidence loss;
-- privacy fixture proving raw identities cannot enter pseudonymous families;
-- pseudonym domain/epoch isolation and privileged mapping access audit;
-- unresolved/expired retention-policy binding blocks production collection;
-- bounded query/replay/export/evidence package handling;
-- no authoritative gameplay mutation from replay/investigation paths.
+- out-of-order causal/revision behavior;
+- unsupported schema behavior by durability class;
+- best-effort queue overflow/drop counters;
+- durable backlog without audit loss;
+- raw-ID rejection in pseudonymous families;
+- analytics identity domain/epoch isolation + privileged mapping access audit;
+- unresolved retention policy blocks collection;
+- bounded replay/query/export/evidence handling;
+- replay/investigation cannot mutate authoritative gameplay.
 
-Physical PostgreSQL atomicity tests are DUR-02/DUR-03 implementation evidence and become mandatory when those layers are authorized.
+Physical PostgreSQL atomicity evidence belongs to DUR-02/DUR-03 once implementation is authorized.
 
-## 22. Downstream gates
+## 23. Downstream gates
 
 After ANL-01 acceptance/lifecycle closeout:
 
-- DUR-02 may finalize PostgreSQL transaction/outbox/checkpoint schema using ANL-01 EventId/TransactionId/publication/privacy semantics;
-- DUR-03 may define item/currency critical event families and prove anti-duplication plus atomic evidence;
-- ANL-02 may define gameplay/balance/world metrics on registered event families;
-- ANL-03 may define economy/security detectors/cases without becoming enforcement authority;
-- ANL-04 may implement least-privilege read-only investigation only after its own contract;
-- no production analytics collection is authorized merely by ANL-01 acceptance.
+- DUR-02 may finalize PostgreSQL schema/transactions/outbox/checkpoints using these semantics;
+- DUR-03 may define item/currency event families and prove conservation + atomic evidence;
+- ANL-02/03/04 may refine consumers/detectors/investigation under their own gates;
+- ANL-01 alone authorizes no production collection.
 
-## 23. Non-goals
+## 24. Non-goals
 
-This contract does not authorize or select:
+No database layout/isolation/locks/migrations/RPO/RTO; no broker/warehouse/lake/dashboard product; no runtime collector; no exact legal/product retention durations; no speculative gameplay payload catalogue; no detector thresholds/auto-bans; no AI mutation; no Platform writes; no deployment/production collection.
 
-- database table/index/partition/outbox/checkpoint schema;
-- isolation/locking/retry/RPO/RTO;
-- Kafka/NATS/Pulsar/Redpanda/RabbitMQ or other broker;
-- ClickHouse/warehouse/data lake/object store/Grafana topology;
-- runtime collector implementation;
-- exact product/jurisdiction retention durations;
-- gameplay event payload families beyond foundation registry rules;
-- detector/model thresholds;
-- automated bans/sanctions;
-- AI mutation rights;
-- Platform writes;
-- deployment/traffic/production collection.
+## 25. Acceptance rule
 
-## 24. Acceptance rule
-
-ANL-01 becomes accepted only when:
-
-- analysis/contract/IDL/registry/resource-limit package is internally consistent with accepted ADR-0006/FND/DUR-01;
-- exact-head repository governance/CI pass;
-- architecture/security/privacy/data-integrity review has zero material findings;
-- zero unresolved material review threads remain;
-- accepted head is squash-merged unchanged;
-- a separate lifecycle closeout archives/releases ownership and closes Issue #135.
+ANL-01 is accepted only when the analysis/contract/IDL/registry/resource-limit package is internally consistent with ADR-0006/FND/DUR-01, exact-head governance/CI pass, terminal architecture/security/privacy/data-integrity review has zero material findings, zero material review threads remain, the accepted head is squash-merged unchanged, and a separate lifecycle closeout archives ownership and closes Issue #135.
