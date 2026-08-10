@@ -4,15 +4,16 @@
 task_id: OTV2-20260810-anl01-game-event-audit-foundation
 title: ANL-01 game event and audit foundation
 mode: CONTRACT
-status: active
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/anl01-game-event-audit-foundation
 issue: 135
+pr: 141
 trusted_base_sha: ef42fa47ab054ab8aa304c017307c1945f931b59
 owner: GPT-5.6 Sol architecture continuation session
 created_at: 2026-08-10T14:41:00+02:00
-updated_at: 2026-08-10T15:01:00+02:00
+updated_at: 2026-08-10T15:00:00+02:00
 repair_cycles_for_current_gate: 2
 max_repair_cycles_for_current_gate: 3
 blocker: null
@@ -28,59 +29,45 @@ owned_paths:
 
 ## Goal
 
-Close `ANL-01 — Game Event and Audit Foundation` after accepted/lifecycle-closed DUR-01 without runtime/DB/broker/production implementation.
+Close architecture-only `ANL-01 — Game Event and Audit Foundation` after accepted/lifecycle-closed DUR-01.
 
 ## Canonical coordination
 
-- canonical issue: #135;
-- accidental duplicate/placeholder issues #136–#140 are closed and have no architecture authority;
+- Issue #135; delivery PR #141.
+- Accidental duplicate/placeholder issues #136–#140 are closed and have no architecture authority.
 - #115 entitlement gate remains separate/blocking on Oteryn-Platform#944.
 
-## Owned decisions
+## Delivered candidate decisions
 
-Event/operation/transaction/correlation identities; typed causation; AnalyticsActorId; protobuf envelope/registry; durability/privacy/retention; immutable event retry; RuntimeOrderRef; TransactionEventRef; atomic audit/publication/dedupe/replay; failure/error/resource limits/evidence.
-
-## Explicit exclusions
-
-No PostgreSQL layout/isolation/locks/migrations/RPO/RTO; no DUR-03 conservation semantics; no broker/warehouse/lake/dashboard; no runtime collector; no ANL-02/03/04 implementation; no Platform writes; no production collection/deployment/traffic.
+- protobuf/proto3 `oteryn-game-events` v1, broker/DB independent;
+- EventId/OperationId/TransactionId/CorrelationId UUIDv7 identities and typed CausationRef;
+- AnalyticsActorId scoped by domain+epoch with a fresh pseudonym each epoch;
+- BEST_EFFORT_TELEMETRY vs DURABLE_AUDIT;
+- EventId binds all semantic envelope values + exact payload bytes across retry/redelivery;
+- RuntimeOrderRef pairs scope ownership generation with runtime ordinal;
+- TransactionEventRef atomically carries TransactionId + ordinal + count;
+- no global event order; atomic audit, at-least-once publication, EventId dedupe and read-only replay;
+- privacy/retention production gate and shared resource/error/failure integration.
 
 ## Repair history
 
-### Cycle 1 — byte stability, runtime order scope, transaction completeness
+### Cycle 1
 
-Findings:
+Fixed protobuf retry byte drift, naked RuntimeExecutionOrdinal scope ambiguity and missing transaction event total count.
 
-1. Protobuf alternate valid serializations could make reserialized same-EventId retry drift in bytes/hash.
-2. Naked RuntimeExecutionOrdinal was ambiguous without ownership generation.
-3. Transaction ordinal without total count could not prove complete event set.
+### Cycle 2
 
-Repairs:
-
-- exact payload bytes fixed before first ambiguous durable attempt and reused across same-EventId retry/redelivery;
-- RuntimeOrderRef = scope ownership generation + runtime ordinal, with concrete channel/instance scope;
-- count added to transaction event evidence.
-
-### Cycle 2 — structural transaction binding, epoch unlinkability, full envelope immutability
-
-Findings:
-
-1. Independent TransactionId/ordinal/count fields still allowed partial malformed combinations.
-2. Epoch-scoped AnalyticsActorId still allowed the same UUID to be reused across epochs, defeating ordinary unlinkability.
-3. Payload byte immutability did not explicitly freeze all semantic envelope values across same-EventId ambiguous retry.
-
-Repairs:
-
-- one atomic `TransactionEventRef(transaction_id, ordinal, count)`; later observations use CausationRef::Transaction instead of partial membership;
-- same operational actor receives a fresh AnalyticsActorId in each new epoch; ordinary consumers get no implicit cross-epoch join key;
-- EventId now binds all semantic envelope field values plus exact payload bytes; raw protobuf envelope byte ordering is not semantic.
+Fixed partial TransactionId/ordinal/count combinations via TransactionEventRef, required fresh AnalyticsActorId across identity epochs, and froze all semantic envelope values across same-EventId retry/redelivery.
 
 ## Final acceptance plan
 
-1. One final adversarial review remains; repair budget `2/3`.
-2. If no material issue remains, freeze final head. If one exists, cycle 3 is the last permitted repair; any later material finding blocks/rotates the gate.
-3. Require exact-head Agent Governance, Dependency Review and CodeQL PASS.
-4. Require zero unresolved material review threads and terminal exact-head architecture/security/privacy/data-integrity PASS.
-5. Squash merge unchanged accepted head.
-6. Separate lifecycle closeout archives task, releases ownership and closes Issue #135.
+- final adversarial review now targets PR #141 exact head; repair budget `2/3`;
+- if no material issue remains, head freezes and no bookkeeping mutation is allowed;
+- if a material issue exists, cycle 3 is the last allowed repair and a later finding blocks/rotates the gate;
+- exact-head Agent Governance, Dependency Review and CodeQL PASS;
+- zero unresolved material threads;
+- terminal exact-head architecture/security/privacy/data-integrity PASS;
+- squash merge unchanged head;
+- separate lifecycle closeout archives/releases ownership and closes #135.
 
-Runtime/component/browser E2E is `NOT_APPLICABLE` for this architecture-only gate.
+No PostgreSQL/runtime/broker/detector/Platform/deployment/production implementation is authorized. Runtime/component/browser E2E is `NOT_APPLICABLE`.
