@@ -9,7 +9,7 @@ repository: blakinio/Oteryn-v2
 delivery_issue: 130
 programme_issue: 112
 delivery_pr: 131
-closeout_pr: null
+closeout_pr: 132
 trusted_base_sha: 3d07b3faaca683514fdfe6291e974f9195e2f763
 final_delivery_head_sha: ee9516d3a9b95cedac3155f1946210e68328d4cc
 delivery_semantic_tree_pre_ci_trigger_sha: a4d2d2689de40f90e5f13780fa5ed450afbf4244
@@ -82,7 +82,7 @@ cdca8f0ad2c8267c7533e52a4f9a48dc128b231d
 
 ## FND-04 programme result
 
-With FND-04A and FND-04B already accepted/lifecycle-closed and FND-04C now accepted, the closeout PR may make the final canonical status transition:
+With FND-04A and FND-04B already accepted/lifecycle-closed and FND-04C now accepted, closeout PR #132 may make the final canonical status transition:
 
 ```text
 FND-04C -> ACCEPTED AND LIFECYCLE-CLOSED
@@ -90,11 +90,11 @@ FND-04 overall -> ACCEPTED AND CLOSED
 programme #112 -> COMPLETE
 ```
 
-The closeout itself changes no A/B/C authority semantics. It archives/releases task ownership and updates the current programme overlay.
+The closeout changes no A/B/C authority semantics. It archives/releases task ownership and updates the current programme overlay.
 
 ## Next ordered architecture work
 
-After this closeout merges and programme #112 closes:
+After closeout PR #132 merges and programme #112 closes:
 
 - ANL-01 and DUR-01 are the next dependency workstreams;
 - DUR-02/DUR-03 remain gated by required ANL-01/DUR-01 decisions;
