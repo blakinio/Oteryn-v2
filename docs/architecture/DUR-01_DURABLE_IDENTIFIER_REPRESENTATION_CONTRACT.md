@@ -275,26 +275,29 @@ Platform `identities.id` versus canonical AccountId is the reference example of 
 
 Legacy identifiers are source provenance, not native identity.
 
-Every accepted import that needs identity continuity uses an explicit mapping conceptually equivalent to:
+Every accepted import that needs identity continuity uses a stable mapping conceptually equivalent to:
 
 ```text
 (source_system,
- source_revision_or_namespace,
+ source_namespace,
  source_entity_kind,
  legacy_identifier)
     -> native_typed_identity
 ```
 
+`source_namespace` identifies the stable identity namespace in which the legacy identifier is meaningful. Export/snapshot revision, source commit/hash, migration classification and import-run identity are provenance fields and do **not** alter the mapping key merely because a later snapshot is imported. A separately accepted migration contract may define a different namespace only when it proves that the source system itself reused/changed identifier semantics across namespaces.
+
 Required invariants:
 
-1. Exact retry of one proven source entity resolves to the same mapping.
-2. The same source tuple cannot resolve to two native identities.
-3. Two distinct semantic source entities cannot silently collapse into one native identity.
-4. Collision or ambiguity fails closed; existing native entity is never overwritten.
-5. Legacy numbers are not encoded into UUID bytes as native identity.
-6. Import tooling cannot mint Platform-owned AccountId/WorldId/ChannelId; it consumes Platform-authorized native mappings.
-7. Mapping provenance preserves the exact source revision/classification needed for deterministic audit/re-import.
-8. A failed/partial import cannot leave a second alternative canonical identity for the same proven source object.
+1. Retry or later snapshot of one proven stable source entity resolves to the same mapping even when revision/import-run provenance changes.
+2. The same stable source key cannot resolve to two native identities.
+3. A changed source revision may update provenance or mutable imported state but cannot silently mint another native identity for the same stable source key.
+4. Two distinct semantic source entities cannot silently collapse into one native identity.
+5. Collision or ambiguity fails closed; existing native entity is never overwritten.
+6. Legacy numbers are not encoded into UUID bytes as native identity.
+7. Import tooling cannot mint Platform-owned AccountId/WorldId/ChannelId; it consumes Platform-authorized native mappings.
+8. Mapping provenance preserves exact source revision/snapshot/classification/import-run evidence for deterministic audit and re-import.
+9. A failed/partial import cannot leave a second alternative canonical identity for the same proven stable source entity.
 
 DUR-02/DUR-04 own physical mapping schema/tooling and transaction mechanics.
 
@@ -399,7 +402,13 @@ Wrong-world scoped references fail even when a component UUID is well formed.
 
 ### 20.6 Legacy import
 
-Prove idempotent repeated import, conflict rejection, no overwrite/collapse and no game-side minting of Platform-owned native IDs.
+Prove:
+
+- repeated import and later snapshots of the same stable source key resolve to one native identity;
+- source revision/provenance changes alone cannot allocate a second native identity;
+- conflicting stable source mapping fails closed;
+- collision/ambiguity does not overwrite/collapse native state;
+- Platform-owned identities are not minted by game migration tooling.
 
 ### 20.7 Migration compatibility
 
@@ -434,7 +443,7 @@ This contract does not authorize:
 
 DUR-01 is accepted only when:
 
-- the bounded analysis and this contract are internally consistent with current FND-ID-01/ADR-0004/ADR-0006/FND-02/FND-03/FND-04 and Platform ADR 0028;
+- the bounded analysis and this contract are internally consistent with current FND-ID-01/ADR-0004/ADR-0006/FND-02/FND-03/FND-04 and Platform ADR 0028/0029;
 - exact-head repository governance/CI pass;
 - an architecture/security/data-integrity review finds zero material issues;
 - zero unresolved material review threads remain;
