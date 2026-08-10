@@ -42,6 +42,8 @@ Architecture acceptance is not runtime implementation. Use [Architecture Status 
 - [ADR-0012 — Character authority and Platform lifecycle boundary](ADR-0012-character-authority-and-platform-lifecycle-boundary.md)
 - [ADR-0013 — Platform database technology independence](ADR-0013-platform-database-technology-independence.md)
 - [ADR-0014 — TCP-default, QUIC-opt-in dual gameplay transport strategy](ADR-0014-dual-gameplay-transport-tcp-default-quic-opt-in.md)
+- [ADR-0015 — GameNode implementation shape is not yet frozen](ADR-0015-gamenode-implementation-shape-not-yet-frozen.md)
+- [ADR-0016 — Gameplay transport client-mode runtime readiness](ADR-0016-gameplay-transport-client-mode-runtime-readiness.md)
 
 ## Accepted foundation contracts
 
@@ -84,5 +86,9 @@ SIM-DETERMINISM-01
 ## Transport rule
 
 `ADR-0014` accepts the dual-transport strategy but does not register QUIC as an authoritative transport profile and does not claim any gameplay transport runtime implementation. For the explicitly refined deferred-QUIC strategy scope, ADR-0014 takes precedence; FND-02 remains authoritative everywhere else, including the current transport registry, application protocol, framing/semantic requirements, sequencing, revisions, bounded inputs and measured-benefit prerequisite.
+
+`ADR-0016` clarifies that transport mode names such as `TCP_ONLY` are future mode vocabulary until their transport/runtime path is separately implemented and proven; the machine-readable transport policy remains authoritative for current runtime availability.
+
+`ADR-0015` clarifies that the modular-monolith GameNode wording in the 2026-08-10 programme refinement is a preferred starting hypothesis, not frozen process/service topology.
 
 Functional gameplay networking requires later implementation authority and proof. Functional QUIC admission/recovery additionally requires a later accepted delivery that registers a stable QUIC transport profile and reconciles both FND-04 fresh-admission and reauthenticated-recovery grant contracts. No QUIC adapter, library choice, endpoint rollout or production traffic is authorized by ADR-0014 alone.
