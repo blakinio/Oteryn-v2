@@ -16,8 +16,8 @@ historical_reviewed_evidence_pr: 109
 historical_reviewed_evidence_head: bf82e392d6ef8b1e627849cdc7383af9a7c987ae
 owner: GPT-5.6 Sol architecture continuation session
 created_at: 2026-08-10T12:50:00+02:00
-updated_at: 2026-08-10T13:00:00+02:00
-repair_cycles_for_current_gate: 1
+updated_at: 2026-08-10T13:08:00+02:00
+repair_cycles_for_current_gate: 2
 max_repair_cycles_for_current_gate: 3
 blocker: null
 owned_paths:
@@ -31,54 +31,54 @@ public_contracts:
 
 ## Goal
 
-Deliver only bounded FND-04B from replacement programme #112 after accepted FND-04A. Freeze reconnect, recovery and continuity authority/security semantics without runtime implementation and without duplicating the final FND-04C error/status integration layer.
+Deliver bounded FND-04B from programme #112 after accepted FND-04A. Freeze reconnect, recovery and continuity authority/security semantics without runtime implementation and without duplicating FND-04C integration.
 
 ## Trusted inputs
 
-- `main@2fd7bac4879f381d5b97230732076df2e9c61f95`;
-- accepted FND-04A fresh-admission authority/profile;
-- accepted FND-02 transport/generation/reconciliation/liveness primitives;
-- accepted FND-03 runtime ownership/fencing/recovery semantics;
-- accepted disconnect/re-entry owner decisions and privacy/forensic baselines;
-- Foundation Error Vocabulary;
-- Issue #127 / programme #112 / delivery PR #128;
-- superseded PR #109 exact head `bf82e392...` as reviewed historical evidence only.
-
-## Scope
-
-Included: reconnect proof; healthy-binding non-preemption; PREPARE/COMMIT; attempt reconciliation; server-authoritative liveness and `ControlLossEpoch`; one exact 4-second defensive PvE protection activation per eligible loss epoch; same-GameSession reconnect/reauth recovery; post-grace existing-actor recovery with new GameSession; recovery locator/current placement; GameNode replacement/fencing; independent revision bindings; recovery security profile; race/crash/failover evidence.
-
-Excluded: runtime/protocol/persistence/Platform/KMS/deployment implementation; entitlement implementation; healthy-session migration protocol; final FND-04C integration.
+Current `main@2fd7bac4879f381d5b97230732076df2e9c61f95`; accepted FND-04A/FND-02/FND-03; accepted disconnect/re-entry owner decisions; Foundation Error Vocabulary; Issue #127 / PR #128; superseded #109 as reviewed historical evidence only.
 
 ## Repair history
 
-### Cycle 1 — structural schema vs semantic binding/profile/revision classification
+### Cycle 1 — structural schema vs semantic binding/profile/revision
 
-Initial profile tables used words such as `exact` for `iss`/`aud`/`purpose`/`profile`/protocol values while the normative precedence separately required authenticated binding or revision outcomes. That could let conforming implementations classify the same signed credential as `MALFORMED` versus `BINDING_MISMATCH`/`REVISION_UNSUPPORTED`.
+Recovery profile schema now owns only claim membership/type/canonical lexical shape. Authenticated semantic `iss`/`aud`/`typ`/`purpose` mismatch maps to `RECOVERY_GRANT_BINDING_MISMATCH`; unsupported profile/protocol/transport or independent gameplay revision maps to `RECOVERY_GRANT_REVISION_UNSUPPORTED`. Invalid signature preempts otherwise well-formed semantic defects.
 
-Repair: authenticated payload schema now owns only claim membership, type and canonical lexical shape. After successful signature and structural schema validation, semantic `iss`/`aud`/`typ`/`purpose` mismatch maps to `RECOVERY_GRANT_BINDING_MISMATCH`; unsupported profile/protocol/transport or independent gameplay revision maps to `RECOVERY_GRANT_REVISION_UNSUPPORTED`. Invalid signature still preempts otherwise well-formed semantic defects. Recovery-profile fixtures explicitly cover this precedence.
+### Cycle 2 — grace origin, failover deadline continuity and reconnect-proof delivery
 
-## Mandatory historical corrections
+Review found that numeric grace may be deferred but its origin cannot be ambiguous, and proof rotation needed a safe lost-COMMIT-response contract.
 
-- historical `2s/5s/15s` reconnect/liveness numbers are non-canonical; only the accepted 4-second protection is exact;
+Accepted repair:
+
+- same-session grace begins exactly at the server-authoritative `ControlLossEpoch` boundary, never at socket close, first missed probe, cleanup or reconnect attempt;
+- original grace deadline/remaining eligibility survives GameNode/runtime-owner replacement and may never restart on failover;
+- `ControlLossEpoch` has internal non-reused discriminator/equivalent evidence and protection activation/expiry state survives failover, preventing a second 4-second window from restart/retry;
+- PREPARE may deliver an **inactive candidate successor reconnect proof** bound to exact attempt/session/candidate generation/transport; it has no authority before COMMIT;
+- COMMIT atomically activates candidate proof and fences predecessor proof;
+- aborted/expired/superseded candidate proof is permanently invalid;
+- same-attempt PREPARE/COMMIT reconciliation does not mint a second proof or authority transition;
+- if a committed transport/proof is lost, predecessor proof never revives; reauthenticated recovery is required;
+- ambiguous post-crash commit state must be reconstructed from fenced authority evidence before any further same-session authority, otherwise fail closed.
+
+## Historical corrections retained
+
+- historical `2s/5s/15s` values are non-canonical; only exact 4-second protection is frozen;
 - no opaque `compatibility_revision`;
-- verifier-anchored recovery trust scope + deterministic crypto/schema precedence;
-- authenticated source-age <=5s + monotonic anti-rollback security/trust evidence;
+- verifier-anchored trust + deterministic crypto/schema precedence;
+- source-age <=5s + anti-rollback security/trust evidence;
 - AccountId->CharacterId before world/actor/controller classification.
 
 ## Validation plan
 
-- exact three-path scope from trusted main;
-- architecture/profile cross-check and full state-machine/race review;
-- verify protection epoch cannot be manufactured/reset;
-- verify healthy current generation cannot be evicted by bearer proof;
-- verify stale generation/proof/prepared candidate cannot command/fence winner;
-- verify GameNode replacement never guesses continuity;
-- full exact-head architecture/security self-review;
-- exact-head Agent Governance, Dependency Review and CodeQL PASS;
+- exact three-path scope;
+- architecture/profile/state-machine/race cross-check;
+- protection/grace/proof exactly-once and failover continuity review;
+- healthy-binding non-preemption review;
+- stale generation/proof/prepared candidate fencing review;
+- GameNode no-guessed-continuity review;
+- exact-head Governance/Dependency/CodeQL PASS;
 - zero unresolved material threads;
 - terminal exact-head architecture/security review with zero material findings;
-- squash merge unchanged accepted head only;
+- squash merge unchanged accepted head;
 - separate lifecycle closeout before FND-04C.
 
-Runtime/component/browser E2E: `NOT_APPLICABLE` for architecture-only delivery.
+Runtime/component/browser E2E: `NOT_APPLICABLE`.
