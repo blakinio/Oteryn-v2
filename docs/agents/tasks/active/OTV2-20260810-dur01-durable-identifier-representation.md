@@ -9,11 +9,11 @@ repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/dur01-durable-identifier-representation
 issue: 111
-pr: null
+pr: 133
 trusted_base_sha: adb0882a5ddbe42944fe955f5effb78fd5495422
 owner: GPT-5.6 Sol architecture continuation session
 created_at: 2026-08-10T13:56:00+02:00
-updated_at: 2026-08-10T14:17:00+02:00
+updated_at: 2026-08-10T14:20:00+02:00
 repair_cycles_for_current_gate: 2
 max_repair_cycles_for_current_gate: 3
 blocker: null
@@ -27,6 +27,13 @@ owned_paths:
 ## Goal
 
 Close the Stage-B `DUR-01` architecture gate after accepted/lifecycle-closed FND-04. Freeze only the durable/database identity representation required before persistence and item/economy contracts can safely design authoritative durable state.
+
+## Delivery
+
+- Issue: #111
+- PR: #133
+- trusted base: `main@adb0882a5ddbe42944fe955f5effb78fd5495422`
+- exact final head will be recorded on immutable PR review evidence after the final self-review; no self-referential SHA commit.
 
 ## Normative accepted inputs
 
@@ -87,13 +94,11 @@ Repair: persisted CommandId uses PostgreSQL `numeric(20,0)` constrained to `1..1
 
 ## Final acceptance plan
 
-1. Bounded analysis resolves all Issue #111 representation questions against current accepted authority.
-2. Final DUR-01 contract includes only decisions closed by that analysis.
-3. Current programme status remains transition-safe.
-4. Full architecture/security/data-integrity self-review uses max 3 repair cycles; current usage `2/3`.
-5. Exact-head Agent Governance, Dependency Review and CodeQL must PASS.
-6. Zero unresolved material review threads and terminal exact-head review with zero material findings are required.
-7. Squash merge only on unchanged accepted head.
-8. Separate lifecycle closeout/archive closes Issue #111 and releases ownership.
+1. Final self-review against the exact four-path candidate; max repair cycles 3, current usage `2/3`.
+2. If a third material issue exists, repair it once and freeze; any later material finding blocks this gate.
+3. Exact-head Agent Governance, Dependency Review and CodeQL must PASS.
+4. Zero unresolved material review threads and terminal exact-head review with zero material findings are required.
+5. Squash merge only on unchanged accepted head.
+6. Separate lifecycle closeout/archive closes Issue #111 and releases ownership.
 
 Runtime/component/browser E2E is `NOT_APPLICABLE` for this architecture-only gate; later physical persistence implementation requires the database integration evidence defined by the contract.
