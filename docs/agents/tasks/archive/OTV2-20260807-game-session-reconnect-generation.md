@@ -6,8 +6,8 @@ status: completed
 repository: blakinio/Oteryn-v2
 branch: docs/OTV2-20260807-game-session-reconnect-generation
 pr: 73
-final_head_sha: 037a405709e66917fd38780b200bd09cc9cf18c6
-merge_commit: af094beeb91bfbbc71bb715a7991af32ca25ff16
+final_head_sha: 037a8ef18989edc6e211cde63852d88cf0b996a0
+merge_commit: af094d4d75d3a19db63714810f263059c78f7b3a
 ownership_released: true
 ```
 
@@ -23,7 +23,7 @@ No architecture, runtime, production or cross-repository behavior is changed.
 last_progress: Merged PR #73 task archived and advisory ownership released.
 status: completed
 pr: 73
-final_head_sha: 037a405709e66917fd38780b200bd09cc9cf18c6
+final_head_sha: 037a8ef18989edc6e211cde63852d88cf0b996a0
 blocker: null
 next_action: No further action; ownership released.
 ```
