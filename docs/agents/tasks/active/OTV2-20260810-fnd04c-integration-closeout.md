@@ -10,11 +10,11 @@ base_branch: main
 branch: docs/fnd04c-error-failure-compatibility-integration
 issue: 130
 programme_issue: 112
-pr: null
+pr: 131
 trusted_base_sha: 3d07b3faaca683514fdfe6291e974f9195e2f763
 owner: GPT-5.6 Sol architecture continuation session
 created_at: 2026-08-10T13:12:00+02:00
-updated_at: 2026-08-10T13:28:00+02:00
+updated_at: 2026-08-10T13:30:00+02:00
 repair_cycles_for_current_gate: 2
 max_repair_cycles_for_current_gate: 3
 blocker: null
@@ -35,6 +35,13 @@ public_contracts:
 
 Deliver the final bounded FND-04 gate after accepted/closed FND-04A and FND-04B. Integrate their semantics without duplication, close diagnostics/correlation gaps, freeze failure/compatibility/evidence obligations and prepare transition-safe final FND-04 completion.
 
+## Delivery
+
+- Issue: #130
+- PR: #131
+- base: current trusted `main@3d07b3faaca683514fdfe6291e974f9195e2f763`
+- exact final head will be recorded on immutable PR review surface after all task/PR metadata is complete; no self-referential SHA commit.
+
 ## Repair history
 
 ### Cycle 1 — transition-safe programme status
@@ -43,9 +50,9 @@ Initial status would become stale between delivery merge and lifecycle closeout.
 
 ### Cycle 2 — canonical failure-scenario status vocabulary
 
-Initial C scenario table used `PASS (ARCHITECTURE)`, while `FOUNDATION_FAILURE_SCENARIOS.md` allows exactly `PASS`, `NOT_APPLICABLE`, `BLOCKED`, `DEFERRED_BY_ACCEPTED_GATE`.
+Initial C scenario table used `PASS (ARCHITECTURE)`, while the Foundation Failure Scenario Catalogue allows exactly `PASS`, `NOT_APPLICABLE`, `BLOCKED`, `DEFERRED_BY_ACCEPTED_GATE`.
 
-Repair: C now uses exactly those canonical status tokens. The evidence column separately states that `PASS` at this architecture gate means the contract freezes the invariant and names future executable evidence; it does not falsely claim runtime implementation/tests already exist.
+Repair: C now uses exactly those tokens. Evidence separately explains that `PASS` at this architecture gate means contract coverage + named future executable evidence, not a false runtime implementation claim.
 
 ## Non-regression rules
 
@@ -58,7 +65,7 @@ Repair: C now uses exactly those canonical status tokens. The evidence column se
 
 - exact five-path diff / clean ancestry;
 - complete scenario applicability + Error Vocabulary review;
-- scenario-to-error-to-mutation matrix review;
+- scenario-to-error-to-mutation review;
 - rollout/rollback/privacy review;
 - exact-head Governance/Dependency/CodeQL PASS;
 - zero unresolved material threads;
