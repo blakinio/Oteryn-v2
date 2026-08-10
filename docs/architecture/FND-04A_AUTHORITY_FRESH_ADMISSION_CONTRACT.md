@@ -5,6 +5,7 @@
 - Replacement programme: Issue #112
 - Owning successor repair: Issue #120 (`FND-04A-R1`)
 - Reconstructed reviewed candidate: PR #114 exact head `79678485d009c22ece2736c822d6b75b6d235ad2`; #114 remains superseded/unmerged after exhausted repair budget
+- Successor repairs: deterministic protected-header/binding classification and verifier-anchored pre-signature trust scope
 - Repository: `blakinio/Oteryn-v2`
 - Trusted reconstruction base: `main@43ca28f1f0f259c08a275c92946aa35f05d4d112`
 - Historical reviewed evidence only: superseded PR #109, final head `bf82e392d6ef8b1e627849cdc7383af9a7c987ae`
@@ -78,6 +79,8 @@ The profile uses JWS Compact JWT, fully specified `alg=Ed25519`, rejects depreca
 
 For deterministic security/error semantics, structural protected-header checks happen before authentication, but a **well-formed semantic `typ` mismatch is classified only after successful signature verification**. Malformed `typ` remains invalid input; failed key trust/signature remains authentication failure; correctly signed wrong `typ` joins wrong `iss`/`aud`/`purpose` as `ADMISSION_GRANT_BINDING_MISMATCH`.
 
+Before signature verification, the admission trust scope is selected exclusively from the verifier-configured expected fresh-entry v1 context: expected issuer, audience, profile, purpose and admission-signing key purpose. Unauthenticated token `iss`, `aud`, `profile`, `purpose` or `typ` never selects, broadens or retargets trust. `kid` may select only within that fixed trusted set. Semantic bindings and unsupported-profile classification occur only after successful signature verification.
+
 The grant MUST bind separate authoritative gameplay dimensions rather than one overloaded compatibility token:
 
 ```text
@@ -135,9 +138,9 @@ Precommit checks are fail-fast eligibility only.
 
 1. FND-02 material limits;
 2. parser/size/protected-header structural bounds, including exact `alg`, bounded `kid`, bounded structurally valid `typ` and forbidden-member rejection, without semantic `typ` comparison;
-3. authenticated current signing-key/profile evidence provenance/freshness/anti-rollback + trusted key lookup;
+3. using the verifier-configured expected fresh-entry v1 issuer/profile/key-purpose scope only, authenticate current signing-key/profile trust/revocation evidence provenance/freshness/anti-rollback and resolve `kid` only inside that fixed trusted set; unauthenticated token semantic values cannot select or broaden the scope;
 4. signature;
-5. after successful signature, exact issuer/audience/type/purpose/time/profile semantics;
+5. after successful signature, exact issuer/audience/type/purpose semantics and unsupported-profile classification;
 6. canonical claims/UUID/generations;
 7. current Platform-security evidence provenance/freshness/anti-rollback + account generation/state;
 8. route/runtime/current target/ownership + independent protocol/transport/ruleset/content/map/world-policy/offer revisions;
@@ -149,14 +152,14 @@ Precommit checks are fail-fast eligibility only.
 14. one atomic final revalidation + authority commit;
 15. publish success after commit only.
 
-A structurally valid but semantically wrong `typ` cannot bypass authentication and cannot be classified as a binding mismatch until signature success. This ordering is normative and is detailed by the companion profile.
+A structurally valid but semantically wrong `typ` cannot bypass authentication and cannot be classified as a binding mismatch until signature success. Likewise, a structurally valid unsupported `profile` cannot retarget pre-signature trust and cannot be classified as unsupported until signature success. This ordering is normative and is detailed by the companion profile.
 
 ### 7.1 Final revalidation
 
 Immediately before/atomically with authority creation revalidate:
 
 - JWT time/lifetime/skew;
-- exact key/profile trust using authenticated source observation provenance, accepted upper-bound age <=5s and non-rollback source revision/fence;
+- exact key/profile trust for the verifier-configured expected fresh-entry v1 context using authenticated source observation provenance, accepted upper-bound age <=5s and non-rollback source revision/fence;
 - current Platform-security evidence using authenticated source observation provenance, accepted upper-bound age <=5s, non-rollback source revision/fence and account generation/state;
 - route/runtime observation, target lifecycle, scope ownership, runtime owner/placement/readiness;
 - protocol_major and transport_profile;
@@ -203,7 +206,7 @@ monotonic/comparable source_revision (or equivalently strong non-rollback decisi
 current decision facts
 ```
 
-Exact wire/storage names and transport remain implementation choices, but these semantics are mandatory.
+For signing-key/profile trust before signature verification, the scope above is the **verifier-configured expected issuer/profile/key-purpose fresh-entry v1 scope**, not a scope named by unauthenticated token claims. Exact wire/storage names and transport remain implementation choices, but these semantics are mandatory.
 
 ### 9.1 Freshness is source age, never cache age
 
@@ -228,12 +231,12 @@ For each evidence authority/scope, Oteryn-v2 MUST reject authorization from a so
 At minimum this applies independently to:
 
 - Platform account-security evidence for the relevant AccountId/security purpose;
-- admission signing-key/profile trust/revocation evidence for the relevant issuer/profile/key-purpose trust scope.
+- admission signing-key/profile trust/revocation evidence for the verifier-configured expected issuer/profile/key-purpose fresh-entry v1 trust scope.
 
 Consequences:
 
 - after a newer Platform-security revision raises the minimum accepted generation, disables or revokes an account, an older allow revision can never re-authorize even if its source age remains <=5s;
-- after a newer trust revision revokes/untrusts a key/profile, an older trusted revision can never restore trust even if its source age remains <=5s;
+- after a newer trust revision revokes/untrusts a key/profile in the configured expected trust scope, an older trusted revision can never restore trust even if its source age remains <=5s;
 - a delayed/replayed cache record cannot move the accepted evidence floor backward;
 - on process/storage recovery, the consumer must reconstruct a current non-rollback floor from authoritative evidence or preserved trusted state before authorizing; inability to prove the floor fails closed rather than assuming revision zero/latest-arrival.
 
@@ -259,7 +262,7 @@ Thus the accepted residual detection window is bounded by the five-second source
 
 - stale/unavailable/unauthenticated/contradictory/unprovable provenance, source age or anti-rollback order -> `ADMISSION_GRANT_SECURITY_EVIDENCE_STALE`, no candidate nonce/authority mutation;
 - current accepted Platform-security evidence explicitly denies/revokes -> `ADMISSION_GRANT_SECURITY_STATE_REVOKED`;
-- current accepted signing-key/profile evidence explicitly marks exact key/profile unknown/revoked/not-trusted -> `ADMISSION_GRANT_AUTHENTICATION_FAILED`.
+- current accepted signing-key/profile evidence for the verifier-configured expected trust scope explicitly marks exact key/profile unknown/revoked/not-trusted -> `ADMISSION_GRANT_AUTHENTICATION_FAILED`.
 
 This is a pre-admission veto only; Platform gains no post-admission GameSession authority.
 
@@ -296,13 +299,13 @@ Common diagnostic envelope: `error_code`, `request_trace_id`, safe `admission_at
 | `ADMISSION_INCUMBENT_PROTECTED` | `CONFLICT` | `TERMINAL` | new attempt only after incumbent eligibility changes | incumbent unchanged; newcomer no authority | `CHARACTER_ALREADY_ACTIVE` | `fresh admission blocked by current character authority` | incumbent state class; world/channel where policy permits |
 | `ADMISSION_CAPACITY_EXCEEDED` | `CAPACITY_EXCEEDED` | `RETRYABLE` | bounded backoff; same grant only on same current route while valid | no partial authority | `TEMPORARILY_UNAVAILABLE` | `fresh admission capacity unavailable` | capacity class; world/channel; route_revision |
 
-Syntactically valid, correctly signed credentials with wrong exact `iss`, `aud`, `typ` or `purpose` use `ADMISSION_GRANT_BINDING_MISMATCH`; unsupported profile revision uses `ADMISSION_GRANT_REVISION_UNSUPPORTED`; malformed structure remains `ADMISSION_GRANT_MALFORMED`. For a structurally valid token that fails key trust/signature, `ADMISSION_GRANT_AUTHENTICATION_FAILED` takes precedence over any unauthenticated semantic binding mismatch.
+Syntactically valid, correctly signed credentials with wrong exact `iss`, `aud`, `typ` or `purpose` use `ADMISSION_GRANT_BINDING_MISMATCH`; correctly signed unsupported profile revision uses `ADMISSION_GRANT_REVISION_UNSUPPORTED`; malformed structure remains `ADMISSION_GRANT_MALFORMED`. For structurally valid input that fails fixed-scope key trust/signature, `ADMISSION_GRANT_AUTHENTICATION_FAILED` takes precedence over any unauthenticated semantic binding or profile mismatch. Unauthenticated token semantics never choose the trust scope.
 
 ## 12. Required evidence
 
 ### Credential/profile/revision
 
-Independent fixtures cover Ed25519 positive/negative/algorithm confusion, token-directed key discovery, parser/claim/UUID failures, malformed `typ`, invalid-signature + wrong-well-formed-`typ` authentication precedence, correctly signed exact binding mismatch, unsupported profile, nbf/expiry/skew/lifetime, replay/concurrent consume, ambiguous issuance, and independent mismatch for each ruleset/content/map/world-policy/offer dimension while others remain unchanged.
+Independent fixtures cover Ed25519 positive/negative/algorithm confusion, token-directed key discovery, parser/claim/UUID failures, malformed `typ`, invalid-signature + wrong-well-formed-`typ` authentication precedence, invalid-signature + unsupported/wrong-well-formed-`profile` authentication precedence, correctly signed exact binding mismatch, correctly signed unsupported profile, same-`kid` token-supplied issuer/profile/purpose retarget attempts, nbf/expiry/skew/lifetime, replay/concurrent consume, ambiguous issuance, and independent mismatch for each ruleset/content/map/world-policy/offer dimension while others remain unchanged.
 
 ### Security provenance/freshness/anti-rollback
 
@@ -362,10 +365,16 @@ security evidence
 -> no rollback from newer deny/revoke to older allow/trust
 -> bounded residual unseen-revocation window <= source-age ceiling
 
+pre-signature trust
+-> verifier-configured expected issuer/profile/key-purpose context only
+-> token semantics never select/broaden trust
+-> kid selects only within fixed trusted set
+
 protected header / binding classification
 -> malformed structure => ADMISSION_GRANT_MALFORMED
--> key trust/signature failure => ADMISSION_GRANT_AUTHENTICATION_FAILED
+-> fixed-scope key trust/signature failure => ADMISSION_GRANT_AUTHENTICATION_FAILED
 -> only authenticated wrong typ/iss/aud/purpose => ADMISSION_GRANT_BINDING_MISMATCH
+-> only authenticated unsupported profile => ADMISSION_GRANT_REVISION_UNSUPPORTED
 
 Oteryn-v2
 -> ownership FIRST, current world SECOND
