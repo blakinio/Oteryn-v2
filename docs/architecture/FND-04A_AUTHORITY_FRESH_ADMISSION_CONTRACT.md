@@ -1,11 +1,12 @@
 # FND-04A — Authority and Fresh Admission Contract
 
-- Status: Candidate bounded architecture contract; canonical for FND-04A only when its owning PR merges
+- Status: Candidate bounded architecture contract; canonical for FND-04A when bounded successor delivery from Issue #120 merges
 - Gate: `FND-04A`
 - Replacement programme: Issue #112
-- Owning delivery: Issue #113 / PR #114
+- Owning successor repair: Issue #120 (`FND-04A-R1`)
+- Reconstructed reviewed candidate: PR #114 exact head `79678485d009c22ece2736c822d6b75b6d235ad2`; #114 remains superseded/unmerged after exhausted repair budget
 - Repository: `blakinio/Oteryn-v2`
-- Trusted base: FND-04 analysis accepted on `main@27f7f647f04e3b1a4151f9b124401986910f03d8`
+- Trusted reconstruction base: `main@43ca28f1f0f259c08a275c92946aa35f05d4d112`
 - Historical reviewed evidence only: superseded PR #109, final head `bf82e392d6ef8b1e627849cdc7383af9a7c987ae`
 - Normative companion: `docs/contracts/FND-04_PRE_ADMISSION_GRANT_PROFILE_V1.md`
 - Consumes: ADR-0003; ADR-0012; FND-ID-01; FND-02; accepted FND-03; accepted FND-04 analysis/reconciliation baselines; Foundation Error Vocabulary
@@ -75,6 +76,8 @@ Fresh entry uses only `docs/contracts/FND-04_PRE_ADMISSION_GRANT_PROFILE_V1.md`.
 
 The profile uses JWS Compact JWT, fully specified `alg=Ed25519`, rejects deprecated polymorphic `EdDSA`, uses dedicated typ/issuer/audience/purpose/key purpose, lifetime <=30s, verifier skew <=5s, authenticated Platform-security evidence <=5s, authenticated signing-key/profile trust evidence <=5s, one-time 32-byte GrantNonce and distinct AdmissionAttemptRef.
 
+For deterministic security/error semantics, structural protected-header checks happen before authentication, but a **well-formed semantic `typ` mismatch is classified only after successful signature verification**. Malformed `typ` remains invalid input; failed key trust/signature remains authentication failure; correctly signed wrong `typ` joins wrong `iss`/`aud`/`purpose` as `ADMISSION_GRANT_BINDING_MISMATCH`.
+
 The grant MUST bind separate authoritative gameplay dimensions rather than one overloaded compatibility token:
 
 ```text
@@ -131,10 +134,10 @@ No silent retarget/downgrade to another World, Channel, owner, content/ruleset/m
 Precommit checks are fail-fast eligibility only.
 
 1. FND-02 material limits;
-2. parser/header/profile bounds;
+2. parser/size/protected-header structural bounds, including exact `alg`, bounded `kid`, bounded structurally valid `typ` and forbidden-member rejection, without semantic `typ` comparison;
 3. authenticated current signing-key/profile evidence provenance/freshness/anti-rollback + trusted key lookup;
 4. signature;
-5. exact issuer/audience/type/purpose/time/profile;
+5. after successful signature, exact issuer/audience/type/purpose/time/profile semantics;
 6. canonical claims/UUID/generations;
 7. current Platform-security evidence provenance/freshness/anti-rollback + account generation/state;
 8. route/runtime/current target/ownership + independent protocol/transport/ruleset/content/map/world-policy/offer revisions;
@@ -145,6 +148,8 @@ Precommit checks are fail-fast eligibility only.
 13. CharacterLease/current runtime-scope acquisition/readiness;
 14. one atomic final revalidation + authority commit;
 15. publish success after commit only.
+
+A structurally valid but semantically wrong `typ` cannot bypass authentication and cannot be classified as a binding mismatch until signature success. This ordering is normative and is detailed by the companion profile.
 
 ### 7.1 Final revalidation
 
@@ -291,13 +296,13 @@ Common diagnostic envelope: `error_code`, `request_trace_id`, safe `admission_at
 | `ADMISSION_INCUMBENT_PROTECTED` | `CONFLICT` | `TERMINAL` | new attempt only after incumbent eligibility changes | incumbent unchanged; newcomer no authority | `CHARACTER_ALREADY_ACTIVE` | `fresh admission blocked by current character authority` | incumbent state class; world/channel where policy permits |
 | `ADMISSION_CAPACITY_EXCEEDED` | `CAPACITY_EXCEEDED` | `RETRYABLE` | bounded backoff; same grant only on same current route while valid | no partial authority | `TEMPORARILY_UNAVAILABLE` | `fresh admission capacity unavailable` | capacity class; world/channel; route_revision |
 
-Syntactically valid, correctly signed credentials with wrong exact `iss`, `aud`, `typ` or `purpose` use `ADMISSION_GRANT_BINDING_MISMATCH`; unsupported profile revision uses `ADMISSION_GRANT_REVISION_UNSUPPORTED`; malformed structure remains `ADMISSION_GRANT_MALFORMED`.
+Syntactically valid, correctly signed credentials with wrong exact `iss`, `aud`, `typ` or `purpose` use `ADMISSION_GRANT_BINDING_MISMATCH`; unsupported profile revision uses `ADMISSION_GRANT_REVISION_UNSUPPORTED`; malformed structure remains `ADMISSION_GRANT_MALFORMED`. For a structurally valid token that fails key trust/signature, `ADMISSION_GRANT_AUTHENTICATION_FAILED` takes precedence over any unauthenticated semantic binding mismatch.
 
 ## 12. Required evidence
 
 ### Credential/profile/revision
 
-Independent fixtures cover Ed25519 positive/negative/algorithm confusion, token-directed key discovery, parser/claim/UUID failures, exact binding mismatch, unsupported profile, nbf/expiry/skew/lifetime, replay/concurrent consume, ambiguous issuance, and independent mismatch for each ruleset/content/map/world-policy/offer dimension while others remain unchanged.
+Independent fixtures cover Ed25519 positive/negative/algorithm confusion, token-directed key discovery, parser/claim/UUID failures, malformed `typ`, invalid-signature + wrong-well-formed-`typ` authentication precedence, correctly signed exact binding mismatch, unsupported profile, nbf/expiry/skew/lifetime, replay/concurrent consume, ambiguous issuance, and independent mismatch for each ruleset/content/map/world-policy/offer dimension while others remain unchanged.
 
 ### Security provenance/freshness/anti-rollback
 
@@ -356,6 +361,11 @@ security evidence
 -> monotonic/comparable source revision; newer accepted decision fences older
 -> no rollback from newer deny/revoke to older allow/trust
 -> bounded residual unseen-revocation window <= source-age ceiling
+
+protected header / binding classification
+-> malformed structure => ADMISSION_GRANT_MALFORMED
+-> key trust/signature failure => ADMISSION_GRANT_AUTHENTICATION_FAILED
+-> only authenticated wrong typ/iss/aud/purpose => ADMISSION_GRANT_BINDING_MISMATCH
 
 Oteryn-v2
 -> ownership FIRST, current world SECOND
