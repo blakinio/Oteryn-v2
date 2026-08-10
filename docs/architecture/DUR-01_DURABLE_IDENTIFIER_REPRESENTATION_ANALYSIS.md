@@ -166,6 +166,34 @@ The following remain separate values and must not be replaced/inferred by compar
 
 If durable business logic needs creation/commit/order time, it stores an explicit authoritative timestamp/revision/order value owned by that contract. `ORDER BY uuid` may be an implementation optimization only when result correctness does not depend on UUID chronology.
 
+### 8.1 Lossless durable CommandId representation
+
+FND-02 owns `CommandId` semantics and defines it as a monotonic non-zero `uint64` scoped by `GameSessionId`, with command identity `(GameSessionId, CommandId)`. DUR-01 may define only its physical persistence when a durable deduplication/idempotency/recovery relation needs it.
+
+PostgreSQL `bigint` is signed and cannot represent the full legal `uint64` range. Restricting CommandId to `INT64_MAX`, applying an undocumented signed offset/xor transform, or storing it in floating point would silently change the accepted FND-02 contract.
+
+Decision when CommandId is persisted:
+
+```text
+Rust/domain scalar: u64, as owned by FND-02
+PostgreSQL scalar:  numeric(20,0)
+valid range:        1 .. 18446744073709551615
+semantic scope:     GameSessionId
+logical identity:   (GameSessionId, CommandId)
+```
+
+Rules:
+
+- zero is invalid because FND-02 requires non-zero post-admission command identity;
+- preserve exact integer value and natural unsigned ordering across round-trip;
+- never store CommandId as `double precision`, textual decimal as the canonical DB scalar, signed-remapped `bigint`, truncated integer or hash-only value;
+- a numeric CommandId equal in two different GameSessions is not the same command;
+- a repeated `(GameSessionId, CommandId)` is the same command identity and downstream idempotency semantics remain FND-02/DUR-02/DUR-03-owned;
+- no global database sequence may replace the client/session command identity;
+- exact composite key/index/check syntax belongs to DUR-02, but it must preserve the complete pair and range.
+
+Required persistence evidence includes round-trip of boundary values `1`, `9223372036854775807`, `9223372036854775808` and `18446744073709551615`, rejection of `0`, negative values, fractional values and values above `uint64::MAX`, and proof that identical numeric CommandId values in different GameSessions do not collide semantically.
+
 ## 9. Minimum new durable-domain identity catalogue
 
 ### 9.1 Avoid a generic DurableEntityId
@@ -317,6 +345,7 @@ DUR-01 representation failures map into the Foundation Error Vocabulary as follo
 | Condition | Foundation category | Minimum mutation outcome |
 |---|---|---|
 | malformed/nil/wrong UUID version for claimed typed identity | `INVALID_INPUT` | no authoritative relation created/changed |
+| invalid/out-of-range persisted CommandId | `INVALID_INPUT` | no authoritative command identity relation created/changed |
 | wrong semantic identity type at a typed boundary | `INVALID_INPUT` | no mutation |
 | unsupported representation/schema profile | `UNSUPPORTED_REVISION` | no silent downgrade |
 | duplicate/collision/native uniqueness conflict | `CONFLICT` | no overwrite/merge |
@@ -342,6 +371,8 @@ strong Rust type
 
 must preserve all 128 bits exactly.
 
+For persisted CommandId, `u64 -> numeric(20,0) -> u64` must preserve the exact full unsigned range and the `(GameSessionId, CommandId)` scope.
+
 ### Cross-language/cross-repository fixtures
 
 For Platform-owned native UUID identities actually consumed by Oteryn-v2, exact fixtures must prove canonical UUID equivalence across producer and consumer. Canary numeric IDs and Platform local integer surrogates must be rejected by native-only fixtures.
@@ -357,6 +388,10 @@ Reject nil UUID and wrong-version UUID where the contract claims UUIDv7. Text fi
 ### Scoped relations
 
 Prove wrong-World scoped references fail rather than matching by the component UUID alone.
+
+### CommandId boundaries
+
+Prove exact persistence of `1`, `INT64_MAX`, `INT64_MAX + 1`, and `UINT64_MAX`; reject zero, negative, fractional and greater-than-uint64 values; prove equal numeric CommandId in two distinct GameSessions does not collide.
 
 ### Legacy import
 
@@ -379,7 +414,7 @@ Runtime/component/browser E2E is not required for this architecture gate, but da
 DUR-01 consumes relevant Foundation scenarios conceptually:
 
 - `FS-STALE-GENERATION`: identity never substitutes for fence/generation;
-- `FS-DUPLICATE-COMMAND`: duplicate operation identity/effect handling remains FND-02/DUR-02/03; UUID equality does not authorize replay;
+- `FS-DUPLICATE-COMMAND`: persistence preserves exact `(GameSessionId, CommandId)` while duplicate effect/idempotency handling remains FND-02/DUR-02/03;
 - `FS-DB-OUTBOX-BOUNDARY`: deferred to DUR-02/ANL-01 after identity representation is fixed;
 - `FS-AUDIT-MUTATION-MISMATCH`: deferred to ANL-01/DUR-02/03;
 - item-duplication prevention remains DUR-03 authority.
@@ -392,11 +427,11 @@ This analysis closes Issue #111's eight question groups:
 
 1. PostgreSQL UUID representation: **native `uuid`, full 128 bits**.
 2. Durable-domain catalogue: **add `ItemInstanceId`; reject generic catch-all identity; leave audit/event IDs to ANL-01**.
-3. Identity/revision/fence/order: **strict separation; UUIDv7 order is non-authoritative**.
+3. Identity/revision/fence/order and CommandId durability: **strict separation; UUIDv7 order is non-authoritative; persisted full-range FND-02 CommandId uses `numeric(20,0)` scoped by GameSessionId**.
 4. Foreign/cross-boundary rules: **game-local typed relations allowed; no Platform/game cross-DB FKs; scope explicit**.
 5. Legacy migration: **stable source-namespace mapping key, revision/snapshot as provenance, no numeric-to-native identity reinterpretation, conflicts fail closed**.
 6. Privacy/public reference: **internal UUIDv7 not automatically public; product-owned opaque refs when needed**.
 7. Evolution: **explicit lossless versioned migration; no silent representation change or re-key**.
-8. Evidence: **round-trip, negative typing/scope, stable legacy mapping/revision-conflict and mixed-version fixtures required**.
+8. Evidence: **UUID and CommandId round-trip/boundary tests, negative typing/scope, stable legacy mapping/revision-conflict and mixed-version fixtures required**.
 
 No unresolved decision in this analysis prevents a final DUR-01 contract. Numeric persistence performance choices, table layout and transaction semantics remain intentionally downstream.
