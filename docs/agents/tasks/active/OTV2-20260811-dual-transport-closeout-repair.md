@@ -4,18 +4,18 @@
 task_id: OTV2-20260811-dual-transport-closeout-repair
 title: Close final dual-transport architecture review findings
 mode: REPAIR
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260811-dual-transport-closeout-repair
-pr: null
+pr: 149
 base_sha: 9794e9a6307b6f9db193ca2ce08607eb065b7d7e
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture closeout coordinator
 created_at: 2026-08-11T00:35:00+02:00
-updated_at: 2026-08-11T00:35:00+02:00
+updated_at: 2026-08-11T00:42:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -40,7 +40,7 @@ public_contracts:
   - docs/contracts/PROTOCOL_OTERYN_TRANSPORT_POLICY.json
 depends_on:
   - closed unmerged PR 145 at 9bf162e9d78f41706e92253c41f36d745e33382e
-  - exhausted successor PR 148 at c36e0eb1127c5689a23ea810c802766fe79d8050
+  - closed unmerged PR 148 at c36e0eb1127c5689a23ea810c802766fe79d8050
   - merged governance PR 146
   - merged FND-ID lifecycle cleanup PR 147
 blocks:
@@ -59,6 +59,7 @@ Deliver the complete architecture package inherited from exhausted PRs #145/#148
 - `PROVEN`: trusted full-diff base for the inherited package is `main@9794e9a6307b6f9db193ca2ce08607eb065b7d7e`.
 - `PROVEN`: PR #148 exact head `c36e0eb1127c5689a23ea810c802766fe79d8050` passed Agent Governance `31438343486`, Dependency Review `31438343473`, CodeQL `31438343467`, and self-review `4901430400`.
 - `PROVEN`: independent review `4901458913` on that head found exactly two material remaining findings: GameNode topology wording lacked a decision gate, and ADR-0014 `TCP_ONLY remains available` contradicted current runtime-unavailable policy.
+- `PROVEN`: PR #148 is now closed unmerged and its task is archived after repair budget `3/3`; no fourth repair was applied to that task.
 - `OWNER_ACCEPTED`: transport/admission/security architecture already reviewed remains unchanged: one `protocol-oteryn`, TCP profile 1 architecture registration only, QUIC future opt-in target blocked on profile/FND-04/order/resource/fault/measured-benefit evidence, Gateway-only Game Login Ticket redemption, no cross-profile grant reuse, fail-closed fallback, no 0-RTT/DATAGRAM baseline.
 - `OWNER_ACCEPTED`: Codex is not routine; this high-risk inherited package still requires exactly one final independent review after the repaired head is frozen.
 
@@ -67,8 +68,8 @@ Deliver the complete architecture package inherited from exhausted PRs #145/#148
 - [x] Add a dedicated clarification making GameNode process/service topology not-yet-frozen and the modular-monolith shape a nonbinding preferred starting hypothesis with explicit future decision tests.
 - [x] Add a dedicated clarification making `TCP_ONLY` and all gameplay transport client modes runtime-unavailable until their transport/client path is implemented and proven.
 - [x] Add the two clarifications to the canonical architecture index with explicit supersession precedence.
-- [ ] Archive/rotate exhausted PR #148 task without a fourth repair on that task.
-- [ ] Close PR #148 unmerged and point it to this successor PR.
+- [x] Archive/rotate exhausted PR #148 task without a fourth repair on that task.
+- [x] Close PR #148 unmerged and point it to successor PR #149.
 - [ ] Full trusted-base diff contains only declared documentation/task/contract paths and preserves reviewed invariants.
 - [ ] Mandatory exact-head self-review passes with zero material findings.
 - [ ] Exact-head Agent Governance, Dependency Review and CodeQL pass.
@@ -89,7 +90,8 @@ Deliver the complete architecture package inherited from exhausted PRs #145/#148
 
 - `ADR-0015` converts the GameNode modular-monolith wording from potentially binding topology authority into a preferred nonbinding implementation-discovery hypothesis and records the mandatory tests for any future topology freeze.
 - `ADR-0016` aligns ADR prose with the machine-readable transport policy: profile registration is not runtime availability; `TCP_ONLY` is future mode vocabulary only until exact-revision implementation/proof exists.
-- The canonical architecture index now includes ADR-0015/0016 and states their narrow precedence.
+- The canonical architecture index includes ADR-0015/0016 and states their narrow precedence.
+- PR #148 lifecycle record is archived; PR #148 is closed unmerged and references PR #149.
 
 ## Validation
 
@@ -97,7 +99,8 @@ Deliver the complete architecture package inherited from exhausted PRs #145/#148
 
 - trusted full-diff base: `9794e9a6307b6f9db193ca2ce08607eb065b7d7e`
 - inherited exact reviewed head: `c36e0eb1127c5689a23ea810c802766fe79d8050`
-- successor focused review: pending after lifecycle rotation
+- successor PR: #149
+- full changed-file review: pending frozen head
 
 ### Component/integration
 
@@ -129,22 +132,22 @@ Deliver the complete architecture package inherited from exhausted PRs #145/#148
 
 - changed-file review: pending
 - unresolved review threads: pending
-- related/superseded PRs: PR #145 closed unmerged; PR #148 to be closed/rotated
+- related/superseded PRs: PR #145 and PR #148 closed unmerged/rotated
 - merge commit/result: pending
 - ownership release: pending
 
 ## Context checkpoint
 
 ```yaml
-last_progress: ADR-0015 and ADR-0016 added on the final successor branch to repair the two remaining independent-review findings without changing runtime authority.
-status: implementing
+last_progress: PR #149 is the final successor; PR #148 is archived/closed after 3/3 repairs, and ADR-0015/0016 address its two terminal review findings.
+status: validating
 branch: docs/OTV2-20260811-dual-transport-closeout-repair
 head_sha: null
-pr: null
+pr: 149
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
-ci_check_generation: pre-pr
+ci_trigger_source: pull_request
+ci_check_generation: final-head-pending
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -158,5 +161,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Archive the exhausted PR #148 task, open the successor PR, close #148 unmerged, then freeze and validate the full successor head.
+next_action: Freeze PR #149 head, perform full trusted-base self-review and exact-head CI, then request exactly one required independent final review; merge unchanged head if clean.
 ```
