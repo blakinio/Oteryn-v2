@@ -2,7 +2,7 @@
 
 - Status: Candidate normative profile owned by bounded successor FND-04A-R1; canonical when the successor delivery from Issue #120 merges
 - Profile ID: `oteryn-pre-admission-v1`
-- Successor repair provenance: reconstructs reviewed PR #114 exact head `79678485d009c22ece2736c822d6b75b6d235ad2` and repairs deterministic protected-header/binding and pre-signature trust-scope classification
+- Successor repair provenance: reconstructs reviewed PR #114 exact head `79678485d009c22ece2736c822d6b75b6d235ad2` and completes deterministic protected-header, verifier-anchored trust-scope and cryptographic/schema error precedence
 - Applies to: fresh native Oteryn-v2 gameplay entry authorization produced by Oteryn Platform and consumed by Oteryn-v2 final game admission
 - Does not apply to: OAuth tokens, web sessions, Game Login Tickets, reconnect/recovery credentials, handoff credentials, Canary compatibility admission or already-admitted GameSession control
 - Cryptographic container: JWS Compact Serialization carrying a JWT claims set
@@ -26,7 +26,12 @@ A valid signature is necessary but never sufficient. Signed world/revision value
 
 v1 uses JWS Compact Serialization, JWT Claims Set and fully specified JOSE `alg=Ed25519` / RFC 8032 Ed25519.
 
-Reject `alg=none`, deprecated polymorphic `EdDSA`, HMAC/RSA/ECDSA fallback, Ed448, incompatible key type/curve and any non-exact algorithm selection. Changing algorithm/container requires a new reviewed profile revision.
+There is no algorithm negotiation or downgrade path.
+
+- missing, null, non-string, empty, non-ASCII or structurally out-of-bound `alg` is malformed input -> `ADMISSION_GRANT_MALFORMED`;
+- a structurally valid algorithm identifier whose value is not exact `Ed25519` — including `none`, deprecated polymorphic `EdDSA`, HMAC/RSA/ECDSA, Ed448 or any other value — is a cryptographic authentication-policy failure -> `ADMISSION_GRANT_AUTHENTICATION_FAILED`;
+- an incompatible key type/curve or signature verification failure is also `ADMISSION_GRANT_AUTHENTICATION_FAILED`;
+- changing algorithm/container requires a new reviewed profile revision and cannot be negotiated by the token.
 
 ## 3. Protected JOSE header
 
@@ -40,15 +45,15 @@ Canonical successful header:
 }
 ```
 
-Pre-signature structural/security validation requires:
+Pre-signature structural/security processing has deterministic precedence:
 
-- protected members are exactly `alg`, `kid`, `typ`; no other protected member is permitted;
-- `alg` exactly `Ed25519`;
-- `kid` is a string of 1..64 ASCII characters matching `[A-Za-z0-9._-]+` and is looked up only inside the verifier-configured trusted admission-key set for the expected fresh-entry v1 context;
-- `typ` is present as a non-empty JSON string of at most 64 visible ASCII bytes with no control or whitespace characters;
-- malformed, missing, null, non-string or out-of-bound `typ` is structural invalid input and maps to `ADMISSION_GRANT_MALFORMED`.
+- protected members must be exactly `alg`, `kid`, `typ`; missing members, duplicate members, unknown/extra members or forbidden protected members are malformed -> `ADMISSION_GRANT_MALFORMED`;
+- `alg` must first be a syntactically valid bounded ASCII string; malformed representation -> `ADMISSION_GRANT_MALFORMED`; a well-formed value other than exact `Ed25519` -> `ADMISSION_GRANT_AUTHENTICATION_FAILED` without key lookup or fallback;
+- `kid` must be a string of 1..64 ASCII characters matching `[A-Za-z0-9._-]+`; malformed representation -> `ADMISSION_GRANT_MALFORMED`; a well-formed `kid` not present/trusted in the fixed verifier trust set -> `ADMISSION_GRANT_AUTHENTICATION_FAILED`;
+- `typ` must be present as a non-empty JSON string of at most 64 visible ASCII bytes with no control or whitespace characters; malformed/missing/null/non-string/out-of-bound `typ` -> `ADMISSION_GRANT_MALFORMED`;
+- `jku`, `x5u`, `x5c`, embedded `jwk`, `crit`, `cty`, `zip`, `b64=false` and token-controlled key discovery are forbidden protected-header shapes -> `ADMISSION_GRANT_MALFORMED`.
 
-The **semantic exact value** of a structurally valid `typ` is deliberately not classified before cryptographic authentication. Only after trusted key lookup and successful Ed25519 signature verification is `typ` compared with exact `oteryn-admission+jwt`. A correctly signed but semantically different `typ` maps to `ADMISSION_GRANT_BINDING_MISMATCH`. A token that fails key-trust or signature verification must not disclose whether its otherwise well-formed `typ` would have matched.
+The **semantic exact value** of a structurally valid `typ` is deliberately not classified before cryptographic authentication. Only after fixed-scope trusted key lookup and successful Ed25519 signature verification is `typ` compared with exact `oteryn-admission+jwt`. A correctly signed but semantically different `typ` maps to `ADMISSION_GRANT_BINDING_MISMATCH`. A token that fails algorithm policy, key trust or signature verification must not disclose whether its otherwise well-formed `typ` would have matched.
 
 The pre-signature trust context is **not token-selectable**. The verifier fixes the expected fresh-entry context from endpoint/configuration before reading semantic payload values:
 
@@ -60,9 +65,7 @@ expected purpose = fresh_entry
 expected key purpose = admission signing for that context
 ```
 
-Unauthenticated `iss`, `aud`, `profile`, `purpose`, `typ` or any other payload/header text MUST NOT choose, broaden or retarget the trusted issuer/profile/key-purpose scope. `kid` may select only a candidate key within the already fixed trusted set. Semantic payload/header bindings are evaluated only after signature success.
-
-Reject `jku`, `x5u`, `x5c`, embedded `jwk`, `crit`, `cty`, `zip`, `b64=false` and token-controlled key discovery.
+Unauthenticated `iss`, `aud`, `profile`, `purpose`, `typ` or any other payload/header text MUST NOT choose, broaden or retarget the trusted issuer/profile/key-purpose scope. A syntactically valid `kid` may select only a candidate key within the already fixed trusted set. Semantic payload/header bindings are evaluated only after signature success.
 
 ## 4. Canonical issuer and audience
 
@@ -75,7 +78,7 @@ Both exact/case-sensitive. Signing-key purpose is dedicated to `oteryn-pre-admis
 
 ## 5. Required claims
 
-Payload is a JSON object containing exactly these claims; unknown claims reject in v1.
+A successfully authenticated v1 payload is a JSON object containing exactly these claims. Exact required-claim membership and unknown-claim rejection are semantic schema checks performed **after successful signature verification**. Pre-signature parsing may establish only the bounded syntactic JSON representation needed to authenticate safely; a well-formed unknown/missing semantic claim does not preempt an authentication failure.
 
 ### 5.1 Standard
 
@@ -115,15 +118,37 @@ Payload is a JSON object containing exactly these claims; unknown claims reject 
 
 FND-02 `schema_revision` is diagnostic/build evidence rather than exact-equality admission identity, so it is also deliberately absent from the signed FND-04A v1 gate.
 
+After successful signature verification, exact schema validation rejects missing/null/wrong-type/unknown claims, noncanonical UUID/revision/generation encodings and invalid NumericDate representation as `ADMISSION_GRANT_MALFORMED`, except an otherwise structurally valid unsupported semantic `profile`, which has the explicit later outcome `ADMISSION_GRANT_REVISION_UNSUPPORTED` after the exact claim's string shape is established.
+
 All UUIDs parse/round-trip exact canonical lowercase hyphenated form; nil rejects. `attempt_ref`, `character_id`, `world_id`, `channel_id` additionally require UUIDv7 + RFC variant. `account_id` remains Platform-owned and is not silently redefined as Oteryn UUIDv7.
 
 Generation values are strings to avoid uint64 precision loss >2^53. `attempt_ref` is producer operation/correlation identity; `jti` is game consume identity; neither is GameSessionId.
 
 ## 6. Size/parser limits
 
-Before signature verification enforce: token <=4096 ASCII bytes; exactly 3 JWS segments; decoded header <=512; payload <=3072; nesting <=2; duplicate JSON members reject; invalid UTF-8 reject; malformed/noncanonical/padded base64url reject; fractional/exponent NumericDate reject; missing/null required claim reject; decompression unsupported. Stricter FND-02 outer bound wins.
+Before signature verification enforce only bounded safe parsing/authentication prerequisites:
 
-Structural parsing may establish claim/header presence, JSON types and bounded encodings before authentication. It must not convert a **well-formed but semantically wrong** protected `typ`, issuer, audience, profile or purpose into an authenticated binding/revision verdict before signature success, and it must not use those unauthenticated values to select the trust scope.
+- token <=4096 ASCII bytes;
+- exactly 3 JWS segments;
+- decoded header <=512 bytes;
+- decoded payload <=3072 bytes;
+- payload/header decode as bounded JSON objects with nesting <=2;
+- duplicate JSON members reject;
+- invalid UTF-8 reject;
+- malformed/noncanonical/padded base64url reject;
+- decompression unsupported;
+- protected-header structural/security rules from Sections 2–3.
+
+Failures above that make the token structurally unparsable are `ADMISSION_GRANT_MALFORMED`; the explicit well-formed non-exact `alg` case remains `ADMISSION_GRANT_AUTHENTICATION_FAILED` as defined in Section 2.
+
+Pre-signature parsing MUST NOT enforce semantic exact payload claim membership, unknown-claim rejection, UUID/revision values, issuer/audience/profile/purpose equality or time validity. Those are evaluated only after successful signature verification. Therefore:
+
+- invalid signature + otherwise well-formed payload with a missing/unknown semantic claim -> `ADMISSION_GRANT_AUTHENTICATION_FAILED`;
+- successful signature + exact-schema missing/unknown/wrong-type/noncanonical claim -> `ADMISSION_GRANT_MALFORMED`;
+- successful signature + structurally valid unsupported `profile` -> `ADMISSION_GRANT_REVISION_UNSUPPORTED`;
+- successful signature + wrong exact `iss`/`aud`/`purpose` or well-formed wrong `typ` -> `ADMISSION_GRANT_BINDING_MISMATCH`.
+
+Stricter FND-02 outer material bound wins before all token work.
 
 ## 7. Time policy
 
@@ -132,7 +157,7 @@ maximum lifetime: 30s from iat to exp
 maximum verifier skew: 5s
 ```
 
-At trusted server time `now`:
+After successful signature and exact claim-schema validation, at trusted server time `now`:
 
 ```text
 now + 5s >= nbf
@@ -244,39 +269,49 @@ Reject non-open target, stale route/runtime observation, changed scope ownership
 
 ## 12. Verification/admission order and final linearization
 
-Steps 1–15 are fail-fast eligibility only:
+Steps are fail-fast eligibility only until the atomic authority boundary:
 
-1. FND-02 material bound;
-2. parser/size bounds;
-3. protected-header **structural/security** validation only: exact `alg`, exact allowed-member set, bounded `kid`, syntactically valid bounded `typ`, forbidden-member rejection; do not semantically compare `typ` yet;
-4. using verifier-configured expected fresh-entry v1 issuer/profile/key-purpose scope only, obtain authenticated admission trust/revocation evidence with source provenance, source-age upper bound <=5s and anti-rollback revision/fence; then resolve `kid` only inside that fixed trusted set; unauthenticated token `iss`/`profile`/`purpose`/`typ` cannot select or broaden this scope;
-5. Ed25519 signature;
-6. after successful signature, exact semantic `iss`, `aud`, `typ`, `purpose`; unsupported `profile` is a revision failure;
-7. time/lifetime/skew;
-8. exact claim schema/canonical UUID/revision encoding;
-9. Platform-security evidence: source provenance, source-age upper bound <=5s, anti-rollback revision/fence and current account generation/state;
-10. route/runtime/current target/ownership + protocol/transport + ruleset/content/map/world-policy/offer revisions independently;
-11. GrantNonce eligibility;
-12. current AccountId->CharacterId ownership/lifecycle;
-13. current CharacterId->WorldId/world eligibility only after step 12;
-14. AccountPresence/duplicate-login eligibility;
-15. CharacterLease/current runtime-scope acquisition/readiness;
-16. one atomic final boundary revalidates every mutable predicate and only then commits complete FND-04A admission authority;
-17. publish success only after commit.
+1. FND-02 outer material bound;
+2. JWS/parser/size/base64/JSON structural bounds;
+3. protected-header shape: required exact member set and bounded syntactic `alg`/`kid`/`typ`; malformed shape -> `ADMISSION_GRANT_MALFORMED`;
+4. cryptographic algorithm policy: syntactically valid non-exact `alg` -> `ADMISSION_GRANT_AUTHENTICATION_FAILED`; exact `Ed25519` continues;
+5. using verifier-configured expected fresh-entry v1 issuer/profile/key-purpose scope only, obtain authenticated admission trust/revocation evidence with source provenance, source-age upper bound <=5s and anti-rollback revision/fence; resolve well-formed `kid` only inside that fixed trusted set; unknown/untrusted `kid` -> `ADMISSION_GRANT_AUTHENTICATION_FAILED`; unauthenticated token semantics cannot select or broaden this scope;
+6. Ed25519 signature; failure -> `ADMISSION_GRANT_AUTHENTICATION_FAILED`;
+7. after successful signature, exact payload claim membership/types/canonical encodings; malformed/missing/unknown/noncanonical schema -> `ADMISSION_GRANT_MALFORMED`;
+8. after schema success, exact semantic `iss`, `aud`, `typ`, `purpose`; wrong value -> `ADMISSION_GRANT_BINDING_MISMATCH`; structurally valid unsupported `profile` -> `ADMISSION_GRANT_REVISION_UNSUPPORTED`;
+9. time/lifetime/skew;
+10. Platform-security evidence: source provenance, source-age upper bound <=5s, anti-rollback revision/fence and current account generation/state;
+11. route/runtime/current target/ownership + protocol/transport + ruleset/content/map/world-policy/offer revisions independently;
+12. GrantNonce eligibility;
+13. current AccountId->CharacterId ownership/lifecycle;
+14. current CharacterId->WorldId/world eligibility only after step 13;
+15. AccountPresence/duplicate-login eligibility;
+16. CharacterLease/current runtime-scope acquisition/readiness;
+17. one atomic final boundary revalidates every mutable predicate and only then commits complete FND-04A admission authority;
+18. publish success only after commit.
 
-### 12.1 Wrong-bound credential classification and precedence
+### 12.1 Complete classification precedence
 
-A syntactically valid and correctly signed credential whose exact `iss`, `aud`, `typ` or `purpose` is wrong returns `ADMISSION_GRANT_BINDING_MISMATCH` (`SESSION_REJECTED`, `SECURITY_TERMINAL`) and is never reinterpreted as the required fresh-entry credential.
+The following precedence is normative and exhaustive for the v1 credential-validation surface:
 
-Classification precedence is normative:
+1. outer/material/parser/JWS/JSON/base64 failures, malformed/missing/non-string/out-of-bound protected-header members, and forbidden/extra protected members -> `ADMISSION_GRANT_MALFORMED`;
+2. syntactically valid but non-exact `alg` -> `ADMISSION_GRANT_AUTHENTICATION_FAILED`; there is no algorithm negotiation, downgrade or revision fallback;
+3. exact algorithm but well-formed `kid` absent/untrusted in the verifier-configured expected trust set, trust decision denial, incompatible key, or Ed25519 signature failure -> `ADMISSION_GRANT_AUTHENTICATION_FAILED`;
+4. only after successful signature, exact payload schema membership/types/canonical encodings are authoritative for classification; missing/unknown/wrong-type/noncanonical claims -> `ADMISSION_GRANT_MALFORMED`;
+5. after successful signature and schema validation, wrong exact `iss`, `aud`, `typ` or `purpose` -> `ADMISSION_GRANT_BINDING_MISMATCH` (`SESSION_REJECTED`, `SECURITY_TERMINAL`);
+6. after successful signature and schema validation, structurally valid unsupported semantic `profile` -> `ADMISSION_GRANT_REVISION_UNSUPPORTED`;
+7. only then evaluate time policy and the mutable game-domain predicates.
 
-1. malformed JWS/JSON/header/payload structure, including missing/null/non-string/out-of-bound `typ` or structurally invalid required claims, returns `ADMISSION_GRANT_MALFORMED` before authentication;
-2. for structurally valid input, trust lookup is performed only in the verifier-configured expected fresh-entry v1 trust scope; key-trust or Ed25519 verification failure returns `ADMISSION_GRANT_AUTHENTICATION_FAILED` regardless of whether untrusted well-formed `typ`, `iss`, `aud`, `profile` or `purpose` text would have matched;
-3. only after successful signature verification may a well-formed but non-exact `typ` produce `ADMISSION_GRANT_BINDING_MISMATCH` together with wrong exact `iss`, `aud` or `purpose`;
-4. only after successful signature verification, a structurally valid but unsupported semantic `profile` returns `ADMISSION_GRANT_REVISION_UNSUPPORTED`;
-5. unauthenticated token semantic values never choose the trust scope and therefore cannot force authentication-versus-revision/binding classification by retargeting key/profile lookup.
+Consequences:
 
-This ordering prevents unauthenticated tokens from using error differences as a binding/profile oracle and guarantees deterministic producer/consumer classification for correctly signed wrong-bound or unsupported-profile credentials.
+- invalid signature + well-formed wrong `typ`/binding values -> `ADMISSION_GRANT_AUTHENTICATION_FAILED`;
+- invalid signature + well-formed unsupported profile -> `ADMISSION_GRANT_AUTHENTICATION_FAILED`;
+- invalid signature + otherwise well-formed missing/unknown semantic payload claim -> `ADMISSION_GRANT_AUTHENTICATION_FAILED`;
+- successfully signed unknown/missing/wrong-type/noncanonical payload claim -> `ADMISSION_GRANT_MALFORMED`;
+- successfully signed wrong binding -> `ADMISSION_GRANT_BINDING_MISMATCH`;
+- successfully signed unsupported profile -> `ADMISSION_GRANT_REVISION_UNSUPPORTED`.
+
+This prevents algorithm, key, binding, profile and exact-schema oracles before authentication and guarantees deterministic producer/consumer classification.
 
 ### 12.2 Final atomic revalidation
 
@@ -375,15 +410,19 @@ Complete FND-04A diagnostic rows live in the authority companion contract.
 
 ## 16. Independent implementation fixtures
 
-### Profile/crypto/binding
+### Profile/crypto/binding/schema precedence
 
 - canonical Ed25519 positive;
-- `none`, deprecated `EdDSA`, wrong algorithm/key type/curve;
-- token-directed key discovery;
-- malformed/duplicate/unknown claims, UUIDv7/variant/canonical failures, size limits;
+- missing/null/non-string/out-of-bound `alg` -> `ADMISSION_GRANT_MALFORMED`;
+- syntactically valid `none`, deprecated `EdDSA`, HMAC/RSA/ECDSA, Ed448 or other non-exact algorithm -> `ADMISSION_GRANT_AUTHENTICATION_FAILED`, with no fallback;
+- malformed `kid` -> `ADMISSION_GRANT_MALFORMED`;
+- well-formed unknown/untrusted `kid` in fixed trust scope -> `ADMISSION_GRANT_AUTHENTICATION_FAILED`;
+- forbidden/extra protected member, embedded key or token-directed key discovery -> `ADMISSION_GRANT_MALFORMED` and never changes trust selection;
 - malformed/missing/non-string/out-of-bound `typ` -> `ADMISSION_GRANT_MALFORMED`;
 - structurally valid wrong `typ` + invalid/untrusted signature -> `ADMISSION_GRANT_AUTHENTICATION_FAILED` without binding-oracle detail;
 - structurally valid unsupported/wrong `profile` + invalid/untrusted signature -> `ADMISSION_GRANT_AUTHENTICATION_FAILED`; untrusted profile cannot retarget trust or force a revision verdict;
+- invalid signature + otherwise well-formed unknown/missing semantic payload claim -> `ADMISSION_GRANT_AUTHENTICATION_FAILED`;
+- correctly signed unknown/missing/wrong-type/noncanonical payload claim -> `ADMISSION_GRANT_MALFORMED`;
 - correctly signed, structurally valid wrong exact `iss`, `aud`, `typ` or `purpose` -> `ADMISSION_GRANT_BINDING_MISMATCH`;
 - correctly signed unsupported `profile` -> `ADMISSION_GRANT_REVISION_UNSUPPORTED`;
 - same `kid` under a token-supplied different issuer/profile/purpose cannot escape the verifier-configured expected trust set;
