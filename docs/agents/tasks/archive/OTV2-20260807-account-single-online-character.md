@@ -6,8 +6,8 @@ status: completed
 repository: blakinio/Oteryn-v2
 branch: docs/OTV2-20260807-account-single-online-character
 pr: 70
-final_head_sha: 8573dc3355784746317489f7b65da0b803f979cd
-merge_commit: f6271f067c1e574bab8bbe96b1ebfe5fc2c6141f
+final_head_sha: 8573c96e1cfc4485a596c55d5f26eb817a0d8265
+merge_commit: f62724a09e6f3fe9e24a106b6ea7c2f196b35fef
 ownership_released: true
 ```
 
@@ -23,7 +23,7 @@ No architecture, runtime, production or cross-repository behavior is changed.
 last_progress: Merged PR #70 task archived and advisory ownership released.
 status: completed
 pr: 70
-final_head_sha: 8573dc3355784746317489f7b65da0b803f979cd
+final_head_sha: 8573c96e1cfc4485a596c55d5f26eb817a0d8265
 blocker: null
 next_action: No further action; ownership released.
 ```
