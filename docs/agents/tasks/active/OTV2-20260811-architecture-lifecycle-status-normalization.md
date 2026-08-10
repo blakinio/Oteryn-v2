@@ -4,7 +4,7 @@
 task_id: OTV2-20260811-architecture-lifecycle-status-normalization
 title: Normalize post-merge architecture lifecycle and dependency status
 mode: GOVERNANCE
-status: investigating
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260811-architecture-lifecycle-status-normalization
@@ -15,7 +15,7 @@ final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture audit coordinator
 created_at: 2026-08-11T01:36:00+02:00
-updated_at: 2026-08-11T01:36:00+02:00
+updated_at: 2026-08-11T01:48:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -45,85 +45,97 @@ external_repositories:
 
 ## Outcome
 
-Make current lifecycle/status documentation truthful after merged governance, FND-ID cleanup and dual-transport work; reconcile the now-completed Platform entitlement producer repair without claiming that the Oteryn-v2 game-side entitlement consumer/enforcement contract is implemented or accepted.
+Make current lifecycle/status documentation truthful after merged governance, FND-ID cleanup and dual-transport work; reconcile the completed Platform entitlement producer repair without claiming that the Oteryn-v2 game-side entitlement consumer/enforcement contract is accepted, implemented or activated.
 
 ## Architecture and source of truth
 
-- `PROVEN`: Oteryn-v2 PR #146 merged as `8f5f20274aa8c886695fb36dfe14025f38f1ee1b`; its task record remains under `active/` on current main.
-- `PROVEN`: Oteryn-v2 PR #147 merged as `81db47966d76709a0e44dfbf1bc3979f38a24ffa`; its task record remains under `active/` on current main even though the ten stale FND-ID support task records were archived by that PR.
-- `PROVEN`: Oteryn-v2 PR #149 merged as `05544969baf58c3a40354f366438d759bfd159e5`; its owning repair task remains under `active/` on current main.
-- `PROVEN`: Oteryn-Platform issue #944 is closed as completed and its repair PR #968 merged as `afaa6d1d8340e44b1152b62d6d27e5fd1649804a`.
-- `PROVEN`: the merged Platform entitlement contract now exposes bounded authority freshness/lifecycle evidence including `authority_valid_until` and fail-closed stale/expired/revoked semantics.
-- `DERIVED`: the producer-side Platform blocker referenced by `PROD-ENTITLEMENTS-01` is satisfied, but Oteryn-v2 still lacks an accepted game-side consumer/enforcement contract; Premium/VIP/profile activation therefore remains blocked.
-- `PROVEN`: architecture/runtime status authority remains `docs/architecture/FOUNDATION_PROGRAMME_CURRENT_STATUS.md`; historical registers may contain older narrative but cannot override this current-status overlay.
+- `PROVEN`: Oteryn-v2 PR #146 merged exact final head `3755d79df011e11fa2e2a62188cf88b06e25df23` as squash merge `8f5f20274aa8c886695fb36dfe14025f38f1ee1b`.
+- `PROVEN`: Oteryn-v2 PR #147 merged exact final head `7fe81934cc031c6c26b9c38993254de62840d493` as squash merge `81db47966d76709a0e44dfbf1bc3979f38a24ffa`.
+- `PROVEN`: Oteryn-v2 PR #149 merged exact final head `641de04b1397cb910f6f26e7dd1594babb8ad1ac` as squash merge `05544969baf58c3a40354f366438d759bfd159e5` after exact-head self-review, Agent Governance, Dependency Review, CodeQL and required independent review all passed.
+- `PROVEN`: Oteryn-Platform issue #944 / `OPA-SEC-0007` is closed `completed`; remediation PR #968 exact final head `27414684ceb77700c7bbf7c6a047c6f3c0c79ad9` merged as `afaa6d1d8340e44b1152b62d6d27e5fd1649804a`.
+- `PROVEN`: the repaired Platform producer contract supplies finite authority validity, lifecycle/authority revision fencing, bounded stale/unavailable semantics, time-safety requirements and rollout/rollback validation obligations for Profile-B game-consumed entitlement authority.
+- `DERIVED`: Platform #944 is no longer an open producer blocker, but Oteryn-v2 still lacks the accepted consumer/enforcement contract and runtime proof; Premium/VIP/game-consumed entitlement activation remains blocked.
+- `PROVEN`: architecture/runtime status authority is `docs/architecture/FOUNDATION_PROGRAMME_CURRENT_STATUS.md`; older progress prose cannot override the current overlay.
 
 ## Acceptance criteria
 
-- [ ] Move the three already-merged task records (#146/#147/#149 owners) from `active/` to `archive/` with exact merge evidence and no semantic architecture changes.
-- [ ] Update the foundation programme checkpoint so its next action and lifecycle statements no longer point at already-completed FND-ID/transport closeout work.
-- [ ] Update current programme status to reflect closed FND-ID/NET-TRANSPORT-01 delivery lifecycle while preserving `NOT_STARTED` runtime implementation where applicable.
-- [ ] Reconcile `PROD-ENTITLEMENTS-01` with Oteryn-Platform #944/#968 exact producer evidence; preserve the game-side consumer contract as a remaining gate and keep issue #115 open.
-- [ ] Keep all edits documentation/governance-only; no runtime, protocol, dependency, workflow, Platform or production change.
-- [ ] Exact-head self-review and applicable CI pass; independent review is required because entitlement/security authority wording changes.
+- [x] Move the three already-merged task records (#146/#147/#149 owners) from `active/` to `archive/` with exact terminal evidence and release stale advisory ownership.
+- [x] Refresh the non-owning foundation programme checkpoint so it no longer names completed FND-ID/FND-02/FND-03/FND-04 work as the next programme gate.
+- [x] Update current programme status to `LIFECYCLE_CLOSED` for FND-ID-01 and NET-TRANSPORT-01 while preserving `NOT_STARTED` runtime claims.
+- [x] Make ADR-0009/ADR-0015 GameNode wording in the status overlay unambiguous: one GameNode remains one process; modular monolith is only a nonbinding internal-decomposition hypothesis.
+- [x] Reconcile `PROD-ENTITLEMENTS-01` with exact Oteryn-Platform #944/#968 producer evidence and preserve the missing Oteryn-v2 consumer/enforcement contract as the activation gate.
+- [x] Preserve issue #115 as open work for the remaining consumer-side contract; do not close it merely because the producer prerequisite is satisfied.
+- [x] Keep all repository edits documentation/governance-only; no runtime, dependency, workflow, Platform or production mutation.
+- [ ] Mandatory exact-head self-review passes with zero material findings.
+- [ ] Exact-head Agent Governance, Dependency Review and CodeQL pass.
+- [ ] One independent final review passes because entitlement/security authority wording is changed.
+- [ ] Squash merge succeeds on the unchanged reviewed head.
 
 ## Excluded scope
 
 - no new gameplay/product owner decisions;
 - no implementation of entitlements, Premium/VIP, GameNode, protocol, transport or persistence;
 - no Platform repository write;
-- no broad rewrite of historical analysis/registers;
+- no broad rewrite of historical ADR evidence;
 - no Codex use except the genuinely required independent final review for entitlement/security authority wording.
 
 ## Implementation / findings
 
-Task initialized from `main@05544969baf58c3a40354f366438d759bfd159e5` after verified merge of PR #149.
+- Archived the stale post-merge task records for PRs #146, #147 and #149 with exact final-head/merge/check evidence; removed their stale `active/` copies.
+- The active-task set is now limited to the long-lived non-owning foundation checkpoint, two intentionally still-active disconnect/forensics analyses, this cleanup task and the directory README.
+- Rewrote the non-owning foundation programme checkpoint as current coordination state: accepted foundation architecture is not reopened; product semantics + bounded DUR-02 discovery + real-boundary vertical slices are the near-term direction.
+- `FOUNDATION_PROGRAMME_CURRENT_STATUS.md` now records FND-ID-01 and NET-TRANSPORT-01 delivery lifecycles closed, while gameplay transport/runtime remains `NOT_STARTED`.
+- `FOUNDATION_PROGRAMME_CURRENT_STATUS.md` also aligns GameNode guidance with ADR-0009/ADR-0015 instead of leaving the older prescriptive modular-monolith wording ambiguous.
+- `PROD-ENTITLEMENTS-01_PLATFORM_GAME_ENFORCEMENT_DEPENDENCY.md` now pins Platform PR #968 / merge `afaa6d1d8340e44b1152b62d6d27e5fd1649804a` as satisfied producer evidence and keeps the game-side consumer contract/runtime activation explicitly unauthorized.
+- No runtime/code/workflow/dependency/external-repository file is changed.
 
 ## Validation
 
 ### Focused
 
-- command/run: pending
-- result: pending
+- base: `main@05544969baf58c3a40354f366438d759bfd159e5`
+- current diff before final task checkpoint: exactly 10 documentation/task/architecture paths; `behind_by=0`
+- active-task directory inspection: merged #146/#147/#149 task records absent; intended live coordination/analysis records preserved
+- direct GitHub evidence: PRs #146/#147/#149 and Oteryn-Platform #944/#968 re-read before normalization
+- result: PASS pending final exact-head recheck
 
 ### Component/integration
 
-- command/run: `NOT_APPLICABLE` — documentation/governance status normalization only
-- result: pending
+- result: `NOT_APPLICABLE` — documentation/governance status normalization only
 
 ### E2E
 
-- scenario: `NOT_APPLICABLE` — no executable behavior change
-- result: pending
+- result: `NOT_APPLICABLE` — no executable behavior change
 
 ### Exact-head CI
 
-- final head: pending
-- trigger source: pending
+- final head: pending after this checkpoint commit
+- trigger source: pull_request
 - workflow/run/job: pending
 - runner assignment: pending
-- classification: pending
+- classification: documentation/governance/security-contract status only
 - result: pending
 
 ## Self-review
 
-- exact head: pending
-- method/reviewer: implementing/coordinating agent
-- material findings: pending
+- exact head: pending final head
+- method/reviewer: implementing/coordinating agent full-diff review
+- material findings: none known; final exact-head recheck pending
 - verdict: pending
 
 ## Independent review
 
-- required: `YES` — cross-repository entitlement/security authority status is being reconciled
+- required: `YES` — cross-repository entitlement/security authority wording is being reconciled
 - exact head: pending
-- method/auditor: one independent final reviewer; Codex only for this required gate if needed
+- method/auditor: one genuinely independent final reviewer; Codex only for this required gate if it is the available appropriate mechanism
 - material findings: pending
 - verdict: pending
 
 ## PR and closeout
 
-- changed-file review: pending
+- changed-file review: pending final head
 - unresolved review threads: pending
-- related/superseded PRs: #146, #147, #149 already merged
+- related/superseded PRs: #146, #147, #149 already merged; Platform #968 already merged
 - protected auto-merge: pending
 - merge commit/result: pending
 - ownership release: pending
@@ -131,15 +143,15 @@ Task initialized from `main@05544969baf58c3a40354f366438d759bfd159e5` after veri
 ## Context checkpoint
 
 ```yaml
-last_progress: Created bounded post-merge lifecycle/status normalization task from main@05544969baf58c3a40354f366438d759bfd159e5.
-status: investigating
+last_progress: Normalized merged task lifecycle, current programme progression and exact Platform entitlement producer-remediation evidence; no runtime/product authority changed.
+status: validating
 branch: docs/OTV2-20260811-architecture-lifecycle-status-normalization
 head_sha: null
 pr: null
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
-ci_check_generation: null
+ci_trigger_source: pull_request
+ci_check_generation: final-head-pending
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -153,5 +165,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Inspect exact merged task records and current programme/entitlement status text, then apply only evidence-backed lifecycle normalization.
+next_action: Freeze the final documentation-only head, open one PR, perform exact-head self-review, run required CI and obtain one independent entitlement/security review before squash merge.
 ```
