@@ -8,7 +8,7 @@ status: completed
 repository: blakinio/Oteryn-v2
 delivery_issue: 111
 delivery_pr: 133
-closeout_pr: null
+closeout_pr: 134
 trusted_base_sha: adb0882a5ddbe42944fe955f5effb78fd5495422
 final_delivery_head_sha: 1a431b4e0667a4a218ea15ed7152a7e979a1b072
 delivery_merge_sha: bc172d7244f823425feb84c46c7d04be1f942eed
@@ -87,4 +87,4 @@ This delivery did not create or authorize:
 - `DUR-03` consumes `ItemInstanceId` for item transaction/conservation design.
 - `PROD-ENTITLEMENTS-01` remains independently blocked by `Oteryn-Platform#944`.
 
-Lifecycle ownership is released only when the dedicated closeout PR carrying this archive and the final current-status transition merges.
+Lifecycle ownership is released only when closeout PR #134 carrying this archive and the final current-status transition merges.
