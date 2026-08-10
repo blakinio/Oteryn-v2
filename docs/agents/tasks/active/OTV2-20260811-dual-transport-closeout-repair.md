@@ -15,7 +15,7 @@ final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture closeout coordinator
 created_at: 2026-08-11T00:35:00+02:00
-updated_at: 2026-08-11T01:07:00+02:00
+updated_at: 2026-08-11T01:30:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -31,6 +31,7 @@ owned_paths:
   - docs/architecture/ARCHITECTURE_REVIEW_REFINEMENTS_2026-08-10.md
   - docs/architecture/ARCHITECTURE_STATUS_MODEL.md
   - docs/architecture/FOUNDATION_PROGRAMME_CURRENT_STATUS.md
+  - docs/architecture/GLOBAL_ARCHITECTURE_DECISION_REGISTER.md
   - docs/architecture/README.md
   - docs/contracts/PROTOCOL_OTERYN_TRANSPORT_POLICY.json
 public_contracts:
@@ -52,36 +53,35 @@ external_repositories:
 
 ## Outcome
 
-Deliver the complete architecture package inherited from exhausted PRs #145/#148 and repair the bounded material findings found during successor review: prevent the 2026-08-10 GameNode modular-monolith recommendation from being misread as frozen decomposition, make `TCP_ONLY` explicitly future/unavailable until gameplay transport implementation is proven, and preserve ADR-0009's already accepted `GameNode = one game-server process` identity/process boundary while keeping only internal decomposition and adjacent-service placement open for later evidence.
+Deliver the inherited architecture package and close the bounded review findings without authorizing runtime implementation. The final package must keep one `protocol-oteryn`, preserve ADR-0009's `GameNode = one game-server process` identity, treat the modular-monolith shape only as a nonbinding internal-decomposition starting hypothesis, and keep every gameplay transport mode unavailable until separately implemented and proven.
 
 ## Architecture and source of truth
 
-- `PROVEN`: trusted full-diff base for the inherited package is `main@9794e9a6307b6f9db193ca2ce08607eb065b7d7e`.
-- `PROVEN`: PR #148 exact head `c36e0eb1127c5689a23ea810c802766fe79d8050` passed Agent Governance `31438343486`, Dependency Review `31438343473`, CodeQL `31438343467`, and self-review `4901430400`.
-- `PROVEN`: independent review `4901458913` on that head found exactly two material remaining findings: GameNode topology wording lacked a decision gate, and ADR-0014 `TCP_ONLY remains available` contradicted current runtime-unavailable policy.
-- `PROVEN`: PR #148 is closed unmerged and its task is archived after repair budget `3/3`; no fourth repair was applied to that task.
-- `PROVEN`: initial PR #149 head `b080390b71cb6aa51404c02f28d52afb97a2f308` passed mandatory self-review and exact-head Agent Governance `31439274842`, Dependency Review `31439274845`, CodeQL `31439274868`.
-- `PROVEN`: required independent review on `b080390...` found one bounded P2: `FOUNDATION_PROGRAMME_CURRENT_STATUS.md` independently retained prescriptive modular-monolith wording outside ADR-0015's original supersession scope.
-- `PROVEN`: repair-cycle-1 head `89f80df8eec8bf0430c365bbdde35597d4879fa2` passed exact-head self-review `4901604130`, Agent Governance `31439807829`, Dependency Review `31439807899` and CodeQL `31439807887`; its prior topology-overlay P2 was resolved.
-- `PROVEN`: required independent review on `89f80df...` found one further bounded P2: ADR-0015's phrase "process/service topology" could be read as reopening ADR-0009's accepted definition of one GameNode as one game-server process.
-- `DERIVED`: the safe repair is not to supersede ADR-0009. ADR-0015 must preserve `GameNode = one process` and keep only internal module/crate decomposition plus genuinely separate adjacent-service boundaries open for later evidence.
-- `OWNER_ACCEPTED`: transport/admission/security architecture already reviewed remains unchanged: one `protocol-oteryn`, TCP profile 1 architecture registration only, QUIC future opt-in target blocked on profile/FND-04/order/resource/fault/measured-benefit evidence, Gateway-only Game Login Ticket redemption, no cross-profile grant reuse, fail-closed fallback, no 0-RTT/DATAGRAM baseline.
-- `OWNER_ACCEPTED`: Codex is not routine; this high-risk inherited package requires one clean final independent review after the repaired head is frozen.
+- `PROVEN`: original trusted package base is `main@9794e9a6307b6f9db193ca2ce08607eb065b7d7e`.
+- `PROVEN`: current strict base after branch synchronization is `main@81db47966d76709a0e44dfbf1bc3979f38a24ffa`.
+- `PROVEN`: PR #148 exact head `c36e0eb1127c5689a23ea810c802766fe79d8050` passed its exact-head checks/self-review; final independent review `4901458913` found the two bounded findings inherited here.
+- `PROVEN`: PR #148 is closed unmerged after exhausting repair budget `3/3`.
+- `PROVEN`: PR #149 repair cycle 1 closed the status-overlay topology ambiguity.
+- `PROVEN`: PR #149 repair cycle 2 preserved ADR-0009's one-process GameNode boundary and aligned `docs/architecture/README.md` with that scope.
+- `PROVEN`: post-sync head `747a68dd009ace5757f0354c75588f815bc84a96` was strictly up to date with main (`behind_by=0`), had the intended 14-path diff, passed self-review `4901701858`, Agent Governance `31442112915`, Dependency Review `31442112903`, and CodeQL `31442112916`.
+- `PROVEN`: required independent review on `747a68dd...` found one final bounded P2: ADR-0014/0015/0016 were accepted but missing from `GLOBAL_ARCHITECTURE_DECISION_REGISTER.md`, contrary to that register's own decision discipline.
+- `DERIVED`: repair cycle 3 must be limited to registering ADR-0014/0015/0016 globally, removing the stale implication that QUIC still belongs to the generic advanced-scaling gate, and updating this task ownership/evidence. No fourth repair is permitted in this task.
+- `OWNER_ACCEPTED`: transport/admission/security invariants remain unchanged: one `protocol-oteryn`; TCP+TLS profile 1 is architecture registration/default intent only; QUIC is future opt-in and blocked on profile/FND-04/ordering/resource/fault/measured-benefit/implementation evidence; Gateway-only Game Login Ticket redemption; no cross-profile grant reuse; fail-closed fallback; no 0-RTT/DATAGRAM baseline.
 
 ## Acceptance criteria
 
-- [x] Add a dedicated clarification making the modular-monolith GameNode shape a nonbinding preferred starting hypothesis rather than a frozen internal decomposition.
-- [x] Preserve ADR-0009's accepted one-process GameNode identity/process/container boundary; ADR-0015 may not silently redefine several processes/services as one GameNode.
-- [x] Keep later evidence-driven decisions open for internal module/crate decomposition and independently deployed adjacent services with genuinely separate authority/security/data/scaling/failure boundaries.
-- [x] Add a dedicated clarification making `TCP_ONLY` and all gameplay transport client modes runtime-unavailable until their transport/client path is implemented and proven.
-- [x] Add the clarifications to the canonical architecture index with explicit supersession precedence.
-- [x] Archive/rotate exhausted PR #148 task without a fourth repair on that task.
-- [x] Close PR #148 unmerged and point it to successor PR #149.
-- [x] Extend ADR-0015's narrow supersession scope to include the exact prescriptive modular-monolith sentence in `FOUNDATION_PROGRAMME_CURRENT_STATUS.md`; the status overlay remains authoritative for status, but not for frozen internal GameNode decomposition.
-- [ ] Full trusted-base diff contains only declared documentation/task/contract paths and preserves reviewed invariants.
-- [ ] Mandatory repair-cycle-2 exact-head self-review passes with zero material findings.
-- [ ] Repair-cycle-2 exact-head Agent Governance, Dependency Review and CodeQL pass.
-- [ ] One clean required independent final review passes on the unchanged repair-cycle-2 head with zero material findings.
+- [x] Make the modular-monolith GameNode shape a nonbinding preferred starting hypothesis rather than frozen internal decomposition.
+- [x] Preserve ADR-0009's accepted one-process GameNode identity/process/container boundary.
+- [x] Keep later evidence-driven decisions open only for internal module/crate decomposition and genuinely separate adjacent services.
+- [x] Make `TCP_ONLY` and all gameplay transport client modes runtime-unavailable until implemented and proven.
+- [x] Add ADR-0015/0016 to the canonical architecture index with explicit narrow precedence.
+- [x] Archive/rotate exhausted PR #148 task and close PR #148 unmerged.
+- [x] Include the status-overlay modular-monolith sentence in ADR-0015's narrow supersession scope.
+- [x] Register accepted ADR-0014/0015/0016 in `GLOBAL_ARCHITECTURE_DECISION_REGISTER.md` and keep ADR-0009/transport-readiness precedence explicit.
+- [ ] Final repair-cycle-3 diff contains only declared documentation/task/contract paths and preserves reviewed invariants.
+- [ ] Mandatory repair-cycle-3 exact-head self-review passes with zero material findings.
+- [ ] Repair-cycle-3 exact-head Agent Governance, Dependency Review and CodeQL pass.
+- [ ] One clean required independent final review passes on the unchanged repair-cycle-3 head with zero material findings.
 - [ ] Squash merge succeeds on the exact reviewed head.
 
 ## Excluded scope
@@ -92,27 +92,26 @@ Deliver the complete architecture package inherited from exhausted PRs #145/#148
 - no Platform repository write;
 - no production/live activation;
 - no change to ADR-0009's one-process GameNode identity;
-- no unrelated architecture cleanup;
-- no routine/redundant Codex review.
+- no broad cleanup of pre-existing stale programme prose outside the bounded global-register registration repair;
+- no fourth repair cycle.
 
 ## Implementation / findings
 
-- `ADR-0015` converts the GameNode modular-monolith wording from potentially binding internal decomposition authority into a preferred nonbinding implementation-discovery hypothesis and records mandatory tests for any later module/service-boundary decision.
-- Repair cycle 2 explicitly preserves ADR-0009: one `GameNode` remains the logical identity of one game-server process with one `NodeId`; separately deployed services may surround a GameNode only as distinct authority/process boundaries and do not collectively constitute that GameNode unless a future ADR explicitly supersedes ADR-0009.
-- `ADR-0016` aligns ADR prose with the machine-readable transport policy: profile registration is not runtime availability; `TCP_ONLY` is future mode vocabulary only until exact-revision implementation/proof exists.
-- The canonical architecture index includes ADR-0015/0016 and states their narrow precedence.
-- PR #148 lifecycle record is archived; PR #148 is closed unmerged and references PR #149.
-- Repair cycle 1 covered the status-overlay modular-monolith sentence; repair cycle 2 closes the ADR-0009 process-identity ambiguity. Neither repair adds runtime implementation or changes transport/admission authority.
+- `ADR-0015` makes internal modular-monolith decomposition nonbinding while preserving ADR-0009's one-process GameNode identity.
+- `ADR-0016` makes transport-profile registration and future client-mode vocabulary explicitly distinct from runtime availability.
+- `PROTOCOL_OTERYN_TRANSPORT_POLICY.json` remains machine-readable current authority for runtime availability.
+- `GLOBAL_ARCHITECTURE_DECISION_REGISTER.md` now records ADR-0014 through ADR-0016, binds them narrowly in decision discipline, and removes QUIC from the generic `EXP-SCALE-01` ownership bucket in favor of ADR-0014/`NET-TRANSPORT-02`.
+- Repair cycles 1-3 are bounded review repairs only; none adds runtime implementation or changes Platform/production authority.
 
 ## Validation
 
 ### Focused
 
-- trusted full-diff base: `9794e9a6307b6f9db193ca2ce08607eb065b7d7e`
-- inherited exact reviewed head: `c36e0eb1127c5689a23ea810c802766fe79d8050`
-- first PR #149 head `b080390b71cb6aa51404c02f28d52afb97a2f308`: self-review + three exact-head checks PASS; one independent-review P2 repaired
-- repair-cycle-1 head `89f80df8eec8bf0430c365bbdde35597d4879fa2`: self-review + three exact-head checks PASS; one independent-review P2 repaired in cycle 2
-- repair-cycle-2 full changed-file review: pending frozen head
+- original trusted package base: `9794e9a6307b6f9db193ca2ce08607eb065b7d7e`
+- strict current-main base after synchronization: `81db47966d76709a0e44dfbf1bc3979f38a24ffa`
+- repair-cycle-1 exact-head checks: PASS before superseding review repair
+- repair-cycle-2/post-sync exact-head checks: PASS before final register finding
+- repair-cycle-3 full current-main diff: pending frozen head
 
 ### Component/integration
 
@@ -124,28 +123,27 @@ Deliver the complete architecture package inherited from exhausted PRs #145/#148
 
 ### Exact-head CI
 
-- final head: pending after this checkpoint commit
+- final head: pending after repair-cycle-3 checkpoint commit
 - trigger source: pull_request/synchronize
 - result: pending
 
 ## Self-review
 
-- exact head: pending repair-cycle-2 head
-- material findings: ADR-0009 process-identity ambiguity repaired in cycle 2
+- exact head: pending repair-cycle-3 head
+- material findings: global-register omission repaired in cycle 3
 - verdict: pending
 
 ## Independent review
 
 - required: `YES` — inherited package contains high-risk transport/admission/security architecture
-- auditor: one genuinely independent final reviewer; Codex only for this required gate if no other independent reviewer is available
-- first PR #149 review: one P2 repaired in cycle 1
-- second PR #149 review on `89f80df...`: one P2 repaired in cycle 2
-- final verdict: pending
+- auditor: one genuinely independent final reviewer; Codex only because this gate genuinely requires independence and is available
+- earlier PR #149 reviews: bounded P2 findings repaired in cycles 1-3
+- final verdict: pending; zero material findings required and no further repair is permitted in this task
 
 ## PR and closeout
 
-- changed-file review: pending repair-cycle-2 head
-- unresolved review threads: ADR-0009 P2 to resolve after repaired content is visible and exact-head review confirms it
+- changed-file review: pending repair-cycle-3 head
+- unresolved review thread: global-register P2 to resolve after repaired content is visible and self-review confirms the scope
 - related/superseded PRs: PR #145 and PR #148 closed unmerged/rotated
 - merge commit/result: pending
 - ownership release: pending
@@ -153,7 +151,7 @@ Deliver the complete architecture package inherited from exhausted PRs #145/#148
 ## Context checkpoint
 
 ```yaml
-last_progress: PR #149 repair cycle 2 preserves ADR-0009's one-process GameNode identity while keeping only internal decomposition and adjacent-service placement evidence-driven.
+last_progress: Repair cycle 3 registers ADR-0014/0015/0016 in the global architecture decision register and removes the stale generic QUIC scaling ownership implication.
 status: validating
 branch: docs/OTV2-20260811-dual-transport-closeout-repair
 head_sha: null
@@ -161,7 +159,7 @@ pr: 149
 final_head_sha: null
 final_head_frozen_at: null
 ci_trigger_source: pull_request
-ci_check_generation: repair-2-head-pending
+ci_check_generation: repair-3-head-pending
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -170,10 +168,10 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 2
+repair_cycles_for_current_gate: 3
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Freeze repair-cycle-2 PR #149 head, run exact-head self-review and CI, resolve the repaired ADR-0009 thread, then request one clean final independent review; squash-merge unchanged head if clean.
+next_action: Freeze repair-cycle-3 PR #149 head, run exact-head self-review and CI, resolve the global-register finding, then obtain one clean final independent review; squash-merge unchanged head if clean. No further content repair is permitted in this task.
 ```
