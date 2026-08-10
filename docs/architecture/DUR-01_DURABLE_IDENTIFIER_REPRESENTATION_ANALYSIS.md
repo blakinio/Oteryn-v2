@@ -237,22 +237,25 @@ This matches Platform ADR 0028's distinction between local `identities.id` and c
 
 Legacy Canary/Otheryn numeric identifiers are migration source identifiers only.
 
-A canonical migration mapping has the logical key:
+The stable logical identity key for one legacy source entity is:
 
 ```text
-(source_system, source_revision_or_namespace, source_entity_kind, legacy_identifier)
+(source_system, source_namespace, source_entity_kind, legacy_identifier)
     -> native typed identity
 ```
+
+`source_namespace` identifies the stable legacy identity namespace (for example one authoritative database/world/domain namespace), not an individual export or snapshot. `source_revision`, snapshot hash/version, import run and migration classification are provenance attached to observations/import attempts; they are **not** part of the stable mapping key unless a separately accepted migration contract proves that a revision actually denotes a different identity namespace.
 
 Rules:
 
 - first accepted import allocates or consumes one canonical native identity according to the owning native lifecycle;
-- retry of the same proven source entity reuses the existing mapping;
-- the same source tuple mapping to a different native identity is a conflict and fails closed;
+- retry or later snapshot of the same proven source entity reuses the existing stable mapping even when source revision/import-run metadata changes;
+- the same stable source key mapping to a different native identity is a conflict and fails closed;
+- a source revision may update provenance or mutable imported state but cannot silently mint a second native identity for the same stable source key;
 - two different semantic source entities may not silently collapse onto one native identity;
 - collision/duplicate ambiguity never overwrites an existing native entity;
 - legacy numeric IDs are not embedded into UUID bytes or used as native UUID entropy/authority;
-- mapping provenance includes exact source revision/classification sufficient for deterministic re-import review;
+- mapping provenance includes exact source revision/snapshot/classification and import-run evidence sufficient for deterministic re-import review;
 - migration tools have no authority to mint Platform-owned AccountId/WorldId/ChannelId values; they consume exact Platform-issued mappings where those identities are required.
 
 DUR-02/DUR-04 decide physical mapping-table/tooling layout. DUR-01 freezes the anti-corruption semantics.
@@ -303,7 +306,7 @@ Any future change requires an explicit migration contract with:
 5. foreign/reference reconciliation;
 6. rollback that does not mint alternate identities;
 7. exact consumer compatibility matrix;
-8. negative fixtures for truncation, wrong type, wrong scope and stale legacy mapping.
+8. negative fixtures for truncation, wrong type, wrong scope and stale/conflicting legacy mapping.
 
 A migration may change storage shape; it may not reinterpret an existing identity as a different semantic entity.
 
@@ -359,8 +362,9 @@ Prove wrong-World scoped references fail rather than matching by the component U
 
 Prove:
 
-- repeat import is idempotent to one mapping;
-- conflicting source mapping fails closed;
+- repeat import and later snapshots of the same stable source key are idempotent to one native mapping;
+- changed source revision/provenance alone cannot allocate a second native identity;
+- conflicting stable source mapping fails closed;
 - duplicate/collision does not overwrite native state;
 - Platform-owned identities are not minted by game migration tooling.
 
@@ -390,9 +394,9 @@ This analysis closes Issue #111's eight question groups:
 2. Durable-domain catalogue: **add `ItemInstanceId`; reject generic catch-all identity; leave audit/event IDs to ANL-01**.
 3. Identity/revision/fence/order: **strict separation; UUIDv7 order is non-authoritative**.
 4. Foreign/cross-boundary rules: **game-local typed relations allowed; no Platform/game cross-DB FKs; scope explicit**.
-5. Legacy migration: **provenance mapping anti-corruption; no numeric-to-native identity reinterpretation; conflicts fail closed**.
+5. Legacy migration: **stable source-namespace mapping key, revision/snapshot as provenance, no numeric-to-native identity reinterpretation, conflicts fail closed**.
 6. Privacy/public reference: **internal UUIDv7 not automatically public; product-owned opaque refs when needed**.
 7. Evolution: **explicit lossless versioned migration; no silent representation change or re-key**.
-8. Evidence: **round-trip, negative typing/scope, legacy conflict and mixed-version fixtures required**.
+8. Evidence: **round-trip, negative typing/scope, stable legacy mapping/revision-conflict and mixed-version fixtures required**.
 
 No unresolved decision in this analysis prevents a final DUR-01 contract. Numeric persistence performance choices, table layout and transaction semantics remain intentionally downstream.
