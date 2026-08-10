@@ -30,7 +30,7 @@ Independent review/audit is additionally required when:
 
 Low-risk documentation/navigation, typo and stale-task bookkeeping changes do not require an independent reviewer solely because they are PRs when no rule above applies.
 
-An independent reviewer may be a qualified human, a separate non-authoring agent/session, Codex or a dedicated audit workflow. Codex is optional and should be used only when it is actually needed as the appropriate independent mechanism or the risk materially benefits from it.
+An independent reviewer may be a qualified human, a separate non-authoring agent/session, Codex or a dedicated audit workflow. **Codex is optional and may be used only when independent review is actually required and Codex is the necessary or appropriate available independent mechanism for that requirement.** Do not invoke it merely for extra assurance on a task that does not require independent review.
 
 If independent review is required but unavailable, record the blocker. Never relabel self-review as independent.
 
