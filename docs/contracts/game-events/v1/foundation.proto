@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package oteryn.events.v1;
+
+// ANL-01 source IDL. This schema defines event interchange semantics only.
+// It does not select a broker, database schema or gameplay protocol payload.
+
+message CommandRef {
+  bytes game_session_id = 1; // exactly 16-byte non-nil UUIDv7
+  uint64 command_id = 2;     // non-zero; semantics owned by FND-02
+}
+
+message AnalyticsActorRef {
+  string identity_domain = 1;  // bounded registered ASCII key
+  uint64 identity_epoch = 2;   // non-zero policy epoch/revision
+  bytes analytics_actor_id = 3; // exactly 16-byte non-nil UUIDv7
+}
+
+message CausationRef {
+  oneof cause {
+    bytes event_id = 1;        // EventId UUIDv7
+    CommandRef command = 2;
+    bytes operation_id = 3;    // OperationId UUIDv7
+    bytes transaction_id = 4;  // TransactionId UUIDv7
+  }
+}
+
+enum EventDurabilityClass {
+  EVENT_DURABILITY_UNSPECIFIED = 0;
+  BEST_EFFORT_TELEMETRY = 1;
+  DURABLE_AUDIT = 2;
+}
+
+enum EventPrivacyClass {
+  EVENT_PRIVACY_UNSPECIFIED = 0;
+  INTERNAL_NON_PERSONAL = 1;
+  PSEUDONYMOUS_ANALYTICS = 2;
+  RESTRICTED_PLAYER_LINKED = 3;
+  SECURITY_SENSITIVE = 4;
+}
+
+message EventEnvelope {
+  uint32 envelope_revision = 1;          // exact 1 for this profile
+  bytes event_id = 2;                    // exactly 16-byte non-nil EventId UUIDv7
+  uint32 event_type_id = 3;              // non-zero registered ID
+  uint32 event_schema_revision = 4;      // non-zero registered revision
+  EventDurabilityClass durability_class = 5;
+  EventPrivacyClass privacy_class = 6;
+  string retention_profile_id = 7;       // accepted finite policy profile required for production
+  int64 occurred_at_unix_ms = 8;         // trusted server wall-clock correlation only
+
+  optional bytes world_id = 9;           // 16-byte UUIDv7 when present
+  optional bytes channel_id = 10;        // requires world_id; semantic ChannelRef
+  optional bytes instance_id = 11;       // requires world_id; semantic InstanceRef
+  optional bytes node_id = 12;           // GameNode process incarnation UUIDv7
+
+  optional bytes game_session_id = 13;   // 16-byte UUIDv7 when present
+  optional uint64 connection_generation = 14; // requires game_session_id; non-zero
+  optional uint64 runtime_execution_ordinal = 15; // owner-local evidence only
+  optional uint64 command_id = 16;        // requires game_session_id; non-zero
+
+  optional bytes operation_id = 17;       // OperationId UUIDv7
+  optional bytes transaction_id = 18;     // TransactionId UUIDv7
+  optional uint32 transaction_event_ordinal = 19; // requires transaction_id; starts at 1
+  optional bytes correlation_id = 20;     // CorrelationId UUIDv7
+  optional CausationRef causation = 21;
+  optional AnalyticsActorRef analytics_actor = 22;
+
+  optional uint32 protocol_major = 23;
+  optional string ruleset_revision = 24;
+  optional string content_revision = 25;
+  string server_build_id = 26;
+
+  bytes payload = 27;                     // registered protobuf payload bytes
+  bytes payload_sha256 = 28;              // exactly 32 bytes, SHA-256(payload)
+
+  reserved 29 to 63;
+}
