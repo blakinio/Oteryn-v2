@@ -10,13 +10,13 @@ base_branch: main
 branch: docs/fnd04b-reconnect-recovery-continuity
 issue: 127
 programme_issue: 112
-pr: null
+pr: 128
 trusted_base_sha: 2fd7bac4879f381d5b97230732076df2e9c61f95
 historical_reviewed_evidence_pr: 109
 historical_reviewed_evidence_head: bf82e392d6ef8b1e627849cdc7383af9a7c987ae
 owner: GPT-5.6 Sol architecture continuation session
 created_at: 2026-08-10T12:50:00+02:00
-updated_at: 2026-08-10T12:50:00+02:00
+updated_at: 2026-08-10T12:56:00+02:00
 repair_cycles_for_current_gate: 0
 max_repair_cycles_for_current_gate: 3
 blocker: null
@@ -41,7 +41,7 @@ Deliver only bounded FND-04B from replacement programme #112 after accepted FND-
 - accepted FND-03 runtime ownership/fencing/recovery semantics;
 - accepted disconnect/re-entry owner decisions and privacy/forensic baselines;
 - Foundation Error Vocabulary;
-- Issue #127 / programme #112;
+- Issue #127 / programme #112 / delivery PR #128;
 - superseded PR #109 exact head `bf82e392...` as reviewed historical evidence only.
 
 ## Scope
