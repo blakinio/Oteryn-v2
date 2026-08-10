@@ -16,8 +16,8 @@ historical_reviewed_evidence_pr: 109
 historical_reviewed_evidence_head: bf82e392d6ef8b1e627849cdc7383af9a7c987ae
 owner: GPT-5.6 Sol architecture continuation session
 created_at: 2026-08-10T12:50:00+02:00
-updated_at: 2026-08-10T12:56:00+02:00
-repair_cycles_for_current_gate: 0
+updated_at: 2026-08-10T13:00:00+02:00
+repair_cycles_for_current_gate: 1
 max_repair_cycles_for_current_gate: 3
 blocker: null
 owned_paths:
@@ -36,8 +36,8 @@ Deliver only bounded FND-04B from replacement programme #112 after accepted FND-
 ## Trusted inputs
 
 - `main@2fd7bac4879f381d5b97230732076df2e9c61f95`;
-- accepted `FND-04A_AUTHORITY_FRESH_ADMISSION_CONTRACT.md` and fresh-admission grant profile;
-- accepted FND-02 transport, `connection_generation`, command/session sequencing, snapshot/resync and authenticated liveness primitives;
+- accepted FND-04A fresh-admission authority/profile;
+- accepted FND-02 transport/generation/reconciliation/liveness primitives;
 - accepted FND-03 runtime ownership/fencing/recovery semantics;
 - accepted disconnect/re-entry owner decisions and privacy/forensic baselines;
 - Foundation Error Vocabulary;
@@ -46,29 +46,34 @@ Deliver only bounded FND-04B from replacement programme #112 after accepted FND-
 
 ## Scope
 
-Included: reconnect secret/proof semantics; healthy-binding non-preemption; PREPARE/COMMIT rebind; idempotent attempt reconciliation; server-authoritative liveness and `ControlLossEpoch`; exactly-once 4-second defensive PvE protection per eligible loss epoch; same-GameSession reconnect and reauthenticated recovery; post-grace existing-actor recovery with a fresh GameSession; recovery locator/current runtime placement; GameNode replacement/fencing; independent recovery revision bindings; recovery credential security profile; replay/race/crash/failover evidence.
+Included: reconnect proof; healthy-binding non-preemption; PREPARE/COMMIT; attempt reconciliation; server-authoritative liveness and `ControlLossEpoch`; one exact 4-second defensive PvE protection activation per eligible loss epoch; same-GameSession reconnect/reauth recovery; post-grace existing-actor recovery with new GameSession; recovery locator/current placement; GameNode replacement/fencing; independent revision bindings; recovery security profile; race/crash/failover evidence.
 
-Excluded: Rust/protobuf/TLS implementation; database/cache schema; Platform writes; concrete KMS/HSM/vendor; deployment; production traffic; entitlement/Premium/VIP implementation; healthy-session migration protocol; final FND-04 cross-component error catalogue/status/failure-scenario integration (FND-04C).
+Excluded: runtime/protocol/persistence/Platform/KMS/deployment implementation; entitlement implementation; healthy-session migration protocol; final FND-04C integration.
 
-## Mandatory corrections versus historical candidate
+## Repair history
 
-1. Do not reintroduce historical `2s/5s/15s` reconnect/liveness numbers. Only the already accepted defensive PvE re-entry protection duration is exact: **4 seconds**. Liveness probe cadence, control-loss threshold, stale transport cleanup deadline and same-session grace duration remain bounded but require later evidence-backed numeric registration.
-2. Do not use opaque signed `compatibility_revision`. Recovery validates protocol, transport, ruleset, content, map and world-policy revisions independently.
-3. Recovery profile must use the same deterministic crypto/schema/binding precedence and verifier-anchored trust selection accepted by FND-04A.
-4. Recovery Platform-security and signing-key/profile evidence must preserve authenticated source observation age `<=5s`, monotonic/comparable anti-rollback ordering and fail-closed restart floor reconstruction.
-5. AccountId->CharacterId ownership must be proven before world/actor/controller classification.
+### Cycle 1 — structural schema vs semantic binding/profile/revision classification
+
+Initial profile tables used words such as `exact` for `iss`/`aud`/`purpose`/`profile`/protocol values while the normative precedence separately required authenticated binding or revision outcomes. That could let conforming implementations classify the same signed credential as `MALFORMED` versus `BINDING_MISMATCH`/`REVISION_UNSUPPORTED`.
+
+Repair: authenticated payload schema now owns only claim membership, type and canonical lexical shape. After successful signature and structural schema validation, semantic `iss`/`aud`/`typ`/`purpose` mismatch maps to `RECOVERY_GRANT_BINDING_MISMATCH`; unsupported profile/protocol/transport or independent gameplay revision maps to `RECOVERY_GRANT_REVISION_UNSUPPORTED`. Invalid signature still preempts otherwise well-formed semantic defects. Recovery-profile fixtures explicitly cover this precedence.
+
+## Mandatory historical corrections
+
+- historical `2s/5s/15s` reconnect/liveness numbers are non-canonical; only the accepted 4-second protection is exact;
+- no opaque `compatibility_revision`;
+- verifier-anchored recovery trust scope + deterministic crypto/schema precedence;
+- authenticated source-age <=5s + monotonic anti-rollback security/trust evidence;
+- AccountId->CharacterId before world/actor/controller classification.
 
 ## Validation plan
 
 - exact three-path scope from trusted main;
-- architecture/profile cross-check;
-- full state-machine and race review;
-- verify same-session versus post-grace transition never resets actor state;
-- verify `ControlLossEpoch` cannot be manufactured/reset by failed reconnect, graceful logout or healthy migration;
+- architecture/profile cross-check and full state-machine/race review;
+- verify protection epoch cannot be manufactured/reset;
 - verify healthy current generation cannot be evicted by bearer proof;
-- verify old/prepared/stale connection generation cannot command/fence winner;
-- verify GameNode replacement cannot infer continuity without fenced recoverable evidence;
-- verify recovery profile cannot select trust from token semantics or silently downgrade;
+- verify stale generation/proof/prepared candidate cannot command/fence winner;
+- verify GameNode replacement never guesses continuity;
 - full exact-head architecture/security self-review;
 - exact-head Agent Governance, Dependency Review and CodeQL PASS;
 - zero unresolved material threads;
@@ -76,4 +81,4 @@ Excluded: Rust/protobuf/TLS implementation; database/cache schema; Platform writ
 - squash merge unchanged accepted head only;
 - separate lifecycle closeout before FND-04C.
 
-Runtime/component/browser E2E: `NOT_APPLICABLE` for architecture-only delivery. Future implementation must execute the named reconnect/recovery/security/failover fixtures.
+Runtime/component/browser E2E: `NOT_APPLICABLE` for architecture-only delivery.
