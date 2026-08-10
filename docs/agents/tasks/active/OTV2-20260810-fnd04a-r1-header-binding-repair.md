@@ -17,8 +17,8 @@ trusted_base_sha: 43ca28f1f0f259c08a275c92946aa35f05d4d112
 reconstruction_squash_sha: 6c34e48e868b604b824f079920694d007f7eb493
 owner: GPT-5.6 Sol architecture continuation session
 created_at: 2026-08-10T11:05:00+02:00
-updated_at: 2026-08-10T11:10:00+02:00
-repair_cycles_for_current_gate: 1
+updated_at: 2026-08-10T11:14:00+02:00
+repair_cycles_for_current_gate: 2
 max_repair_cycles_for_current_gate: 3
 final_head_sha: null
 final_head_frozen_at: null
@@ -35,26 +35,24 @@ public_contracts:
 
 ## Goal
 
-Deliver the bounded successor repair authorized by the product owner after PR #114 exhausted its `3/3` repair budget and an exact-head terminal review found one material interoperability contradiction. This task is a new gate with its own repair budget; it is not a fourth repair cycle on #114.
+Deliver the bounded successor repair authorized by the product owner after PR #114 exhausted its `3/3` repair budget and an exact-head terminal review found a material interoperability contradiction. This task is a new gate with its own repair budget; it is not a fourth repair cycle on #114.
 
 ## Source / provenance
 
 - current trusted reconstruction base: `main@43ca28f1f0f259c08a275c92946aa35f05d4d112`;
 - reviewed but unmerged exhausted candidate: PR #114 exact head `79678485d009c22ece2736c822d6b75b6d235ad2`;
 - staging reconstruction was squashed once onto the fresh current-main branch as `6c34e48e868b604b824f079920694d007f7eb493`, preserving content without importing #114's 11-commit history;
-- all previously repaired #114 semantics remain candidate evidence unless explicitly changed by the single R1 finding below;
+- all previously repaired #114 semantics remain candidate evidence unless explicitly changed by the bounded R1 findings below;
 - Issue #120 records the owner disposition and bounded successor acceptance criteria;
 - delivery PR: #125.
 
-## Material terminal finding carried from #114
+## Repair cycle 1 — protected `typ` classification
 
 The v1 profile simultaneously required an early `exact protected header/profile` check before signature verification and required a correctly signed wrong `typ` to map to `ADMISSION_GRANT_BINDING_MISMATCH` after authentication.
 
 Because `typ` is itself a protected JOSE header member, conforming fail-fast consumers could classify the same token differently. That violates deterministic cross-component error semantics and risks exposing semantic binding information for unauthenticated tokens.
 
-## Accepted R1 repair
-
-The successor candidate now freezes this precedence:
+The successor freezes this precedence:
 
 ```text
 malformed protected-header structure
@@ -77,7 +75,35 @@ Specifically:
 3. malformed/missing/null/non-string/out-of-bound `typ` remains `ADMISSION_GRANT_MALFORMED`;
 4. structurally valid wrong `typ` with failed/untrusted signature remains `ADMISSION_GRANT_AUTHENTICATION_FAILED` without a binding oracle;
 5. correctly signed wrong exact `typ` maps deterministically to `ADMISSION_GRANT_BINDING_MISMATCH`, together with wrong exact `iss`/`aud`/`purpose`;
-6. unsupported payload `profile` remains `ADMISSION_GRANT_REVISION_UNSUPPORTED`.
+6. correctly signed unsupported payload `profile` remains `ADMISSION_GRANT_REVISION_UNSUPPORTED`.
+
+## Repair cycle 2 — verifier-anchored trust scope
+
+Exact-head review of the first successor freeze found a second material ambiguity: pre-signature `key/profile` trust was required before the token's `profile`/`iss`/`purpose` claims had been authenticated. An implementation could therefore accidentally let unauthenticated token semantics select a trust scope and return a different error class than another conforming implementation.
+
+The successor now freezes:
+
+```text
+pre-signature trust scope
+= verifier-configured expected fresh-entry v1 issuer/profile/key-purpose context
+
+untrusted iss/aud/profile/purpose/typ
+!= trust selector
+
+kid
+= selector only inside the fixed trusted set
+```
+
+Consequences:
+
+1. pre-signature trust/revocation evidence is fetched/evaluated only for the verifier-configured expected fresh-entry v1 context;
+2. unauthenticated `iss`, `aud`, `profile`, `purpose` or `typ` cannot choose, broaden or retarget trust;
+3. `kid` can only identify a candidate key inside the already fixed trusted set and never authorizes token-directed key discovery;
+4. structurally valid unsupported/wrong `profile` plus failed/untrusted signature remains `ADMISSION_GRANT_AUTHENTICATION_FAILED`;
+5. only a successfully verified credential can produce `ADMISSION_GRANT_REVISION_UNSUPPORTED` for an unsupported semantic profile;
+6. fixtures cover invalid-signature + unsupported-profile and same-`kid` issuer/profile/purpose trust-retarget attempts.
+
+The prior freeze `fa361f15510c53c33c8f2d5be2234dac3d30b427` and its CI generation are invalidated by this material repair.
 
 ## Scope preserved from FND-04A
 
@@ -104,12 +130,12 @@ No Rust runtime, protocol codec/schema implementation, persistence schema, Platf
 - verify branch ancestry starts from exact current trusted main and reconstruction added only reviewed #114 content;
 - verify final changed paths versus main are exactly this active task plus the two FND-04A public contracts;
 - verify no stale #114 active task remains in the successor diff;
-- verify architecture/profile agree on protected-header structural checks, authentication precedence and post-signature `typ` binding classification;
-- verify malformed `typ`, wrong-well-formed-`typ` + invalid signature, and correctly signed wrong `typ` fixtures are all explicit;
+- verify architecture/profile agree on protected-header structural checks, fixed pre-signature trust scope, authentication precedence, post-signature `typ` binding classification and post-signature unsupported-profile classification;
+- verify malformed `typ`, wrong-well-formed-`typ` + invalid signature, correctly signed wrong `typ`, wrong/unsupported profile + invalid signature, correctly signed unsupported profile, and token-directed trust-retarget fixtures are explicit;
 - verify all prior #114 P1/P2 repairs remain intact;
 - verify current-main entitlement dependency remains separate and does not alter FND-04A semantics;
 - perform full exact-head architecture/security self-review;
-- freeze exact final head only after PR metadata/task provenance are complete;
+- freeze exact final head only after all repair metadata is complete;
 - require exact-head Agent Governance, Dependency Review and CodeQL PASS;
 - require zero unresolved material review threads;
 - require one terminal exact-head architecture/security review with zero material findings;
@@ -121,7 +147,7 @@ Runtime/component/browser E2E: `NOT_APPLICABLE` because this gate changes archit
 
 ```yaml
 status: validating
-last_progress: PR #125 bound into successor task; FND-04A candidate reconstructed onto current main; terminal typ-order contradiction repaired in both public contracts; stale #114 active task removed.
-repair_cycles_for_current_gate: 1
-next_action: freeze the resulting exact head on the immutable PR surface, then run full diff review, exact-head CI and terminal review without moving the branch.
+last_progress: Repair cycle 2/3 completed. Both public contracts now anchor pre-signature admission trust to the verifier-configured expected v1 context; token semantics cannot retarget trust, and authentication/binding/profile error precedence is deterministic.
+repair_cycles_for_current_gate: 2
+next_action: freeze the resulting exact head on the immutable PR surface, then repeat full exact-head architecture/security review and all required CI without moving the branch.
 ```
