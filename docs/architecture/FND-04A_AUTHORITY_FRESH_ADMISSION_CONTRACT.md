@@ -5,7 +5,7 @@
 - Replacement programme: Issue #112
 - Owning successor repair: Issue #120 (`FND-04A-R1`)
 - Reconstructed reviewed candidate: PR #114 exact head `79678485d009c22ece2736c822d6b75b6d235ad2`; #114 remains superseded/unmerged after exhausted repair budget
-- Successor repairs: deterministic protected-header/binding classification and verifier-anchored pre-signature trust scope
+- Successor repairs: deterministic protected-header/binding classification, verifier-anchored pre-signature trust scope, and complete cryptographic/payload-schema classification precedence
 - Repository: `blakinio/Oteryn-v2`
 - Trusted reconstruction base: `main@43ca28f1f0f259c08a275c92946aa35f05d4d112`
 - Historical reviewed evidence only: superseded PR #109, final head `bf82e392d6ef8b1e627849cdc7383af9a7c987ae`
@@ -75,11 +75,17 @@ Platform never creates canonical GameSessionId. A valid Platform signature never
 
 Fresh entry uses only `docs/contracts/FND-04_PRE_ADMISSION_GRANT_PROFILE_V1.md`.
 
-The profile uses JWS Compact JWT, fully specified `alg=Ed25519`, rejects deprecated polymorphic `EdDSA`, uses dedicated typ/issuer/audience/purpose/key purpose, lifetime <=30s, verifier skew <=5s, authenticated Platform-security evidence <=5s, authenticated signing-key/profile trust evidence <=5s, one-time 32-byte GrantNonce and distinct AdmissionAttemptRef.
+The profile uses JWS Compact JWT, fully specified `alg=Ed25519`, rejects algorithm negotiation/downgrade and deprecated polymorphic `EdDSA`, uses dedicated typ/issuer/audience/purpose/key purpose, lifetime <=30s, verifier skew <=5s, authenticated Platform-security evidence <=5s, authenticated signing-key/profile trust evidence <=5s, one-time 32-byte GrantNonce and distinct AdmissionAttemptRef.
 
-For deterministic security/error semantics, structural protected-header checks happen before authentication, but a **well-formed semantic `typ` mismatch is classified only after successful signature verification**. Malformed `typ` remains invalid input; failed key trust/signature remains authentication failure; correctly signed wrong `typ` joins wrong `iss`/`aud`/`purpose` as `ADMISSION_GRANT_BINDING_MISMATCH`.
+Deterministic credential classification is part of the security contract:
 
-Before signature verification, the admission trust scope is selected exclusively from the verifier-configured expected fresh-entry v1 context: expected issuer, audience, profile, purpose and admission-signing key purpose. Unauthenticated token `iss`, `aud`, `profile`, `purpose` or `typ` never selects, broadens or retargets trust. `kid` may select only within that fixed trusted set. Semantic bindings and unsupported-profile classification occur only after successful signature verification.
+- malformed protected/JWS/JSON structure -> `ADMISSION_GRANT_MALFORMED`;
+- syntactically valid non-exact cryptographic `alg`, untrusted fixed-scope `kid`, incompatible key or signature failure -> `ADMISSION_GRANT_AUTHENTICATION_FAILED`;
+- semantic payload exact-schema validation waits for signature success; authenticated malformed/missing/unknown/noncanonical payload schema -> `ADMISSION_GRANT_MALFORMED`;
+- authenticated wrong exact `typ`/`iss`/`aud`/`purpose` -> `ADMISSION_GRANT_BINDING_MISMATCH`;
+- authenticated structurally valid unsupported `profile` -> `ADMISSION_GRANT_REVISION_UNSUPPORTED`.
+
+Before signature verification, the admission trust scope is selected exclusively from the verifier-configured expected fresh-entry v1 context: expected issuer, audience, profile, purpose and admission-signing key purpose. Unauthenticated token `iss`, `aud`, `profile`, `purpose` or `typ` never selects, broadens or retargets trust. `kid` may select only within that fixed trusted set. Semantic bindings, exact payload schema and unsupported-profile classification occur only after successful signature verification.
 
 The grant MUST bind separate authoritative gameplay dimensions rather than one overloaded compatibility token:
 
@@ -134,25 +140,28 @@ No silent retarget/downgrade to another World, Channel, owner, content/ruleset/m
 
 ## 7. Atomic fresh-admission linearization
 
-Precommit checks are fail-fast eligibility only.
+Precommit checks are fail-fast eligibility only until the atomic authority boundary.
 
-1. FND-02 material limits;
-2. parser/size/protected-header structural bounds, including exact `alg`, bounded `kid`, bounded structurally valid `typ` and forbidden-member rejection, without semantic `typ` comparison;
-3. using the verifier-configured expected fresh-entry v1 issuer/profile/key-purpose scope only, authenticate current signing-key/profile trust/revocation evidence provenance/freshness/anti-rollback and resolve `kid` only inside that fixed trusted set; unauthenticated token semantic values cannot select or broaden the scope;
-4. signature;
-5. after successful signature, exact issuer/audience/type/purpose semantics and unsupported-profile classification;
-6. canonical claims/UUID/generations;
-7. current Platform-security evidence provenance/freshness/anti-rollback + account generation/state;
-8. route/runtime/current target/ownership + independent protocol/transport/ruleset/content/map/world-policy/offer revisions;
-9. GrantNonce eligibility;
-10. current AccountId->CharacterId ownership/lifecycle;
-11. current CharacterId->WorldId/world eligibility only after step 10;
-12. AccountPresence/duplicate-login eligibility;
-13. CharacterLease/current runtime-scope acquisition/readiness;
-14. one atomic final revalidation + authority commit;
-15. publish success after commit only.
+1. FND-02 outer material limits;
+2. JWS/parser/size/base64/JSON structural bounds;
+3. protected-header shape: exact required member set and bounded syntactic `alg`/`kid`/`typ`; malformed/missing/extra/forbidden shape -> `ADMISSION_GRANT_MALFORMED`;
+4. cryptographic algorithm policy: syntactically valid non-exact `alg` -> `ADMISSION_GRANT_AUTHENTICATION_FAILED`; exact `Ed25519` continues with no negotiation/fallback;
+5. using the verifier-configured expected fresh-entry v1 issuer/profile/key-purpose scope only, authenticate current signing-key/profile trust/revocation evidence provenance/freshness/anti-rollback and resolve a well-formed `kid` only inside that fixed trusted set; unknown/untrusted `kid` -> `ADMISSION_GRANT_AUTHENTICATION_FAILED`; unauthenticated token semantic values cannot select or broaden the scope;
+6. Ed25519 signature; failure -> `ADMISSION_GRANT_AUTHENTICATION_FAILED`;
+7. after successful signature, exact payload claim membership/types/canonical encodings; missing/unknown/wrong-type/noncanonical schema -> `ADMISSION_GRANT_MALFORMED`;
+8. after schema success, exact issuer/audience/type/purpose semantics -> `ADMISSION_GRANT_BINDING_MISMATCH` on mismatch; structurally valid unsupported profile -> `ADMISSION_GRANT_REVISION_UNSUPPORTED`;
+9. JWT time/lifetime/skew;
+10. current Platform-security evidence provenance/freshness/anti-rollback + account generation/state;
+11. route/runtime/current target/ownership + independent protocol/transport/ruleset/content/map/world-policy/offer revisions;
+12. GrantNonce eligibility;
+13. current AccountId->CharacterId ownership/lifecycle;
+14. current CharacterId->WorldId/world eligibility only after step 13;
+15. AccountPresence/duplicate-login eligibility;
+16. CharacterLease/current runtime-scope acquisition/readiness;
+17. one atomic final revalidation + authority commit;
+18. publish success after commit only.
 
-A structurally valid but semantically wrong `typ` cannot bypass authentication and cannot be classified as a binding mismatch until signature success. Likewise, a structurally valid unsupported `profile` cannot retarget pre-signature trust and cannot be classified as unsupported until signature success. This ordering is normative and is detailed by the companion profile.
+This ordering is normative. A well-formed token cannot use algorithm, key, binding, profile or exact payload-schema differences as a pre-authentication oracle. An invalid signature wins over any otherwise well-formed semantic payload defect because semantic exact-schema/binding/profile classification occurs only after authentication.
 
 ### 7.1 Final revalidation
 
@@ -282,9 +291,9 @@ Common diagnostic envelope: `error_code`, `request_trace_id`, safe `admission_at
 
 | Internal code | Category | Progression | Retry / next authority | Mutation outcome | Public class | Redacted diagnostic | Extra credential-free correlation |
 |---|---|---|---|---|---|---|---|
-| `ADMISSION_GRANT_MALFORMED` | `INVALID_INPUT` | `TERMINAL` | new valid capability; never same malformed grant | no authority mutation | `RETRY_LOGIN` | `fresh admission grant malformed` | parser stage; safe profile/header class |
-| `ADMISSION_GRANT_AUTHENTICATION_FAILED` | `AUTHENTICATION_FAILED` | `SECURITY_TERMINAL` | restart authenticated issuance; never same credential | no authority mutation | `AUTHENTICATION_REQUIRED` | `fresh admission credential authentication failed` | safe_kid; trust decision class/revision bucket |
-| `ADMISSION_GRANT_BINDING_MISMATCH` | `SESSION_REJECTED` | `SECURITY_TERMINAL` | newly issued correct-bound grant; never reinterpret same credential | no authority mutation | `RETRY_LOGIN` | `fresh admission credential bound to a different context` | mismatch class only; never echo untrusted value |
+| `ADMISSION_GRANT_MALFORMED` | `INVALID_INPUT` | `TERMINAL` | new valid capability; never same malformed grant | no authority mutation | `RETRY_LOGIN` | `fresh admission grant malformed` | parser/schema stage; safe profile/header class only after authentication when semantic |
+| `ADMISSION_GRANT_AUTHENTICATION_FAILED` | `AUTHENTICATION_FAILED` | `SECURITY_TERMINAL` | restart authenticated issuance; never same credential | no authority mutation | `AUTHENTICATION_REQUIRED` | `fresh admission credential authentication failed` | safe algorithm/key/trust decision class; never unauthenticated semantic binding/profile detail |
+| `ADMISSION_GRANT_BINDING_MISMATCH` | `SESSION_REJECTED` | `SECURITY_TERMINAL` | newly issued correct-bound grant; never reinterpret same credential | no authority mutation | `RETRY_LOGIN` | `fresh admission credential bound to a different context` | authenticated mismatch class only; never echo untrusted value |
 | `ADMISSION_GRANT_NOT_YET_VALID` | `SESSION_REJECTED` | `RETRYABLE` | same unconsumed grant only after accepted nbf window while all bindings current | no nonce/authority mutation | `TEMPORARILY_UNAVAILABLE` | `fresh admission grant not yet active` | trusted-time boundary class |
 | `ADMISSION_GRANT_EXPIRED` | `SESSION_REJECTED` | `TERMINAL` | fresh issuer/Gateway attempt | no authority mutation | `RETRY_LOGIN` | `fresh admission grant expired` | trusted-time boundary class |
 | `ADMISSION_GRANT_REPLAYED` | `SESSION_REJECTED` | `SECURITY_TERMINAL` | reconcile prior admission; never reuse grant | prior success may exist; no duplicate | `SESSION_UNAVAILABLE` | `fresh admission grant already consumed or replayed` | replay receipt/correlation ref |
@@ -294,18 +303,54 @@ Common diagnostic envelope: `error_code`, `request_trace_id`, safe `admission_at
 | `ADMISSION_GRANT_ROUTE_STALE` | `STALE_GENERATION` | `TERMINAL` | fresh Gateway route + grant | no authority mutation | `RETRY_LOGIN` | `fresh admission route no longer current` | world_id; channel_id; route_revision |
 | `ADMISSION_GRANT_RUNTIME_GENERATION_STALE` | `STALE_GENERATION` | `TERMINAL` | fresh current-owner evidence + grant | no authority mutation | `RETRY_LOGIN` | `fresh admission runtime ownership no longer current` | world_id; channel_id; runtime_observation_revision; match/stale class only |
 | `ADMISSION_GRANT_WORLD_STALE` | `STALE_GENERATION` | `TERMINAL` | resolve current world then newly authorized route/grant; no retarget | no nonce/presence/lease/session/transport mutation | `RETRY_LOGIN` | `fresh admission character world binding no longer matches` | signed world_id; relation revision/class; no transfer details |
-| `ADMISSION_GRANT_REVISION_UNSUPPORTED` | `UNSUPPORTED_REVISION` | `TERMINAL` | compatible producer/client/consumer revisions; no downgrade | no authority mutation | `CLIENT_UPDATE_REQUIRED` | `fresh admission authoritative revision unsupported` | mismatch dimension class plus non-secret revision IDs where policy permits |
+| `ADMISSION_GRANT_REVISION_UNSUPPORTED` | `UNSUPPORTED_REVISION` | `TERMINAL` | compatible producer/client/consumer revisions; no downgrade | no authority mutation | `CLIENT_UPDATE_REQUIRED` | `fresh admission authoritative revision unsupported` | authenticated mismatch dimension class plus non-secret revision IDs where policy permits |
 | `ADMISSION_ACCOUNT_CHARACTER_CONFLICT` | `CONFLICT` | `TERMINAL` | new attempt only after ownership/lifecycle change | no partial admission | `SESSION_UNAVAILABLE` | `fresh admission account or character relationship conflicts with current authority` | ownership/lifecycle decision class; world only after ownership-safe evaluation |
 | `ADMISSION_INCUMBENT_PROTECTED` | `CONFLICT` | `TERMINAL` | new attempt only after incumbent eligibility changes | incumbent unchanged; newcomer no authority | `CHARACTER_ALREADY_ACTIVE` | `fresh admission blocked by current character authority` | incumbent state class; world/channel where policy permits |
 | `ADMISSION_CAPACITY_EXCEEDED` | `CAPACITY_EXCEEDED` | `RETRYABLE` | bounded backoff; same grant only on same current route while valid | no partial authority | `TEMPORARILY_UNAVAILABLE` | `fresh admission capacity unavailable` | capacity class; world/channel; route_revision |
 
-Syntactically valid, correctly signed credentials with wrong exact `iss`, `aud`, `typ` or `purpose` use `ADMISSION_GRANT_BINDING_MISMATCH`; correctly signed unsupported profile revision uses `ADMISSION_GRANT_REVISION_UNSUPPORTED`; malformed structure remains `ADMISSION_GRANT_MALFORMED`. For structurally valid input that fails fixed-scope key trust/signature, `ADMISSION_GRANT_AUTHENTICATION_FAILED` takes precedence over any unauthenticated semantic binding or profile mismatch. Unauthenticated token semantics never choose the trust scope.
+Complete v1 credential precedence is:
+
+```text
+unparsable / malformed protected shape
+-> ADMISSION_GRANT_MALFORMED
+
+well-formed non-exact alg
+OR fixed-scope kid/key/trust/signature failure
+-> ADMISSION_GRANT_AUTHENTICATION_FAILED
+
+authenticated exact-schema violation
+-> ADMISSION_GRANT_MALFORMED
+
+authenticated wrong typ/iss/aud/purpose
+-> ADMISSION_GRANT_BINDING_MISMATCH
+
+authenticated unsupported profile
+-> ADMISSION_GRANT_REVISION_UNSUPPORTED
+```
+
+Unauthenticated semantic binding/profile/schema values never choose the trust scope or preempt an authentication failure.
 
 ## 12. Required evidence
 
 ### Credential/profile/revision
 
-Independent fixtures cover Ed25519 positive/negative/algorithm confusion, token-directed key discovery, parser/claim/UUID failures, malformed `typ`, invalid-signature + wrong-well-formed-`typ` authentication precedence, invalid-signature + unsupported/wrong-well-formed-`profile` authentication precedence, correctly signed exact binding mismatch, correctly signed unsupported profile, same-`kid` token-supplied issuer/profile/purpose retarget attempts, nbf/expiry/skew/lifetime, replay/concurrent consume, ambiguous issuance, and independent mismatch for each ruleset/content/map/world-policy/offer dimension while others remain unchanged.
+Independent fixtures cover:
+
+- canonical Ed25519 positive;
+- malformed/missing/non-string/out-of-bound `alg` -> malformed;
+- well-formed `none`/`EdDSA`/RSA/ECDSA/HMAC/Ed448/other algorithm -> authentication failed, no fallback;
+- malformed `kid` -> malformed; well-formed unknown/untrusted `kid` -> authentication failed;
+- forbidden/extra protected member or token-directed key discovery -> malformed and never changes trust selection;
+- malformed `typ` -> malformed;
+- invalid signature + wrong well-formed `typ` -> authentication failed;
+- invalid signature + unsupported/wrong well-formed `profile` -> authentication failed;
+- invalid signature + otherwise well-formed missing/unknown semantic payload claim -> authentication failed;
+- correctly signed missing/unknown/wrong-type/noncanonical payload claim -> malformed;
+- correctly signed wrong exact `iss`/`aud`/`typ`/`purpose` -> binding mismatch;
+- correctly signed unsupported profile -> revision unsupported;
+- same-`kid` token-supplied issuer/profile/purpose trust-retarget attempts cannot escape the fixed verifier trust set;
+- nbf/expiry/skew/lifetime, replay/concurrent consume, ambiguous issuance;
+- independent mismatch for each ruleset/content/map/world-policy/offer dimension while all other dimensions remain unchanged.
 
 ### Security provenance/freshness/anti-rollback
 
@@ -340,13 +385,15 @@ Each loser fails before candidate authority mutation; presence/lease/GameSession
 
 Never log raw grant/nonce/reusable credential/private key. AccountId/CharacterId do not become ordinary metric labels. Diagnostic templates are stable redacted text and correlation fields avoid credentials/private fencing/security-generation values.
 
+Before successful authentication, diagnostics must not expose whether token semantic issuer/audience/profile/purpose/typ or exact payload schema would have matched. Safe algorithm/key/trust-stage classes may be recorded only within the redaction policy and never include credentials or token-supplied key material.
+
 ## 14. Downstream integration
 
 FND-04B consumes accepted authority/session starting state for reconnect/recovery without weakening A. FND-04C integrates A/B errors, failure scenarios, rollout/evidence and thin final FND-04 index without silently changing accepted component semantics. DUR/OPS/PERF own physical persistence/atomicity and measured production values.
 
 ## 15. Acceptance boundary
 
-FND-04A merge accepts only fresh-admission authority, strict profile, independent revision bindings, ownership-safe current-world validation, authenticated source-age + anti-rollback security evidence semantics and complete A-error shape. It authorizes no runtime implementation and does not complete FND-04.
+FND-04A merge accepts only fresh-admission authority, strict profile, deterministic cryptographic/schema/binding precedence, independent revision bindings, ownership-safe current-world validation, authenticated source-age + anti-rollback security evidence semantics and complete A-error shape. It authorizes no runtime implementation and does not complete FND-04.
 
 ## 16. Concise rule
 
@@ -370,18 +417,19 @@ pre-signature trust
 -> token semantics never select/broaden trust
 -> kid selects only within fixed trusted set
 
-protected header / binding classification
--> malformed structure => ADMISSION_GRANT_MALFORMED
--> fixed-scope key trust/signature failure => ADMISSION_GRANT_AUTHENTICATION_FAILED
--> only authenticated wrong typ/iss/aud/purpose => ADMISSION_GRANT_BINDING_MISMATCH
--> only authenticated unsupported profile => ADMISSION_GRANT_REVISION_UNSUPPORTED
+credential classification
+-> malformed JWS/header shape => MALFORMED
+-> well-formed non-exact alg => AUTHENTICATION_FAILED
+-> fixed-scope kid/key/trust/signature failure => AUTHENTICATION_FAILED
+-> authenticated exact-schema violation => MALFORMED
+-> authenticated wrong typ/iss/aud/purpose => BINDING_MISMATCH
+-> authenticated unsupported profile => REVISION_UNSUPPORTED
 
 Oteryn-v2
 -> ownership FIRST, current world SECOND
 -> route/runtime/revisions + nonce + presence + lease
 
 atomic final boundary repeats every mutable fact
--> wrong-bound signed grant => ADMISSION_GRANT_BINDING_MISMATCH
 -> valid ownership + stale world => ADMISSION_GRANT_WORLD_STALE
 -> stale/rollback/unprovable evidence => ADMISSION_GRANT_SECURITY_EVIDENCE_STALE
 -> all valid => one admission authority commit
