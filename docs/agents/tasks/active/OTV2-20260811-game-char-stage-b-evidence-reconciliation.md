@@ -4,18 +4,18 @@
 task_id: OTV2-20260811-game-char-stage-b-evidence-reconciliation
 title: Reconcile GAME-CHAR-01 Stage B against first Reference target
 mode: COORDINATE
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260811-game-char-stage-b-evidence-reconciliation
-pr: null
+pr: 183
 base_sha: ef906b3c2d9cbb9cb7a455a94f84068fb6175795
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-11T22:37:00+02:00
-updated_at: 2026-08-11T22:37:00+02:00
+updated_at: 2026-08-11T22:55:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -40,54 +40,67 @@ external_repositories: []
 
 ## Outcome
 
-Produce one nonbinding paper-only Stage-B evidence reconciliation against the owner-accepted 2026-07-28 Reference target. Separate target-proven/derived facts from current-only evidence and unresolved historical continuity, identify which character semantics are safe to freeze now, and fail closed on every `UNKNOWN` or `CONFLICT` rather than guessing.
+Produce one nonbinding paper-only Stage-B evidence reconciliation against the owner-accepted 2026-07-28 Reference target, distinguishing target-aligned evidence from current-only evidence and unresolved historical continuity while failing closed on every `UNKNOWN` or `CONFLICT`.
 
 ## Source of truth
 
 - `PROVEN`: trusted base is `main@ef906b3c2d9cbb9cb7a455a94f84068fb6175795`.
-- `PROVEN`: the first Reference target is Global Tibia production-observable behavior after the 2026-07-28 server-save/maintenance boundary.
-- `PROVEN`: target selection does not imply evidence completeness; accepted evidence states are `PROVEN`, `OBSERVED`, `DERIVED`, `UNKNOWN`, `CONFLICT`, `DECLARED_DIFFERENCE`.
+- `PROVEN`: first Reference target is Global Tibia production-observable behavior after the 2026-07-28 server-save/maintenance boundary.
+- `PROVEN`: target selection does not imply evidence completeness; accepted evidence states remain `PROVEN`, `OBSERVED`, `DERIVED`, `UNKNOWN`, `CONFLICT`, `DECLARED_DIFFERENCE`.
 - `PROVEN`: Stage A remains binding for aggregate/lifecycle/revision/migration safety and overall GAME-CHAR remains unaccepted.
-- `PROVEN`: current official manuals/FAQ are primary current evidence but cannot automatically prove July-28 historical behavior without continuity evidence.
-- `OBSERVED TARGET-ERA PRIMARY`: official Character Bazaar surfaces dated July 28-30 show live character levels, professions/promotions, weapon/magic/shielding skills, blessings and world-transfer state around the selected cut.
-- `PROVEN PRE-TARGET PRIMARY`: official 2025 Monk launch material raised the account active-character limit from 20 to 25 before the selected target.
-- `PROVEN HISTORICAL + CURRENT PRIMARY`: offline training retains the documented 10-minute start threshold and 12-hour maximum from its 2012 introduction through the current official FAQ; exact advancement formulas remain unspecified.
-- `PROVEN HISTORICAL + CURRENT PRIMARY`: the general death-loss model introduced in 2009 and the seven-blessing extension introduced in 2017 are still represented in the current official manual; target-specific sub-rules still require per-claim continuity/evidence review.
-- `PROVEN`: open PR #162 remains disjoint CI/repository-governance work and is out of scope.
+- `PROVEN`: current official manuals/FAQ cannot automatically prove July-28 behavior without continuity evidence.
+- `PROVEN`: July 27 official maintenance notice expected July-28 worlds/website back around 10:45 CEST; this is an expected time, not an exact cryptographic cut marker.
+- `OBSERVED TARGET-DAY PRIMARY`: official Character Bazaar auctions starting Jul 28 around 10:42–10:45 expose all five vocation families/promoted forms, skill/blessing/build vocabulary and are strongly aligned with resumed target-day service; minute-level post-cut certainty is not overclaimed.
+- `PROVEN PRE-TARGET PRIMARY`: official 2025 Monk material raised active-character limit from 20 to 25 before target.
+- `PROVEN HISTORICAL + CURRENT PRIMARY`: offline training preserves the documented >10-minute start threshold and 12-hour maximum from 2012 introduction through current FAQ; exact effectiveness remains unspecified.
+- `PROVEN HISTORICAL + CURRENT PRIMARY`: general death-loss model introduced in 2009 and seven-blessing extension introduced in 2017 remain represented in current official material; exact target edge rules require per-claim continuity.
+- `PROVEN`: 2025 capacity migration applied the +200 base-capacity change to existing characters only after level-up, proving migration-sensitive state cannot universally be recomputed from level/vocation alone.
+- `PROVEN`: official March 2026 chronology says level-8+ flow moved to Targuna, while current official Quick Start still describes Thais Peninsula/Blue Valley, proving current official pages can be stale for target chronology.
+- `PROVEN`: PR #162 remains disjoint CI/governance work and is out of scope.
 
 ## Acceptance criteria
 
-- [ ] Reconcile creation inputs/starter-state evidence against the July-28 target.
-- [ ] Reconcile name length/character restrictions, uniqueness/reuse/deletion implications and identify normalization/recycling gaps.
-- [ ] Reconcile active/deleted character quotas and deletion/undelete timing evidence.
-- [ ] Freeze only sufficiently evidenced durable progression vocabulary; distinguish exact formulas from state categories.
-- [ ] Reconcile five-vocation/promotion vocabulary and target-era evidence without importing combat/ability details into Character authority.
-- [ ] Reconcile death/respawn/experience/skill/blessing/item-loss boundaries and leave item conservation with GAME-ITEM/DUR-03.
-- [ ] Reconcile offline-training capability/timing from formula/effectiveness semantics.
-- [ ] Identify Wheel/proficiency/Monk/build facts that need durable representation versus later GAME-ABILITY/GAME-ITEM/SIM ownership.
-- [ ] Produce an owner-ready Stage-B decision package only for claims with sufficient target evidence; explicitly list evidence blockers for full GAME-CHAR closure.
-- [ ] Do not treat current official docs, community pages, Canary/crystalserver or absence of patch notes as automatic July-28 proof.
-- [ ] Do not update current status/register/horizon or accept Stage B in this analysis PR.
-- [ ] Do not implement runtime, schema, content, protocol or external-repository behavior.
-- [ ] Perform full exact-head self-review and repository-required documentation CI before merge.
+- [x] Reconciled creation/starter-state evidence and identified exact target template gaps.
+- [x] Reconciled naming evidence and identified normalization/recycling/uniqueness gaps.
+- [x] Reconciled active/deleted quotas and deletion timing, preserving current-only values as target `UNKNOWN` where continuity is missing.
+- [x] Identified durable progression vocabulary separately from exact formulas.
+- [x] Reconciled five-vocation/promotion vocabulary without importing combat/ability semantics into Character authority.
+- [x] Reconciled death/blessing/item-loss boundaries while preserving GAME-ITEM/DUR-03 conservation ownership.
+- [x] Reconciled offline-training timing separately from effectiveness/formula semantics.
+- [x] Identified modern build/proficiency/Animus/charm/task ownership questions without inflating the Character aggregate.
+- [x] Produced explicit Stage-B blockers and evidence-acquisition plan; full Stage B is not ready for owner acceptance.
+- [x] Did not treat current official docs, patch-note absence, community pages or OTS implementations as automatic July-28 proof.
+- [x] Did not update current status/register/horizon or accept Stage B.
+- [x] Did not implement runtime, schema, content, protocol or external-repository behavior.
+- [ ] Perform final exact-head self-review and repository-required documentation CI before merge.
 
-## Excluded scope
+## Material findings / repairs
 
-This task does not:
+- Initial draft incorrectly treated `Mord Or` ending exactly Jul 28 10:00 CEST as direct post-cut target evidence. This was invalid because an auction end timestamp does not establish when character state was captured, and 10:00 is at/pre the maintenance boundary. Repair cycle 1 removed that claim.
+- Additional research found target-day auctions starting around 10:42–10:45 CEST, including multiple vocation families. Because official maintenance communication only **expected** service back around 10:45, the repaired dossier classifies these as `OBSERVED / strong target alignment`, not unconditional minute-exact `PROVEN post-cut` evidence.
+- Detailed pages such as `Fiebe` ending later on Jul 28 are retained only as boundary-era vocabulary corroboration when their auction began before the save.
+- Current official Quick Start was freshly verified to retain superseded Thais Peninsula/Blue Valley wording despite dated March 17, 2026 official Targuna rollout, so that stale-document conflict remains a valid finding.
 
-- accept GAME-CHAR Stage B or overall GAME-CHAR;
-- decide an intentional Reference difference without owner approval;
-- create PostgreSQL DDL/indexes/locking/migrations;
-- freeze combat/ability/item formulas owned by later gates;
-- use current Global observations as historical proof without continuity evidence;
-- write Canary, crystalserver, Platform or other external repositories;
-- modify PR #162.
+## Stage-B result
+
+Full Stage B remains **NOT READY**. Material blockers:
+
+1. naming normalization/uniqueness/recycling;
+2. exact deletion grace/total quota/name hold continuity;
+3. exact creation/starter template;
+4. exact experience/skill/speed formulas and authoritative-vs-derived mapping;
+5. promotion target continuity and entitlement boundary;
+6. PvP/skull/blessing/Death-Redemption persistent edge rules;
+7. offline-training effectiveness/rounding/selectable-skill contract;
+8. ownership of Wheel/proficiency/Animus/charm/task and adjacent modern build state.
+
+There is no useful owner preference to request yet: remaining work is primarily evidence acquisition. Owner intervention is warranted only if target evidence is unavailable, credible sources remain in conflict, or an explicit Reference difference/simplification becomes necessary.
 
 ## Validation
 
 ### Focused
 
-Reconcile every proposed Stage-B fact against accepted July-28 target/evidence rules and existing Character Authority/FND-ID/FND-04/DUR boundaries.
+- result: **PASS after repair cycle 1** against accepted July-28 evidence model, Stage-A Character Authority/FND-ID/FND-04 boundaries and DUR ownership separation.
 
 ### Component/integration
 
@@ -99,28 +112,37 @@ Reconcile every proposed Stage-B fact against accepted July-28 target/evidence r
 
 ### Exact-head CI
 
-Pending final immutable PR head.
+Pending final immutable PR head after this bookkeeping commit.
 
 ## Self-review
 
-Pending final immutable PR head.
+- material findings before final freeze: `1` evidence-precision finding repaired;
+- final-head review: pending.
 
 ## Independent review
 
-- required: `NO` unless final diff unexpectedly changes accepted high-risk authority/security/protocol/persistence/production semantics; intended scope is nonbinding evidence analysis only.
+- required: `NO` unless final diff unexpectedly changes accepted high-risk authority/security/protocol/persistence/production semantics; intended scope remains nonbinding evidence analysis only.
+
+## PR and closeout
+
+- delivery PR: #183;
+- expected changed files: exactly task record + nonbinding evidence dossier;
+- status/register/horizon changes: none;
+- PR #162: parallel/disjoint, untouched;
+- merge/archive: pending exact-head gates.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Accepted first Reference target lifecycle is closed and the Stage-B evidence-reconciliation branch is claimed; initial official primary evidence has been gathered for creation/quota, target-era professions/skills, offline training and death/blessings.
-status: implementing
+last_progress: Stage-B evidence dossier is in PR #183; repair cycle 1 corrected target-cut auction timestamp overclaim and final analysis now keeps full Stage B unaccepted with eight explicit evidence blockers.
+status: validating
 branch: docs/OTV2-20260811-game-char-stage-b-evidence-reconciliation
-pr: null
+pr: 183
 final_head_sha: null
 ci_check_generation: null
 ci_checks_for_current_head: 0
-repair_cycles_for_current_gate: 0
+repair_cycles_for_current_gate: 1
 owner_action_required: null
-blocker: null
-next_action: Write the target-evidence matrix, distinguish freeze-ready facts from current-only/unknown historical semantics, and define the next evidence-acquisition or owner-decision boundary.
+blocker: none for analysis delivery; full Stage-B acceptance remains evidence-blocked
+next_action: Freeze final PR head, perform full-diff exact-head self-review, run documentation CI, merge/archive if all gates pass, then continue autonomous evidence acquisition on the unresolved Stage-B blockers.
 ```
