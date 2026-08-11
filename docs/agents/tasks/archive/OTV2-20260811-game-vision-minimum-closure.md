@@ -12,7 +12,7 @@ delivery_pr: 171
 base_sha: c88f778a3d4a8d26efeb3a2ad2f328b4efca3768
 final_head_sha: 385b98e005667bc5a826b8e8376476608f57f96d
 delivery_merge_sha: 03502c1ff7e3432e590cefc02b691f26e016cc3b
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 172
 owner: released
 created_at: 2026-08-11T15:57:00+02:00
 completed_at: 2026-08-11T16:20:12+02:00
@@ -124,8 +124,8 @@ All applicable repository checks passed on the unchanged final head `385b98e0056
 - delivery head: `385b98e005667bc5a826b8e8376476608f57f96d`
 - delivery squash merge: `03502c1ff7e3432e590cefc02b691f26e016cc3b`
 - related PR #162: parallel/disjoint; untouched
-- lifecycle closeout PR: pending
-- ownership release: this archive movement is the terminal ownership-release mechanism; after its merge no active task remains for this delivered analysis.
+- lifecycle closeout PR: #172
+- ownership release: PR #172 is the terminal archival/ownership-release mechanism; after its merge no active task remains for this delivered analysis.
 
 ## Remaining owner gate
 
