@@ -15,7 +15,7 @@ final_head_sha: f462da7ee4bd16a5cfad5de298291e8917d7e939
 final_head_frozen_at: 2026-08-11T11:55:00+02:00
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-11T11:46:00+02:00
-updated_at: 2026-08-11T12:00:00+02:00
+updated_at: 2026-08-11T12:07:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -39,7 +39,7 @@ external_repositories: []
 delivery_pr: 165
 delivery_merge_sha: fe6da8b962374cadc2324984e7d590a89dc830e3
 delivery_repair_cycles: 1
-lifecycle_closeout_pr: null
+lifecycle_closeout_pr: 166
 implementation_status: NOT_APPLICABLE
 ```
 
@@ -47,7 +47,7 @@ implementation_status: NOT_APPLICABLE
 
 Persist the owner's explicit acceptance that **PvP is a secondary pillar of Oteryn**: a serious, supported part of the product where enabled, but not the dominant organizing principle for the entire game.
 
-The owner-accepted architecture delivery is complete. This archive preserves the complete task record plus terminal review/CI/merge evidence. Lifecycle closeout only moves the completed record from `active/` to `archive/`; it does not change the product decision.
+The owner-accepted architecture delivery is complete. This archive preserves the complete task record plus terminal review/CI/merge evidence. Lifecycle PR #166 is only the archival/ownership-release mechanism; it does not change the product decision and no further action belongs to this completed task.
 
 ## Architecture and source of truth
 
@@ -175,12 +175,12 @@ The owner-accepted meaning `PvP = secondary pillar` was unchanged.
 - related/superseded PRs: parallel disjoint draft PR #162; no supersession
 - protected auto-merge: `NOT_USED`; owner-authorized squash merge executed only after exact-head gates passed
 - merge commit/result: PR #165 squash-merged as `fe6da8b962374cadc2324984e7d590a89dc830e3`
-- ownership release: lifecycle closeout PR pending
+- ownership release: lifecycle PR #166 is the terminal archival/ownership-release mechanism; no remaining action belongs to this completed task
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner-accepted PvP secondary-pillar baseline delivered by PR #165 on exact repaired head with all gates PASS; lifecycle closeout now preserves this full record while releasing active ownership.
+last_progress: Owner-accepted PvP secondary-pillar baseline delivered by PR #165 with all delivery gates PASS; lifecycle PR #166 is the terminal archival/ownership-release mechanism for this completed task.
 status: completed
 branch: docs/OTV2-20260811-pvp-secondary-owner-baseline
 head_sha: f462da7ee4bd16a5cfad5de298291e8917d7e939
@@ -205,5 +205,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Open lifecycle closeout PR, record its number, make the archived checkpoint terminal, validate exact head, then squash-merge if clean.
+next_action: NONE
 ```
