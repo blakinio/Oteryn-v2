@@ -4,18 +4,18 @@
 task_id: OTV2-20260812-game-char-stage-b-owner-baseline
 title: Persist owner-accepted GAME-CHAR Stage B minimum semantic closure
 mode: COORDINATE
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260812-game-char-stage-b-owner-baseline
-pr: null
+pr: 193
 base_sha: e56e56b29b40937fa4d377486cceb2e2479cd2a3
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-12T00:17:00+02:00
-updated_at: 2026-08-12T00:17:00+02:00
+updated_at: 2026-08-12T00:30:00+02:00
 execution_budget_minutes: 60
 owned_paths:
   - docs/agents/tasks/active/OTV2-20260812-game-char-stage-b-owner-baseline.md
@@ -53,43 +53,45 @@ Persist the product owner's explicit acceptance of the complete minimum `GAME-CH
 - `PROVEN`: trusted base is `main@e56e56b29b40937fa4d377486cceb2e2479cd2a3`.
 - `PROVEN`: Stage A is already owner-accepted and remains binding.
 - `PROVEN`: first Reference target is Global Tibia production-observable behavior after the 2026-07-28 server-save/maintenance boundary.
-- `PROVEN`: #183/#185/#187 evidence and #190 closure synthesis are lifecycle-closed and nonbinding until this owner acceptance is recorded.
+- `PROVEN`: #183/#185/#187 evidence and #190 closure synthesis are lifecycle-closed and provide the decision evidence consumed here.
 - `PROVEN`: open PR #191 changes only factual promotion-source provenance (`2001` -> `2002`) in the earlier evidence delta and does not change any classification or this accepted package; it owns disjoint paths and remains untouched.
 - `PROVEN`: open PR #162 owns disjoint CI/repository-governance paths and remains untouched.
-- `PROVEN`: no active task on `main` owns GAME-CHAR or the mutable coordination paths declared here.
+- `PROVEN`: no active task on trusted `main` owned GAME-CHAR or the mutable coordination paths when this task claimed them.
 
 ## Acceptance criteria
 
-- [ ] Add a dedicated `OWNER_ACCEPTED` Stage-B owner baseline preserving all eleven accepted semantic decisions.
-- [ ] Overall `GAME-CHAR-01` becomes `ACCEPTED` as architecture while `ImplementationStatus` remains `NOT_STARTED` and runtime authority remains `NONE`.
-- [ ] Preserve Stage A as binding rather than rewriting it.
-- [ ] Preserve strict Reference parity: every remaining `UNKNOWN/CONFLICT` stays an explicit hard parity gate and may not become an implementation default.
-- [ ] Preserve profile-neutral `DUR-02` scope: acceptance unblocks final paper-only core Character schema architecture plus typed/versioned extension/migration boundaries, not an all-profile schema-completeness claim.
-- [ ] Preserve the ban on an untyped/generic miscellaneous-state bag as a substitute for explicit semantic ownership.
-- [ ] Preserve ruleset/SIM/content/world-profile ownership of unresolved exact arithmetic, starter content and profile-specific behavior where the closure packet assigns it downstream.
-- [ ] Preserve Platform entitlement, GAME-ITEM/DUR-03, FND-ID/FND-04 and Character Authority boundaries.
-- [ ] Synchronize `FOUNDATION_PROGRAMME_CURRENT_STATUS.md`, `GLOBAL_ARCHITECTURE_DECISION_REGISTER.md` and `GAMEPLAY_AND_PRODUCT_ARCHITECTURE_HORIZON.md` narrowly.
-- [ ] Do not rewrite historical pre-decision/evidence documents.
-- [ ] Do not modify PR #191, PR #162 or external repositories.
+- [x] Added dedicated `GAME-CHAR-01_STAGE_B_OWNER_BASELINE.md` with `OWNER_ACCEPTED` status and all eleven accepted semantic decisions.
+- [x] Overall `GAME-CHAR-01` is recorded as `ACCEPTED` architecture while `ImplementationStatus` remains `NOT_STARTED` and runtime authority remains `NONE`.
+- [x] Preserved Stage A as binding rather than rewriting it.
+- [x] Preserved strict Reference parity: every remaining `UNKNOWN/CONFLICT` is an explicit hard parity gate and cannot become an implementation default.
+- [x] Preserved profile-neutral `DUR-02` scope: acceptance unblocks only final paper-only core Character schema architecture plus typed/versioned extension/migration boundaries, not an all-profile schema-completeness claim.
+- [x] Preserved the ban on an untyped/generic miscellaneous-state bag as a substitute for explicit semantic ownership.
+- [x] Preserved ruleset/SIM/content/world-profile ownership of unresolved exact arithmetic, starter content and profile-specific behavior.
+- [x] Preserved Platform entitlement, GAME-ITEM/DUR-03, FND-ID/FND-04 and Character Authority boundaries.
+- [x] Synchronized `FOUNDATION_PROGRAMME_CURRENT_STATUS.md`, `GLOBAL_ARCHITECTURE_DECISION_REGISTER.md` and `GAMEPLAY_AND_PRODUCT_ARCHITECTURE_HORIZON.md`.
+- [x] Historical pre-decision/evidence documents remain unchanged.
+- [x] PR #191, PR #162 and external repositories remain untouched.
 - [ ] Perform focused reconciliation, mandatory full exact-head self-review and repository-required documentation CI before merge.
+
+## Focused reconciliation result before final freeze
+
+- Stage-A identity/lifecycle/revision/fencing/quiescence boundaries: preserved.
+- First Reference target/evidence hierarchy: preserved.
+- `GAME-CHAR = ACCEPTED` is explicitly separated from `PARITY_CONFIRMED`, physical schema, runtime implementation and production enablement.
+- Reference active-character quota `25` is owner-accepted from the packet's strong `DERIVED` evidence and remains reopenable only through the accepted supersession rule.
+- Unresolved deletion/name-hold/naming-normalization/starter/arithmetic/promotion/PvP/offline-effectiveness/profile details remain explicit downstream hard parity gates.
+- `DUR-02` is unblocked only for paper-only profile-neutral core schema architecture with explicit typed/versioned profile extensions; profile-specific schema completeness remains gated.
+- No generic misc-state bag, client authority, Platform Character mutation authority or item/economy ownership leakage introduced.
 
 ## Excluded scope
 
-This task does not:
-
-- implement PostgreSQL tables, migrations or transactions;
-- implement gameplay, formulas, rulesets, content, protocol or client behavior;
-- choose first Reference PvP/world type;
-- accept `GAME-CHANNEL-01`, `GAME-ITEM-01`, `SIM-DETERMINISM-01` or `DUR-02`;
-- convert unresolved target values into July-28 truth;
-- mark any unproven behavior `PARITY_CONFIRMED`;
-- modify external repositories or production.
+This task does not implement PostgreSQL tables/migrations/transactions, gameplay formulas/rulesets/content/protocol/client behavior, select first Reference PvP/world type, accept `GAME-CHANNEL-01`/`GAME-ITEM-01`/`SIM-DETERMINISM-01`/`DUR-02`, convert unresolved values into July-28 truth, mark unproven behavior `PARITY_CONFIRMED`, modify external repositories or production.
 
 ## Validation
 
 ### Focused
 
-Reconcile the owner baseline against Stage A, the accepted Reference target/evidence hierarchy, the #190 minimum-closure packet, the architecture status model and Character/FND/DUR ownership boundaries.
+Result before final-head freeze: **PASS** against Stage A, accepted Reference target/evidence hierarchy, #190 minimum closure packet, status model and Character/FND/DUR ownership boundaries.
 
 ### Component/integration/runtime E2E
 
@@ -105,15 +107,21 @@ Pending final immutable PR head.
 
 ## Independent review
 
-- required: `NO` unless the final diff unexpectedly changes executable security/protocol/persistence/production authority or creates material uncertainty; intended scope is owner-authorized paper-only semantic architecture and coordination.
+- required: `NO` unless final full-diff review identifies material uncertainty or an unexpected executable security/protocol/persistence/production authority change; intended scope is owner-authorized paper-only semantic architecture and coordination.
+
+## PR and closeout
+
+- delivery PR: #193
+- intended changed files: exactly five declared documentation paths
+- post-merge closeout must archive this full task record, release ownership and change only GAME-CHAR DeliveryStatus `OPEN -> LIFECYCLE_CLOSED` plus immutable delivery evidence in current status.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner explicitly accepted the complete minimum GAME-CHAR Stage-B closure package; dedicated delivery branch/task claimed from current main with PR #191/#162 confirmed disjoint.
-status: implementing
+last_progress: Owner-accepted Stage-B baseline and three mutable coordination documents are written in draft PR #193; focused reconciliation passed and no runtime/parity-completeness authority was introduced.
+status: validating
 branch: docs/OTV2-20260812-game-char-stage-b-owner-baseline
-pr: null
+pr: 193
 final_head_sha: null
 final_head_frozen_at: null
 ci_check_generation: null
@@ -123,5 +131,5 @@ runner_assignment_state: unknown
 repair_cycles_for_current_gate: 0
 owner_action_required: null
 blocker: null
-next_action: Write the canonical Stage-B owner baseline and synchronize current status/register/horizon without creating runtime or parity-completeness authority.
+next_action: Freeze final PR head, inspect the complete five-file diff, record exact-head self-review, run required documentation CI, and squash-merge only if every gate passes.
 ```
