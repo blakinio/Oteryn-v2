@@ -4,18 +4,18 @@
 task_id: OTV2-20260811-evolved-reliability-ux-owner-baseline
 title: Persist GAME-VISION-01 Evolved reliability/UX-first owner baseline
 mode: COORDINATE
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260811-evolved-reliability-ux-owner-baseline
-pr: null
+pr: 163
 base_sha: f184930fac66fdf9ae0cc7f606d3502c17626a79
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-11T10:59:00+02:00
-updated_at: 2026-08-11T10:59:00+02:00
+updated_at: 2026-08-11T11:04:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -50,15 +50,15 @@ Persist the owner's explicit acceptance that the **first Evolved differentiation
 
 ## Acceptance criteria
 
-- [ ] Record reliability/UX-first as the owner-accepted first Evolved strategy.
-- [ ] State that the first Evolved package should minimize gameplay-power/economy disturbance while improving trust, usability, recovery and clarity.
-- [ ] Preserve server authority, persistence/value integrity, Reference parity and one shared engine/client/protocol foundation.
-- [ ] Make clear that shared semantic-neutral reliability/UX improvements may benefit Reference too and need not be Evolved-exclusive.
-- [ ] Keep exact feature inventory, UI design, numeric KPIs and rollout mechanics unresolved.
-- [ ] Keep death/progression/PvP/economy/boss-loot/systemic redesign out of the first package unless separately owner-accepted.
-- [ ] Keep full `GAME-VISION-01` explicitly `NOT ACCEPTED`.
-- [ ] Include decision-timing, downstream-consumer, cost-of-delay and supersession-evidence records.
-- [ ] No runtime/client/server/content/production implementation is authorized.
+- [x] Record reliability/UX-first as the owner-accepted first Evolved strategy.
+- [x] State that the first Evolved package should minimize gameplay-power/economy disturbance while improving trust, usability, recovery and clarity.
+- [x] Preserve server authority, persistence/value integrity, Reference parity and one shared engine/client/protocol foundation.
+- [x] Make clear that shared semantic-neutral reliability/UX improvements may benefit Reference too and need not be Evolved-exclusive.
+- [x] Keep exact feature inventory, UI design, numeric KPIs and rollout mechanics unresolved.
+- [x] Keep death/progression/PvP/economy/boss-loot/systemic redesign out of the first package unless separately owner-accepted.
+- [x] Keep full `GAME-VISION-01` explicitly `NOT ACCEPTED`.
+- [x] Include decision-timing, downstream-consumer, cost-of-delay and supersession-evidence records.
+- [x] No runtime/client/server/content/production implementation is authorized.
 - [ ] Exact-head self-review and repository-required CI pass before merge.
 
 ## Excluded scope
@@ -79,14 +79,17 @@ This task must not:
 - Current main at task start: `f184930fac66fdf9ae0cc7f606d3502c17626a79`.
 - Open PR at task start: #162 (`ci: enforce aggregate pull request merge gate`). Its changed paths are repository engineering/governance files plus `docs/agents/tasks/active/OTV2-20260811-merge-gate-hardening.md`; no overlap exists with this task's two owned paths.
 - This task therefore proceeds as a disjoint documentation change while preserving #162 ownership.
+- Added `docs/architecture/GAME-VISION-01_EVOLVED_RELIABILITY_UX_FIRST_OWNER_BASELINE.md` as a separate owner-accepted partial baseline.
 - The owner acceptance resolves only owner-decision packet item 5 from `GAME-VISION-01_PREDECISION_ANALYSIS.md`.
+- The baseline distinguishes shared semantic-neutral reliability/UX quality from true Evolved-specific product/ruleset differences, preventing an artificial “worse Reference” interpretation.
+- Full `GAME-VISION-01` remains `NOT ACCEPTED`; no executable implementation or production rollout is authorized.
 
 ## Validation
 
 ### Focused
 
-- command/run: compare owner wording with `GAME-VISION-01_PREDECISION_ANALYSIS.md`, `GAME-VISION-01_PLAYER_PROMISE_OWNER_BASELINE.md`, accepted Reference baselines and ADR-0010; inspect parallel PR #162 changed paths for ownership collision
-- result: pending final document and exact-head review
+- command/run: full diff and authority-boundary inspection against `GAME-VISION-01_PREDECISION_ANALYSIS.md`, `GAME-VISION-01_PLAYER_PROMISE_OWNER_BASELINE.md`, accepted Reference baselines, ADR-0010 and PR #162 changed-path inventory
+- result: **PASS** for declared scope before final-head freeze; exact-head self-review still required after this checkpoint commit
 
 ### Component/integration
 
@@ -100,9 +103,9 @@ This task must not:
 
 ### Exact-head CI
 
-- final head: pending
-- trigger source: pending PR creation/synchronize
-- workflow/run/job: pending
+- final head: pending this metadata checkpoint commit
+- trigger source: `pull_request/synchronize`
+- workflow/run/job: pending fresh generation for final head
 - runner assignment: pending
 - classification: repository-required documentation checks applicable to exact PR head
 - result: pending
@@ -110,13 +113,13 @@ This task must not:
 ## Audit
 
 - scope: owner-authority fidelity, accidental gameplay-policy freeze, accidental Reference degradation, shared-stack/profile-boundary conflict, task-template completeness, parallel ownership collision
-- material findings: pending
-- unresolved findings: pending
-- verdict: pending
+- material findings: no material finding in focused pre-freeze audit; exact-head review/CI pending
+- unresolved findings: pending exact-head PR thread verification
+- verdict: pending final exact-head verification
 
 ## Self-review
 
-- exact head: pending
+- exact head: pending this metadata checkpoint commit
 - method/reviewer: implementing/coordinating agent full-diff product/architecture/governance review
 - material findings: pending
 - verdict: pending
@@ -131,7 +134,7 @@ This task must not:
 
 ## PR and closeout
 
-- changed-file review: pending
+- changed-file review: pending exact final head
 - unresolved review threads: pending
 - related/superseded PRs: parallel disjoint PR #162; no supersession
 - protected auto-merge: pending
@@ -141,15 +144,15 @@ This task must not:
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner accepted reliability/UX-first as the first Evolved differentiation strategy; verified parallel PR #162 owns disjoint repository-engineering paths and created a dedicated branch/task.
-status: implementing
+last_progress: Persisted the narrow owner-accepted Evolved reliability/UX-first baseline and opened PR #163; parallel PR #162 remains disjoint and untouched.
+status: validating
 branch: docs/OTV2-20260811-evolved-reliability-ux-owner-baseline
 head_sha: null
-pr: null
+pr: 163
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
-ci_check_generation: pre-pr
+ci_trigger_source: pull_request/synchronize
+ci_check_generation: final-head-pending
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -163,5 +166,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Add the narrow owner baseline, then open and validate a PR without touching #162-owned paths.
+next_action: Freeze the checkpointed exact head, perform mandatory full-diff self-review, verify current-base/parallel-PR state and exact-head CI, then squash-merge only if clean.
 ```
