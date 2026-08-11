@@ -15,7 +15,7 @@ final_head_sha: 2a1ea9d7b13b0579027cd4760a4162d0d0f91820
 final_head_frozen_at: 2026-08-11T12:28:00+02:00
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-11T12:22:00+02:00
-updated_at: 2026-08-11T12:35:00+02:00
+updated_at: 2026-08-11T12:41:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -41,7 +41,7 @@ delivery_pr: 167
 delivery_merge_sha: 88dba5e89954db77c01b95e7946a408e21f0ccf0
 delivery_repair_cycles: 0
 delivery_ci_recovery_actions: 0
-lifecycle_closeout_pr: null
+lifecycle_closeout_pr: 168
 implementation_status: NOT_APPLICABLE
 ```
 
@@ -49,7 +49,7 @@ implementation_status: NOT_APPLICABLE
 
 Persist the owner's explicit acceptance of the Oteryn product baseline **solo viable, party rewarded**: meaningful ordinary progression and normal sessions remain viable without permanent party dependence, while coordinated party play has real gameplay value.
 
-The owner-accepted architecture delivery is complete. This archive preserves the complete task record plus terminal review/CI/merge evidence. Lifecycle closeout only moves the completed record from `active/` to `archive/`; it does not change the product decision.
+The owner-accepted architecture delivery is complete. This archive preserves the complete task record plus terminal review/CI/merge evidence. Lifecycle PR #168 is only the archival/ownership-release mechanism; it does not change the product decision and no further action belongs to this completed task.
 
 ## Architecture and source of truth
 
@@ -164,12 +164,12 @@ This task did not:
 - related/superseded PRs: parallel disjoint draft PR #162; no supersession
 - protected auto-merge: `NOT_USED`; owner-authorized squash merge executed only after exact-head gates passed
 - merge commit/result: PR #167 squash-merged as `88dba5e89954db77c01b95e7946a408e21f0ccf0`
-- ownership release: lifecycle closeout PR pending
+- ownership release: lifecycle PR #168 is the terminal archival/ownership-release mechanism; no remaining action belongs to this completed task
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner-accepted solo viable, party rewarded baseline delivered by PR #167 on exact head with all gates PASS; lifecycle closeout now preserves this full record while releasing active ownership.
+last_progress: Owner-accepted solo viable, party rewarded baseline delivered by PR #167 with all delivery gates PASS; lifecycle PR #168 is the terminal archival/ownership-release mechanism for this completed task.
 status: completed
 branch: docs/OTV2-20260811-solo-viable-party-rewarded-owner-baseline
 head_sha: 2a1ea9d7b13b0579027cd4760a4162d0d0f91820
@@ -194,5 +194,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Open lifecycle closeout PR, record its number, make the archived checkpoint terminal, validate exact head, then squash-merge if clean.
+next_action: NONE
 ```
