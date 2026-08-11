@@ -8,132 +8,118 @@
 - Evidence inputs: Stage A owner baseline + #183 general Stage-B reconciliation + #185 B1-B3 acquisition + #187 B4-B8 delta
 - Decision owner: product owner
 - Runtime authority: **NONE**
-- Does not authorize: runtime/client/protocol/physical persistence/content/Platform implementation, production rollout, unproven Reference formulas/values, first Reference PvP world-type selection or any intentional Reference difference not separately accepted
+- Does not authorize: runtime/client/protocol/physical persistence/content/Platform implementation, production rollout, unproven Reference formulas/values, first Reference PvP world-type selection or intentional Reference differences not separately accepted
 
 ## 1. Executive result
 
-### Is the evidence sufficient to claim complete Reference character parity?
+### Complete Reference character parity proven?
 
-**NO.**
+**NO.** Material target-visible gaps remain, including exact naming normalization/recycling, deletion-policy numbers, exact starter content, XP/skill arithmetic, promotion fee/Premium-lapse edges, full PvP/death edges, offline-training effectiveness and some definition-migration details.
 
-Several target-visible values/formulas remain `UNKNOWN` or only current-state evidence:
+None may be guessed or marked `PARITY_CONFIRMED`.
 
-- exact naming normalization/repertoire/recycling;
-- 60-day deletion / total-30 / deleted-name-hold target continuity;
-- exact starter template and some creation-flow details;
-- exact XP/skill arithmetic;
-- promotion fee and Premium-lapse target edges;
-- full PvP/Twist/fair-fight/skull/Death Redemption edge matrix;
-- offline-training effectiveness arithmetic;
-- some modern-definition migration details.
+### Durable semantic Character architecture closable?
 
-None of these may be guessed or presented as `PARITY_CONFIRMED`.
+**RECOMMENDATION: YES — if the owner accepts this packet.**
 
-### Is the evidence sufficient to close the **durable semantic Character architecture**?
+The accumulated evidence is sufficient to freeze:
 
-**RECOMMENDATION: YES — if the owner accepts the closure boundary in this packet.**
+- durable Character ownership scope;
+- semantic lifecycle/build/progression catalogue;
+- target vocation/skill vocabulary needed by durability;
+- version/revision/migration envelopes;
+- policy boundaries for unresolved target values;
+- which unknowns belong to later ruleset/SIM/content/world-profile parity gates instead of database topology.
 
-The evidence now supports a stable answer to the architecture questions that determine:
-
-- who owns character state;
-- which state is character-specific versus another authority;
-- which semantic lifecycle/progression/build facts durability must be able to represent;
-- how naming, creation, promotion, death, offline training and modern progression are versioned;
-- which unknowns are policy/ruleset/content/SIM values rather than database topology;
-- how to keep those unknowns fail-closed without blocking formula-neutral durable architecture.
-
-This is a scope refinement, **not a reduction of the Reference parity standard**.
+This refines **where** exact parity is proven. It does not weaken **whether** exact parity must be proven.
 
 ## 2. Decision-discipline test
 
-### Must durable semantic ownership be decided now?
+### Must semantic ownership be decided now?
 
-**YES.**
+**YES.** Final character-bearing `DUR-02` architecture needs to know what Character durability must represent and which authorities remain outside Character.
 
-Final character-bearing `DUR-02` architecture is blocked until GAME-CHAR tells it what durable Character semantics must exist and which authorities remain outside Character.
+### Must every exact value/formula be decided now?
 
-### Must every exact Reference value/formula be decided now?
+**RECOMMENDATION: NO**, unless the value/formula constrains durable identity, authority, transaction atomicity, irreversible representation or migration semantics.
 
-**RECOMMENDATION: NO — not when the value/formula does not determine identity, authority, transaction atomicity, irreversible representation or migration topology.**
+Unresolved values remain mandatory gates before the corresponding Reference behavior is implemented, enabled, externally exercised or claimed as parity.
 
-Such values remain mandatory before the corresponding Reference behavior is implemented, enabled, tested as parity or included in an external Reference evaluation.
+### Cost of keeping all numbers inside the schema gate
 
-### What becomes expensive if we keep treating all unknown numbers as schema blockers?
+- persistence is pressured to encode gameplay formulas;
+- current Global/OTS values can leak into the July-28 target by convenience;
+- SIM/content/PvP research blocks unrelated ownership design;
+- future formula corrections create schema churn;
+- Stage B remains monolithic despite enough evidence for safe semantic closure.
 
-- persistence starts encoding gameplay formulas merely to unblock itself;
-- current Global or OTS values may leak into the July-28 target by convenience;
-- unrelated SIM/content/PvP evidence becomes a prerequisite for basic ownership/revision design;
-- future rule correction can require schema churn instead of a versioned policy/fixture update;
-- Stage B never closes despite having enough evidence to define durable semantic boundaries.
+### Risk of deferring too much
 
-### What becomes dangerous if we defer too much?
+- missing durable state becomes expensive to add;
+- name uniqueness can be frozen under the wrong comparison model;
+- character-specific progression can leak to account/item/content authority;
+- profile-specific death state can be hard-coded universally;
+- UNKNOWN can become an accidental default.
 
-- a generic schema may omit state that later cannot be added/migrated safely;
-- name uniqueness may be implemented with an irreversible wrong comparison model;
-- character-specific progression may be accidentally stored under item/account/content authority;
-- world/profile-sensitive death state may be hard-coded as universal;
-- parity gaps may be silently treated as implementation defaults.
+The recommended split freezes semantic envelopes and keeps unresolved parity fail-closed.
 
-The recommended package therefore freezes **semantic envelopes and ownership**, while keeping unproven target values hard-gated.
-
-## 3. Closure model
-
-The recommended boundary is:
+## 3. Recommended closure boundary
 
 ```text
 GAME-CHAR Stage B
-owns / freezes
+freezes
 -> Character semantic catalogue
 -> Character-specific ownership scope
 -> version/revision/migration envelopes
--> policy boundaries and fail-closed unknown handling
--> which decisions DUR-02 may represent generically
+-> policy boundaries
+-> explicit UNKNOWN/CONFLICT handling
+-> what DUR-02 must be able to represent
 
 Reference ruleset / SIM / content / world-profile gates
-own / freeze later where applicable
+freeze later where applicable
 -> exact arithmetic
--> exact numeric policy values not yet evidenced
+-> unresolved numeric target values
 -> exact starter content
 -> exact PvP/world-type edge matrix
--> target-specific deterministic fixtures
+-> deterministic parity fixtures
 
 DUR-02
 owns later
 -> physical schema/constraints/indexes/transactions/migrations
--> only after consuming accepted semantic architecture
+-> only after accepted Character semantics
 ```
 
-Architecture acceptance therefore remains distinct from `PARITY_CONFIRMED` implementation evidence.
+Architecture acceptance remains distinct from `PARITY_CONFIRMED` implementation evidence.
 
-## 4. Recommended Stage-B decision 1 — naming semantic envelope
+## 4. Decision 1 — naming semantic envelope
 
-### Evidence basis
+### Evidence
 
-#185 establishes strong continuity evidence for a Tibia-wide/global name namespace, long-lived technical naming restrictions and separate rename-history semantics. Exact July-28 canonicalization/recycling remains incomplete.
+#185 provides strong continuity evidence for a Tibia-wide/global name namespace and separate rename/history semantics. Exact July-28 canonicalization/recycling remains incomplete.
 
 ### RECOMMENDATION
 
 Freeze:
 
-1. Reference character names occupy one **logical global Character Authority namespace**, not independent per-world namespaces.
-2. Character has a player-visible display name and an authoritative **canonical comparison key** produced by a versioned naming policy.
-3. The canonical comparison key is a semantic value used for uniqueness/conflict decisions; its exact normalization algorithm is not hard-coded into GAME-CHAR while target evidence is incomplete.
-4. Current name, searchable former-name alias/history and deleted-name reservation are distinct semantics.
-5. A naming-policy revision change requires explicit validation/migration/conflict handling and may not silently reinterpret existing names.
-6. CharacterId remains identity through rename; names are not identities.
+1. Reference names occupy one **logical global Character Authority namespace**, not independent per-world namespaces.
+2. Character has a player-visible display name plus an authoritative **canonical comparison key** produced by a versioned naming policy.
+3. The comparison key is a semantic uniqueness value; exact normalization is not invented while target evidence is incomplete.
+4. Current name, former-name alias/history and deleted-name reservation are distinct semantics.
+5. Naming-policy revision changes require explicit validation/migration/conflict handling; no silent reinterpretation.
+6. CharacterId remains identity through rename; a name is not identity.
 
-### Remains parity-pending
+### Parity-pending
 
 - exact Unicode/case/space normalization;
-- exact repertoire / 29-letter continuity;
-- reserved/restricted-pattern revision;
-- deleted-name release algorithm and duration.
+- exact allowed repertoire / 29-letter target continuity;
+- exact restricted-pattern revision;
+- deleted-name release algorithm/timing.
 
-### DUR-02 consequence
+### DUR-02 boundary
 
-DUR-02 may design a formula/implementation-neutral authoritative name registry/key representation, but may not choose collation/normalization semantics by database convenience.
+DUR-02 may represent an authoritative comparison key/registry but must not choose normalization via database collation convenience.
 
-## 5. Recommended Stage-B decision 2 — lifecycle policy values are versioned policy, not lifecycle topology
+## 5. Decision 2 — lifecycle/quota values are versioned policy
 
 Stage A already accepts:
 
@@ -141,152 +127,186 @@ Stage A already accepts:
 ACTIVE -> DELETION_SCHEDULED -> RETIRED
 ```
 
-#185 strongly supports active-character quota `25`, while exact July-28 continuity for deletion grace `60 days`, total `30`, undelete interaction and deleted-name hold remains incomplete.
+#185 strongly supports an active-character quota of `25`; exact July-28 continuity for grace `60 days`, total `30`, undelete interactions and name hold remains incomplete.
 
 ### RECOMMENDATION
 
 Freeze:
 
-1. the Stage-A semantic lifecycle unchanged;
-2. account/world eligibility and quota checks as Character Authority policy evaluated atomically with lifecycle operations;
-3. **25 active characters** as the recommended Reference target active-character quota based on strong primary continuity evidence;
-4. deletion grace, scheduled-deletion total quota, undelete conditions and name-hold/recycling timings as versioned Reference lifecycle/name-policy values;
-5. unknown target values remain `PARITY_PENDING_EVIDENCE` and must not be filled from current Global by assumption.
+1. Stage-A lifecycle unchanged.
+2. Account/world eligibility and quota checks are Character Authority policy evaluated atomically with lifecycle operations.
+3. **25 active characters** as the Reference active-character quota based on strong primary continuity evidence.
+4. Deletion grace, scheduled-deletion total quota, undelete rules and name-hold/recycling timing are versioned Reference policy values.
+5. Unknown target values remain `PARITY_PENDING_EVIDENCE`, never inferred from current Global.
 
-Unknown policy values do not require new lifecycle states or database topology.
+Unknown policy values do not require extra lifecycle states or database topology.
 
-## 6. Recommended Stage-B decision 3 — creation uses a versioned policy/template boundary
+## 6. Decision 3 — creation uses versioned ruleset/content/starter context
 
-### Evidence basis
+### Evidence
 
-#185 establishes Newhaven as the production entry point before target, strong tutorial/Newhaven/vocation-selection continuity and Targuna as the post-Newhaven continuation before July 28. Exact starter stats/items/home state remain unresolved.
-
-### RECOMMENDATION
-
-Freeze:
-
-1. Character creation remains the atomic/idempotent Character Authority operation accepted in Stage A.
-2. Creation records explicit profile/ruleset/content/starter-template revision context sufficient to reproduce/migrate the initial semantic state.
-3. Exact starter inventory/equipment, early route/quest data and tutorial content are **content/ruleset template semantics**, not hard-coded Character-constructor defaults.
-4. Character build state must support the target's pre-vocation/selection lifecycle; a universal schema invariant that every newly created character already has a final vocation is forbidden.
-5. World/route/quest ownership remains content/world authority even when those facts are presented on a character page.
-6. Exact target starter template remains a Reference content/parity fixture gate before the corresponding flow is claimed complete.
-
-This allows DUR-02 to represent initialization context without inventing the unknown starter package.
-
-## 7. Recommended Stage-B decision 4 — progression catalogue versus arithmetic
-
-### Evidence basis
-
-Target-era evidence establishes persistent character progression vocabulary including level, experience, HP, mana, capacity, speed and the skill family. Historical capacity migration proves not every visible stat can safely be assumed to be a pure current formula projection.
+#185 establishes Newhaven before target, strong tutorial/Newhaven/vocation-selection continuity and Targuna as the post-Newhaven path before July 28. Exact starter stats/items/home state remain unresolved.
 
 ### RECOMMENDATION
 
 Freeze:
 
-1. Character domain owns authoritative persistent progression facts needed by the active ruleset.
-2. Reference progression includes the evidenced character-level/experience/skill vocabulary and supports migration-sensitive attributes such as capacity without assuming they are always pure functions.
+1. Creation remains the atomic/idempotent Character Authority operation from Stage A.
+2. Creation records explicit profile/ruleset/content/starter-template revision context sufficient for deterministic interpretation/migration.
+3. Exact starter inventory/equipment, route/quest data and tutorial content are content/ruleset template semantics, not Character-constructor defaults.
+4. Character build state must represent the target's pre-vocation selection period; a universal invariant that every newly created character already has a final vocation is forbidden.
+5. World/route/quest ownership remains content/world authority even when projected on a character surface.
+6. Exact starter package remains a Reference content/parity-fixture gate.
+
+## 7. Decision 4 — freeze Reference vocation and skill vocabulary, not engine enums
+
+### Evidence
+
+#183 target-day Character Bazaar evidence strongly aligns with five vocation families and promoted forms around the selected cut and exposes eight skill categories.
+
+### RECOMMENDATION
+
+Freeze the first Reference semantic vocabulary:
+
+#### Vocation families / promoted forms
+
+- Druid -> Elder Druid;
+- Knight -> Elite Knight;
+- Monk -> Exalted Monk;
+- Paladin -> Royal Paladin;
+- Sorcerer -> Master Sorcerer;
+- plus an explicit pre-vocation/unselected build state where target flow requires it.
+
+#### Skill categories
+
+- Fist Fighting;
+- Club Fighting;
+- Sword Fighting;
+- Axe Fighting;
+- Distance Fighting;
+- Shielding;
+- Fishing;
+- Magic Level.
+
+Architecture rules:
+
+1. These are Reference ruleset definitions/state, not universal engine/protocol forks.
+2. Durable Character state refers to versioned vocation/build/skill definitions rather than assuming all future profiles share this exact catalogue.
+3. Promotion is a versioned transition within the character build model.
+4. A later Reference revision or Evolved profile may change the catalogue only through explicit versioned ruleset/migration policy.
+
+## 8. Decision 5 — progression catalogue versus arithmetic
+
+### Evidence
+
+Target-era evidence supports level, experience, HP, mana, capacity, speed and the skill vocabulary. Historical capacity migration proves not every visible stat is safely assumed to be a pure current-formula projection.
+
+### RECOMMENDATION
+
+Freeze:
+
+1. Character domain owns authoritative persistent progression facts required by the active ruleset.
+2. Reference durability supports evidenced level/experience/skill vocabulary and migration-sensitive attributes such as capacity without assuming universal pure functions.
 3. Persisted facts and deterministic derived projections remain explicitly distinguished under Stage A.
-4. Every progression fact/projection is interpreted under explicit ruleset/profile revision context.
-5. Exact XP→level, skill-advancement, HP/mana/capacity/speed and rounding formulas are **ruleset/SIM parity gates**, unless evidence proves a particular formula changes identity/ownership/atomicity/irreversible representation.
-6. DUR-02 may choose a formula-neutral representation of authoritative facts but may not encode an unproven formula as a schema invariant.
+4. Interpretation always carries explicit ruleset/profile revision context.
+5. Exact XP->level, skill advancement, HP/mana/capacity/speed and rounding arithmetic are **ruleset/SIM parity gates** unless a formula is proven to constrain identity/ownership/atomicity/irreversible representation.
+6. DUR-02 may use formula-neutral representations and must not encode unproven arithmetic as schema invariants.
 
 ### Hard implementation gate
 
-No unresolved arithmetic may be implemented as Reference behavior or marked `PARITY_CONFIRMED` without target evidence + deterministic fixtures.
+No unresolved arithmetic may be implemented as Reference truth or marked `PARITY_CONFIRMED` without target evidence and deterministic fixtures.
 
-## 8. Recommended Stage-B decision 5 — promotion achievement versus entitlement-derived activation
+## 9. Decision 6 — promotion achievement versus entitlement-derived activation
 
-### Evidence basis
+### Evidence
 
-#187 gives very strong primary continuity for promotion at level >=20 with Premium eligibility. Exact July-28 fee and Premium-lapse edge behavior remain incomplete.
-
-### RECOMMENDATION
-
-Freeze:
-
-1. promotion/profession progression is Character-owned versioned build state;
-2. achieved promotion history/state is not erased merely because an account entitlement changes;
-3. current active benefits/eligibility may be derived from Character promotion state + active ruleset + Platform-owned entitlement input;
-4. exact fee and exact lapse/reactivation target semantics remain versioned policy/parity gates;
-5. Platform remains entitlement authority and never becomes steady-state Character mutation authority.
-
-No monetization or Premium implementation is authorized.
-
-## 9. Recommended Stage-B decision 6 — death/protection is profile-scoped, not one universal Character formula
-
-### Evidence basis
-
-#187 establishes strong base death/blessing continuity and proves material PvP/world-profile differences. The accepted GAME-VISION PvP baseline explicitly leaves exact world types and whether the first Reference proof is PvP-enabled unresolved.
+#187 provides very strong continuity evidence for promotion at level >=20 with Premium eligibility. Exact July-28 fee/Premium-lapse edges remain incomplete.
 
 ### RECOMMENDATION
 
 Freeze:
 
-1. Character owns durable character-specific death/protection consequences and protection/progression facts required by an active profile, while item-loss/corpse/value conservation remains GAME-ITEM/DUR-03/combat owned.
-2. Death/protection evaluation is under explicit Reference ruleset/world-profile policy revision.
-3. Regular blessing/protection state exposed as character-specific state remains representable without hard-coding one universal formula.
-4. PvP-only persistent facts are introduced only when their owning world/profile policy requires them and with explicit ownership/fencing.
-5. The complete Twist/fair-fight/skull/Death Redemption edge matrix does **not** block generic Character durable architecture before exact PvP world/profile policy is selected.
-6. Exact PvP/death formulas remain hard parity/implementation gates for any world/profile that exercises them.
+1. Promotion/profession progression is Character-owned versioned build state.
+2. Achieved promotion state/history is not erased merely because account entitlement changes.
+3. Active benefits/eligibility may derive from Character promotion state + active ruleset + Platform-owned entitlement input.
+4. Exact fee and lapse/reactivation semantics remain versioned parity-policy gates.
+5. Platform stays entitlement authority and does not become steady-state Character mutation authority.
 
-### Important boundary
+No Premium/commerce implementation is authorized.
 
-This does not choose a first Reference PvP world type. That remains a separate product/world-policy decision coordinated with `GAME-CHANNEL-01` and related PvP/recovery gates.
+## 10. Decision 7 — death/protection is profile-scoped
 
-## 10. Recommended Stage-B decision 7 — offline-training semantic counter versus effectiveness
+### Evidence
 
-### Evidence basis
+#187 establishes strong base death/blessing continuity and proves material PvP/world-profile differences. The accepted PvP product baseline explicitly leaves exact world types and whether the first Reference proof is PvP-enabled unresolved.
 
-#187 establishes strong primary continuity for the per-character offline-training counter/timer state machine:
+### RECOMMENDATION
 
-- >=10 minutes offline before gain;
+Freeze:
+
+1. Character owns durable character-specific death/protection consequences and protection/progression facts required by an active profile.
+2. Item loss, corpse/loot and value conservation remain combat/GAME-ITEM/DUR-03 owned.
+3. Death/protection evaluation is under explicit Reference ruleset/world-profile policy revision.
+4. Regular blessing/protection state remains representable without one universal formula.
+5. PvP-only persistent facts are introduced only when their owning profile requires them and with explicit ownership/fencing.
+6. Complete Twist/fair-fight/skull/Death Redemption edge semantics do **not** block generic Character durability before PvP world/profile policy is selected.
+7. Exact PvP/death behavior remains a hard parity/implementation gate for every profile that exercises it.
+
+This packet does not choose the first Reference PvP world type; that remains separate product/world-policy work coordinated with `GAME-CHANNEL-01` and related PvP/recovery gates.
+
+## 11. Decision 8 — offline-training counter versus effectiveness
+
+### Evidence
+
+#187 provides strong continuity for:
+
+- >=10 minutes offline before training gain;
 - maximum 12 hours effective continuous training;
 - 1 pool second consumed per training second;
 - 1 pool second restored per second online or offline without training;
-- reactivation required to consume refilled pool after depletion.
+- reactivation needed to consume refilled pool after depletion.
 
 ### RECOMMENDATION
 
 Freeze:
 
-1. offline training is a ruleset capability, not universal engine behavior;
-2. when enabled by the Reference target, its activation/counter/pool state is character-specific durable progression state;
-3. the strongly evidenced timer/pool semantics above are accepted as the Reference semantic counter model;
-4. exact effectiveness coefficients, advancement arithmetic, rounding, modifier interaction and selectable-skill details remain ruleset/SIM parity gates where evidence is incomplete.
+1. Offline training is an explicit ruleset capability, not universal engine behavior.
+2. Where the target enables it, activation/counter/pool state is character-specific durable progression state.
+3. The evidenced 10-min / 12-h / 1:1 timer-pool semantics form the Reference semantic counter model.
+4. Exact effectiveness coefficients, advancement arithmetic, rounding, modifiers and version-sensitive selectable skills remain ruleset/SIM parity gates.
 
-DUR-02 may represent the semantic counter/capability without encoding effectiveness formulas.
+DUR-02 may represent the counter/capability without embedding effectiveness formulas.
 
-## 11. Recommended Stage-B decision 8 — modern character-specific progression scope
+## 12. Decision 9 — modern character-specific progression scope
 
-### Evidence basis
+### Evidence
 
-#187 materially strengthens character-specific ownership evidence:
+#187 establishes or strongly supports:
 
-- Weapon Proficiency Progress is explicitly character-bound and non-transferable;
-- Character Bazaar transfer contract classifies charms/charm points/charm expansion, Hunting Task Points and permanent Hunting Task/Prey slots as character-specific;
-- Wheel/Promotion Points have strong character-build ownership evidence;
-- Animus Mastery has strong character-specific progression alignment.
+- Weapon Proficiency Progress explicitly character-bound/non-transferable;
+- charms/charm points/charm expansion character-specific under the Bazaar transfer contract;
+- Hunting Task Points character-specific;
+- permanent Hunting Task and Prey slots character-specific;
+- Wheel/Promotion Points as strong character-build state;
+- Animus Mastery as strong character-specific progression.
 
 ### RECOMMENDATION
 
 Freeze:
 
-1. Character **domain ownership scope** includes character-specific progression/capability facts required by the active target, including the evidenced systems above.
-2. Character-specific does not imply one giant Character aggregate, table or transaction boundary.
-3. DUR-02 may use dedicated character-owned child aggregates where size, independent lifecycle, contention or migration evidence justifies them.
-4. ruleset/content definitions own trees, thresholds, perk/mastery definitions, formulas and compatibility rules;
-5. GAME-ITEM/DUR-03 owns item-instance/resource conservation and value transfers;
-6. Platform owns commercial entitlement source;
-7. character-specific progression refers to stable versioned definition identities and requires explicit migration when definitions become incompatible.
+1. Character **domain ownership scope** includes target-required character-specific progression/capability facts evidenced above.
+2. Character-specific does not mean one giant aggregate/table/transaction.
+3. DUR-02 may use character-owned child aggregates when size, contention, lifecycle or migration evidence justifies them.
+4. Ruleset/content definitions own trees, thresholds, perks/mastery definitions, formulas and compatibility.
+5. GAME-ITEM/DUR-03 owns item/resource conservation and value transfer.
+6. Platform owns commercial entitlement source.
+7. Character-specific progress refers to stable versioned definition identities and requires explicit migration for incompatible revisions.
 
-This closes ownership scope without prematurely fixing physical decomposition.
+This freezes ownership scope, not physical decomposition.
 
-## 12. Recommended Stage-B decision 9 — unresolved Reference values become explicit parity gates
+## 13. Decision 10 — every unresolved target rule is an explicit parity gate
 
 ### RECOMMENDATION
-
-Introduce the following architecture rule for this gate:
 
 ```text
 UNKNOWN / CONFLICT target rule
@@ -294,47 +314,41 @@ UNKNOWN / CONFLICT target rule
 -> may NOT be filled by current Global, OTS code or implementation convenience
 -> may NOT be enabled as claimed Reference behavior
 -> may NOT be PARITY_CONFIRMED
--> must be evidenced, explicitly declared different, or kept out of the exercised release scope
+-> must be evidenced, explicitly DECLARED_DIFFERENCE, or excluded from the exercised release scope
 ```
 
-This applies to remaining naming, lifecycle-value, starter-content, arithmetic, promotion-edge, PvP-edge, offline-effectiveness and definition-migration gaps.
+Applies to remaining naming, lifecycle values, starter content, arithmetic, promotion edges, PvP edges, offline effectiveness and definition migrations.
 
-### External Reference evaluation rule
-
-Any character behavior exercised by an external Reference milestone must be either:
+For an external Reference milestone, every exercised character behavior must be either:
 
 - `PARITY_CONFIRMED`; or
 - an explicit owner-accepted `DECLARED_DIFFERENCE`.
 
-A known `UNKNOWN`/`CONFLICT` cannot silently pass as Reference fidelity.
+Known `UNKNOWN/CONFLICT` cannot silently pass as fidelity.
 
-## 13. Recommended Stage-B decision 10 — refine the gate boundary, not the parity standard
+## 14. Decision 11 — refine GAME-CHAR gate scope, not parity strictness
 
-Current horizon wording can be read as requiring every exact formula before durable Character architecture may close.
-
-Evidence now shows this conflates two different proof obligations.
+Current horizon wording can be read as requiring every exact formula before durable Character architecture closes. Evidence now shows that this conflates architecture and behavioral proof.
 
 ### RECOMMENDATION
 
-Refine `GAME-CHAR-01` so its architecture acceptance requires:
+GAME-CHAR architecture acceptance requires:
 
 - complete semantic ownership boundaries;
-- lifecycle/build/progression semantic catalogue sufficient for durability;
-- revision/version/migration/fencing rules;
+- lifecycle/build/progression catalogue sufficient for durability;
+- version/revision/migration/fencing rules;
 - safe policy envelopes for target-specific values;
-- explicit hard gates for every unresolved Reference value/formula.
+- explicit hard gates for all unresolved Reference values/formulas.
 
-It does **not** require exact numeric arithmetic that belongs to a later ruleset/SIM/content/world-profile contract **unless that arithmetic constrains durable identity, ownership, atomicity, irreversible representation or migration**.
+It does **not** require exact numeric arithmetic owned by later ruleset/SIM/content/world-profile contracts unless that arithmetic constrains durable identity, ownership, atomicity, irreversible representation or migration.
 
-The Reference parity standard itself remains unchanged and fail-closed.
+Reference parity itself remains unchanged and fail-closed.
 
-## 14. What remains deliberately unresolved after recommended closure
+## 15. Deliberately unresolved after recommended closure
 
-The following may remain unresolved without silently becoming defaults:
+### Naming/lifecycle
 
-### Naming / lifecycle policy
-
-- exact canonicalization/repertoire/29-letter target continuity;
+- exact normalization/repertoire/29-letter target continuity;
 - deleted-name release algorithm;
 - deletion grace `60 days`, total `30` and related July-28 continuity.
 
@@ -343,10 +357,10 @@ The following may remain unresolved without silently becoming defaults:
 - exact starter inventory/equipment/stats/home/route content;
 - remaining target-specific creation validation details.
 
-### Progression/arithmetic
+### Arithmetic
 
 - exact XP/level and skill curves;
-- exact derived-stat arithmetic/rounding where still unproven.
+- exact derived-stat formulas/rounding where unproven.
 
 ### Promotion/entitlement
 
@@ -356,27 +370,25 @@ The following may remain unresolved without silently becoming defaults:
 ### Death/PvP
 
 - first Reference PvP world type;
-- complete Twist/fair-fight/skull/PvP edge matrix;
+- complete Twist/fair-fight/skull edge matrix;
 - exact target Death Redemption history/window semantics;
-- exact death arithmetic beyond evidenced/accepted portions.
+- remaining exact death arithmetic.
 
 ### Offline training
 
-- effectiveness coefficients and detailed advancement arithmetic.
+- effectiveness coefficients and advancement arithmetic.
 
 ### Modern progression
 
 - exact formulas/definitions;
 - physical child-aggregate/table placement;
-- migration details for future incompatible definition revisions.
+- incompatible-definition migration details.
 
-These remain hard-gated at their owning implementation/parity boundary.
+All remain hard-gated at their owning implementation/parity boundary.
 
-## 15. Effect if owner accepts this package
+## 16. Effect if owner accepts
 
-### GAME-CHAR status
-
-Recommended effect after delivery lifecycle closes:
+After the owner-baseline delivery lifecycle closes:
 
 ```text
 GAME-CHAR-01
@@ -386,75 +398,75 @@ ImplementationStatus = NOT_STARTED
 Runtime authority    = NONE
 ```
 
-Stage A remains binding and Stage B becomes the accepted semantic Reference/durability closure layered on top of it.
+Stage A remains binding; accepted Stage B becomes the semantic Reference/durability layer on top of it.
 
-### DUR-02
+### DUR-02 effect
 
-`DUR-02` may proceed from bounded discovery to final **paper-only character schema architecture** using the accepted GAME-CHAR semantics.
+`DUR-02` may proceed to final **paper-only Character schema architecture** using accepted semantics.
 
 It still may not:
 
-- implement PostgreSQL schema/migrations without separate implementation authority;
-- hard-code unproven Reference formulas/values;
-- choose name normalization by database convenience;
-- collapse child progression systems into one aggregate without evidence;
+- implement PostgreSQL DDL/migrations without separate authority;
+- hard-code unproven values/formulas;
+- select name normalization via DB convenience;
+- collapse child progressions without evidence;
 - encode one universal PvP/death profile;
 - treat current Global as July-28 truth.
 
-### Runtime / content
+### Runtime/content effect
 
-No runtime, content, client, protocol, Platform or production implementation is authorized by GAME-CHAR acceptance itself.
+None. GAME-CHAR acceptance alone authorizes no runtime, content, client, protocol, Platform or production implementation.
 
-### Reference implementation
+## 17. Alternative: wait for every exact value
 
-Each unresolved target rule remains blocked until the owning evidence/ruleset/SIM/content/world-profile gate resolves it.
+Possible, but **NOT RECOMMENDED**. It would block durability on historical values owned by other evidence/gate domains, pressure persistence to infer policy, delay later architecture and encourage current-Global/OTS substitution.
 
-## 16. Alternative: keep GAME-CHAR open until every exact value is known
+The recommended split still has a strict parity gate — at the feature/ruleset/fixture boundary where exact behavior matters.
 
-This is possible but **NOT RECOMMENDED**.
-
-It would preserve a single monolithic gate at the cost of:
-
-- blocking durable ownership/schema architecture on historical values that may require different evidence channels;
-- pressuring persistence to infer or embed gameplay policy;
-- delaying GAME-ITEM/DUR and vertical-slice architecture for reasons unrelated to durable topology;
-- encouraging accidental current-Global/OTS substitution.
-
-A strict parity gate still exists under the recommended split — it simply lives at the feature/ruleset/fixture boundary where exact behavior actually matters.
-
-## 17. Owner decision package
+## 18. Owner decision package
 
 ### RECOMMENDATION — NOT OWNER-ACCEPTED
 
-Accept sections 4–13 as the minimum GAME-CHAR Stage-B semantic closure and accept the effect in section 15.
+Accept decisions 1–11 (sections 4–14) and the effect in section 16.
 
-In compact form:
+Compact form:
 
-1. global logical character-name namespace + versioned canonical comparison policy; exact normalization/recycling remains parity-pending;
-2. Stage-A lifecycle retained; active quota `25` accepted as strong Reference candidate; other unresolved lifecycle values become versioned parity-pending policy;
-3. creation uses versioned ruleset/content/starter context; exact starter content is not schema policy and pre-vocation state must be representable;
-4. progression ownership/catalogue closes independently from exact formulas when storage remains formula-neutral/versioned;
-5. promotion achievement is Character-owned; active benefits may depend on Platform-owned entitlement/ruleset; unresolved fee/lapse edges stay parity-pending;
-6. death/protection is profile-scoped; generic Character architecture does not require a complete PvP edge matrix before world-profile selection;
-7. offline-training counter/capability state is Character-owned with evidenced 10-min/12-h/1:1 counter semantics; effectiveness stays ruleset/SIM-pending;
-8. modern character-specific progression belongs to Character domain scope but may use child aggregates; definitions/content/item/economy/Platform authorities remain separate;
-9. every remaining `UNKNOWN/CONFLICT` is an explicit hard parity gate, never an implementation default;
-10. refine GAME-CHAR architecture scope to semantic ownership/versioning/migration; exact arithmetic remains mandatory before Reference implementation/parity claim when it does not constrain durable topology.
+1. global logical name namespace + versioned canonical comparison policy; exact normalization/recycling parity-pending;
+2. Stage-A lifecycle retained; Reference active quota `25`; other unresolved lifecycle numbers are versioned parity-pending policy;
+3. creation uses versioned ruleset/content/starter context; exact starter content stays content/parity-pending; pre-vocation state must be representable;
+4. first Reference vocabulary explicitly includes five vocation families/promoted forms plus pre-vocation state and eight evidenced skill categories;
+5. progression ownership/catalogue closes independently from exact formulas when durability stays formula-neutral/versioned;
+6. promotion achievement is Character-owned; benefits may depend on Platform entitlement/ruleset; fee/lapse edges stay parity-pending;
+7. death/protection is profile-scoped; generic Character durability does not require exhaustive PvP edges before world-profile selection;
+8. offline-training counter/capability is Character-owned with evidenced 10-min/12-h/1:1 semantics; effectiveness stays ruleset/SIM-pending;
+9. modern character-specific progression belongs to Character domain scope but may use child aggregates; definition/item/economy/Platform authorities remain separate;
+10. every remaining `UNKNOWN/CONFLICT` is an explicit hard parity gate, never an implementation default;
+11. refine GAME-CHAR architecture scope to semantic ownership/versioning/migration; exact arithmetic remains mandatory before Reference implementation/parity claim when it does not constrain durable topology.
 
-If accepted, overall `GAME-CHAR-01` may become `ACCEPTED / LIFECYCLE_CLOSED / NOT_STARTED` after the owner-baseline delivery lifecycle, and final paper-only `DUR-02` character schema architecture may proceed.
+If accepted, overall `GAME-CHAR-01` may become `ACCEPTED / LIFECYCLE_CLOSED / NOT_STARTED` after the acceptance-delivery lifecycle, and final paper-only `DUR-02` Character schema architecture may proceed.
 
-## 18. What acceptance does not mean
+## 19. Supersession / reopening rule
 
-Acceptance would **not** mean:
+A later proposal may supersede a decision from this package only with named evidence such as:
+
+- stronger July-28 target-period primary evidence contradicting a `DERIVED` rule;
+- an explicit later accepted Reference revision;
+- evidence that a deferred formula/value actually changes durable identity, ownership, atomicity, irreversible representation or migration;
+- legal/privacy/security/integrity constraints;
+- a separately accepted owner product/ruleset strategy change.
+
+Implementation convenience, current Global behavior or an OTS implementation is never sufficient supersession evidence.
+
+## 20. Acceptance does not mean
 
 - all July-28 character behavior is known;
-- all listed current values are accepted as July-28 values;
-- Reference character runtime may be implemented without additional gates;
+- current values are automatically July-28 values;
 - unknown formulas may be guessed;
-- PostgreSQL DDL/migrations are authorized;
+- Reference character runtime may bypass later gates;
+- PostgreSQL implementation is authorized;
 - first Reference PvP world type is selected;
 - GAME-CHANNEL, GAME-ITEM, SIM or content gates are accepted;
 - Premium/VIP implementation is authorized;
-- any external repository may be modified.
+- external repository writes are authorized.
 
-Until the owner explicitly accepts or modifies section 17, this document remains **PRE-DECISION SYNTHESIS / NOT ACCEPTED** and `GAME-CHAR-01` remains `PROPOSED / PLANNED / NOT_STARTED`.
+Until the owner explicitly accepts or modifies section 18, this document remains **PRE-DECISION SYNTHESIS / NOT ACCEPTED** and `GAME-CHAR-01` remains `PROPOSED / PLANNED / NOT_STARTED`.
