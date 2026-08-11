@@ -4,18 +4,18 @@
 task_id: OTV2-20260811-reference-parity-precedence-risk-owner-baseline
 title: Persist GAME-VISION-01 Reference parity precedence and progression-risk owner baseline
 mode: COORDINATE
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260811-reference-parity-precedence-risk-owner-baseline
-pr: null
+pr: 169
 base_sha: 5b141e009f929226a59c2f13cd5075f20a2aeea6
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-11T13:02:00+02:00
-updated_at: 2026-08-11T13:05:00+02:00
+updated_at: 2026-08-11T13:10:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -90,13 +90,14 @@ This task must not:
 - Active tasks at task start: foundation preimplementation contracts plus two disconnect-analysis tasks; no path overlap with this bounded GAME-VISION delivery.
 - Added `docs/architecture/GAME-VISION-01_REFERENCE_PARITY_PRECEDENCE_OWNER_BASELINE.md` as the canonical precedence/interpretation record.
 - Re-read the existing PvP and solo/party owner baselines. Both already preserve named Reference parity for actual mechanics, so this task intentionally avoids unnecessary edits to historical accepted baselines and instead centralizes the new owner clarification in the dedicated precedence document.
+- Opened PR #169 with the required `## Summary`, `## Scope` and `## Validation` sections; declared changed-file scope remains exactly the task record plus the new owner baseline.
 
 ## Validation
 
 ### Focused
 
-- command/run: compare current owner clarification against Reference-first/hybrid/player-promise/PvP/solo-party baselines, `GAME-VISION-01_PREDECISION_ANALYSIS.md` item 8 and ADR-0010; verify no parallel ownership collision
-- result: **PASS** for declared owner scope before PR/final-head freeze; exact-head review still required after PR checkpoint
+- command/run: compare current owner clarification against Reference-first/hybrid/player-promise/PvP/solo-party baselines, `GAME-VISION-01_PREDECISION_ANALYSIS.md` item 8 and ADR-0010; verify no parallel ownership collision; inspect PR #169 metadata and changed-file scope
+- result: **PASS** for declared owner scope before final-head freeze; exact-head review required after this checkpoint
 
 ### Component/integration
 
@@ -110,9 +111,9 @@ This task must not:
 
 ### Exact-head CI
 
-- final head: pending PR checkpoint
-- trigger source: pending
-- workflow/run/job: pending
+- final head: pending this PR checkpoint commit
+- trigger source: `pull_request/synchronize`
+- workflow/run/job: pending fresh generation for final candidate head
 - runner assignment: pending
 - classification: repository-required documentation checks
 - result: pending
@@ -121,12 +122,12 @@ This task must not:
 
 - scope: owner-source fidelity, Reference-vs-Evolved authority, accidental parity override, accidental detailed gameplay freeze, cross-profile quality interpretation, task-template completeness and parallel ownership collision
 - material findings: no material finding in focused pre-freeze review; exact-head audit pending
-- unresolved findings: pending
+- unresolved findings: pending exact-head PR review-thread verification
 - verdict: pending
 
 ## Self-review
 
-- exact head: pending
+- exact head: pending this checkpoint commit
 - method/reviewer: implementing/coordinating agent full-diff product/architecture/governance review
 - material findings: pending
 - verdict: pending
@@ -151,15 +152,15 @@ This task must not:
 ## Context checkpoint
 
 ```yaml
-last_progress: Added the dedicated owner baseline that makes Reference parity authoritative for solo/party, PvP and progression/death/risk while distinguishing long-term Evolved gameplay direction from shared cross-profile quality rules.
-status: implementing
+last_progress: Persisted the dedicated owner baseline and opened PR #169; existing PvP/solo-party baselines were verified to already preserve Reference parity and therefore were not rewritten.
+status: validating
 branch: docs/OTV2-20260811-reference-parity-precedence-risk-owner-baseline
 head_sha: null
-pr: null
+pr: 169
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
-ci_check_generation: pre-pr
+ci_trigger_source: pull_request/synchronize
+ci_check_generation: final-head-pending
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -173,5 +174,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Open the bounded documentation PR, checkpoint its number, freeze exact head, then run mandatory self-review and repository-required CI.
+next_action: Freeze this checkpointed exact head, run mandatory full-diff self-review, verify review threads/current main/parallel #162 state and repository-required CI, then squash-merge only if clean.
 ```
