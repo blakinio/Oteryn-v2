@@ -15,7 +15,7 @@ final_head_sha: 88ac5fa32b999e158ea54cb6d8af7068148e824f
 final_head_frozen_at: 2026-08-11T11:13:00+02:00
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-11T10:59:00+02:00
-updated_at: 2026-08-11T11:24:00+02:00
+updated_at: 2026-08-11T11:28:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -47,7 +47,7 @@ implementation_status: NOT_APPLICABLE
 
 Persist the owner's explicit acceptance that the **first Evolved differentiation strategy is reliability/UX-first**: Oteryn should first improve player-visible trust, usability, recovery and clarity while avoiding an initial broad redesign of combat power, progression, death, PvP, boss rewards or economy.
 
-The owner-accepted architecture delivery is complete. This archived record preserves the full task context and terminal delivery evidence. Lifecycle PR #164 only moves the completed record from `active/` to `archive/`; it does not change the product decision.
+The owner-accepted architecture delivery is complete. This archived record preserves the full task context and terminal delivery evidence. Lifecycle PR #164 is only the archival/ownership-release mechanism; it does not change the product decision and no further action belongs to this completed delivery task.
 
 ## Architecture and source of truth
 
@@ -119,6 +119,18 @@ Repair applied:
 
 This repair strengthened decision-timing evidence only; owner-accepted reliability/UX-first semantics were unchanged.
 
+### Lifecycle closeout review repair — terminal checkpoint
+
+Automatic review of lifecycle PR #164 on older closeout head `275ca4bb3def91de5b3a158cce6b936d943fb793` correctly observed that the initial archive draft still had `lifecycle_closeout_pr: null` and a checkpoint that could direct a future coordinator to repeat closeout work.
+
+Before final closeout freeze:
+
+- `lifecycle_closeout_pr` was set to `164`;
+- the archive continued to preserve the full completed task record rather than a summary;
+- this terminal repair changes the completed task checkpoint to `next_action: NONE`, so recovery cannot reopen work that belongs only to the lifecycle PR mechanism.
+
+No architecture/product semantics changed.
+
 ## Validation
 
 ### Focused
@@ -152,7 +164,7 @@ This repair strengthened decision-timing evidence only; owner-accepted reliabili
 ## Audit
 
 - scope: owner-authority fidelity, decision-timing justification, accidental gameplay-policy freeze, accidental Reference degradation, shared-stack/profile-boundary conflict, task-template completeness, parallel ownership collision and PR-governance recovery correctness
-- material findings: one PR-metadata governance issue repaired through bounded recovery; one valid P1 on concrete blocked work repaired in cycle 1; one older checkpoint P1 became outdated after task advancement; zero open material findings on final head
+- material findings: one PR-metadata governance issue repaired through bounded recovery; one valid P1 on concrete blocked work repaired in cycle 1; one older checkpoint P1 became outdated after task advancement; zero open material findings on final delivery head
 - unresolved findings: **0** at delivery merge; threads `PRRT_kwDOTuGrds6YKz36` and `PRRT_kwDOTuGrds6YKz3-` were replied with final-head evidence and resolved
 - verdict: **PASS** on final delivery head
 
@@ -179,12 +191,12 @@ This repair strengthened decision-timing evidence only; owner-accepted reliabili
 - related/superseded PRs: parallel disjoint PR #162; no supersession
 - protected auto-merge: `NOT_USED`; owner-authorized squash merge executed only after exact-head gates passed
 - merge commit/result: PR #163 squash-merged as `d8d3e5e26e26673880bad7e615cdc4b1ec5e779c`
-- ownership release: lifecycle PR #164 moves this full completed record to `archive/`; final closeout validation/merge pending
+- ownership release: lifecycle PR #164 is the terminal archival/ownership-release mechanism; no remaining action belongs to this completed task
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner-accepted Evolved reliability/UX-first baseline delivered by PR #163 with all gates PASS; lifecycle PR #164 is open and preserves the full completed record while releasing active ownership.
+last_progress: Owner-accepted Evolved reliability/UX-first baseline delivered by PR #163 with all gates PASS; lifecycle PR #164 is the terminal archival/ownership-release mechanism for this already completed task.
 status: completed
 branch: docs/OTV2-20260811-evolved-reliability-ux-owner-baseline
 head_sha: 88ac5fa32b999e158ea54cb6d8af7068148e824f
@@ -209,5 +221,5 @@ ci_recovery_actions_for_current_head: 1
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Perform mandatory exact-head self-review and repository-required CI for lifecycle PR #164, then squash-merge if clean.
+next_action: NONE — the owner-decision delivery is complete; lifecycle PR #164 owns only the terminal archival move and ownership release.
 ```
