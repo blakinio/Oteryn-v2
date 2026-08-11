@@ -12,7 +12,7 @@ delivery_pr: 195
 base_sha: 2913201186d0e38cfc0bf0c9e2c5b83f981a61c6
 final_head_sha: df50e020a46cd94e2ed6d742b27d69fc58667b99
 delivery_merge_sha: ca0a7373104cf9908e347dcc9890f46893098928
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 196
 owner: released
 created_at: 2026-08-12T00:42:00+02:00
 completed_at: 2026-08-12T01:10:00+02:00
@@ -192,6 +192,7 @@ Final delivery head `df50e020a46cd94e2ed6d742b27d69fc58667b99`:
 - final changed files: exactly two declared documentation paths;
 - branch behind main at merge: `0`;
 - squash merge: `ca0a7373104cf9908e347dcc9890f46893098928`;
+- lifecycle closeout PR: #196;
 - current status/register/horizon unchanged;
 - no DDL/runtime/Platform/production authority;
 - PR #191 and PR #162 untouched;
@@ -220,12 +221,12 @@ A separate future full-DUR-02 reconciliation must identify the remaining histori
 ## Context checkpoint
 
 ```yaml
-last_progress: Nonbinding profile-neutral Character persistence packet delivered by PR #195 with repair budget 3/3, exact-head self-review PASS and all required exact-head CI PASS; task is ready for lifecycle archive/ownership release.
+last_progress: Nonbinding profile-neutral Character persistence packet delivered by PR #195 with repair budget 3/3, exact-head self-review PASS and all required exact-head CI PASS; lifecycle closeout PR #196 archives the complete task and releases ownership.
 status: completed
 delivery_pr: 195
 final_head_sha: df50e020a46cd94e2ed6d742b27d69fc58667b99
 delivery_merge_sha: ca0a7373104cf9908e347dcc9890f46893098928
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 196
 repair_cycles_for_current_gate: 3
 ci_run_ids:
   - 31545127063
