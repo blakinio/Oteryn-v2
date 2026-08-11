@@ -20,7 +20,7 @@ Hybrid means:
 3. New upstream behavior does **not** silently mutate that released Reference revision.
 4. Upstream changes become Reference semantics only when they are explicitly promoted into a later named Reference revision through a controlled release decision.
 
-This resolves the tracking-policy choice between permanently pinned, continuously live-tracking and hybrid release-train tracking. It does not close the whole product-vision gate.
+This resolves the long-term tracking-policy choice between a permanently static pin, continuously live-mutating tracking and hybrid release-train tracking. It does not select the exact Global target used by any particular Reference revision and does not close the whole product-vision gate.
 
 ## 2. Decision timing record
 
@@ -113,7 +113,31 @@ This baseline does not require every observed upstream change to be promoted. In
 
 Tests, parity matrices, issue reports and release evidence must be able to state which Reference revision they concern. Later revisions do not retroactively change the meaning of evidence collected for earlier revisions.
 
-## 5. Relationship to the Reference-first decision
+## 5. Authority and scoped supersession of ADR-0010
+
+`ADR-0010-reference-and-evolved-world-product-profiles.md` remains accepted and authoritative except for the exact deferred policy scope explicitly resolved here.
+
+ADR-0010 §4 (`Reference parity is measured and explicit`) states that the choice between a pinned reference release, a dated behavior baseline or continuous tracking remained deferred to `GAME-VISION-01` or a dedicated parity contract. Its `Deferred decisions` section likewise lists continuous tracking versus pinned Reference worlds as unresolved.
+
+This later owner decision **supersedes only that long-term upstream-tracking-policy deferral**:
+
+- Reference is not permanently frozen to one historical upstream state for all future releases;
+- Reference does not live-mutate released semantics whenever Global Tibia changes;
+- Reference continuously observes upstream evidence and promotes accepted changes only into later immutable named Reference revisions.
+
+The following ADR-0010 requirements remain fully binding:
+
+- every Reference parity claim names a versioned target;
+- even continuously collected evidence must materialize through immutable Reference revisions;
+- parity classification remains explicit;
+- one canonical engine/client/`protocol-oteryn` and profile isolation remain unchanged;
+- exact target definition for a particular Reference revision remains a separate decision.
+
+A Reference revision may still use a date, patch, behavior snapshot or another accepted identifier to name its immutable target. This baseline selects the **tracking lifecycle**, not the exact target-naming scheme or first Global baseline.
+
+No other ADR-0010 decision is superseded by this document.
+
+## 6. Relationship to the Reference-first decision
 
 `GAME-VISION-01_REFERENCE_FIRST_OWNER_BASELINE.md` establishes that the first externally evaluated Oteryn build is Reference-first and must name an immutable Reference baseline/revision.
 
@@ -126,7 +150,7 @@ This document adds the long-term policy for what happens after that first revisi
 
 Together these two partial owner baselines remove both the first-profile-order ambiguity and the pinned-vs-live-vs-hybrid tracking ambiguity.
 
-## 6. Explicitly unresolved decisions
+## 7. Explicitly unresolved decisions
 
 This owner acceptance does **not** resolve:
 
@@ -148,7 +172,7 @@ This owner acceptance does **not** resolve:
 
 These remain owner/product or downstream architecture decisions.
 
-## 7. Guardrails
+## 8. Guardrails
 
 Future work must not:
 
@@ -161,8 +185,8 @@ Future work must not:
 
 Reference revisions remain versioned product/ruleset/content semantics over the same canonical engine, native client and `protocol-oteryn` foundation.
 
-## 8. Acceptance boundary
+## 9. Acceptance boundary
 
-This document is **binding only for the hybrid Reference upstream-tracking model**: continuous observation plus explicit promotion into immutable named Reference revisions.
+This document is **binding only for the hybrid Reference upstream-tracking model**: continuous observation plus explicit promotion into immutable named Reference revisions, and it explicitly supersedes ADR-0010's prior deferment of that long-term tracking-policy choice.
 
 `GAME-VISION-01` as a whole remains **NOT ACCEPTED** until its remaining owner decisions are explicitly resolved or deliberately deferred through accepted policy.
