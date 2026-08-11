@@ -7,7 +7,7 @@
 - Scope: launch/product-level importance of PvP only
 - Source type: `USER_SOURCE`
 - Full `GAME-VISION-01` status: **NOT ACCEPTED**
-- Does not authorize: runtime/client/server/content implementation, exact PvP rules, death formulas, world-type selection, production rollout or acceptance of remaining GAME-VISION decisions
+- Does not authorize: runtime/client/server/content implementation, exact PvP rules, death formulas, world-type selection, channel/PvP switching policy, production rollout or acceptance of remaining GAME-VISION decisions
 
 ## 1. Purpose
 
@@ -23,7 +23,7 @@ PvP must be a real, supported and high-quality part of the product where a world
 
 **YES.**
 
-The minimum `GAME-VISION-01` contract needs a stable answer to how much product authority PvP has before character lifecycle, death/risk, channel behavior, disconnect handling, content scope and alpha acceptance can be prioritized coherently.
+The minimum `GAME-VISION-01` contract needs a stable answer to how much product authority PvP has before character lifecycle, death/risk, channel-sensitive design, disconnect handling, content scope and alpha acceptance can be prioritized coherently.
 
 ### Concrete work blocked until this decision is recorded
 
@@ -42,7 +42,7 @@ This baseline constrains:
 - `GAME-CHAR-01` death/risk/lifecycle design where PvP consequences interact with character state;
 - later PvP ruleset/world-policy work;
 - disconnect/grace/post-grace policy where combat and PvP abuse prevention matter;
-- `GAME-CHANNEL-01` product policy for channel switching, co-location and anti-escape behavior;
+- `GAME-CHANNEL-01` product policy where PvP state interacts with channel transitions; this document does not choose switching eligibility, anti-escape semantics or cooldowns;
 - combat authority, anti-cheat and exploit analysis;
 - content and milestone breadth decisions for PvP-sensitive encounters, areas and world types.
 
@@ -102,12 +102,12 @@ PvP-sensitive work must preserve, where applicable under already accepted archit
 
 - server-authoritative legality and outcomes;
 - durable value/progression integrity and anti-duplication guarantees;
-- stale-writer and lease fencing;
+- stale-writer and lease fencing where the owning persistence/session contracts require them;
 - anti-cheat and abuse evidence without client authority leakage;
-- safe reconnect/disconnect behavior;
-- no channel switch as an immediate combat/PvP escape path;
-- explicit handling of combat locks, transactions and unsafe state transitions;
+- safe reconnect/disconnect behavior under its owning recovery policy;
 - privacy-safe telemetry and human product authority.
+
+**No channel-switch/PvP eligibility rule is accepted by this section.** Combat-lock interaction, anti-escape semantics, switching eligibility and cooldown policy remain owned by `GAME-CHANNEL-01` and related PvP/recovery gates.
 
 This document does not choose timers, formulas or enforcement thresholds.
 
@@ -124,6 +124,8 @@ This acceptance does **not** decide:
 - secure-mode, targeting or client-control details;
 - safe zones, protection zones or PvP-area taxonomy;
 - disconnect grace duration, post-grace outcomes or logout-abuse policy;
+- whether and under what conditions PvP/combat state blocks or restricts channel changes;
+- anti-escape semantics for channel changes;
 - channel-switch cooldowns, PvP lock durations or anti-hopping thresholds;
 - transfer restrictions between PvP/non-PvP world types;
 - anti-cheat detector/enforcement policy;
@@ -139,7 +141,7 @@ Because PvP is secondary rather than core-dominant:
 - the first Reference vertical slice may prove combat, death/recovery and authority with bounded PvP coverage rather than full PvP feature parity;
 - later milestones must state explicitly what PvP scenarios are in scope and what remains deferred;
 - PvP-sensitive invariants that protect safety/integrity cannot be deferred merely because feature breadth is deferred;
-- a future PvP-specific proof should demonstrate authoritative combat state, abuse-resistant disconnect/recovery, correct value consequences and channel/transition safety before broad PvP content breadth.
+- channel-transition PvP scenarios must follow the separately accepted `GAME-CHANNEL-01` policy rather than being inferred from this product-priority baseline.
 
 This is milestone guidance, not implementation authorization.
 
@@ -163,6 +165,6 @@ This document is **binding only for launch/product-level PvP importance**:
 - supported seriously where enabled;
 - not the dominant organizing principle of the entire game;
 - correctness, fairness, safety and exploit resistance remain first-class;
-- exact PvP mechanics and world policies remain unresolved.
+- exact PvP mechanics, world policies and PvP/channel-transition policy remain unresolved.
 
 `GAME-VISION-01` as a whole remains **NOT ACCEPTED** until its remaining owner decisions are explicitly resolved or deliberately deferred through accepted policy.
