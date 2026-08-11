@@ -12,7 +12,7 @@ delivery_pr: 190
 base_sha: 4dce1e4da5c7c9e442abe99975aac3e7913b46b4
 final_head_sha: 7d2097e9ab68f6410c4280e4941e073309334807
 delivery_merge_sha: 02887e94dff9ddb5e5e11f1c11c99f03fff51879
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 192
 owner: released
 created_at: 2026-08-11T23:46:00+02:00
 completed_at: 2026-08-12T00:00:00+02:00
@@ -203,11 +203,12 @@ The packet's recommended profile-neutral DUR-02 core remains blocked on that own
 ## Context checkpoint
 
 ```yaml
-last_progress: Minimum Stage-B closure packet delivered by PR #190 with two repaired material findings, exact-head self-review PASS and all required exact-head CI PASS; task ready for lifecycle archive/ownership release.
+last_progress: Minimum Stage-B closure packet delivered by PR #190 with two repaired material findings, exact-head self-review PASS and all required exact-head CI PASS; lifecycle closeout PR #192 archives the task and releases ownership.
 status: completed
 delivery_pr: 190
 final_head_sha: 7d2097e9ab68f6410c4280e4941e073309334807
 delivery_merge_sha: 02887e94dff9ddb5e5e11f1c11c99f03fff51879
+lifecycle_closeout_pr: 192
 repair_cycles_for_current_gate: 2
 ci_run_ids:
   - 31540201827
