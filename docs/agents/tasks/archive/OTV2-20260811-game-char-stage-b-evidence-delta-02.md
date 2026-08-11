@@ -13,7 +13,7 @@ base_sha: 1411994c70abbf065273c0502c88413b61ca5ca0
 reconciled_main_sha: 2ebce3d657f2f844883ef0a5f1a903adbf410984
 final_head_sha: 2d93f3211a1a27f0e88f08fd13612fae9cf50193
 delivery_merge_sha: dad86260b22744248cbe333eac0a650af919c993
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 188
 owner: released
 created_at: 2026-08-11T23:12:00+02:00
 completed_at: 2026-08-11T23:39:00+02:00
@@ -183,6 +183,7 @@ status: completed
 delivery_pr: 187
 final_head_sha: 2d93f3211a1a27f0e88f08fd13612fae9cf50193
 delivery_merge_sha: dad86260b22744248cbe333eac0a650af919c993
+lifecycle_closeout_pr: 188
 repair_cycles_for_current_gate: 1
 ci_run_ids:
   - 31538521240
