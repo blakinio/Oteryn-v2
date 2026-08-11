@@ -4,18 +4,18 @@
 task_id: OTV2-20260811-first-reference-baseline-owner-acceptance
 title: Persist owner-accepted first Reference baseline
 mode: COORDINATE
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260811-first-reference-baseline-owner-acceptance
-pr: null
+pr: 181
 base_sha: 3106590eee22227b81228d2930b5d90e2053c9e9
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-11T22:09:00+02:00
-updated_at: 2026-08-11T22:09:00+02:00
+updated_at: 2026-08-11T22:23:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -55,17 +55,26 @@ Persist the product owner's explicit acceptance of the complete recommended pack
 
 ## Acceptance criteria
 
-- [ ] Add a canonical owner baseline accepting all ten package items from dossier section 21.
-- [ ] Record the 2026-07-28 post-server-save behavior cut as immutable first Reference target semantics.
-- [ ] Preserve evidence states `PROVEN`, `OBSERVED`, `DERIVED`, `UNKNOWN`, `CONFLICT`, `DECLARED_DIFFERENCE` and the accepted evidence-source hierarchy.
-- [ ] Preserve the rule that patch-note/search absence is not evidence of no upstream change.
-- [ ] Preserve lawful/provenance-safe native implementation and security/integrity/legal overrides.
-- [ ] Update current status/register/horizon so the target is no longer shown as deferred/hard-blocking.
-- [ ] Keep overall `GAME-CHAR-01` `PROPOSED / PLANNED / NOT_STARTED`; Stage B becomes unblocked but remains unaccepted.
-- [ ] Keep final character-bearing DUR-02 schema blocked on accepted Stage B/full GAME-CHAR closure.
-- [ ] Do not choose final Reference revision naming syntax, specific Stage-B mechanics/formulas or implementation.
-- [ ] Do not modify PR #162 or external repositories.
+- [x] Added canonical owner baseline accepting the complete ten-item package from dossier section 21.
+- [x] Recorded the 2026-07-28 post-server-save behavior cut as immutable first Reference target semantics.
+- [x] Preserved evidence states `PROVEN`, `OBSERVED`, `DERIVED`, `UNKNOWN`, `CONFLICT`, `DECLARED_DIFFERENCE` and the accepted evidence-source hierarchy.
+- [x] Preserved the rule that patch-note/search absence is not evidence of no upstream change.
+- [x] Preserved lawful/provenance-safe native implementation and security/integrity/legal overrides.
+- [x] Updated current status/register/horizon so the target is no longer shown as deferred/hard-blocking.
+- [x] Kept overall `GAME-CHAR-01` `PROPOSED / PLANNED / NOT_STARTED`; Stage B becomes unblocked but remains unaccepted.
+- [x] Kept final character-bearing DUR-02 schema blocked on accepted Stage B/full GAME-CHAR closure.
+- [x] Chose no final Reference revision naming syntax, Stage-B mechanics/formulas or implementation.
+- [x] Kept PR #162 and external repositories untouched.
 - [ ] Perform full exact-head self-review and repository-required documentation CI before merge.
+
+## Implementation / findings
+
+- Added `GAME-VISION-01_FIRST_REFERENCE_BASELINE_OWNER_BASELINE.md` with the owner-selected immutable 2026-07-28 behavior cut and the complete evidence/provenance package.
+- Synchronized current status, global register and gameplay/product horizon so the exact-target prerequisite is satisfied while GAME-CHAR Stage B remains unaccepted.
+- `GAME-VISION-01` delivery status is `OPEN` only for this concrete owner-baseline delivery and must return to `LIFECYCLE_CLOSED` during lifecycle closeout; implementation remains `NOT_STARTED`.
+- Bounded DUR-02 discovery may use the target only as question/compatibility context before Stage-B acceptance; it gains no final schema authority.
+- Full-diff review found two material register regressions before final freeze: the first edit accidentally removed the existing DUR-03 rule `Define item instance identity and ownership.` and introduced noncanonical status text `ACCEPTED PARTIAL SCOPE`. Repair cycle 1 restored the DUR-03 rule and represented Stage-A partial scope with ordinary `ACCEPTED` status plus explicit scope wording, without changing owner-approved semantics.
+- No runtime/client/protocol/physical-schema/content/Platform/production authority is created.
 
 ## Excluded scope
 
@@ -82,40 +91,66 @@ This task does not:
 
 ### Focused
 
-Reconcile the owner baseline against the delivered dossier, accepted GAME-VISION Reference-first/hybrid/parity-precedence baselines, GAME-CHAR Stage A and the architecture status model.
+- command/run: reconcile owner baseline against the delivered dossier, accepted GAME-VISION Reference-first/hybrid/parity-precedence baselines, GAME-CHAR Stage A and `ARCHITECTURE_STATUS_MODEL.md`
+- result: **PASS after repair cycle 1**; owner target, evidence hierarchy, GAME-CHAR/DUR boundaries and no-runtime authority are preserved
 
 ### Component/integration
 
-`NOT_APPLICABLE` — paper-only product/architecture owner baseline.
+- command/run: `NOT_APPLICABLE` — paper-only product/architecture owner baseline
+- result: `NOT_APPLICABLE`
 
 ### E2E
 
-`NOT_APPLICABLE` — no executable/player-visible behavior changes.
+- scenario: `NOT_APPLICABLE` — no executable/player-visible behavior changes
+- result: `NOT_APPLICABLE`
 
 ### Exact-head CI
 
-Pending final immutable PR head.
+- final head: pending immutable PR head after this bookkeeping commit
+- trigger source: pending
+- workflow/run/job: pending
+- classification: documentation/governance validation
+- result: pending
 
 ## Self-review
 
-Pending final immutable PR head.
+- exact head: pending immutable PR head after this bookkeeping commit
+- method/reviewer: implementing/coordinating agent full-diff product/architecture/governance review
+- material findings: `2` repaired before final freeze; final-head findings pending
+- verdict: pending final-head review
 
 ## Independent review
 
-- required: `NO` unless final diff unexpectedly changes executable high-risk security/protocol/persistence/production authority; intended scope is owner-approved paper-only product architecture.
+- required: `NO` under trusted-base risk policy unless final review discovers unusual/high-risk semantic expansion; this package records an explicit owner-approved paper-only product/evidence target and changes no executable security/protocol/persistence/production behavior
+- exact head: `NOT_APPLICABLE`
+- method/auditor: `NOT_APPLICABLE`
+- material findings: `NOT_APPLICABLE`
+- verdict: `NOT_APPLICABLE`
+
+## PR and closeout
+
+- delivery PR: #181
+- changed-file review: five declared documentation paths; exact-head review pending
+- unresolved review threads: pending
+- related PR: #162 parallel/disjoint
+- merge result: pending
+- ownership release: pending lifecycle closeout
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner accepted the full first-Reference-baseline recommendation; dedicated branch/task claimed from current main.
-status: implementing
+last_progress: Owner-accepted first Reference target and evidence model are in PR #181; repair cycle 1 corrected two register regressions while preserving the owner-approved 2026-07-28 target and GAME-CHAR Stage-B boundary.
+status: validating
 branch: docs/OTV2-20260811-first-reference-baseline-owner-acceptance
-pr: null
+pr: 181
 final_head_sha: null
+final_head_frozen_at: null
 ci_check_generation: null
 ci_checks_for_current_head: 0
-repair_cycles_for_current_gate: 0
+ci_run_ids: []
+runner_assignment_state: unknown
+repair_cycles_for_current_gate: 1
 owner_action_required: null
 blocker: null
-next_action: Persist the canonical owner baseline and synchronize current status/register/horizon without accepting GAME-CHAR Stage B or implementation.
+next_action: Freeze this PR head, repeat full-diff self-review on the exact head, run exact-head documentation CI, merge only if all gates pass, then archive the task and return GAME-VISION delivery status to LIFECYCLE_CLOSED.
 ```
