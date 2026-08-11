@@ -8,14 +8,14 @@ status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260811-game-vision-channel-decision-dossier
-pr: null
+pr: 152
 base_sha: c1f115621acd7ba87fc47954f0e8b7d94f63e037
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-11T08:40:00+02:00
-updated_at: 2026-08-11T08:48:00+02:00
+updated_at: 2026-08-11T08:50:30+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -31,7 +31,8 @@ depends_on:
   - FOUNDATION_PROGRAMME_CURRENT_STATUS.md
 blocks: []
 cross_repository_coordination_id: OTV2-GLOBAL-ARCHITECTURE
-external_repositories: []
+external_repositories:
+  - blakinio/canary # read-only comparative proposal inventory only
 ```
 
 ## Outcome
@@ -79,16 +80,17 @@ Produce two nonbinding, owner-decision-ready architecture analyses for `GAME-VIS
 - Comparative evidence is deliberately non-normative. Blizzard's Classic layering discussion demonstrates that capacity partitioning can conflict with world-event semantics; ESO's phasing support demonstrates that invisible phase separation creates real co-location UX problems.
 - Read-only `blakinio/canary` proposal classification confirms there is a large Evolved-feature inventory. The vision dossier explicitly rejects treating it as an initial launch checklist and recommends reliability/UX-first differences before broad systemic redesign.
 - Audited `docs/agents/tasks/active/OTV2-20260807-disconnect-forensic-evidence-analysis.md` and `OTV2-20260807-lag-disconnect-protection-analysis.md` against their merged architecture packages and later FND-04/ANL work. They still preserve unresolved downstream questions including PvP disconnect semantics, post-grace behavior, detector/enforcement policy and remaining forensic policy/detail. They are therefore not proven stale or fully superseded; no lifecycle mutation is justified here.
-- Current diff from task base contains exactly three declared paths: this task record plus the two new nonbinding analysis documents. No accepted ADR, runtime, dependency, workflow or public contract is changed.
+- Initial full-diff self-review found one task-metadata omission only: the read-only `blakinio/canary` evidence repository was not listed under `external_repositories`, and the task had not yet recorded PR #152. This checkpoint repairs those declarations without changing either analysis recommendation or any accepted architecture.
+- Current intended diff remains exactly three declared paths. No accepted ADR, runtime, dependency, workflow or public contract is changed.
 
 ## Validation
 
 ### Focused
 
 - source reconciliation: PASS against ADR-0010, product baseline, 2026-08-10 architecture refinements, multichannel scope matrix, current programme status and read-only comparative sources
-- current changed-file set: exactly 3 declared paths; `behind_by=0` at pre-PR compare
+- pre-final changed-file set: exactly 3 declared paths; `behind_by=0`
 - authority classification: both new documents state `PRE-DECISION ANALYSIS / NOT ACCEPTED` and explicitly forbid implementation/acceptance inference
-- component/integration: `NOT_APPLICABLE` — architecture analysis only
+- PR metadata: PR #152 uses required `## Summary`, `## Scope` and `## Validation` headings
 
 ### Component/integration
 
@@ -100,14 +102,15 @@ Produce two nonbinding, owner-decision-ready architecture analyses for `GAME-VIS
 
 ### Exact-head CI
 
-- final head: pending checkpoint commit/PR
+- final head: pending this metadata checkpoint commit
 - result: pending
 
 ## Self-review
 
-- exact head: pending final head
+- initial candidate head `18d82d02772d29c69b5f796642a3e4c7dad2ebdb`: one low-risk task-metadata omission found and repaired
+- exact final head: pending current checkpoint commit
 - method/reviewer: implementing/coordinating agent full-diff architecture review
-- material findings: pending final-head review
+- material findings: pending repaired final-head review
 - verdict: pending
 
 ## Independent review
@@ -120,8 +123,9 @@ Produce two nonbinding, owner-decision-ready architecture analyses for `GAME-VIS
 
 ## PR and closeout
 
-- changed-file review: 3 declared paths before final checkpoint commit
-- unresolved review threads: pending PR
+- PR: #152
+- changed-file review: exactly 3 declared paths before final checkpoint commit
+- unresolved review threads: pending exact-head recheck
 - related/superseded PRs: none
 - protected auto-merge: pending
 - merge commit/result: pending
@@ -130,15 +134,15 @@ Produce two nonbinding, owner-decision-ready architecture analyses for `GAME-VIS
 ## Context checkpoint
 
 ```yaml
-last_progress: Completed both nonbinding owner-decision dossiers and verified that the two disconnect/forensics checkpoints remain legitimately active rather than stale lifecycle residue.
+last_progress: Repaired the only self-review finding by declaring the read-only Canary evidence repository and PR #152 in the task metadata; analysis content and authority classification remain unchanged.
 status: validating
 branch: docs/OTV2-20260811-game-vision-channel-decision-dossier
 head_sha: null
-pr: null
+pr: 152
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
-ci_check_generation: pre-pr-final-head-pending
+ci_trigger_source: pull_request/synchronize
+ci_check_generation: repaired-final-head-pending
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -147,10 +151,10 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 0
+repair_cycles_for_current_gate: 1
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Freeze the final documentation head, perform mandatory full-diff self-review, open the PR and verify exact-head repository checks before squash merge and lifecycle archive.
+next_action: Freeze the repaired exact head, perform mandatory full-diff self-review, verify exact-head CI and squash-merge only if the unchanged head is clean.
 ```
