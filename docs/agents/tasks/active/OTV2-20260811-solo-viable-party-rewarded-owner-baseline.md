@@ -4,18 +4,18 @@
 task_id: OTV2-20260811-solo-viable-party-rewarded-owner-baseline
 title: Persist GAME-VISION-01 solo-viable party-rewarded owner baseline
 mode: COORDINATE
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260811-solo-viable-party-rewarded-owner-baseline
-pr: null
+pr: 167
 base_sha: 470f269d338e085f40910ca79e60a5a8d8ea4abf
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-11T12:22:00+02:00
-updated_at: 2026-08-11T12:22:00+02:00
+updated_at: 2026-08-11T12:27:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -93,6 +93,7 @@ This task must not:
 - Repository search found no existing owner baseline for `solo viable, party rewarded`.
 - Read `GAME-VISION-01_PREDECISION_ANALYSIS.md`; owner-decision packet item 7 is explicitly `Solo/party emphasis` and exists to prevent `GAME-CHAR-01`, shared XP and content sizing from guessing.
 - Added `docs/architecture/GAME-VISION-01_SOLO_VIABLE_PARTY_REWARDED_OWNER_BASELINE.md` as a separate owner-accepted partial baseline.
+- Opened PR #167 with the mandatory `## Summary`, `## Scope` and `## Validation` metadata headings.
 - The baseline distinguishes product intent from mechanics: solo viability does not mean every content item is soloable, and party reward does not imply a specific XP multiplier.
 - Full `GAME-VISION-01` remains `NOT ACCEPTED`; no executable implementation or rollout is authorized.
 
@@ -100,8 +101,8 @@ This task must not:
 
 ### Focused
 
-- command/run: compare owner acceptance with `GAME-VISION-01_PREDECISION_ANALYSIS.md` item 7 and accepted Reference/player-promise/Evolved/PvP baselines; verify no existing solo/party owner baseline; inspect draft PR #162 for path collision
-- result: **PASS** for declared product scope before PR/final-head freeze; exact-head self-review still required after PR metadata checkpoint
+- command/run: compare owner acceptance with `GAME-VISION-01_PREDECISION_ANALYSIS.md` item 7 and accepted Reference/player-promise/Evolved/PvP baselines; verify no existing solo/party owner baseline; inspect draft PR #162 for path collision; inspect PR #167 metadata and declared changed-file scope
+- result: **PASS** for declared product scope before final-head freeze; exact-head self-review still required after this checkpoint commit
 
 ### Component/integration
 
@@ -115,9 +116,9 @@ This task must not:
 
 ### Exact-head CI
 
-- final head: pending PR creation/checkpoint
-- trigger source: pending
-- workflow/run/job: pending
+- final head: pending this PR metadata checkpoint commit
+- trigger source: `pull_request/synchronize`
+- workflow/run/job: pending fresh generation for final candidate head
 - runner assignment: pending
 - classification: repository-required documentation checks applicable to exact PR head
 - result: pending
@@ -126,12 +127,12 @@ This task must not:
 
 - scope: owner-authority fidelity, accidental shared-XP/party-bonus freeze, accidental all-content-solo requirement, Reference/Evolved conflict, GAME-CHANNEL authority leakage, reward-integrity weakening, task-template completeness and parallel ownership collision
 - material findings: no material finding in focused pre-freeze review; exact-head audit pending
-- unresolved findings: pending PR review-thread verification
+- unresolved findings: pending exact-head PR review-thread verification
 - verdict: pending exact-head verification
 
 ## Self-review
 
-- exact head: pending
+- exact head: pending this checkpoint commit
 - method/reviewer: implementing/coordinating agent full-diff product/architecture/governance review
 - material findings: pending
 - verdict: pending
@@ -156,15 +157,15 @@ This task must not:
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner accepted solo viable, party rewarded; verified GAME-VISION item 7 and no existing canonical baseline, then added the bounded owner baseline plus active task record.
-status: implementing
+last_progress: Persisted the bounded owner-accepted solo viable, party rewarded baseline and opened PR #167; parallel draft PR #162 remains disjoint and untouched.
+status: validating
 branch: docs/OTV2-20260811-solo-viable-party-rewarded-owner-baseline
 head_sha: null
-pr: null
+pr: 167
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
-ci_check_generation: pre-pr
+ci_trigger_source: pull_request/synchronize
+ci_check_generation: final-head-pending
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -178,5 +179,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Open the bounded PR, checkpoint PR metadata, freeze exact head, run mandatory self-review and repository-required CI, then squash-merge only if clean.
+next_action: Freeze this checkpointed exact head, perform mandatory full-diff self-review, verify review threads/current main/parallel #162 state and repository-required CI, then squash-merge only if clean.
 ```
