@@ -15,7 +15,7 @@ final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-12T00:17:00+02:00
-updated_at: 2026-08-12T00:30:00+02:00
+updated_at: 2026-08-12T00:33:00+02:00
 execution_budget_minutes: 60
 owned_paths:
   - docs/agents/tasks/active/OTV2-20260812-game-char-stage-b-owner-baseline.md
@@ -71,7 +71,7 @@ Persist the product owner's explicit acceptance of the complete minimum `GAME-CH
 - [x] Synchronized `FOUNDATION_PROGRAMME_CURRENT_STATUS.md`, `GLOBAL_ARCHITECTURE_DECISION_REGISTER.md` and `GAMEPLAY_AND_PRODUCT_ARCHITECTURE_HORIZON.md`.
 - [x] Historical pre-decision/evidence documents remain unchanged.
 - [x] PR #191, PR #162 and external repositories remain untouched.
-- [ ] Perform focused reconciliation, mandatory full exact-head self-review and repository-required documentation CI before merge.
+- [ ] Perform mandatory full exact-head self-review and repository-required documentation CI before merge.
 
 ## Focused reconciliation result before final freeze
 
@@ -83,6 +83,20 @@ Persist the product owner's explicit acceptance of the complete minimum `GAME-CH
 - `DUR-02` is unblocked only for paper-only profile-neutral core schema architecture with explicit typed/versioned profile extensions; profile-specific schema completeness remains gated.
 - No generic misc-state bag, client authority, Platform Character mutation authority or item/economy ownership leakage introduced.
 
+## Review repair
+
+### Repair cycle 1 — avoid invented aggregate parity status
+
+Pre-freeze full-diff review found the owner baseline's terminal status example used `Reference parity = PARTIAL`. `PARTIAL` is not part of `ARCHITECTURE_STATUS_MODEL.md` and could be misread as a new aggregate status axis.
+
+Repair:
+
+- replaced that wording with `Reference parity = per-behavior evidence-gated; no aggregate parity status is implied by architecture acceptance`;
+- retained the exact per-behavior `PARITY_CONFIRMED` / `DECLARED_DIFFERENCE` / `UNKNOWN` / `CONFLICT` rules;
+- no accepted semantic decision, runtime authority or downstream gate changed.
+
+Repair budget used: `1/3`.
+
 ## Excluded scope
 
 This task does not implement PostgreSQL tables/migrations/transactions, gameplay formulas/rulesets/content/protocol/client behavior, select first Reference PvP/world type, accept `GAME-CHANNEL-01`/`GAME-ITEM-01`/`SIM-DETERMINISM-01`/`DUR-02`, convert unresolved values into July-28 truth, mark unproven behavior `PARITY_CONFIRMED`, modify external repositories or production.
@@ -91,7 +105,7 @@ This task does not implement PostgreSQL tables/migrations/transactions, gameplay
 
 ### Focused
 
-Result before final-head freeze: **PASS** against Stage A, accepted Reference target/evidence hierarchy, #190 minimum closure packet, status model and Character/FND/DUR ownership boundaries.
+Result after repair cycle 1 before final-head freeze: **PASS** against Stage A, accepted Reference target/evidence hierarchy, #190 minimum closure packet, status model and Character/FND/DUR ownership boundaries.
 
 ### Component/integration/runtime E2E
 
@@ -118,7 +132,7 @@ Pending final immutable PR head.
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner-accepted Stage-B baseline and three mutable coordination documents are written in draft PR #193; focused reconciliation passed and no runtime/parity-completeness authority was introduced.
+last_progress: Owner-accepted Stage-B baseline and three mutable coordination documents are written in draft PR #193; repair cycle 1 removed a non-normative aggregate parity status and focused reconciliation passes.
 status: validating
 branch: docs/OTV2-20260812-game-char-stage-b-owner-baseline
 pr: 193
@@ -128,7 +142,7 @@ ci_check_generation: null
 ci_checks_for_current_head: 0
 ci_run_ids: []
 runner_assignment_state: unknown
-repair_cycles_for_current_gate: 0
+repair_cycles_for_current_gate: 1
 owner_action_required: null
 blocker: null
 next_action: Freeze final PR head, inspect the complete five-file diff, record exact-head self-review, run required documentation CI, and squash-merge only if every gate passes.
