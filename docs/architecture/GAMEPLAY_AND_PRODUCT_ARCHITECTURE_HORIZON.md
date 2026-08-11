@@ -112,7 +112,7 @@ Must preserve:
 
 - Overall gate status: `BLOCKS_DURABLE_GAMEPLAY`; overall `DecisionStatus` remains `PROPOSED`, implementation `NOT_STARTED`.
 - **Stage A: OWNER-ACCEPTED PARTIAL BASELINE** in `GAME-CHAR-01_STAGE_A_OWNER_BASELINE.md`.
-- **Stage B: OPEN / HARD-BLOCKED** on selection of the exact first named Reference baseline wherever character-visible semantics are Reference-sensitive.
+- **Stage B: UNACCEPTED / HARD-BLOCKED** on selection of the exact first named Reference baseline wherever character-visible semantics are Reference-sensitive.
 - Final character-bearing `DUR-02` schema and broad progression implementation still require full GAME-CHAR acceptance after Stage B.
 - Consume `GAME-VISION-01_MINIMUM_OWNER_BASELINE.md`, the Reference parity-precedence owner baseline, character-authority/session/lease contracts, DUR-01 and the Stage-A owner baseline.
 
