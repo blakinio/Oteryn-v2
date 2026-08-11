@@ -4,18 +4,18 @@
 task_id: OTV2-20260811-game-char-predecision-analysis
 title: Prepare baseline-neutral GAME-CHAR-01 owner decision dossier
 mode: COORDINATE
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260811-game-char-predecision-analysis
-pr: null
+pr: 175
 base_sha: 9510a93b024b92a761176b18373c8853c30a6617
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-11T17:03:00+02:00
-updated_at: 2026-08-11T17:03:00+02:00
+updated_at: 2026-08-11T17:12:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -54,16 +54,16 @@ Produce one nonbinding `GAME-CHAR-01` pre-decision dossier that separates decisi
 
 ## Acceptance criteria
 
-- [ ] Inventory already accepted character identity/authority/session invariants and do not reopen them.
-- [ ] Separate baseline-neutral GAME-CHAR decisions from Reference-sensitive decisions that require the exact first Reference target.
-- [ ] Recommend a minimal character aggregate boundary that does not absorb inventory/economy/social/house/market authority.
-- [ ] Recommend a minimal lifecycle model and explicit deletion/restore/retirement semantics without guessing retention durations.
-- [ ] Recommend first-generation safe mutation rules for rename, deletion finalization, world transfer and account transfer without live-authority ambiguity.
-- [ ] Define progression facts versus derived-stat/revision semantics without freezing formulas or physical schema.
-- [ ] Define ruleset/profile migration and offline-progression boundaries without silent reinterpretation.
-- [ ] Map consequences to DUR-02, GAME-ITEM, combat, Platform projections and FND-04 without implementing them.
-- [ ] Produce a compact owner decision package for the baseline-neutral portion and name the exact remaining hard blocker for full GAME-CHAR closure.
-- [ ] Do not modify runtime, protocol, persistence schema, content, external repositories or accepted owner baselines.
+- [x] Inventory already accepted character identity/authority/session invariants and do not reopen them.
+- [x] Separate baseline-neutral GAME-CHAR decisions from Reference-sensitive decisions that require the exact first Reference target.
+- [x] Recommend a minimal character aggregate boundary that does not absorb inventory/economy/social/house/market authority.
+- [x] Recommend a minimal lifecycle model and explicit deletion/restore/retirement semantics without guessing retention durations.
+- [x] Recommend first-generation safe mutation rules for rename, deletion finalization, world transfer and account transfer without live-authority ambiguity.
+- [x] Define progression facts versus derived-stat/revision semantics without freezing formulas or physical schema.
+- [x] Define ruleset/profile migration and offline-progression boundaries without silent reinterpretation.
+- [x] Map consequences to DUR-02, GAME-ITEM, combat, Platform projections and FND-04 without implementing them.
+- [x] Produce a compact owner decision package for the baseline-neutral portion and name the exact remaining hard blocker for full GAME-CHAR closure.
+- [x] Do not modify runtime, protocol, persistence schema, content, external repositories or accepted owner baselines.
 - [ ] Perform exact-head self-review and repository-required documentation CI before merge.
 
 ## Excluded scope
@@ -81,14 +81,22 @@ This task does not:
 
 ## Implementation / findings
 
-Pending canonical pre-decision analysis.
+- Added `docs/architecture/GAME-CHAR-01_PREDECISION_ANALYSIS.md` as a nonbinding dossier.
+- The analysis concludes that full GAME-CHAR closure must be staged: Stage A baseline-neutral semantics may be owner-accepted now, while Stage B remains hard-blocked on the exact first Reference target wherever concrete character mechanics/durable vocabulary are target-sensitive.
+- Recommended Stage A uses a bounded Character aggregate rather than a giant MMO aggregate; inventory/economy/social/house/market/session authorities remain separate.
+- Recommended lifecycle is `ACTIVE -> DELETION_SCHEDULED -> RETIRED`, with restore before terminal retirement, CharacterId non-reuse and privacy erasure kept separate from semantic retirement.
+- Recommended first-generation safety requires actor `ABSENT` and no playable CharacterLease before terminal retirement, world transfer or account ownership transfer; live transfer is deferred.
+- Recommended semantic concurrency separates character-state revision/fencing from FND-04 GameSession/CharacterLease fencing.
+- Progression is modeled as ruleset-defined authoritative facts versus derived values; exact formulas and persistent target-specific vocabulary remain blocked rather than guessed.
+- The dossier makes name namespace, slot/quota values, creation choices, exact progression/death/vocation/offline-training rules and final Reference-sensitive DUR-02 fields explicit Stage-B work.
+- No current accepted source was superseded and PR #162 remains disjoint.
 
 ## Validation
 
 ### Focused
 
-- command/run: reconcile the dossier against accepted GAME-VISION, Character Authority/Platform, FND-ID, FND-04 and DUR-01 sources
-- result: pending
+- command/run: reconcile the dossier against accepted GAME-VISION, ADR-0012 / Character Authority Platform boundary, FND-ID character/account and single-online-character baselines, FND-04 session/lease authority, DUR-01 durability split and current programme ordering
+- result: **PASS before final-head freeze**; no identity/authority conflict, Reference hard-gate bypass or runtime/schema authority leakage found
 
 ### Component/integration
 
@@ -102,7 +110,7 @@ Pending canonical pre-decision analysis.
 
 ### Exact-head CI
 
-- final head: pending
+- final head: pending immutable PR/check evidence after final repository commit
 - trigger source: pending
 - workflow/run/job: pending
 - runner assignment: pending
@@ -111,14 +119,14 @@ Pending canonical pre-decision analysis.
 
 ## Self-review
 
-- exact head: pending
+- exact head: pending immutable PR evidence after final repository commit
 - method/reviewer: implementing/coordinating agent full-diff product/architecture/governance review
-- material findings: pending
+- material findings: pending final-head review
 - verdict: pending
 
 ## Independent review
 
-- required: `NO` unless final diff changes an accepted high-risk semantic; intended scope is nonbinding analysis only
+- required: `NO` under trusted-base risk policy — final intended diff is nonbinding architecture/task analysis only and changes no accepted security/protocol/persistence/multichannel authority/product rule
 - exact head: `NOT_APPLICABLE`
 - method/auditor: `NOT_APPLICABLE`
 - material findings: `NOT_APPLICABLE`
@@ -126,9 +134,9 @@ Pending canonical pre-decision analysis.
 
 ## PR and closeout
 
-- changed-file review: pending
-- unresolved review threads: pending
-- related/superseded PRs: PR #162 parallel/disjoint
+- changed-file review: exactly two declared documentation paths; final-head verification pending
+- unresolved review threads: 0 before final freeze
+- related/superseded PRs: PR #162 parallel/disjoint; no supersession
 - protected auto-merge: pending
 - merge commit/result: pending
 - ownership release: pending
@@ -136,11 +144,11 @@ Pending canonical pre-decision analysis.
 ## Context checkpoint
 
 ```yaml
-last_progress: GAME-VISION lifecycle is closed and a dedicated baseline-neutral GAME-CHAR predecision branch is claimed from current main.
-status: implementing
+last_progress: Baseline-neutral GAME-CHAR predecision dossier is in draft PR #175; focused reconciliation passed and the package is ready for final-head self-review and documentation CI.
+status: validating
 branch: docs/OTV2-20260811-game-char-predecision-analysis
 head_sha: null
-pr: null
+pr: 175
 final_head_sha: null
 final_head_frozen_at: null
 ci_trigger_source: null
@@ -157,5 +165,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Write the baseline-neutral GAME-CHAR-01 pre-decision dossier and identify the exact Reference-sensitive hard-gated remainder.
+next_action: Freeze the final PR head, perform exact-head self-review and documentation CI, merge/archive the nonbinding dossier, then request the product-owner Stage-A decision.
 ```
