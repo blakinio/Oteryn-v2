@@ -15,7 +15,47 @@ This document persists a product-owner decision that predates the current `GAME-
 
 It intentionally freezes **only the already-decided selection UX**. It must not be used to infer answers to surrounding channel-policy questions.
 
-## 2. Owner-accepted decision
+## 2. Decision timing record
+
+### Must this decision be recorded now?
+
+**YES — because the owner already made it and downstream design must stop treating this narrow scope as open.**
+
+This task does not create a new decision. Recording the 2026-07-22 decision now is necessary because the current `GAME-CHANNEL-01` pre-decision dossier still presents the player-visible/default channel-selection model as an owner choice. Leaving the accepted selection UX outside the repository would allow a later task to ask the owner again or to choose a conflicting separate-login/manual-only model.
+
+### Concrete downstream work constrained by this baseline
+
+The partial baseline must be consumed before these scopes freeze their relevant UX/flow behavior:
+
+- completion of the selection/visibility portion of `GAME-CHANNEL-01`;
+- channel-selection/admission UX in `ALPHA-CLIENT-01` or equivalent native-client work;
+- any multichannel admission/selection flow used by `VSL-MULTICHANNEL-01`;
+- any login/world-selection design that could otherwise model channels as separate login-server identities.
+
+It does **not** block single-channel admission, movement, combat, persistence or recovery slices that do not expose a player-facing multichannel selector.
+
+### What becomes expensive if recording is delayed?
+
+- client navigation/state may be designed around separate per-channel login-server concepts;
+- world/character selection may omit the accepted automatic/recommended path or manual `Change Channel` affordance;
+- tests may encode the wrong entry flow and later require rewrite;
+- future architecture discussions may repeatedly spend owner attention on an already-decided question;
+- routing/admission UX may couple channel identity to authentication more strongly than intended.
+
+### Evidence that could justify superseding this baseline
+
+Because this is an owner product decision, evidence may justify **proposing** a superseding decision but cannot silently supersede it. Relevant evidence could include:
+
+- usability/playtest evidence that the selection model causes material player confusion or friction;
+- measured party/social co-location failures showing the recommended/manual presentation is inadequate;
+- measured queue/capacity behavior that makes the current selection presentation misleading;
+- accessibility or platform UX constraints;
+- security/abuse evidence showing the manual selection affordance creates an unacceptable risk that cannot be solved by server-authoritative eligibility;
+- an explicit later product-owner strategy change.
+
+Any replacement must name this baseline and the exact superseded scope. Implementation convenience alone is not supersession evidence.
+
+## 3. Owner-accepted decision
 
 ### USER_SOURCE — accepted 2026-07-22
 
@@ -29,7 +69,7 @@ Within the character/world selection experience:
 
 This is the accepted product-selection model for the declared scope.
 
-## 3. What this resolves in the pre-decision dossier
+## 4. What this resolves in the pre-decision dossier
 
 For this narrow scope, this owner baseline takes precedence over any option/recommendation wording in:
 
@@ -46,7 +86,7 @@ The following questions are therefore **not open anymore**:
 
 The parent dossier's broader recommendation of a “soft-visible sticky channel” model remains only partially resolved: the selection-flow visibility/default choice is accepted here, while in-session visibility/stickiness and switching mechanics remain open below.
 
-## 4. Explicitly unresolved
+## 5. Explicitly unresolved
 
 The 2026-07-22 owner decision does **not** by itself establish:
 
@@ -65,7 +105,7 @@ The 2026-07-22 owner decision does **not** by itself establish:
 
 These remain for the owning `GAME-CHANNEL-01`, PvP/content, `PERF-01`, `OPS-CHANNEL-01` and UX contracts.
 
-## 5. Architecture compatibility
+## 6. Architecture compatibility
 
 This owner decision is compatible with the accepted architecture because:
 
@@ -78,7 +118,7 @@ This owner decision is compatible with the accepted architecture because:
 
 No new wire/API/runtime shape is selected by this UX baseline.
 
-## 6. Required downstream behavior
+## 7. Required downstream behavior
 
 Future `GAME-CHANNEL-01` and client/admission design must preserve the following observable product intent:
 
@@ -94,7 +134,7 @@ Oteryn login
 
 A future UI may refine exact labels/layout, but it must not silently turn channels into separate login-server identities or remove the accepted recommended/manual-choice model without a superseding owner decision.
 
-## 7. Acceptance boundary
+## 8. Acceptance boundary
 
 This document is **accepted only for the declared partial scope**.
 
