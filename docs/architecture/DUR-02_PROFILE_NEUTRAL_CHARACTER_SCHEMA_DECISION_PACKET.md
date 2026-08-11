@@ -1,50 +1,71 @@
-# DUR-02 — Profile-Neutral Core Character Schema Decision Packet
+# DUR-02 — Profile-Neutral Character Persistence Decision Packet
 
 - Status: **PRE-DECISION ARCHITECTURE / NOT ACCEPTED**
 - Date: 2026-08-12
-- Gate: `DUR-02 — Persistence v1`
-- Scope: profile-neutral core Character persistence architecture only
+- Stable gate: `DUR-02 — Persistence v1`
+- Packet scope: **profile-neutral core Character persistence architecture only**
 - Trusted repository base: `blakinio/Oteryn-v2@2913201186d0e38cfc0bf0c9e2c5b83f981a61c6`
 - Decision owner: product/architecture owner
-- Consumes: ADR-0004, DUR-01, ANL-01, accepted GAME-CHAR Stage A/B, FND-04A/B/C, ADR-0012 and the Character Authority / Platform boundary
+- Consumes: ADR-0004, DUR-01, ANL-01, accepted GAME-CHAR Stage A/B, FND-04A/B/C, ADR-0012 and `CHARACTER_AUTHORITY_PLATFORM_BOUNDARY.md`
 - Runtime authority: **NONE**
 - Does not authorize: PostgreSQL DDL/migrations, database provisioning, runtime persistence code, item/currency persistence, production backup configuration, Platform writes, profile-specific PvP Character state or unresolved Reference values/formulas
 
-## 1. Decision required
+## 1. Decision boundary
 
-Accepted GAME-CHAR answers **what Character semantics must be durable**. DUR-02 must answer **how the profile-neutral core is physically structured and transactionally protected** without allowing persistence convenience to become gameplay policy.
+Accepted GAME-CHAR answers **what Character semantics must be durable**. This packet recommends **how the profile-neutral Character persistence core is physically structured and transactionally protected** without allowing persistence convenience to become gameplay policy.
 
 ```text
-accepted semantic ownership
+accepted Character semantics
 -> choose relation / transaction / fencing architecture
--> preserve typed extension points
--> keep unresolved profile/ruleset values outside schema invariants
+-> preserve typed profile-extension boundaries
+-> keep unresolved profile/ruleset behavior outside schema invariants
 -> later implementation proves SQL / migration / runtime behavior
 ```
 
-### Must this architecture be decided now?
+### Must this Character persistence architecture be decided now?
 
-**YES.** It blocks final paper-only Character persistence architecture, native Character Authority implementation planning, FND-04 admission/recovery persistence integration, mandatory audit/outbox design, migration/restore architecture and VSL-PERSISTENCE-01 planning.
+**YES.** It blocks safe paper-only design of native Character persistence, FND-04 authority persistence, idempotency, mandatory audit/outbox atomicity, migration/recovery and later VSL-PERSISTENCE-01 implementation planning.
 
-### Must SQL DDL or every profile child table be decided now?
+### Does this packet close the whole stable `DUR-02 — Persistence v1` gate?
 
-**NO.** Freeze relation ownership, keys, fences, authority transitions, lock order, migration discipline and typed extension rules. Exact SQL names/syntax, migration library, connection pool and profile-specific child schemas remain implementation or owning-profile work.
+**NO.**
 
-## 2. Accepted constraints
+`FOUNDATION_DECISION_BACKLOG.md` historically defines `DUR-02` more broadly than this Character packet, including Persistence-v1 subjects such as migration mechanism/schema ownership and wider cross-domain consistency boundaries. Later architecture has moved item-conservation semantics toward `GAME-ITEM-01`/`DUR-03`, but no explicit accepted decision has yet declared the entire remaining historical `DUR-02` scope closed by this Character packet.
 
-### Database ownership
+Therefore a future owner acceptance of this packet must create a **binding partial owner baseline** for the profile-neutral Character persistence sub-scope while the overall stable gate remains:
 
-- authoritative native game persistence targets PostgreSQL;
-- game and Platform use separate logical databases, owners, credentials and migration histories;
-- no cross-database foreign keys;
-- Platform never directly mutates native Character tables;
-- Character Authority is the semantic writer for Character lifecycle/ownership/name/progression/build state.
+```text
+DUR-02 overall
+DecisionStatus       = PROPOSED
+DeliveryStatus       = PLANNED after partial-baseline closeout
+ImplementationStatus = NOT_STARTED
+Runtime authority    = NONE
+```
 
-### Identity representation
+A later reconciliation must either close the remaining Persistence-v1 scope or explicitly supersede/narrow it before overall `DUR-02` may become `ACCEPTED`.
 
-Native UUIDv7 identities persist as PostgreSQL `uuid`, full 128 bits, nil invalid and no semantic reuse. Persisted `CommandId` preserves the full FND-02 nonzero uint64 range as `numeric(20,0)` in `(GameSessionId, CommandId)` scope. UUID ordering is never semantic chronology/revision/authority.
+### Must SQL DDL or every profile-specific child table be frozen now?
 
-### Independent fences
+**NO.** This packet freezes ownership, relation families, authority transitions, fencing, transaction boundaries, lock/isolation rules, migration discipline and typed extension requirements. Exact SQL names/syntax, migration library, connection pool, storage parameters and profile-specific child schemas remain implementation or owning-profile work.
+
+## 2. Binding inputs
+
+### 2.1 PostgreSQL and ownership
+
+- PostgreSQL is the authoritative native game relational target.
+- Platform and game use separate logical databases, owners, credentials and migration histories.
+- There are no cross-database foreign keys.
+- Platform may own account/commercial workflow state but may not directly mutate native Character persistence.
+- Character Authority is the semantic writer for Character identity/lifecycle/ownership/name/progression/build state.
+- Redis/in-memory caches are never authority recovery sources.
+
+### 2.2 Durable identifiers
+
+- native UUIDv7 identities persist as PostgreSQL `uuid`, full 128 bits, nil invalid and non-reused where their semantic contract requires non-reuse;
+- persisted `CommandId` preserves the FND-02 nonzero uint64 range as `numeric(20,0)` and is scoped by `GameSessionId`;
+- UUID ordering never defines chronology, revision or authority.
+
+### 2.3 Independent fences
 
 ```text
 CharacterRevision
@@ -54,84 +75,86 @@ CharacterRevision
 != RuntimeScopeAuthority ownership generation
 ```
 
-Every durable Character-owned mutation validates Character state/revision. FND-04 independently validates session/lease/transport/runtime authority.
+Character semantic mutation validates `CharacterRevision`. FND-04 separately validates who may control/write through current presence/lease/session/transport/runtime authority.
 
-### Durable audit
+### 2.4 Durable audit
 
-For a mutation requiring durable audit:
+For any mutation whose owning contract requires durable audit:
 
 ```text
 authoritative mutation + mandatory durable audit evidence
 commit together
 OR
-neither is authoritative
+neither becomes authoritative
 ```
 
-Publication is at-least-once. Event replay never replays gameplay mutation. Same EventId retains the same semantic event and exact payload bytes while retained.
+Publication is at-least-once. Replay is evidence/projection replay and never replays gameplay mutation.
 
-### Profile-neutral boundary
+### 2.5 Profile-neutral boundary
 
 Accepted GAME-CHAR forbids:
 
-- current Global/OTS behavior becoming unresolved July-28 truth;
-- one universal PvP/death profile;
-- an untyped JSON/KV miscellaneous-state bag;
-- claiming one core schema complete for every future profile.
+- treating current Global/Canary/crystalserver/another OTS as unresolved July-28 truth;
+- one universal PvP/death persistence profile;
+- an untyped JSON/KV/EAV miscellaneous-state escape hatch;
+- claiming one Character core schema complete for every future world/profile.
 
-## 3. Options considered
+## 3. Persistence shapes considered
 
-### A — one wide Character row
+### Option A — one wide Character row
 
-**Rejected.** It couples unrelated state/lifecycles, creates nullable migration churn, mixes Character and FND-04 authority and undermines typed child aggregates.
+**Rejected.** It couples unrelated state/lifecycles, creates nullable migration churn, mixes Character and FND-04 authority, increases root-row coupling and undermines typed child aggregates.
 
-### B — generic EAV/JSON state
+### Option B — generic EAV/JSON Character state
 
-**Rejected.** It weakens constraints/ownership/migrations and becomes a bypass around future semantic gates.
+**Rejected.** It weakens constraints, ownership and migration review and becomes a bypass around future semantic gates.
 
-### C — event sourcing as Character source of truth
+### Option C — full Character event sourcing
 
-**Rejected for Persistence v1.** ADR-0004 chooses current-state tables + revisions + idempotent operations + transactional outbox + bounded audit. ANL events remain evidence, not gameplay authority.
+**Rejected for Persistence v1.** ADR-0004 chooses current-state tables + revisions + idempotent operations + transactional outbox + bounded critical audit. ANL-01 events remain evidence, not gameplay authority.
 
-### D — normalized current-state core + typed child relations/extensions
+### Option D — normalized current-state core + typed child relations/extensions
 
-**RECOMMENDED.** One root/revision anchor, separate name and FND-04 authority relations, typed children, durable receipts, immutable audit journal plus mutable publication state, and explicit profile extension boundaries.
+**RECOMMENDED.** Use one Character root/revision anchor, separate name and FND-04 authority relation families, typed children, durable receipts, retained immutable event evidence plus separate mutable publication state, and explicit typed profile extensions.
 
-## 4. Profile-neutral Character relation map
+## 4. Profile-neutral Character relation families
 
-Logical names below explain architecture; they are not final SQL identifiers.
+Logical names below describe ownership; they are not final SQL identifiers.
 
 ### 4.1 `character_root`
 
 One row per CharacterId containing only profile-neutral root facts:
 
 - CharacterId;
-- current owner AccountId (external reference, no cross-DB FK);
+- current owner AccountId — external Platform-issued reference, no cross-DB FK;
 - current WorldId;
 - lifecycle `ACTIVE | DELETION_SCHEDULED | RETIRED`;
-- monotonic CharacterRevision;
-- active profile/ruleset interpretation revision references required to interpret Character state;
-- creation/starter context revision references required for deterministic interpretation/migration;
+- monotonic `CharacterRevision`;
+- active profile/ruleset interpretation revision references needed to interpret Character state;
+- creation/starter context revision references needed for deterministic interpretation/migration;
 - accepted lifecycle timestamps/evidence where policy requires them.
 
-It does **not** own items/currency, quest aggregates, Platform entitlements, lease/session generations, generic extension JSON or exact Reference arithmetic.
+It does **not** own items/currency, quest aggregates, Platform entitlements, lease/session generations, generic extension JSON or unresolved Reference arithmetic.
 
-#### CharacterRevision
+#### Global `CharacterRevision`
 
-Every committed Character-owned semantic mutation:
+Every committed Character-owned **semantic** mutation:
 
 1. locks/revalidates `character_root`;
-2. validates expected CharacterRevision when the operation uses optimistic expected state;
+2. validates expected CharacterRevision when the operation contract supplies one;
 3. rejects/reconciles stale state;
-4. advances CharacterRevision exactly once for that Character transaction;
-5. records resulting revision in durable receipt/audit evidence.
+4. advances CharacterRevision exactly once for the committed Character semantic transaction;
+5. records the resulting revision in durable receipt/audit evidence where applicable.
 
-Several typed child rows may change in the same transaction; the global CharacterRevision advances once. It is never derived from UUID order, DB transaction ID, wall clock, EventId or lease generation.
+Several typed Character child rows may change in that transaction; the global CharacterRevision advances once. Pure FND-04 control/session transitions do not advance CharacterRevision unless they also mutate Character semantic state.
+
+CharacterRevision is never derived from UUID order, database transaction ID, wall clock, EventId or lease/session generation.
 
 ### 4.2 `account_character_guard`
 
-A game-owned lock anchor keyed by AccountId.
+A game-owned serialization anchor keyed by AccountId.
 
-It serializes every account-scoped Character operation whose correctness depends on portfolio state, including whenever policy can change quota eligibility:
+It is acquired for **every** account-scoped Character operation whose correctness depends on portfolio/quota state, including whenever active policy can change quota eligibility:
 
 - create;
 - schedule deletion;
@@ -140,86 +163,84 @@ It serializes every account-scoped Character operation whose correctness depends
 - account ownership transfer;
 - any later quota-affecting lifecycle transition.
 
-It is **not** Account authority, Platform security state or an authoritative active-count cache.
+It is **not** Account authority, Platform security/entitlement state or an independently authoritative active-count cache.
 
-The authoritative portfolio result is derived from current Character Authority rows under the guard and the active lifecycle/quota policy revision.
-
-An `active_count` cache is not authoritative unless a later evidence-backed superseding design proves transactional counter + reconciliation invariants.
+Portfolio eligibility/count is derived from current Character Authority state under the guard and active policy revision. A cached counter cannot become authority without a later evidence-backed superseding design with transactional and reconciliation invariants.
 
 Multi-account operations lock account guards in canonical full-AccountId byte order.
 
 ### 4.3 `character_name_registry`
 
-Separate relation family owning:
+Separate relation family for:
 
 - display name;
 - complete lossless canonical comparison key;
 - naming-policy revision;
-- `CURRENT | FORMER_ALIAS | RESERVED` semantic class;
+- semantic claim class such as `CURRENT | FORMER_ALIAS | RESERVED`;
 - CharacterId relation;
 - policy-owned effective/release evidence.
 
-The game domain computes canonical keys under the accepted naming policy. PostgreSQL enforces equality/uniqueness over the complete result; database collation never invents semantic normalization. Hashes may accelerate lookup but never replace complete-key verification.
+The game domain computes the canonical key under the accepted naming policy. PostgreSQL enforces equality/uniqueness over the complete result; database collation never invents semantic normalization. Hashes may accelerate lookup but never replace complete-key verification.
 
-#### Naming-policy revision cutover
+#### Naming-policy cutover
 
-A global namespace cannot have two simultaneously authoritative canonicalization universes that disagree on equality.
+One logical global namespace cannot safely run two simultaneously authoritative canonicalization universes that disagree on equality.
 
-Before destination policy cutover:
+Before destination-policy cutover:
 
-1. recompute destination keys for every conflict-participating live/reserved claim;
-2. detect and resolve/abort every new collision;
-3. validate destination uniqueness;
+1. compute destination canonical keys for every conflict-participating live/reserved claim;
+2. detect and resolve/abort all new collisions;
+3. validate the destination authoritative uniqueness constraint/index;
 4. compatibly cut readers/writers to the destination policy;
-5. retain old-policy evidence/history only as non-authoritative history after cutover.
+5. retain old-policy values only as non-authoritative history/migration evidence after cutover.
 
-Authoritative uniqueness cannot be partitioned by policy revision merely to hide conflicts unless a later owner decision intentionally creates separate namespaces.
+The authoritative namespace may not be partitioned by naming-policy revision merely to hide cross-revision conflicts unless an explicit later owner decision intentionally creates separate namespaces.
 
 Application-only `check availability -> later insert` is not correctness. Database uniqueness decides simultaneous name races.
 
 ### 4.4 `character_build_core`
 
-Typed child relation for profile-neutral build linkage:
+Typed Character child relation for profile-neutral build/profession linkage:
 
 - CharacterId;
-- stable ruleset-owned vocation/build definition reference where one exists;
+- stable ruleset-owned vocation/build definition reference where present;
 - explicit pre-vocation/unselected state;
 - promotion-achievement state/reference;
 - build/ruleset definition revision.
 
-CharacterRevision remains the global fence. Reference vocation strings/ordinals are not universal engine-schema enums. Stable definition-key representation is consumed from the ruleset/content owner rather than reinvented here.
+CharacterRevision remains the global stale-state fence. Vocation titles/ordinals are ruleset data, not universal engine-schema enums. Stable definition-key representation is consumed from the owning ruleset/content contract.
 
 ### 4.5 progression and skill relations
 
-Use typed relations only after the owning ruleset determines persisted facts versus deterministic projections.
+Use typed relations only after the owning ruleset determines which values are authoritative persisted facts and which are deterministic projections.
 
 ```text
 persisted authoritative fact
 != deterministic derived projection
 ```
 
-Recommended shape:
+Recommended architecture:
 
-- typed scalar progression relation for universally required persisted Character facts after their status is accepted;
-- typed skill relation keyed by accepted stable skill-definition key;
+- typed scalar progression relation for universally required persisted Character facts after their ownership/status is accepted;
+- typed skill-state relation keyed by the stable ruleset skill-definition key;
 - dedicated typed children for later accepted progression systems.
 
-Do not persist duplicate values merely because a formula is unknown unless evidence establishes both are independently authoritative.
+Do not duplicate persisted representations merely because a formula is unknown unless evidence establishes both are independently authoritative.
 
-Migration-sensitive facts that cannot safely be recomputed — capacity is the accepted example — preserve the authoritative value plus interpretation revision.
+Migration-sensitive values that cannot safely be recomputed — capacity is the accepted example — preserve the authoritative value plus its interpretation revision.
 
-The first Reference eight-skill catalogue is accepted semantically, but this packet freezes neither a fixed eight-column table nor an opaque skill-advancement blob. Physical skill state remains typed, definition-keyed, revisioned and migration-safe.
+The accepted Reference eight-skill catalogue does **not** imply either a fixed eight-column table or an opaque skill blob. Physical skill state remains typed, definition-keyed, revisioned and migration-safe.
 
 ### 4.6 typed Character-owned profile extensions
 
-Weapon Proficiency, charms, Hunting Tasks, permanent Prey/Hunting slots, Wheel/Promotion Points, Animus and future profile-specific Character facts use dedicated typed relation families/child aggregates after their physical contracts are accepted.
+Weapon Proficiency, charms, Hunting Tasks, permanent Prey/Hunting slots, Wheel/Promotion Points, Animus and future profile-specific Character facts use dedicated typed relation families/child aggregates after their physical contract is accepted.
 
 Every extension declares:
 
 - semantic owner;
 - CharacterId relation;
-- stable definition key and owner;
-- schema/definition revision compatibility;
+- stable definition identity/key and its owner;
+- schema/definition compatibility revision;
 - CharacterRevision interaction;
 - transaction/lifecycle boundary;
 - migration/rollback;
@@ -227,7 +248,7 @@ Every extension declares:
 
 No generic `type + JSON/blob` persistence path is allowed as a temporary ownership escape hatch.
 
-## 5. FND-04 authority persistence boundary
+## 5. FND-04 authority persistence
 
 FND-04 authority state is physically distinct from Character semantic state.
 
@@ -238,9 +259,9 @@ Authoritatively keyed by AccountId and enforcing game-domain mandatory-presence 
 Requirements:
 
 - one AccountId has at most one mandatory-presence Character;
-- one CharacterId cannot simultaneously be claimed by multiple accounts;
+- one CharacterId cannot simultaneously be claimed by several accounts;
 - current AccountId->CharacterId ownership is still revalidated against Character Authority;
-- presence claim never substitutes for `character_root.account_id`;
+- presence never substitutes for `character_root.account_id`;
 - Character ownership never substitutes for presence/control authority.
 
 ### 5.2 `character_lease`
@@ -250,31 +271,31 @@ Keyed by CharacterId and storing restart-reconstructible lease fencing:
 - nonzero monotonic non-reused CharacterLease generation or accepted equivalent;
 - current lease/control state;
 - holder/session/runtime-scope references required by FND-04;
-- restart-reconstructible lease freshness/expiry evidence once numeric lease policy is accepted.
+- restart-reconstructible freshness/expiry evidence once numeric policy is accepted.
 
-Lease generation is never CharacterRevision. Stale generation cannot renew, commit controlled mutation or regain control. Exact TTL/renew/safety numbers and scalar representation remain deferred.
+Lease generation is never CharacterRevision. Stale generation cannot renew, commit controlled mutation or regain control. Exact TTL/renew/safety values and their final scalar representation remain deferred.
 
 ### 5.3 `game_session`
 
-Keyed by GameSessionId when durable recovery continuity requires it.
+Keyed by GameSessionId when durable continuity requires it.
 
-Stores only session-scoped truth:
+Stores session-scoped truth only:
 
 - AccountId + CharacterId binding;
-- session lifecycle/terminality;
+- lifecycle/terminality;
 - current `connection_generation`;
 - current CharacterLease generation fence/reference;
 - FND-04 recovery binding revision set as applicable:
-  - protocol_major;
-  - transport_profile;
-  - ruleset_revision;
-  - content_revision;
-  - map_revision;
-  - world_policy_revision;
-  - current RuntimeScopeAuthority / runtime owner generation evidence;
-- reconnect-proof/candidate metadata references where the accepted security implementation requires them.
+  - `protocol_major`;
+  - `transport_profile`;
+  - `ruleset_revision`;
+  - `content_revision`;
+  - `map_revision`;
+  - `world_policy_revision`;
+  - current RuntimeScopeAuthority / runtime-owner generation evidence;
+- reconnect-proof/candidate metadata references where the later accepted security implementation requires them.
 
-Actor-wide ControlLoss state is **not duplicated in GameSession**. A terminal GameSessionId never revives. GameSessionId is identity, never bearer proof.
+Actor-wide ControlLoss state is **not duplicated here**. A terminal GameSessionId never revives. GameSessionId is identity, never bearer proof.
 
 ### 5.4 `control_loss_continuity`
 
@@ -286,27 +307,29 @@ Single actor-wide owner for restart-safe ControlLoss state:
 - protection eligibility/consumption;
 - accepted four-second protection activation/expiry;
 - protection re-arm state/deadline where applicable;
-- references to current/terminal GameSession only as context.
+- current/terminal GameSession references only as context.
 
-Deadlines survive restart/failover without restart/extension. Process-local monotonic timer values cannot be serialized as restart-stable time; later implementation must define trusted restart-stable deadline representation and uncertainty behavior.
+Deadlines survive restart/failover without restart/extension. Process-local monotonic timer values cannot be serialized as restart-stable time; later implementation defines the trusted restart-stable deadline representation and clock-uncertainty/fail-closed behavior.
 
 ### 5.5 reconnect proof material
 
-Exact hash/encryption/KMS is deferred by FND-04B. The physical boundary requires secret/verifier material to remain separate from ordinary Character rows/analytics, absent from plaintext logs/audit, predecessor-fenced across generations and frozen by a later security implementation contract before runtime enablement.
+Exact hash/encryption/KMS representation remains deferred by FND-04B. The persistence boundary requires secret/verifier material to remain separate from ordinary Character state/analytics, absent from plaintext logs/audit, predecessor-fenced across generations and frozen by a later security implementation contract before runtime enablement.
 
 ### 5.6 atomic fresh-admission authority commit
 
-Fresh admission is one database authority linearization boundary, not a sequence of independently authoritative row writes.
+Fresh admission is one authority linearization boundary, not a series of independently authoritative row writes.
 
-Prechecks may be performed earlier for fail-fast behavior, but immediately before/atomically with final authority creation the transaction revalidates the accepted FND-04A mutable facts, including at least:
+Prechecks may fail fast, but immediately before/atomically with final authority creation the transaction:
 
-- current AccountId->CharacterId ownership/lifecycle;
-- current CharacterId->WorldId eligibility;
-- AccountPresence incumbent state;
-- CharacterLease/current generation state;
-- current runtime owner/RuntimeScopeAuthority generation/readiness;
-- protocol/transport/ruleset/content/map/world-policy/offer compatibility inputs required by the admission contract;
-- GrantNonce eligibility and any mutable authenticated security/trust evidence whose final validation belongs at commit.
+1. acquires/validates the current Character root as needed to prevent concurrent ownership/world/lifecycle transition during final admission revalidation, **without advancing CharacterRevision unless semantic Character state changes**;
+2. revalidates current AccountId->CharacterId ownership/lifecycle;
+3. revalidates current CharacterId->WorldId eligibility;
+4. locks/revalidates AccountPresence incumbent state;
+5. locks/revalidates CharacterLease/current generation state;
+6. revalidates current runtime owner/RuntimeScopeAuthority generation/readiness;
+7. revalidates protocol/transport/ruleset/content/map/world-policy/offer dimensions required by FND-04A;
+8. revalidates GrantNonce eligibility and mutable authenticated security/trust evidence whose accepted contract requires final revalidation;
+9. includes any mandatory durable authority/audit evidence registered for the transition.
 
 Only successful commit atomically:
 
@@ -320,47 +343,45 @@ consumes GrantNonce
 + establishes initial authoritative session/reconciliation boundary
 ```
 
-Failure creates **none** of those candidate authority effects. Candidate/precommit GameSessionId is never reused after failure.
+Failure leaves **none** of those candidate authority effects. Precommit/candidate GameSessionId is never reused after failure. Success becomes externally visible only after commit.
 
-Success becomes externally visible only after commit.
-
-The physical GrantNonce/security-evidence relation layout remains owned by FND/security implementation; DUR-02 freezes the atomicity requirement and required same-transaction revalidation, not their exact tables here.
+The exact GrantNonce/security-evidence relation layout remains a later FND/security implementation choice; the required same-authority transaction semantics are fixed here.
 
 ### 5.7 reconnect/recovery PREPARE persistence
 
-ReconnectAttemptRef is idempotency/correlation, not authority.
+`ReconnectAttemptRef` is idempotency/correlation identity, not authority.
 
-PREPARE needs a bounded typed candidate relation or equivalent durable state that binds at least:
+PREPARE uses bounded typed candidate/disposition state binding at least:
 
 ```text
 GameSessionId
 ReconnectAttemptRef
 predecessor connection_generation
 strict-successor candidate connection_generation
-exact authenticated candidate transport/binding reference
+exact authenticated candidate TransportBinding identity/reference
 proof class
 finite prepared deadline
 candidate reconnect-proof metadata/reference where used
 PREPARED disposition/reconciliation evidence
 ```
 
-PREPARE grants **zero** gameplay/liveness/fencing authority and does not advance current connection generation.
+A raw process-local socket pointer/handle is never persisted as restart-stable authority. If the exact prepared physical transport cannot still be proven current after process loss, that candidate cannot COMMIT and must abort/fail closed into the accepted recovery path.
 
-Same eligible PREPARE retry returns/reconciles the same logical candidate rather than minting independent successor authority. Abort/expiry/supersession permanently invalidates candidate proof/state.
+PREPARE grants **zero** gameplay/liveness/fencing authority and does not advance the current connection generation. Same eligible PREPARE retry reconciles the same logical candidate rather than minting independent successor authority. Abort/expiry/supersession permanently invalidates candidate proof/state.
 
-Prepared candidate resources are bounded; exact limits are registry/implementation values.
+Prepared resources are bounded; exact limits remain registry/implementation values.
 
 ### 5.8 reconnect/recovery atomic COMMIT
 
 Reconnect/recovery authority changes only at COMMIT.
 
-The COMMIT transaction locks/revalidates the current GameSession/lease/presence/candidate authority and the accepted mutable security/revision facts immediately before switch, including:
+The COMMIT transaction locks/revalidates current GameSession, presence, lease, prepared candidate and **ControlLoss continuity row whenever re-entry/protection entitlement may change**, plus the accepted mutable security/revision facts, including:
 
-- candidate exists, unexpired and matches exact session/attempt/candidate transport;
+- candidate exists, unexpired and bound to exact session/attempt/candidate transport;
 - predecessor connection generation still matches PREPARE source;
-- session remains reconnect-eligible and original grace remains valid for same-session path;
+- session remains reconnect-eligible and original grace is valid for same-session path;
 - no healthy current controller regained authority;
-- AccountPresenceClaim still denotes same CharacterId;
+- AccountPresenceClaim still denotes the same CharacterId;
 - CharacterLease remains current/compatible;
 - RuntimeScopeAuthority owner/generation/placement remains current;
 - FND-02 reconciliation boundary is safe;
@@ -376,21 +397,24 @@ fences predecessor TransportBinding authority
 + activates candidate successor reconnect proof and invalidates predecessor proof where applicable
 + preserves GameSessionId for same-session reconnect
 + preserves actor/gameplay state and domain revisions
-+ records re-entry for current ControlLossEpoch
-+ activates exact 4s protection only when that epoch has eligible unused entitlement
-+ consumes RecoveryGrantNonce only when the successful path requires it
++ records re-entry for the current ControlLossEpoch
++ consumes/activates the one eligible 4s protection entitlement at most once
++ consumes RecoveryGrantNonce only on the successful path that requires it
 + records stable ReconnectAttempt disposition for lost-response reconciliation
++ records any mandatory durable authority/audit evidence
 ```
 
-Failure does **not** advance generation, revive predecessor, consume nonce as success, activate proof/protection or roll authority back to PREPARE-time observations.
+Failed/stale COMMIT does **not** advance generation, revive predecessor, consume nonce as success, activate proof/protection or roll authority back to PREPARE-time observations.
 
-Lost COMMIT response reconciles from the persisted attempt/current-generation authority; it never performs a second switch.
+Lost COMMIT response reconciles from persisted attempt/current-generation authority and never performs a second switch.
 
 ### 5.9 post-grace recovery with new GameSession
 
-If old GameSession is terminal but the same actor remains `PRESENT_UNCONTROLLED`, accepted post-grace recovery creates a **new** GameSessionId at one atomic boundary while preserving actor state.
+If the old GameSession is terminal but the same actor remains `PRESENT_UNCONTROLLED`, accepted post-grace recovery creates a **new** GameSessionId at one atomic boundary while preserving the actor.
 
-The transaction revalidates ownership/world/presence/lease/runtime/recovery evidence and only on success:
+The transaction locks/revalidates Character ownership/world eligibility where required, presence, lease, runtime authority, recovery evidence and ControlLoss continuity.
+
+Only success:
 
 ```text
 creates new GameSessionId
@@ -398,16 +422,16 @@ creates new GameSessionId
 + establishes new current reconnect proof/transport authority
 + consumes required RecoveryGrantNonce
 + restores playable control to the same actor
-+ preserves eligible existing ControlLossEpoch semantics without inventing a new epoch
++ preserves any eligible existing ControlLossEpoch/protection entitlement without inventing a new epoch
 ```
 
 It does not respawn/heal/refill/teleport/reset conditions/cooldowns/combat/threat/aggro or reuse the terminal GameSessionId.
 
-## 6. Idempotency and durable receipts
+## 6. Idempotency and receipts
 
 ### 6.1 Character Authority operation receipts
 
-Retryable cross-system Character mutations use a durable OperationId receipt when an operation needs independent retry identity.
+Retryable cross-system Character mutations use a durable OperationId receipt when the operation requires independent retry identity.
 
 A bounded typed `character_operation_receipt` records:
 
@@ -415,7 +439,7 @@ A bounded typed `character_operation_receipt` records:
 - operation kind;
 - authenticated caller/semantic request fingerprint;
 - CharacterId where known;
-- terminal/nonterminal operation state;
+- terminal/nonterminal state;
 - bounded stable result category;
 - resulting CharacterRevision where applicable;
 - TransactionId for committed atomic mutation where applicable;
@@ -427,8 +451,8 @@ Rules:
 
 - same OperationId + same semantic request -> same logical operation/result reconciliation;
 - same OperationId + conflicting request -> conflict;
-- timeout is not proof of success/failure;
-- create retry before CharacterId is known resolves to the one CharacterId or stable terminal result;
+- timeout is not success/failure proof;
+- create retry before CharacterId is known resolves to one CharacterId or stable terminal result;
 - world/account transfer retry cannot apply twice.
 
 ### 6.2 persisted gameplay command dedup
@@ -441,19 +465,19 @@ Where FND-02/DUR requires durable dedup across an ambiguous commit boundary, ide
 (GameSessionId, CommandId)
 ```
 
-A receipt may carry request fingerprint/result/TransactionId/revision as needed. Equal numeric CommandId in another GameSession is distinct. Retention remains bounded and operation-owned.
+Equal numeric CommandId in another GameSession is distinct. Receipt fields and retention remain bounded/operation-owned.
 
 ### 6.3 TransactionId
 
-Each logical atomic durable mutation requiring ANL transaction evidence uses one stable TransactionId across ambiguous physical commit retry/reconciliation. DB attempt IDs/WAL positions/local surrogates never replace it.
+Each logical atomic durable mutation requiring ANL transaction evidence uses one stable TransactionId across ambiguous database-attempt retry/reconciliation. DB attempt IDs/WAL positions/local surrogates never replace it.
 
-## 7. Character transaction architecture
+## 7. Character-domain transaction architecture
 
 ### 7.1 one Character mutation anchor
 
-Every Character-owned durable semantic mutation locks/revalidates `character_root` first. This serializes durable mutation **per Character** in accordance with one CharacterRevision; unrelated characters remain independent.
+Every Character-owned semantic durable mutation locks/revalidates `character_root` first. This serializes semantic persistence per Character under one CharacterRevision while unrelated characters remain independent.
 
-FND-04-only authority transitions do not increment CharacterRevision unless they also mutate Character semantic state.
+FND-04-only control/session transitions do not increment CharacterRevision unless they also mutate Character semantic state.
 
 ### 7.2 account-scoped operations
 
@@ -465,61 +489,61 @@ Account transfer:
 2. revalidate current owner;
 3. lock/revalidate Character root;
 4. evaluate source/destination policy;
-5. revalidate required ABSENT/no-playable-lease state;
+5. revalidate required `ABSENT` / no-playable-lease state;
 6. commit AccountId rebinding + CharacterRevision + receipt + mandatory audit atomically.
 
 ### 7.3 name operations
 
-Create/rename compute canonical key under the active naming policy outside DB collation, rely on full-key DB uniqueness, and atomically bind claim/history with Character mutation/receipt/audit. Simultaneous name races have one DB-authoritative winner.
+Create/rename compute canonical key under active naming policy outside DB collation, rely on complete-key DB uniqueness and atomically bind claim/history with Character mutation/receipt/audit. Simultaneous name races have one DB-authoritative winner.
 
 ### 7.4 quiescent high-impact operations
 
-Stage A remains binding: terminal retirement, world transfer and account ownership transfer require actor `ABSENT` and no current playable CharacterLease in the first architecture. The final transaction locks/revalidates presence/lease instead of trusting a stale precheck.
+Terminal retirement, world transfer and account ownership transfer retain the Stage-A requirement: actor `ABSENT` and no current playable CharacterLease. Final transaction locks/revalidates presence/lease instead of trusting an earlier precheck.
 
-### 7.5 death/item split
+### 7.5 death/item boundary
 
-DUR-02 may define the Character progression consequence shape but does not decide item/corpse/value conservation. `GAME-ITEM-01`/`DUR-03` must later prove the cross-domain atomic/reconciliation boundary before a death path that changes both Character and items can be implemented. No silent partial success is accepted.
+DUR-02 may define Character progression consequence persistence but does not decide item/corpse/value conservation. `GAME-ITEM-01`/`DUR-03` must later prove the cross-domain atomic/reconciliation boundary before a path changing both Character and items is implemented. No silent partial success is accepted.
 
 ## 8. Isolation, locks and retries
 
-### Recommended default
+### Recommended isolation rule
 
-`READ COMMITTED` is acceptable only with **explicit authority anchors + DB constraints** closing every correctness-sensitive anomaly for that operation.
+PostgreSQL `READ COMMITTED` is acceptable only with **explicit authority anchors + DB constraints** that close every correctness-sensitive anomaly for that operation.
 
 Examples:
 
-- Character root lock -> per-Character revision order;
+- Character root lock -> Character revision serialization;
 - account guard -> quota/portfolio serialization;
 - unique canonical key -> name conflict;
-- presence/lease locks + generation compare -> authority conflict;
+- presence/lease/session/candidate/ControlLoss locks + generation compare -> FND-04 authority safety;
 - unique OperationId / durable command identity -> idempotency.
 
-If an invariant cannot be proven under this model, add an accepted lock/constraint anchor or use bounded PostgreSQL `SERIALIZABLE` with same-operation retry/reconciliation.
+If an invariant cannot be proven under that model, introduce an accepted lock/constraint anchor or use bounded PostgreSQL `SERIALIZABLE` with same-operation retry/reconciliation.
 
-PostgreSQL default isolation is not itself a correctness proof.
+PostgreSQL default isolation is not itself a correctness proof. Advisory locks may supplement coordination but are never sole authority.
 
-Advisory locks may supplement performance/coordination but are never sole authority.
-
-### Lock ordering
+### Lock order
 
 Same-class multi-entity locks use canonical full-identity byte order.
 
-Cross-class order for Character-domain transactions:
+Character-domain cross-class order:
 
 ```text
 account portfolio guard(s)
 -> Character root(s)
--> FND-04 presence / lease / session rows required for final revalidation
+-> FND-04 authority rows required for final revalidation
 -> existing name rows where row locks are needed
 -> typed Character child rows in stable definition-key order
 -> receipts / audit / publication inserts
 ```
 
-Fresh-admission/reconnect transactions follow their own FND-04 authority-row order but must remain consistent with any Character root revalidation they perform; implementation must publish one executable lock-order matrix before SQL code is accepted.
+Any FND-04 flow that also requires Character root revalidation takes the Character root **before** FND-04 authority rows so it cannot reverse the Character-domain order.
 
-A new unique name claim may race on the unique constraint instead of locking a nonexistent row.
+Within FND-04 authority rows, implementation must publish one executable lock-order matrix before SQL code is accepted; it must be consistent across fresh admission, PREPARE/COMMIT, post-grace recovery and Character-domain quiescence checks.
 
-Retries after serialization/deadlock/lost response retain the same semantic OperationId/TransactionId. Retry count/backoff numbers remain downstream.
+New unique name claims may race on the unique constraint rather than locking a nonexistent row.
+
+Retries after serialization/deadlock/lost response retain the same semantic OperationId/TransactionId. Retry count/backoff remains downstream.
 
 ## 9. Durable audit journal and publication state
 
@@ -527,54 +551,54 @@ A mutable outbox row cannot simultaneously be the retained canonical audit recor
 
 ### `durable_event_journal`
 
-Stores retained ANL semantic evidence such as EventId, event/schema/profile references, trusted timestamp/context, correlation/causation/operation/transaction links, applicable domain revisions, **exact registered payload bytes**, payload SHA-256 and required CharacterRevision linkage.
+Stores retained ANL semantic evidence including EventId, event/schema/privacy/retention profile refs, trusted timestamp/context, correlation/causation/operation/transaction links, applicable domain revisions, **exact registered payload bytes**, payload SHA-256 and required CharacterRevision linkage.
 
-While retained, same EventId cannot be rewritten to different semantic content/payload bytes.
+While retained, one EventId cannot be rewritten to different semantic content/payload bytes.
 
-Accepted retention/privacy lifecycle may remove/redact data only through a separately governed/audited lifecycle and may not silently rewrite one retained EventId into different semantics.
+An accepted privacy/retention/legal lifecycle may remove/redact data only through its separately governed and audited process; it may not silently rewrite a retained EventId into different semantics.
 
 ### `event_publication_state`
 
-Separate mutable state keyed by EventId for pending/published/retry/quarantine status, attempt metadata, retry timing and delivery errors/checkpoints. It is not gameplay/audit truth.
+Separate mutable state keyed by EventId for pending/published/retry/quarantine status, attempt metadata, retry timing and delivery error/checkpoint state. It is not gameplay/audit truth.
 
 ### Atomicity
 
-For each mutation requiring durable audit:
+For every mutation requiring durable audit:
 
 ```text
 current-state mutation
-+ CharacterRevision when Character state changes
++ CharacterRevision if Character semantics change
 + receipt where required
 + mandatory durable_event_journal rows
 + publication enqueue state
 commit in one PostgreSQL transaction
 ```
 
-If mandatory journal/enqueue cannot commit, the audited mutation does not become authoritative. Best-effort telemetry is asynchronous and non-blocking.
+If mandatory journal/enqueue cannot commit, the audited mutation does not become authoritative. Best-effort telemetry is asynchronous/non-blocking.
 
-Publisher uses committed rows only, delivery is at-least-once, EventId deduplicates effects, retries reuse retained exact event bytes, and replay cannot mutate gameplay.
+Publisher uses committed rows only, delivery is at-least-once, EventId deduplicates effects, retries reuse retained exact event bytes and replay cannot mutate gameplay.
 
 ## 10. Current state and checkpoints
 
 Normalized root + typed current-state relations at CharacterRevision are canonical Character durability. Do not create a second generic serialized Character snapshot.
 
-If later runtime/profile systems need an additional consistent checkpoint, use a manifest containing CharacterId, CharacterRevision boundary, relevant content/ruleset/map/world-policy/runtime-owner revisions and references to **typed owner-specific checkpoint components**. No arbitrary payload blob.
+If later runtime/profile systems need a broader consistent checkpoint, use a manifest containing CharacterId, CharacterRevision boundary, relevant ruleset/content/map/world-policy/runtime-owner revisions and references to **typed owner-specific checkpoint components**. No arbitrary payload blob.
 
-A Character success response is never authoritative before PostgreSQL commit. Lost success response is reconciled from durable receipt/current state rather than blindly repeated. This is a commit/ack invariant, not a numeric DR RPO promise.
+A Character success response is never authoritative before PostgreSQL commit. Lost success response is reconciled from durable receipt/current state rather than blindly repeated. This is a logical commit/ack invariant, not a numeric DR RPO promise.
 
 ## 11. Restart, crash and disaster restore
 
 ### Ordinary restart
 
-Committed Character state/revision, required FND-04 authority continuity, operation receipts and mandatory audit/publication evidence are reconstructible from PostgreSQL before authority resumes. Redis/in-memory state cannot restore authority by itself.
+Committed Character state/revision, required FND-04 authority continuity, receipts and mandatory audit/publication evidence are reconstructed from PostgreSQL before authority resumes. Redis/in-memory state cannot restore authority by itself.
 
-Restart/failover never resets/reuses CharacterRevision, lease generation, connection generation, ControlLossEpoch, grace/protection deadlines or terminal GameSession; nor replays committed operations.
+Restart/failover never resets/reuses CharacterRevision, lease generation, connection generation, ControlLossEpoch, grace/protection deadlines or terminal GameSession and never replays a committed semantic operation.
 
 If authority cannot be proven, fail closed or use the accepted fresh/recovery path.
 
 ### PITR/disaster restore
 
-A restored old snapshot cannot assume restored sessions/leases remain current.
+An older restored snapshot cannot assume restored sessions/leases remain current.
 
 Before gameplay authority resumes:
 
@@ -582,17 +606,17 @@ Before gameplay authority resumes:
 2. establish a strictly newer non-rollback recovery/authority fence outside values that could have rolled back with the snapshot, or prove an equivalent mechanism;
 3. fence pre-restore TransportBinding/session/lease authority that cannot be proven current;
 4. reconcile Platform security/account state and current routing/world revisions;
-5. verify Character/name/operation/audit/publication integrity;
+5. verify Character/name/FND-04/receipt/audit/publication integrity;
 6. publish/replay committed evidence only, never gameplay commands;
 7. reopen traffic only after restore validation passes.
 
-Exact recovery-fence issuer/storage is deferred to DUR/OPS/security. The accepted candidate property here is **no authority resurrection**.
+Exact recovery-fence issuer/storage is deferred to DUR/OPS/security. The architecture requirement is **no authority resurrection**.
 
 ### Backup/RPO/RTO
 
 Require PostgreSQL backup + WAL/PITR capability, automated restore verification, integrity checks across Character/name/FND-04/receipt/audit/publication state and exact artifact/revision evidence. Numeric production RPO/RTO remains OPS/PERF/milestone-owned.
 
-## 12. Schema migration and compatibility
+## 12. Migration and compatibility
 
 Game DB has one game-owned migration history; Platform migrations never apply it.
 
@@ -606,21 +630,21 @@ EXPAND
 -> CONTRACT only after rollback window closes
 ```
 
-Ruleset/profile/content changes that alter persisted interpretation require explicit source/destination revisions and deterministic migration/compatibility evidence. A revision number change never silently reinterprets state.
+Ruleset/profile/content changes that alter persisted interpretation require explicit source/destination revisions and deterministic migration/compatibility evidence. A revision change never silently reinterprets state.
 
-Migration IDs are never reused; backfills are resumable/bounded; constraints become authoritative only after validation; incompatible writers are fenced before destructive contract; rollback order is known before cutover; domain identities never change due to storage migration.
+Migration IDs are never reused; backfills are resumable/bounded; constraints become authoritative only after validation; incompatible writers are fenced before destructive contract; rollback order is known before cutover; domain identities do not change due to storage migration.
 
-Definition references keep stable identity or explicit deterministic mapping; DB row positions/enum ordinals are never durable definition identity.
+Definition references keep stable identity or explicit deterministic mapping. Database row positions/enum ordinals are never durable definition identity.
 
-## 13. Foreign keys, retirement and privacy
+## 13. Referential integrity, retirement and privacy
 
 Game-owned typed child relations use CharacterId referential integrity where both sides share game migration authority. Exact FK deferrability/cascade syntax is implementation-owned.
 
-Ordinary Character retirement is a state transition, not `DELETE CASCADE`. Child data does not disappear solely because lifecycle becomes RETIRED unless its semantic/retention contract requires removal.
+Ordinary Character retirement is a semantic state transition, not `DELETE CASCADE`. Child state does not disappear solely because lifecycle becomes RETIRED unless its semantic/retention contract requires removal.
 
 Physical cleanup never makes CharacterId reusable; sufficient tombstone/provenance evidence remains.
 
-Privacy deletion/anonymization is separately owned by DATA-PRIVACY-01 and cannot be modelled as Character identity reuse or implicit removal of mandatory security/audit evidence. Name-history retention/public exposure needs explicit privacy/retention policy before production.
+Privacy deletion/anonymization is separately owned by DATA-PRIVACY-01 and cannot be modelled as identity reuse or implicit removal of mandatory security/audit evidence. Name-history retention/public exposure needs explicit policy before production.
 
 ## 14. Query/index intent
 
@@ -639,9 +663,9 @@ Implementation must provide authoritative access paths for:
 - pending publication without scanning full audit history;
 - authorized EventId/TransactionId/CharacterRevision audit lookup.
 
-Full identities/keys are authoritative. UUIDv7 order may improve locality but never defines chronology. Hash-only/partial indexes never replace full equality verification. High-cardinality IDs do not become normal metrics labels.
+Full identities/keys are authoritative. UUIDv7 order may improve locality but never defines chronology. Hash-only/partial indexes never replace full equality verification. High-cardinality IDs do not become ordinary metrics labels.
 
-## 15. Required future failure outcomes
+## 15. Future implementation failure outcomes
 
 | Condition | Required disposition |
 |---|---|
@@ -654,8 +678,8 @@ Full identities/keys are authoritative. UUIDv7 order may improve locality but ne
 | canonical name conflict | one DB-authoritative winner |
 | naming-policy migration collision | cutover blocked until resolved |
 | quota/lifecycle race | serialized under account guard |
-| concurrent fresh admissions | at most one atomic authority winner |
-| reconnect PREPARE retry | same logical candidate/disposition |
+| concurrent fresh admissions | at most one atomic authority winner; no partial candidate authority |
+| reconnect PREPARE retry | same logical candidate/disposition; zero authority |
 | stale/failed reconnect COMMIT | no authority switch/nonce success/protection manufacture |
 | lost reconnect COMMIT response | reconcile persisted attempt/current generation; no second switch |
 | DB unavailable | no authoritative mutation; no Redis/in-memory fallback |
@@ -671,11 +695,11 @@ Raw PostgreSQL errors are not public contracts.
 ## 16. Security boundaries
 
 - game DB runtime credentials cannot write Platform DB;
-- Platform credentials cannot write Character/FND-04 game relations;
+- Platform credentials cannot write Character/FND-04 authority relations;
 - read projections use explicit read-only APIs/views/contracts;
 - reconnect secrets never enter ordinary audit/analytics;
 - knowing AccountId/CharacterId/GameSessionId is never authorization;
-- ordinary corrections do not depend on manual raw SQL; later GM/support mutation uses typed audited domain commands.
+- ordinary corrections do not depend on manual raw SQL; later support/GM mutation uses typed audited domain commands.
 
 ## 17. Implementation evidence required later
 
@@ -697,15 +721,17 @@ This packet is paper-only. Future implementation must prove at least:
 
 ### FND-04 authority
 
-- concurrent fresh admissions have one final-boundary winner and no partial candidate authority;
+- concurrent fresh admissions have one final-boundary winner and no partial authority;
+- fresh-admission Character root revalidation prevents concurrent transfer/lifecycle TOCTOU without advancing CharacterRevision solely for authority state;
 - stale lease/runtime/session generation is rejected;
-- PREPARE has zero authority and same retry returns same logical candidate;
-- COMMIT atomically switches binding/generation/proof/attempt disposition and activates protection at most once;
+- PREPARE has zero authority and same retry returns the same logical candidate;
+- process-local transport handles are never restored as durable candidate authority;
+- COMMIT atomically switches binding/generation/proof/attempt disposition and consumes protection entitlement at most once under the ControlLoss lock;
 - failed/stale COMMIT changes no authority;
 - lost COMMIT response reconciles without a second switch;
 - post-grace recovery creates a new GameSession and preserves actor state;
 - actor-wide ControlLoss has one authority, survives restart and does not reset deadlines;
-- full FND-04 binding revision set is revalidated at recovery.
+- full FND-04 binding revision set is revalidated on recovery.
 
 ### Idempotency
 
@@ -715,7 +741,7 @@ This packet is paper-only. Future implementation must prove at least:
 
 ### Audit/publication
 
-- mutation + exact mandatory audit bytes + enqueue are atomic;
+- mutation + exact mandatory audit bytes + publication enqueue are atomic;
 - crash after commit/before publish redelivers same EventId/bytes;
 - duplicate publish yields one consumer effect;
 - conflicting retained EventId content fails integrity checks;
@@ -737,72 +763,88 @@ This packet is paper-only. Future implementation must prove at least:
 
 - Platform write credentials rejected from game authority tables;
 - public/read projection cannot leak unauthorized ownership mapping;
-- pseudonymous analytics family cannot silently fall back to raw CharacterId/AccountId; restricted player-linked audit remains controlled by its explicit privacy class.
+- a pseudonymous analytics family cannot silently fall back to raw CharacterId/AccountId; restricted player-linked audit remains controlled by its explicit privacy class.
 
-## 18. Decision package
+## 18. Owner decision package
 
 ### RECOMMENDATION — NOT OWNER-ACCEPTED
 
-Accept these seventeen rules as the minimum DUR-02 profile-neutral Character persistence architecture:
+Accept these seventeen rules as a **binding partial DUR-02 baseline for the profile-neutral Character persistence sub-scope**:
 
-1. **Normalized current-state**, not event sourcing: `character_root` is identity/lifecycle/owner/world/global-revision lock anchor; typed children hold distinct state.
+1. **Normalized current-state**, not event sourcing: `character_root` is Character identity/lifecycle/owner/world/global-revision lock anchor; typed children hold distinct state.
 2. **One CharacterRevision** advances once per committed Character semantic transaction and remains independent from FND-04 authority generations.
 3. **Account guard rows** serialize every quota-affecting portfolio/lifecycle operation without becoming Account authority or count truth.
 4. **Global name registry** stores complete domain-generated canonical key + policy revision; DB uniqueness decides races; naming-policy cutover validates all destination collisions before one new authoritative policy becomes active.
 5. **Separate FND-04 relations** keep AccountPresenceClaim, CharacterLease, GameSession and actor-wide ControlLoss continuity as distinct authorities; no duplicated ControlLoss truth.
-6. **Atomic fresh admission** commits GrantNonce/presence/lease/new GameSession/connection generation as one revalidated authority boundary; failed admission leaves no partial authority.
-7. **Reconnect/recovery PREPARE has zero authority** and uses bounded typed candidate/disposition state; same retry reconciles same candidate.
-8. **Reconnect/recovery COMMIT is the only binding switch** and atomically fences predecessor, advances connection generation, binds candidate transport/proof, preserves actor/session continuity as applicable, records attempt outcome and activates the one eligible 4s protection entitlement at most once.
-9. **Post-grace recovery uses a new GameSessionId** while preserving the same authoritative actor and existing eligible ControlLossEpoch semantics.
+6. **Atomic fresh admission** commits GrantNonce/presence/lease/new GameSession/connection generation as one revalidated authority boundary, including Character root revalidation; failed admission leaves no partial authority.
+7. **Reconnect/recovery PREPARE has zero authority**, uses bounded typed candidate/disposition state and never treats a process-local socket handle as durable authority.
+8. **Reconnect/recovery COMMIT is the only binding switch** and atomically fences predecessor, advances connection generation, binds candidate transport/proof, preserves continuity, records attempt outcome and consumes the one eligible 4s protection entitlement at most once under ControlLoss fencing.
+9. **Post-grace recovery uses a new GameSessionId** while preserving the same authoritative actor and any eligible existing ControlLoss semantics.
 10. **Typed profile extensions only**; no generic JSON/KV/EAV misc-state escape hatch.
-11. **Durable receipts** use OperationId for retryable Character workflows; `(GameSessionId, CommandId)` is persisted only where a real durable gameplay boundary needs it.
+11. **Durable receipts** use OperationId for retryable Character workflows; `(GameSessionId, CommandId)` is persisted only where an actual durable gameplay boundary requires it.
 12. **Explicit lock/isolation proof**: Character root + account/FND-04/name constraints close anomalies; READ COMMITTED is acceptable only with proof, otherwise bounded SERIALIZABLE; advisory locks are never sole authority.
-13. **Immutable retained audit semantics + separate mutable publication state** commit atomically with mandatory audited mutations; privacy/retention lifecycle remains separately governed.
+13. **Retained immutable audit semantics + separate mutable publication state** commit atomically with mandatory audited mutations; privacy/retention lifecycle remains separately governed.
 14. **Normalized current state is the Character checkpoint**; additional checkpoints reference typed owner-specific components; no generic snapshot blob and no acknowledged success before commit.
 15. **No authority resurrection after restore**: PITR/disaster restore requires a newer non-rollback recovery fence/equivalent proof before admission resumes.
 16. **Staged migration** uses expand -> migrate/backfill -> validate -> cut over -> contract; retirement, physical deletion and privacy erasure remain separate; CharacterId is never reused.
 17. **Profile-neutral core only**: unresolved Reference values/formulas/profile-specific PvP/world facts and numeric operational policies stay outside core schema invariants and remain gated by their owners.
 
-## 19. Effect if owner later accepts
+## 19. Effect if owner later accepts this packet
 
-Recommended status after a separate owner-baseline delivery lifecycle:
+Because the stable `DUR-02 — Persistence v1` gate remains broader than this packet, acceptance should create a dedicated record such as:
 
 ```text
-DUR-02
-DecisionStatus       = ACCEPTED
-DeliveryStatus       = LIFECYCLE_CLOSED
-ImplementationStatus = NOT_STARTED
-Accepted scope       = profile-neutral Character persistence architecture
-Runtime authority    = NONE
+DUR-02 profile-neutral Character persistence sub-scope
+Owner baseline        = OWNER_ACCEPTED PARTIAL BASELINE
+Binding scope         = sections 4-18 of this packet
+ImplementationStatus  = NOT_STARTED
+Runtime / DDL authority = NONE
+
+DUR-02 overall
+DecisionStatus        = PROPOSED
+DeliveryStatus        = PLANNED after partial-baseline closeout
+ImplementationStatus  = NOT_STARTED
 ```
 
-DDL/migrations remain **NOT AUTHORIZED** by architecture acceptance.
+Acceptance would unblock a separately authorized implementation-design package **within the accepted Character persistence sub-scope** and provide stable typed extension contracts.
 
-Acceptance would unblock a separately authorized implementation-design/package for the profile-neutral Character persistence core and stable typed profile-extension contracts.
+It would **not**:
 
-It would **not** create/migrate tables, accept GAME-ITEM/DUR-03, define item/currency atomicity, select a PvP/world profile, make unresolved Reference behavior true, authorize runtime persistence or set production RPO/RTO/backup frequency.
+- mark overall `DUR-02` accepted;
+- create/migrate PostgreSQL tables;
+- accept `GAME-ITEM-01` or `DUR-03`;
+- define item/currency atomicity;
+- select a PvP/world profile;
+- make unresolved Reference behavior true;
+- authorize runtime Character persistence;
+- choose Rust migration/ORM/database libraries;
+- set production RPO/RTO/backup frequency;
+- authorize Platform or production changes.
+
+A later full-DUR-02 reconciliation must identify the remaining stable Persistence-v1 subjects, account for later gate splits such as GAME-ITEM/DUR-03, and either accept them or explicitly supersede/narrow the historical DUR-02 scope before the overall DecisionStatus may become `ACCEPTED`.
 
 ## 20. Supersession / reopening
 
-A later proposal may reopen an accepted clause only with named evidence such as:
+A later proposal may reopen an accepted partial-baseline clause only with named evidence such as:
 
 - a proven correctness anomaly not closed by the lock/constraint/authority-transition model;
 - measured contention showing one Character root revision is an unacceptable bottleneck plus a proven equivalent partitioned fence;
 - an accepted profile semantic requiring new typed durable state;
-- evidence that a deferred formula/value constrains physical representation/atomicity;
+- evidence that a deferred Reference formula/value constrains physical representation/atomicity;
 - a PostgreSQL limitation discovered during implementation requiring an equivalent safer design;
 - security/privacy/restore evidence requiring stronger separation/fencing;
-- explicit later architecture superseding ADR-0004 Persistence-v1 direction.
+- explicit later architecture superseding ADR-0004 or this accepted partial scope.
 
 ORM defaults, convenience, current Global schema, Canary/crystalserver tables or generic JSON flexibility are not sufficient evidence.
 
 ## 21. Deliberately not decided
 
+- remaining whole-gate DUR-02 Persistence-v1 subjects outside this Character packet;
 - exact SQL table/column/index/constraint/schema names;
 - migration framework/library;
 - ORM/query builder/Rust DB crate;
 - connection-pool settings;
-- exact scalar representation of CharacterRevision/lease/session generations where accepted semantics allow equivalent non-reused forms;
+- exact scalar representation of CharacterRevision/lease/session generations where semantics allow equivalent non-reused forms;
 - exact stable ruleset/content definition-key scalar representation where its owner has not frozen it;
 - profile-specific child table layouts;
 - item/currency/market/house schema;
@@ -814,4 +856,4 @@ ORM defaults, convenience, current Global schema, Canary/crystalserver tables or
 - production topology;
 - runtime implementation.
 
-Until the owner accepts or modifies section 18, this document remains **PRE-DECISION ARCHITECTURE / NOT ACCEPTED** and `DUR-02` remains `PROPOSED / PLANNED / NOT_STARTED`.
+Until the owner accepts or modifies section 18, this document remains **PRE-DECISION ARCHITECTURE / NOT ACCEPTED** and `DUR-02` overall remains `PROPOSED / PLANNED / NOT_STARTED`.
