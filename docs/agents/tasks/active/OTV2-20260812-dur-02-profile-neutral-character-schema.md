@@ -4,18 +4,18 @@
 task_id: OTV2-20260812-dur-02-profile-neutral-character-schema
 title: Prepare DUR-02 profile-neutral core Character schema architecture
 mode: COORDINATE
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260812-dur-02-profile-neutral-character-schema
-pr: null
+pr: 195
 base_sha: 2913201186d0e38cfc0bf0c9e2c5b83f981a61c6
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-12T00:42:00+02:00
-updated_at: 2026-08-12T00:42:00+02:00
+updated_at: 2026-08-12T00:57:00+02:00
 execution_budget_minutes: 60
 owned_paths:
   - docs/agents/tasks/active/OTV2-20260812-dur-02-profile-neutral-character-schema.md
@@ -50,42 +50,82 @@ Prepare one nonbinding paper-only DUR-02 decision packet for the profile-neutral
 - `PROVEN`: GAME-CHAR-01 is `ACCEPTED / LIFECYCLE_CLOSED / NOT_STARTED`; only paper-only profile-neutral DUR-02 schema architecture is unblocked.
 - `PROVEN`: PostgreSQL is the authoritative game relational target; Platform and game use separate logical databases and have no cross-database foreign keys or unrestricted shared writers.
 - `PROVEN`: native UUIDv7 identities persist as PostgreSQL `uuid`; persisted CommandId uses full-range `numeric(20,0)` in `(GameSessionId, CommandId)` scope.
-- `PROVEN`: CharacterRevision is semantically distinct from CharacterLease/session generations; every durable Character mutation must validate/fence stale expected Character state.
-- `PROVEN`: FND-04 keeps AccountPresenceClaim, CharacterLease, GameSession, TransportBinding and RuntimeScopeAuthority distinct; reconnect/control-loss continuity must survive permitted restarts without authority resurrection or timer reset.
+- `PROVEN`: CharacterRevision is semantically distinct from CharacterLease/session generations; every durable Character mutation validates/fences stale expected Character state.
+- `PROVEN`: FND-04 keeps AccountPresenceClaim, CharacterLease, GameSession, TransportBinding, ControlLoss continuity and RuntimeScopeAuthority distinct; reconnect/control-loss continuity must survive permitted restarts without authority resurrection or timer reset.
 - `PROVEN`: mandatory durable audit evidence commits atomically with its owning mutation; publication is at-least-once and replay never replays gameplay mutation.
 - `PROVEN`: Character Authority alone owns native Character mutation; Platform AccountId/commercial state remains separate and Platform direct native Character-table writes are forbidden.
-- `PROVEN`: profile-specific Character facts, unresolved Reference values/formulas and item/economy conservation remain outside the neutral-core authority of this task.
+- `PROVEN`: profile-specific Character facts, unresolved Reference values/formulas and item/economy conservation remain outside this neutral-core task authority.
 - `PROVEN`: open PR #191 is a disjoint factual evidence-provenance correction; PR #162 is disjoint CI/governance; both remain untouched.
-- `PROVEN`: the foundation programme checkpoint has `owned_paths: []` and is non-owning; it does not reserve DUR-02 paths.
+- `PROVEN`: the foundation programme checkpoint has `owned_paths: []` and is non-owning.
 
 ## Acceptance criteria
 
-- [ ] Compare realistic persistence shapes and recommend one profile-neutral model.
-- [ ] Define root Character relation and global CharacterRevision semantics without making UUID ordering or wall time authority.
-- [ ] Define global name-registry physical boundary without allowing database collation to choose canonicalization.
-- [ ] Define account-global quota/concurrency lock anchoring without creating a second Account authority or drift-prone counter truth.
-- [ ] Define FND-04 persistence relations/fencing separately from CharacterRevision.
-- [ ] Define typed profile-extension boundaries; reject one giant Character row and untyped JSON/KV miscellaneous-state storage.
-- [ ] Define retryable Character Authority operation receipts/idempotency and the separate optional persisted `(GameSessionId, CommandId)` dedup boundary where required.
-- [ ] Define transaction/lock ordering and isolation/retry policy sufficient to avoid name/quota/ownership/lease races.
-- [ ] Define immutable durable-audit journal + publication/outbox boundary satisfying ANL-01 without making event sourcing authoritative state.
-- [ ] Define checkpoint/recovery semantics without a redundant generic Character snapshot blob.
-- [ ] Define migration/rollback/restore/backup safety, including no pre-restore session/lease authority resurrection.
-- [ ] Preserve semantic retirement versus privacy erasure and no CharacterId reuse.
-- [ ] Keep exact operational RPO/RTO, lease TTL, reconnect timing and unresolved Reference values out of this gate unless already accepted elsewhere.
-- [ ] Do not emit SQL DDL, ORM/migration files, runtime code or production configuration.
-- [ ] Do not update current status/register/horizon because no DUR-02 owner acceptance exists yet.
+- [x] Compared realistic persistence shapes and recommended normalized current-state + typed child relations rather than a mega-row, EAV/JSON or event-sourcing source of truth.
+- [x] Defined Character root and global CharacterRevision semantics without making UUID order or wall time authority.
+- [x] Defined global name-registry physical boundary without allowing DB collation to choose canonicalization; destination-policy collision validation is mandatory before naming-policy cutover.
+- [x] Defined account-global portfolio/quota lock anchoring without creating second Account authority or drift-prone counter truth; every quota-affecting lifecycle transition uses the guard.
+- [x] Defined FND-04 presence/lease/session/control-loss persistence separately from CharacterRevision and prohibited duplicated actor-wide ControlLoss truth.
+- [x] Defined typed profile-extension boundaries; rejected one giant Character row and generic JSON/KV/EAV miscellaneous-state storage.
+- [x] Defined retryable Character Authority OperationId receipts and separate optional persisted `(GameSessionId, CommandId)` dedup where a durable command boundary requires it.
+- [x] Defined transaction/lock ordering and conditional READ COMMITTED vs bounded SERIALIZABLE retry policy.
+- [x] Defined retained immutable durable-audit journal + separate mutable publication state satisfying ANL-01 without making event sourcing authoritative state; privacy/retention lifecycle remains separately governed.
+- [x] Defined current-state/checkpoint and no-ack-before-commit behavior without a redundant generic snapshot blob.
+- [x] Defined migration/rollback/restore/backup safety, including a no-authority-resurrection requirement after PITR/disaster restore.
+- [x] Preserved semantic retirement vs privacy erasure and CharacterId non-reuse.
+- [x] Kept exact operational RPO/RTO, lease TTL, retry limits, retention and unresolved Reference values out of this gate.
+- [x] Did not emit SQL DDL/ORM/migration files/runtime code/production configuration.
+- [x] Did not update current status/register/horizon because no DUR-02 owner acceptance exists.
 - [ ] Perform full exact-head self-review and repository-required documentation CI before merge.
+
+## Recommended architecture
+
+- `character_root` is the per-Character identity/lifecycle/owner/world/global-revision lock anchor.
+- `account_character_guard` is a game-owned serialization anchor, not Account authority or a count truth.
+- `character_name_registry` stores lossless domain-generated canonical keys and authoritative uniqueness; naming-policy revisions require collision-safe cutover.
+- build/progression/profile state uses typed child relations and typed extensions; no generic misc-state payload.
+- FND-04 AccountPresenceClaim, CharacterLease, GameSession and ControlLoss continuity are separate relation families and separate fencing dimensions.
+- OperationId is the durable retry identity for retryable Character Authority workflows; `(GameSessionId, CommandId)` is persisted only when required by an actual durable gameplay command boundary.
+- Character mutations serialize via root + explicit authority anchors/constraints; account portfolio mutations use guard rows; quiescent high-impact operations revalidate presence/lease at commit.
+- READ COMMITTED is acceptable only with an explicit anomaly-closing lock/constraint proof; otherwise bounded SERIALIZABLE retry uses the same semantic operation identity.
+- mandatory durable event journal + publication enqueue commits atomically with mutation; retained event content is immutable while mutable delivery state is separate.
+- normalized current state is canonical; extra checkpoints only reference typed owner-specific components.
+- PITR/disaster restore cannot resurrect rolled-back session/lease authority and requires a newer non-rollback fence/equivalent proof before admission resumes.
+- migrations use expand -> migrate/backfill -> validate -> cut over -> contract; no silent semantic reinterpretation.
+
+## Review repair
+
+### Repair cycle 1 — concurrency, authority, retention and status corrections
+
+Pre-freeze persistence review found six material/clarifying issues:
+
+1. account guard wording covered create/restore/transfer but not every lifecycle transition that may change quota eligibility;
+2. `game_session` wording risked duplicating actor-wide ControlLoss state owned by a separate continuity relation;
+3. FND-04 recovery binding revisions were incompletely enumerated in the GameSession persistence boundary;
+4. name-policy revision storage lacked an explicit rule preventing two simultaneously authoritative canonicalization universes from bypassing global uniqueness;
+5. `immutable durable journal` wording could be misread as overriding an accepted retention/privacy deletion lifecycle;
+6. future DUR-02 status example decorated `DecisionStatus` with scope text rather than keeping the normative value `ACCEPTED` separate from `Accepted scope`.
+
+Repair:
+
+- broadened account guard use to every quota-affecting portfolio/lifecycle transition;
+- made actor-wide ControlLoss continuity single-owned and removed it from GameSession state;
+- added protocol/transport/ruleset/content/map/world-policy/runtime-owner binding revision evidence to the GameSession recovery boundary;
+- added full destination-key collision validation and one-authoritative-policy cutover for naming revisions;
+- clarified event content is immutable while retained, with separately accepted/audited retention/privacy lifecycle;
+- restored normative status-axis vocabulary;
+- also narrowed pseudonymous analytics evidence to forbid raw-ID fallback only in pseudonymous families, not legitimate restricted audit classes.
+
+Repair budget used: `1/3`.
 
 ## Excluded scope
 
-No PostgreSQL DDL/migration implementation, no database provisioning, no connection-pool/library selection, no runtime persistence adapter, no item/currency tables or DUR-03 transaction semantics, no Platform writes, no ruleset/content implementation, no first PvP/world-profile schema extension, no exact unresolved Reference values/formulas, no production backup target or numeric RPO/RTO.
+No PostgreSQL DDL/migration implementation, DB provisioning, Rust persistence adapter, item/currency tables/DUR-03 semantics, Platform writes, ruleset/content implementation, first PvP/world-profile extension, unresolved Reference values/formulas or production backup targets/numeric RPO/RTO.
 
 ## Validation
 
 ### Focused
 
-Reconcile the packet against ADR-0004, DUR-01, ANL-01, accepted GAME-CHAR, FND-04, ADR-0012/Character Authority boundary and architecture decision discipline.
+Result after repair cycle 1 before final freeze: **PASS** against ADR-0004, DUR-01, ANL-01, accepted GAME-CHAR, FND-04A/B, ADR-0012/Character Authority boundary and architecture decision discipline.
 
 ### Component/integration/runtime E2E
 
@@ -101,20 +141,28 @@ Pending final immutable PR head.
 
 ## Independent review
 
-- required: `NO` unless final analysis unexpectedly freezes high-risk executable data/security behavior rather than remaining a nonbinding decision packet; an accepted DUR-02 contract or implementation would require risk reassessment.
+- required: `NO` for this nonbinding packet unless final review identifies an executable high-risk authority change or unresolved material uncertainty; any later owner-accepted DUR-02 contract or implementation must reassess risk.
+
+## PR and closeout
+
+- delivery PR: #195
+- intended changed files: exactly the task record + decision packet
+- current status/register/horizon changes: none
+- runtime/DDL authority: none
+- closeout after merge must archive the complete task record and release ownership without accepting DUR-02.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: GAME-CHAR owner baseline lifecycle is closed; DUR-02 profile-neutral Character persistence inputs were reconciled and a dedicated nonbinding schema-architecture task/branch is claimed from current main.
-status: implementing
+last_progress: Nonbinding DUR-02 profile-neutral Character schema packet is in draft PR #195; repair cycle 1 corrected quota, FND-04 continuity/binding, naming-policy migration, journal-retention and status-vocabulary issues before final freeze.
+status: validating
 branch: docs/OTV2-20260812-dur-02-profile-neutral-character-schema
-pr: null
+pr: 195
 final_head_sha: null
 final_head_frozen_at: null
 ci_checks_for_current_head: 0
-repair_cycles_for_current_gate: 0
+repair_cycles_for_current_gate: 1
 owner_action_required: null
 blocker: null
-next_action: Write the nonbinding DUR-02 profile-neutral core Character schema decision packet, explicitly separating core relation/transaction/fencing decisions from typed profile extensions and unresolved Reference behavior.
+next_action: Verify live main/disjoint PR state, freeze final PR head, perform full-diff self-review, run exact-head documentation CI, merge/archive only if all gates pass, then present the DUR-02 owner decision package.
 ```
