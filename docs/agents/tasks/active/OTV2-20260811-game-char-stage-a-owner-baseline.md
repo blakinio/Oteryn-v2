@@ -15,7 +15,7 @@ final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-11T18:28:00+02:00
-updated_at: 2026-08-11T18:41:00+02:00
+updated_at: 2026-08-11T18:43:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -86,13 +86,14 @@ This task does not:
 - Bounded DUR-02 discovery may consume Stage-A invariants only; final character schema remains blocked on Stage B/full GAME-CHAR acceptance.
 - No runtime/schema/Platform/content/production authority is created by this package.
 - PR #162 remains disjoint and untouched.
+- Full-diff self-review found one status-vocabulary defect before final freeze: `GAMEPLAY_AND_PRODUCT_ARCHITECTURE_HORIZON.md` labeled Stage B `OPEN / HARD-BLOCKED`, but normative `ARCHITECTURE_STATUS_MODEL.md` reserves `OPEN` for a concrete active delivery. Stage B has no task/delivery yet. Repair cycle 1 changed this to `UNACCEPTED / HARD-BLOCKED` without altering any accepted Stage-A semantics or overall GAME-CHAR status.
 
 ## Validation
 
 ### Focused
 
 - command/run: reconcile Stage-A owner baseline against `GAME-CHAR-01_PREDECISION_ANALYSIS.md`, accepted GAME-VISION, Character Authority/FND-ID/FND-04 boundaries, DUR-01 and `ARCHITECTURE_STATUS_MODEL.md`
-- result: **PASS before final-head freeze**; no Stage-B leakage, ownership conflict or runtime/schema authorization found
+- result: **PASS after repair cycle 1**; no Stage-B leakage, ownership conflict or runtime/schema authorization remains
 
 ### Component/integration
 
@@ -106,7 +107,7 @@ This task does not:
 
 ### Exact-head CI
 
-- final head: pending immutable PR head after this bookkeeping commit
+- final head: pending immutable PR head after this final bookkeeping commit
 - trigger source: pending
 - workflow/run/job: pending
 - classification: documentation/governance validation
@@ -114,10 +115,10 @@ This task does not:
 
 ## Self-review
 
-- exact head: pending immutable PR head after this bookkeeping commit
+- exact head: pending immutable PR head after this final bookkeeping commit
 - method/reviewer: implementing/coordinating agent full-diff product/architecture/governance review
-- material findings: pending final-head review
-- verdict: pending
+- material findings: `1` repaired before final freeze; final-head findings pending
+- verdict: pending final-head review
 
 ## Independent review
 
@@ -139,7 +140,7 @@ This task does not:
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner-accepted GAME-CHAR Stage A partial baseline and the three mutable coordination documents are in draft PR #177; focused reconciliation passed and the overall GAME-CHAR gate remains intentionally unaccepted.
+last_progress: Owner-accepted GAME-CHAR Stage A partial baseline is in PR #177; review repair cycle 1 corrected the noncanonical Stage-B OPEN label while preserving all product semantics.
 status: validating
 branch: docs/OTV2-20260811-game-char-stage-a-owner-baseline
 head_sha: null
@@ -153,10 +154,10 @@ ci_run_ids: []
 runner_assignment_state: unknown
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 0
+repair_cycles_for_current_gate: 1
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Freeze final PR head, perform full-diff self-review, run exact-head documentation CI, merge only if all gates pass, then archive the task.
+next_action: Freeze this PR head, repeat full-diff self-review on the exact head, run exact-head documentation CI, merge only if all gates pass, then archive the task.
 ```
