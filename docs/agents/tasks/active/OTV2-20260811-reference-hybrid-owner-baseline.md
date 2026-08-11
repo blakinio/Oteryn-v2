@@ -15,7 +15,7 @@ final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-11T09:57:00+02:00
-updated_at: 2026-08-11T10:00:00+02:00
+updated_at: 2026-08-11T10:03:00+02:00
 execution_budget_minutes: 60
 owned_paths:
   - docs/agents/tasks/active/OTV2-20260811-reference-hybrid-owner-baseline.md
@@ -48,6 +48,7 @@ Persist the owner's explicit acceptance that Reference uses a **hybrid upstream-
 - [x] Leave exact cadence, concrete Global baseline, migration/rollback mechanics and revision naming unresolved.
 - [x] Keep full `GAME-VISION-01` explicitly `NOT ACCEPTED`.
 - [x] Include decision-timing, downstream-consumer, cost-of-delay and supersession-evidence records.
+- [x] Explicitly identify and supersede only ADR-0010's deferred long-term Reference tracking-policy clause while preserving the remainder of ADR-0010.
 - [x] No runtime/client/server/content/production implementation is authorized.
 - [ ] Exact-head self-review and repository-required CI pass before merge.
 
@@ -60,6 +61,19 @@ Persist the owner's explicit acceptance that Reference uses a **hybrid upstream-
 - Concrete baseline version/date, release cadence, revision naming, migration/rollback mechanics, support lifetime and per-change promotion policy remain unresolved.
 - Full `GAME-VISION-01` remains `NOT ACCEPTED` and no executable implementation is authorized.
 
+### Review repair cycle 1
+
+Automatic review on older head `9f9ea9b9e299fa3faddcf1639c1b64ff4f219cc2` raised one valid P2: the new policy resolved the tracking ambiguity but did not explicitly identify the authoritative ADR-0010 clause whose deferment it superseded.
+
+Repair applied in `GAME-VISION-01_REFERENCE_HYBRID_TRACKING_OWNER_BASELINE.md`:
+
+- explicitly names ADR-0010 §4 and its `Deferred decisions` tracking clause;
+- supersedes only the long-term tracking-policy deferment;
+- preserves ADR-0010's named/versioned parity-target, immutable-revision, classification, shared-stack and isolation requirements;
+- keeps the concrete Global target/date and target-naming scheme unresolved.
+
+This repair changes authority bookkeeping only; it does not broaden the owner's hybrid policy.
+
 ## Validation
 
 ### Focused
@@ -67,9 +81,10 @@ Persist the owner's explicit acceptance that Reference uses a **hybrid upstream-
 - base: `main@cd041f0da4e38ec87990a4924cb7a8a2b1f66f5e`
 - open PRs at task start: 0
 - PR: #158
-- pre-PR compare: `behind_by=0`; exactly two declared documentation paths
+- changed paths: exactly two declared documentation paths
 - source classification: current-session `USER_SOURCE`
 - authority boundary: hybrid Reference tracking only; remaining GAME-VISION decisions explicitly unresolved
+- repair cycles: `1/3`
 
 ### Component/integration
 
@@ -81,14 +96,14 @@ Persist the owner's explicit acceptance that Reference uses a **hybrid upstream-
 
 ### Exact-head CI
 
-- final head: pending this metadata checkpoint commit
+- final head: pending this repair checkpoint commit
 - result: pending
 
 ## Self-review
 
-- exact head: pending this metadata checkpoint commit
+- exact head: pending this repair checkpoint commit
 - method/reviewer: implementing/coordinating agent full-diff product/architecture review
-- material findings: pending
+- material findings: pending after repair
 - verdict: pending
 
 ## Independent review
@@ -100,21 +115,22 @@ Persist the owner's explicit acceptance that Reference uses a **hybrid upstream-
 ## PR and closeout
 
 - PR: #158
-- changed-file review: pending exact final head
-- unresolved review threads: pending
+- changed-file review: pending repaired exact final head
+- unresolved review threads: pending reply/resolve after verifying repaired head
 - merge: pending
 - lifecycle archive: pending after merge
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Persisted the owner-accepted hybrid Reference tracking baseline and opened PR #158 without accepting any other GAME-VISION decisions.
+last_progress: Repaired the valid P2 by explicitly scoping supersession of ADR-0010's deferred Reference tracking-policy clause while preserving all unrelated ADR-0010 authority.
 status: validating
 branch: docs/OTV2-20260811-reference-hybrid-owner-baseline
 pr: 158
 final_head_sha: null
 ci_trigger_source: pull_request/synchronize
+repair_cycles_for_current_gate: 1
 owner_action_required: null
 blocker: null
-next_action: Freeze the exact final head, perform mandatory full-diff self-review, verify repository-required CI, resolve any material review findings, and squash-merge only if unchanged and clean.
+next_action: Freeze the repaired exact head, rerun full-diff self-review, reply/resolve the P2 with exact-head evidence, verify fresh CI on the repaired head, and squash-merge only if clean.
 ```
