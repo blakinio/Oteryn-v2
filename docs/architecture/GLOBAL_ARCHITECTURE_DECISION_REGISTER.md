@@ -51,7 +51,7 @@ Stable IDs are canonical across tasks, prompts and PRs. Stage labels are descrip
 | Minimum cross-boundary foundation identifier contract | `ACCEPTED` | `FND-ID-01_FOUNDATION_IDENTIFIER_CONTRACT.md`, merge `2c584543cd1e3758958755478a6cc6ed3d39a8a9` |
 | Minimum GAME-VISION product contract | `ACCEPTED` | `GAME-VISION-01_MINIMUM_OWNER_BASELINE.md` plus the seven earlier owner baselines |
 | First immutable Reference behavior cut: Global Tibia production-observable behavior after the 2026-07-28 server-save/maintenance boundary | `ACCEPTED` | `GAME-VISION-01_FIRST_REFERENCE_BASELINE_OWNER_BASELINE.md` |
-| Baseline-neutral GAME-CHAR Stage-A semantics | `ACCEPTED PARTIAL SCOPE` | `GAME-CHAR-01_STAGE_A_OWNER_BASELINE.md`; overall GAME-CHAR remains unaccepted |
+| Baseline-neutral GAME-CHAR Stage-A semantics (partial scope only; overall GAME-CHAR remains unaccepted) | `ACCEPTED` | `GAME-CHAR-01_STAGE_A_OWNER_BASELINE.md` |
 
 ## Progressive execution policy
 
@@ -168,6 +168,7 @@ Stable IDs are canonical across tasks, prompts and PRs. Stage labels are descrip
 
 - Status: `BLOCKS_DURABLE_GAMEPLAY`.
 - Waits for accepted `DUR-02`, `GAME-ITEM-01` and ANL-01 evidence semantics.
+- Define item instance identity and ownership.
 - Freeze inventory/equipment/container/ground transfer transaction boundaries only after item semantics are explicit.
 - Define pickup, drop, loot, trade, bank, depot, market, mail, reward, split, merge, transform, currency and retry semantics.
 - Produce atomic provenance evidence and deterministic conservation/single-location invariants consumable by Game Intelligence.
