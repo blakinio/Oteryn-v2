@@ -11,7 +11,7 @@
 
 ## 1. Why this packet exists
 
-`GAME-VISION-01_PREDECISION_ANALYSIS.md` and its economy addendum were produced before the owner subsequently accepted seven narrower GAME-VISION baselines. Those historical pre-decision documents remain valid evidence, but their original owner-decision lists now mix **already accepted** decisions with genuinely unresolved ones.
+`GAME-VISION-01_PREDECISION_ANALYSIS.md` and its economy addendum were produced before the owner subsequently accepted seven narrower GAME-VISION baselines. Those historical pre-decision documents remain valid evidence, but their original owner-decision lists now mix already accepted decisions with genuinely unresolved ones.
 
 Rewriting those historical analyses would blur the decision trail. This packet instead provides a current synthesis.
 
@@ -26,7 +26,7 @@ The accepted 2026-08-10 programme refinement requires the minimum product vision
 - first intentional improvements beyond Reference behavior;
 - measurable success criteria.
 
-This packet shows which of those are already owner-accepted, what still needs an owner choice, and what can be deliberately deferred without blocking the next safe architecture gates.
+This packet shows which are already owner-accepted, what still needs an owner choice, and what can be deliberately deferred without blocking the next safe architecture gates.
 
 ## 2. Current owner-accepted GAME-VISION baseline
 
@@ -37,7 +37,7 @@ The following are **PROVEN owner-accepted partial baselines** on the trusted bas
 | First external profile | `ACCEPTED` | `GAME-VISION-01_REFERENCE_FIRST_OWNER_BASELINE.md` | First externally evaluated build is one Reference profile; Evolved follows later. |
 | Reference upstream tracking | `ACCEPTED` | `GAME-VISION-01_REFERENCE_HYBRID_TRACKING_OWNER_BASELINE.md` | Observe upstream continuously, but promote changes only into later immutable named Reference revisions. |
 | Internal player promise | `ACCEPTED` | `GAME-VISION-01_PLAYER_PROMISE_OWNER_BASELINE.md` | Preserve recognizable Tibia depth/persistent-world character, modern native quality, and explicit/versioned/measurable intentional differences. |
-| First Evolved strategy | `ACCEPTED` | `GAME-VISION-01_EVOLVED_RELIABILITY_UX_FIRST_OWNER_BASELINE.md` | First Evolved differentiation is reliability/UX-first, not a broad systemic gameplay redesign. |
+| First Evolved strategy | `ACCEPTED` | `GAME-VISION-01_EVOLVED_RELIABILITY_UX_FIRST_OWNER_BASELINE.md` | First Evolved differentiation is reliability/UX-first, not broad systemic gameplay redesign. |
 | PvP product importance | `ACCEPTED` | `GAME-VISION-01_PVP_SECONDARY_PILLAR_OWNER_BASELINE.md` | PvP is important and high-quality where enabled, but not the dominant organizing principle of the whole product. |
 | Solo/party emphasis | `ACCEPTED` | `GAME-VISION-01_SOLO_VIABLE_PARTY_REWARDED_OWNER_BASELINE.md` | Ordinary meaningful progression remains solo viable; coordinated party play has real value. |
 | Reference-vs-Vision precedence and progression/risk direction | `ACCEPTED` | `GAME-VISION-01_REFERENCE_PARITY_PRECEDENCE_OWNER_BASELINE.md` | Actual Reference gameplay follows its selected named parity baseline; future-facing GAME-VISION preferences primarily guide Evolved. Later Evolved progression/death redesign requires an explicit isolated gate. |
@@ -73,7 +73,7 @@ Accept the following four-part package as the **minimum GAME-VISION closure cont
 1. the core-loop contract in section 5;
 2. the Reference-rule-first economy/scarcity contract in section 6;
 3. the success-measure categories in section 7;
-4. the explicit deferrals in section 8.
+4. the explicit deferrals and hard downstream gates in section 8.
 
 The package is intentionally coherent with all seven existing owner baselines and does not redefine Reference parity.
 
@@ -126,7 +126,7 @@ Reference uses its selected parity mechanics. Evolved may later change mechanics
 PvP is a secondary pillar:
 
 - PvP may materially affect risk, preparation, conflict and social goals where a world/ruleset enables it;
-- PvP is not required to be present in every normal session or to dominate progression/economy design globally;
+- PvP is not required in every normal session and must not dominate progression/economy design globally;
 - exact Reference PvP behavior remains parity-owned;
 - Evolved PvP changes require explicit later decisions.
 
@@ -238,30 +238,38 @@ When external evaluation begins and privacy policy permits, track categories suc
 
 This section selects categories, not numeric success thresholds.
 
-## 8. Deliberate deferrals required for a narrow gate
+## 8. Deliberate deferrals and hard downstream gates
 
 ### RECOMMENDATION — accept these deferrals with the package
 
-The following remain important but do **not** need to be frozen to close the minimum `GAME-VISION-01` gate now.
+The following remain important but do **not** all need to be frozen to let the minimum `GAME-VISION-01` gate unblock its next architecture work.
 
-| Topic | Proposed state after closure | Required before |
+| Topic | Proposed state after closure | Hard requirement before |
 |---|---|---|
-| Exact Global Tibia patch/date/behavior baseline for first Reference revision | `DEFERRED WITH HARD GATE` | Must be selected before the first external Reference evaluation/parity release contract and its final fixtures. |
-| Exact Reference revision naming scheme | `DEFERRED` | Before release/version tooling depends on it. |
-| Complete numbered design-pillars/anti-pillars catalogue | `DEFERRED` | Revisit only if the accepted player promise + product baselines cease to provide a sufficient decision filter. |
-| Exact death/progression/PvP/party formulas | `OWNED DOWNSTREAM` | Their dedicated character/combat/PvP/party/ruleset gates. |
+| Exact Global Tibia patch/date/behavior baseline for first Reference revision | `DEFERRED WITH HARD GATE` | Any broad Reference mechanics/content implementation or final parity fixtures that require concrete target semantics, and the first external Reference evaluation/release contract. |
+| Exact Reference revision naming scheme | `DEFERRED` | Release/version tooling depends on it. |
+| Complete numbered design-pillars/anti-pillars catalogue | `DEFERRED FORMALIZATION` | Revisit only if the already accepted player-promise/product filters cease to reject scope coherently. |
+| Exact death/progression/PvP/party formulas | `OWNED DOWNSTREAM` | Their dedicated character/combat/PvP/party/ruleset gates before implementation. |
 | Exact economy rates, prices, drops, fees, sink values and scarcity thresholds | `OWNED DOWNSTREAM` | `GAME-ITEM-01`, economy/content gates and relevant DUR contracts before implementation. |
-| Exact numeric product/KPI thresholds | `MILESTONE-OWNED` | Before the named external alpha/release milestone is declared successful. |
-| Exact first Evolved feature inventory | `DEFERRED` | Before the first Evolved implementation milestone; strategy is already reliability/UX-first. |
-| Branding/public marketing wording | `DEFERRED` | Before public launch/marketing claim. |
+| Exact numeric product/KPI thresholds | `MILESTONE-OWNED` | The named external alpha/release milestone may be declared successful. |
+| Exact first Evolved feature inventory | `DEFERRED` | First Evolved implementation milestone. Strategy is already reliability/UX-first. |
+| Branding/public marketing wording | `DEFERRED` | Public launch/marketing claim. |
 | Monetization/Premium/VIP economics | `DEFERRED` | Dedicated `PROD-ENTITLEMENTS-01` / business decision before activation. |
 | LiveOps cadence and automatic economy control | `DEFERRED` | Dedicated LiveOps/economy decision; automatic gameplay/economy mutation is not implied. |
 
-### Why exact Global baseline can remain deferred here
+### 8.1 Design-filter clarification
 
-Reference-first already requires every evaluated release to name an immutable Reference baseline, and hybrid tracking defines how future revisions evolve. The exact first patch/date does not need to be selected merely to let `GAME-CHAR-01` define architecture that can represent Reference rules faithfully.
+This does **not** defer having a product/design filter. `GAME-VISION-01_PLAYER_PROMISE_OWNER_BASELINE.md` already provides a binding internal product promise and an explicit proposal-rejection filter, and the accepted PvP/solo-party/Evolved baselines add further product constraints.
 
-It becomes a hard prerequisite when parity fixtures/content for the actual first external Reference revision must be frozen. Deferring it now avoids selecting a moving product target before the runtime/content proof is ready to consume it.
+Only the creation of a more exhaustive numbered pillars/anti-pillars catalogue is deferred. If future proposals cannot be decided coherently from the accepted promise and baselines, that formalization becomes necessary before those proposals proceed.
+
+### 8.2 Exact Reference baseline clarification
+
+Reference-first already requires every evaluated release to name an immutable Reference baseline, and hybrid tracking defines how future revisions evolve. The exact first patch/date does not need to be selected merely to let `GAME-CHAR-01` define lifecycle/ownership architecture that can faithfully represent Reference rules.
+
+However, the deferral is **not permission to guess Reference semantics**. If a `GAME-CHAR-01` or other downstream decision cannot be made baseline-neutral, it becomes blocked on the concrete Reference baseline rather than inventing a default.
+
+Likewise, broad Reference mechanics/content implementation and final parity fixtures that depend on concrete rules remain blocked until the exact named baseline is selected. This preserves the older `GAMEPLAY_AND_PRODUCT_ARCHITECTURE_HORIZON.md` requirement without forcing an early patch/date choice merely for completeness.
 
 ## 9. What acceptance of this packet would mean
 
@@ -269,10 +277,11 @@ If the owner accepts the recommended package, a separate owner-baseline delivery
 
 1. the seven existing partial owner baselines remain binding and unchanged;
 2. sections 5-7 of this packet become the accepted minimum loop/economy/success contract;
-3. section 8 becomes the accepted deliberate-deferral policy;
+3. section 8 becomes the accepted deliberate-deferral and hard-gate policy;
 4. `GAME-VISION-01` may move from `PROPOSED / PLANNED` to **accepted for its minimum product-vision gate scope**, while every explicitly deferred/downstream topic remains open under its named gate;
 5. acceptance still authorizes **no runtime implementation by itself**;
-6. `GAME-CHAR-01` becomes the next product-sensitive architecture gate in the programme order, alongside already permitted bounded `DUR-02` discovery.
+6. `GAME-CHAR-01` becomes the next product-sensitive architecture gate in the programme order, alongside already permitted bounded `DUR-02` discovery;
+7. broad Reference gameplay/content implementation remains blocked whenever concrete parity semantics are required but the exact first Reference baseline has not yet been selected.
 
 The accepted closure baseline should update current mutable programme/status documents rather than rewriting the historical pre-decision analyses or seven narrower owner baselines.
 
@@ -327,8 +336,9 @@ success
   with numeric thresholds owned by later milestones
 
 explicit deferrals
-= exact first Global baseline, formulas/rates, KPI numbers, branding,
-  monetization, exact Evolved feature list and LiveOps cadence stay downstream
+= exact first Global baseline is a hard downstream gate before concrete Reference semantics;
+  formulas/rates, KPI numbers, branding, monetization, exact Evolved feature list
+  and LiveOps cadence remain downstream
 ```
 
 Until the product owner explicitly accepts or replaces this recommendation, this file remains **PRE-DECISION SYNTHESIS / NOT ACCEPTED** and `GAME-VISION-01` remains not fully accepted.
