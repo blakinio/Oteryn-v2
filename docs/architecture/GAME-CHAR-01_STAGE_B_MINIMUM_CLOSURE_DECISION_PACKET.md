@@ -73,7 +73,7 @@ freezes
 -> version/revision/migration envelopes
 -> policy boundaries
 -> explicit UNKNOWN/CONFLICT handling
--> what DUR-02 must be able to represent
+-> what the profile-neutral DUR-02 core must be able to represent
 
 Reference ruleset / SIM / content / world-profile gates
 freeze later where applicable
@@ -81,15 +81,19 @@ freeze later where applicable
 -> unresolved numeric target values
 -> exact starter content
 -> exact PvP/world-type edge matrix
+-> profile-specific durable facts not required by the neutral core
 -> deterministic parity fixtures
 
-DUR-02
+DUR-02 core
 owns later
--> physical schema/constraints/indexes/transactions/migrations
+-> profile-neutral physical schema/constraints/indexes/transactions/migrations
+-> typed, versioned extension/migration boundaries for later accepted profile-specific durable facts
 -> only after accepted Character semantics
 ```
 
 Architecture acceptance remains distinct from `PARITY_CONFIRMED` implementation evidence.
+
+The extension boundary is not permission for an untyped key/value or JSON "misc state" bag. Any later profile-specific durable state still requires an explicit semantic owner, stable typed/versioned representation, migration rules and the evidence/acceptance required by its owning gate.
 
 ## 4. Decision 1 — naming semantic envelope
 
@@ -402,16 +406,21 @@ Stage A remains binding; accepted Stage B becomes the semantic Reference/durabil
 
 ### DUR-02 effect
 
-`DUR-02` may proceed to final **paper-only Character schema architecture** using accepted semantics.
+`DUR-02` may proceed to final **paper-only profile-neutral core Character schema architecture** using accepted semantics and must define explicit typed/versioned migration/extension boundaries for later accepted profile-specific character state.
 
-It still may not:
+This is not a claim that one schema package is complete for every future world/PvP profile. In particular, if a selected PvP-enabled or other world profile requires additional durable Character facts, final schema completeness for that profile remains blocked until those facts and their ownership/policy are accepted.
+
+The profile-neutral core still may not:
 
 - implement PostgreSQL DDL/migrations without separate authority;
 - hard-code unproven values/formulas;
 - select name normalization via DB convenience;
 - collapse child progressions without evidence;
 - encode one universal PvP/death profile;
+- use an untyped/generic miscellaneous-state bag to defer semantic ownership;
 - treat current Global as July-28 truth.
+
+Later profile-specific schema extensions/migrations must preserve Stage-A revision/fencing, explicit semantic ownership, compatible migration/rollback policy and the accepted Reference evidence boundary.
 
 ### Runtime/content effect
 
@@ -443,7 +452,7 @@ Compact form:
 10. every remaining `UNKNOWN/CONFLICT` is an explicit hard parity gate, never an implementation default;
 11. refine GAME-CHAR architecture scope to semantic ownership/versioning/migration; exact arithmetic remains mandatory before Reference implementation/parity claim when it does not constrain durable topology.
 
-If accepted, overall `GAME-CHAR-01` may become `ACCEPTED / LIFECYCLE_CLOSED / NOT_STARTED` after the acceptance-delivery lifecycle, and final paper-only `DUR-02` Character schema architecture may proceed.
+If accepted, overall `GAME-CHAR-01` may become `ACCEPTED / LIFECYCLE_CLOSED / NOT_STARTED` after the acceptance-delivery lifecycle, and `DUR-02` may proceed to final paper-only **profile-neutral core** Character schema architecture with explicit typed/versioned profile-extension and migration boundaries. Any profile-specific durable Character facts remain separately gated before that profile's schema may be called complete.
 
 ## 19. Supersession / reopening rule
 
@@ -465,6 +474,7 @@ Implementation convenience, current Global behavior or an OTS implementation is 
 - Reference character runtime may bypass later gates;
 - PostgreSQL implementation is authorized;
 - first Reference PvP world type is selected;
+- one Character schema is complete for all future world/PvP profiles;
 - GAME-CHANNEL, GAME-ITEM, SIM or content gates are accepted;
 - Premium/VIP implementation is authorized;
 - external repository writes are authorized.
