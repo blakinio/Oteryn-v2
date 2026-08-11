@@ -12,7 +12,7 @@ delivery_pr: 181
 base_sha: 3106590eee22227b81228d2930b5d90e2053c9e9
 final_head_sha: 2a07643653d6d56a94ada89caf79005fce09e58a
 delivery_merge_sha: b57b382cb929b2c8a20d5c81197e933b0526764f
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 182
 owner: released
 created_at: 2026-08-11T22:09:00+02:00
 completed_at: 2026-08-11T22:27:21+02:00
@@ -117,11 +117,12 @@ Start a separate bounded **paper-only `GAME-CHAR-01` Stage-B evidence reconcilia
 ## Context checkpoint
 
 ```yaml
-last_progress: First Reference target owner baseline delivered by PR #181 with repair cycle 1, exact-head self-review PASS and all required CI PASS; lifecycle closeout restores GAME-VISION delivery status to LIFECYCLE_CLOSED and releases ownership.
+last_progress: First Reference target owner baseline delivered by PR #181 with repair cycle 1, exact-head self-review PASS and all required CI PASS; lifecycle closeout PR #182 restores GAME-VISION delivery status to LIFECYCLE_CLOSED and releases ownership.
 status: completed
 delivery_pr: 181
 final_head_sha: 2a07643653d6d56a94ada89caf79005fce09e58a
 delivery_merge_sha: b57b382cb929b2c8a20d5c81197e933b0526764f
+lifecycle_closeout_pr: 182
 repair_cycles_for_current_gate: 1
 ci_run_ids:
   - 31532701302
