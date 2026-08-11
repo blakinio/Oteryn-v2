@@ -15,7 +15,7 @@ final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-11T10:59:00+02:00
-updated_at: 2026-08-11T11:04:00+02:00
+updated_at: 2026-08-11T11:08:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -84,12 +84,25 @@ This task must not:
 - The baseline distinguishes shared semantic-neutral reliability/UX quality from true Evolved-specific product/ruleset differences, preventing an artificial “worse Reference” interpretation.
 - Full `GAME-VISION-01` remains `NOT ACCEPTED`; no executable implementation or production rollout is authorized.
 
+### CI recovery cycle 1 — PR metadata event payload
+
+Initial exact-head Agent Governance run `31476089174` failed before checkout because the original PR body used `## Parallel coordination` instead of the mandatory literal `## Scope` heading. The workflow log proved the exact cause: `PR body is missing ## Scope`.
+
+Recovery actions:
+
+- corrected PR #163 metadata only; the body now contains mandatory `## Summary`, `## Scope` and `## Validation` headings and records final candidate head `76f785bbac3efb37c17727eb4f3bd2f4bfa46bfb`;
+- attempted one job rerun without moving the head;
+- the rerun failed identically because GitHub reruns reuse the original `pull_request` event payload, so the job continued to see the old body despite live PR metadata being corrected;
+- therefore this task checkpoint is a justified `synchronize` commit whose only purpose is to produce a fresh PR event with the corrected metadata; it does not change the owner-accepted architecture baseline.
+
+The previous self-review/CI generation is superseded by this head movement. A fresh exact-head self-review and fresh repository-required CI are mandatory.
+
 ## Validation
 
 ### Focused
 
 - command/run: full diff and authority-boundary inspection against `GAME-VISION-01_PREDECISION_ANALYSIS.md`, `GAME-VISION-01_PLAYER_PROMISE_OWNER_BASELINE.md`, accepted Reference baselines, ADR-0010 and PR #162 changed-path inventory
-- result: **PASS** for declared scope before final-head freeze; exact-head self-review still required after this checkpoint commit
+- result: **PASS** for declared product scope; fresh exact-head review required after this CI-recovery checkpoint
 
 ### Component/integration
 
@@ -103,25 +116,26 @@ This task must not:
 
 ### Exact-head CI
 
-- final head: pending this metadata checkpoint commit
+- final head: pending this CI-recovery checkpoint commit
 - trigger source: `pull_request/synchronize`
-- workflow/run/job: pending fresh generation for final head
+- workflow/run/job: pending fresh generation for corrected PR metadata
 - runner assignment: pending
 - classification: repository-required documentation checks applicable to exact PR head
-- result: pending
+- prior failure: Agent Governance run `31476089174`, initial job `93730023249` and rerun job `93730563639` — both failed on stale original event body missing `## Scope`; not a document/content failure
+- result: pending fresh generation
 
 ## Audit
 
-- scope: owner-authority fidelity, accidental gameplay-policy freeze, accidental Reference degradation, shared-stack/profile-boundary conflict, task-template completeness, parallel ownership collision
-- material findings: no material finding in focused pre-freeze audit; exact-head review/CI pending
-- unresolved findings: pending exact-head PR thread verification
+- scope: owner-authority fidelity, accidental gameplay-policy freeze, accidental Reference degradation, shared-stack/profile-boundary conflict, task-template completeness, parallel ownership collision, PR-governance metadata/recovery correctness
+- material findings: one PR-metadata governance failure (`## Scope` heading missing) fixed in live PR metadata; stale-event rerun behavior proven; no architecture/product finding
+- unresolved findings: pending fresh exact-head PR thread verification and CI
 - verdict: pending final exact-head verification
 
 ## Self-review
 
-- exact head: pending this metadata checkpoint commit
+- exact head: pending this CI-recovery checkpoint commit
 - method/reviewer: implementing/coordinating agent full-diff product/architecture/governance review
-- material findings: pending
+- material findings: previous PASS review `4904580876` invalidated by head movement; fresh review pending
 - verdict: pending
 
 ## Independent review
@@ -134,7 +148,7 @@ This task must not:
 
 ## PR and closeout
 
-- changed-file review: pending exact final head
+- changed-file review: pending repaired exact final head
 - unresolved review threads: pending
 - related/superseded PRs: parallel disjoint PR #162; no supersession
 - protected auto-merge: pending
@@ -144,7 +158,7 @@ This task must not:
 ## Context checkpoint
 
 ```yaml
-last_progress: Persisted the narrow owner-accepted Evolved reliability/UX-first baseline and opened PR #163; parallel PR #162 remains disjoint and untouched.
+last_progress: Corrected PR #163 mandatory metadata heading after exact log evidence; rerun proved stale event-payload reuse, so this checkpoint intentionally triggers a fresh synchronize event without changing the architecture baseline.
 status: validating
 branch: docs/OTV2-20260811-evolved-reliability-ux-owner-baseline
 head_sha: null
@@ -152,7 +166,7 @@ pr: 163
 final_head_sha: null
 final_head_frozen_at: null
 ci_trigger_source: pull_request/synchronize
-ci_check_generation: final-head-pending
+ci_check_generation: recovery-1-fresh-event-pending
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -160,11 +174,11 @@ runner_assignment_state: unknown
 terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
-identical_failure_retries: 0
+identical_failure_retries: 1
 repair_cycles_for_current_gate: 0
-ci_recovery_actions_for_current_head: 0
+ci_recovery_actions_for_current_head: 1
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Freeze the checkpointed exact head, perform mandatory full-diff self-review, verify current-base/parallel-PR state and exact-head CI, then squash-merge only if clean.
+next_action: Freeze the new recovery head, perform fresh mandatory self-review, verify corrected-metadata CI and current main/parallel-PR state, then squash-merge only if clean.
 ```
