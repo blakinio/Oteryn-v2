@@ -12,7 +12,7 @@ delivery_pr: 173
 base_sha: fc937dae0ea6bed8e64b4190d66a7fbb49bdf1cc
 final_head_sha: bf4d009877547f0d3581f8af874d8eee4e49a0a8
 delivery_merge_sha: c71081557c7bcb837d15571a4ed3837e2591a24b
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 174
 owner: released
 created_at: 2026-08-11T16:37:00+02:00
 completed_at: 2026-08-11T16:53:04+02:00
@@ -112,13 +112,14 @@ Final delivery head: `bf4d009877547f0d3581f8af874d8eee4e49a0a8`.
 - final delivery changed files: exactly 5 declared documentation paths;
 - unresolved review threads at delivery merge: `0`;
 - delivery merge: `c71081557c7bcb837d15571a4ed3837e2591a24b`;
+- lifecycle closeout PR: #174;
 - runtime/production authority: **NONE**;
 - lifecycle closeout changes only task archival/ownership release and `GAME-VISION-01` DeliveryStatus `OPEN -> LIFECYCLE_CLOSED`; it does not alter the accepted product semantics.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Minimum GAME-VISION owner baseline delivered by PR #173 with exact-head self-review and all required CI PASS; lifecycle closeout archives the task and releases ownership.
+last_progress: Minimum GAME-VISION owner baseline delivered by PR #173 with exact-head self-review and all required CI PASS; lifecycle closeout #174 archives the task and releases ownership.
 status: completed
 branch: docs/OTV2-20260811-game-vision-minimum-owner-baseline
 head_sha: bf4d009877547f0d3581f8af874d8eee4e49a0a8
