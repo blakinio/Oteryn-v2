@@ -15,7 +15,7 @@ final_head_sha: 88ac5fa32b999e158ea54cb6d8af7068148e824f
 final_head_frozen_at: 2026-08-11T11:13:00+02:00
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-11T10:59:00+02:00
-updated_at: 2026-08-11T11:20:00+02:00
+updated_at: 2026-08-11T11:24:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -39,7 +39,7 @@ delivery_pr: 163
 delivery_merge_sha: d8d3e5e26e26673880bad7e615cdc4b1ec5e779c
 delivery_repair_cycles: 1
 delivery_ci_recovery_actions: 1
-lifecycle_closeout_pr: null
+lifecycle_closeout_pr: 164
 implementation_status: NOT_APPLICABLE
 ```
 
@@ -47,7 +47,7 @@ implementation_status: NOT_APPLICABLE
 
 Persist the owner's explicit acceptance that the **first Evolved differentiation strategy is reliability/UX-first**: Oteryn should first improve player-visible trust, usability, recovery and clarity while avoiding an initial broad redesign of combat power, progression, death, PvP, boss rewards or economy.
 
-The owner-accepted architecture delivery is complete. This archived record preserves the full task context and terminal delivery evidence. The lifecycle closeout only moves the completed record from `active/` to `archive/`; it does not change the product decision.
+The owner-accepted architecture delivery is complete. This archived record preserves the full task context and terminal delivery evidence. Lifecycle PR #164 only moves the completed record from `active/` to `archive/`; it does not change the product decision.
 
 ## Architecture and source of truth
 
@@ -179,12 +179,12 @@ This repair strengthened decision-timing evidence only; owner-accepted reliabili
 - related/superseded PRs: parallel disjoint PR #162; no supersession
 - protected auto-merge: `NOT_USED`; owner-authorized squash merge executed only after exact-head gates passed
 - merge commit/result: PR #163 squash-merged as `d8d3e5e26e26673880bad7e615cdc4b1ec5e779c`
-- ownership release: lifecycle closeout branch moves this full completed record to `archive/`; closeout PR number pending
+- ownership release: lifecycle PR #164 moves this full completed record to `archive/`; final closeout validation/merge pending
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner-accepted Evolved reliability/UX-first baseline delivered by PR #163 on exact repaired head with all gates PASS; lifecycle closeout now preserves this full record while releasing active ownership.
+last_progress: Owner-accepted Evolved reliability/UX-first baseline delivered by PR #163 with all gates PASS; lifecycle PR #164 is open and preserves the full completed record while releasing active ownership.
 status: completed
 branch: docs/OTV2-20260811-evolved-reliability-ux-owner-baseline
 head_sha: 88ac5fa32b999e158ea54cb6d8af7068148e824f
@@ -209,5 +209,5 @@ ci_recovery_actions_for_current_head: 1
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Open lifecycle closeout PR for this full active-to-archive move, validate exact head, then squash-merge if clean.
+next_action: Perform mandatory exact-head self-review and repository-required CI for lifecycle PR #164, then squash-merge if clean.
 ```
