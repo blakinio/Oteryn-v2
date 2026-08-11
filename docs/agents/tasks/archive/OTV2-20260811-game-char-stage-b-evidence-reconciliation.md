@@ -11,7 +11,7 @@ delivery_pr: 183
 base_sha: ef906b3c2d9cbb9cb7a455a94f84068fb6175795
 final_head_sha: bf3e9efd32959fbc5b2abf59639f48a84799a170
 delivery_merge_sha: f0455f605099120d20fb016e85da726a5b6d0cc1
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 184
 owner: released
 completed_at: 2026-08-11T23:00:00+02:00
 implementation_status: NOT_APPLICABLE
@@ -27,7 +27,7 @@ The dossier remains **PRE-DECISION / NOT ACCEPTED**. It concludes that full GAME
 
 ## Main findings
 
-- July-28 Character Bazaar target-day evidence is useful but timestamp-sensitive: auction **start** around the maintenance boundary is relevant; auction **end** time is not a character-state snapshot timestamp.
+- July-28 Character Bazaar target-day evidence is timestamp-sensitive: auction **start** around the maintenance boundary is relevant; auction **end** time is not a character-state snapshot timestamp.
 - Official maintenance notice expected worlds/website back around 10:45 CEST, so July-28 listings beginning around 10:42–10:45 are conservatively `OBSERVED / strong target alignment`, not unconditional minute-exact post-cut proof.
 - Five vocation families/promoted forms, level/experience/HP/mana/capacity/speed, blessing counts and named skill/build vocabulary have strong target-era evidence.
 - Active-character quota 25 has strong pre/post primary continuity evidence.
