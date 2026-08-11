@@ -12,7 +12,7 @@ delivery_pr: 175
 base_sha: 9510a93b024b92a761176b18373c8853c30a6617
 final_head_sha: 87d9189fad592a06ad0c8b44c2620e635ab96607
 delivery_merge_sha: f9d459c3d658c71c1f79a3f7d10990286371e1fb
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 176
 owner: released
 created_at: 2026-08-11T17:03:00+02:00
 completed_at: 2026-08-11T17:15:00+02:00
@@ -134,6 +134,7 @@ Final delivery head: `87d9189fad592a06ad0c8b44c2620e635ab96607`.
 - delivery changed files: exactly 2 declared documentation paths;
 - unresolved review threads at merge: `0`;
 - delivery merge: `f9d459c3d658c71c1f79a3f7d10990286371e1fb`;
+- lifecycle closeout PR: #176;
 - owner recommendation acceptance: **NOT PERFORMED**;
 - runtime/production authority: **NONE**;
 - next programme action: product owner accepts/replaces the Stage-A package; after acceptance the exact first Reference baseline becomes the next material hard-gated GAME-CHAR input.
@@ -141,7 +142,7 @@ Final delivery head: `87d9189fad592a06ad0c8b44c2620e635ab96607`.
 ## Context checkpoint
 
 ```yaml
-last_progress: Nonbinding GAME-CHAR Stage-A/Stage-B decision dossier delivered by PR #175 with self-review and all exact-head CI PASS; analysis task is terminal and ownership may be released.
+last_progress: Nonbinding GAME-CHAR Stage-A/Stage-B decision dossier delivered by PR #175 with self-review and all exact-head CI PASS; lifecycle PR #176 archives the analysis task and releases ownership.
 status: completed
 branch: docs/OTV2-20260811-game-char-predecision-analysis
 head_sha: 87d9189fad592a06ad0c8b44c2620e635ab96607
