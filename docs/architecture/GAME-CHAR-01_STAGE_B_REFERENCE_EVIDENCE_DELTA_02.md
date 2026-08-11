@@ -1,17 +1,24 @@
-# GAME-CHAR-01 — Stage B Reference Evidence Delta 02
+# GAME-CHAR-01 — Stage B Reference Evidence Delta 02 (B4-B8)
 
 - Status: **PRE-DECISION EVIDENCE DELTA / NOT ACCEPTED**
 - Date: 2026-08-11
 - Gate: `GAME-CHAR-01` Stage B
 - Reference target: **Global Tibia production-observable behavior after the 2026-07-28 server-save/maintenance change boundary**
-- Trusted repository base: `blakinio/Oteryn-v2@1411994c70abbf065273c0502c88413b61ca5ca0`
-- Supersedes: nothing; additive to `GAME-CHAR-01_STAGE_B_REFERENCE_EVIDENCE_RECONCILIATION.md`
+- Trusted task base: `blakinio/Oteryn-v2@1411994c70abbf065273c0502c88413b61ca5ca0`
+- Reconciled repository base: `blakinio/Oteryn-v2@2ebce3d657f2f844883ef0a5f1a903adbf410984`
+- Scope: **B4 progression, B5 promotion, B6 death/PvP, B7 offline training, B8 modern build/progression ownership only**
+- B1-B3 authority: `GAME-CHAR-01_STAGE_B_B1_B3_EVIDENCE_ACQUISITION.md`
+- Supersedes: nothing; additive to the prior Stage-B reconciliation and B1-B3 acquisition
 - Runtime authority: **NONE**
 - Does not authorize: Stage-B acceptance, overall GAME-CHAR acceptance, runtime/client/protocol/persistence/content implementation, physical schema, production rollout or intentional Reference differences
 
-## 1. Purpose
+## 1. Purpose and scope discipline
 
-Reduce Stage-B evidence blockers with additional primary official Tibia evidence while preserving the accepted evidence discipline:
+This delta reduces only B4-B8 evidence blockers using additional primary official Tibia evidence.
+
+B1 naming, B2 deletion/quota and B3 creation/starter are intentionally **not re-analysed here**. Their current evidence state is canonical in `GAME-CHAR-01_STAGE_B_B1_B3_EVIDENCE_ACQUISITION.md` delivered by PR #185 and lifecycle-closed by PR #186.
+
+Accepted evidence discipline remains:
 
 ```text
 target cut selected
@@ -24,97 +31,72 @@ no discovered change note
 != proof that X did not change
 ```
 
-This delta does not rewrite the historical #183 reconciliation. It records only new evidence, revised classifications and architecture-timing recommendations.
-
 ## 2. Executive result
 
 ### Can full Stage B close after this delta?
 
 **NO.**
 
-Material gaps remain in exact naming normalization/recycling, target deletion values, exact starter template, several persistent death/PvP edges, exact offline-training effectiveness and a small residual set of modern-system ownership/migration details.
+The delta materially reduces B4-B8 uncertainty, but exact target arithmetic/effectiveness and some target-sensitive PvP/entitlement/migration edges remain unresolved.
 
 ### What improved materially?
 
 Primary official evidence strengthens:
 
-1. global character-name namespace as a long-lived Tibia property;
-2. active-character quota `25` continuity;
-3. promotion level-20 + Premium core eligibility;
-4. offline-training counter/state-machine semantics;
-5. Twist of Fate and Adventurer's Blessing feature/world-type boundaries;
-6. Wheel/Promotion Point character-build ownership;
-7. Weapon Proficiency progress ownership;
-8. charms/charm points, Hunting Task Points and permanent Hunting Task/Prey slots as character-specific state;
-9. Animus Mastery as character-visible progression with strong character-specific alignment;
-10. separation of durable fact ownership from exact arithmetic.
+1. promotion level-20 + Premium core eligibility;
+2. offline-training timer/pool state-machine semantics;
+3. base death/blessing rule continuity and world/profile-specific PvP boundaries;
+4. Wheel/Promotion Point character-build ownership;
+5. Weapon Proficiency progress ownership;
+6. charms/charm points, Hunting Task Points and permanent Hunting Task/Prey slots as character-specific product state;
+7. Animus Mastery as strongly character-specific progression;
+8. the architecture distinction between durable fact ownership and exact ruleset arithmetic.
 
-### Most important architecture finding
+### Most important architecture recommendation
 
-Exact gameplay formulas should not all be physical-schema blockers merely because they are part of Reference behavior.
+Exact gameplay formulas should not automatically become physical-schema blockers merely because they are Reference behavior.
 
 ```text
 semantic fact ownership + version/migration envelope
 !=
-exact ruleset arithmetic / fixture values
+exact ruleset arithmetic / parity fixture values
 ```
 
-If persistence remains formula-neutral, versioned and migration-safe, exact arithmetic may remain a Reference implementation/SIM fixture gate without forcing every numeric formula into `DUR-02` prerequisites.
+If a durable contract remains formula-neutral, explicitly versioned and migration-safe, exact arithmetic can stay blocked for Reference implementation/SIM fixtures without blocking every generic Character ownership/revision decision.
 
-This is a **RECOMMENDATION**, not an accepted gate redefinition.
+This is **RECOMMENDATION / NOT ACCEPTED**.
 
-## 3. New primary evidence inventory
+## 3. Primary evidence inventory
 
-### E1 — global character-name namespace
+### E1 — promotion level 20 + Premium
 
-Official CipSoft article **Tibia Character Names - Now and in the Future** (2008-04-02) explicitly describes character names as unique across Tibia worlds, contrasting Tibia with games where uniqueness exists only per server.
-
-Primary source:
-
-- `https://www.tibia.com/news/?id=708&subtopic=latestnews`
-
-The 2008-04-08 production patch changed technical naming rules without announcing a namespace-scope change:
-
-- `https://www.tibia.com/news/?id=716&subtopic=newsarchive`
-
-Current creation documentation still treats name availability globally, but is current-only evidence for detailed rules:
-
-- `https://www.tibia.com/gameguides/?section=starting&subtopic=manual`
-
-### E2 — active-character limit 25
-
-Official 2025 Monk rollout material announced and implemented the account active-character limit increase from 20 to 25:
-
-- `https://www.tibia.com/news/?id=8260&subtopic=latestnews`
-- `https://www.tibia.com/news/?id=8307&subtopic=newsarchive`
-
-Current official account/creation documentation still states 25 active characters.
-
-### E3 — promotion level 20 + Premium
-
-Official 2001 release material introducing promoted vocations states that Premium players at or above level 20 can be promoted:
+Official 2001 release material introducing promoted vocations states that Premium players at or above level 20 can receive promotion:
 
 - `https://www.tibia.com/news/?id=122&subtopic=newsarchive`
 
-Current official character documentation still requires level >=20 and Premium and also currently states a one-time 20,000 gp fee plus Premium-lapse suspension/restoration behavior:
+Current official character documentation still requires level >=20 and Premium and additionally documents a one-time 20,000 gp fee plus current Premium-lapse behavior:
 
 - `https://www.tibia.com/gameguides/?section=characters&subtopic=manual`
 
-Only level-20 + Premium has the strong dated pre/post continuity established here. The exact 20,000 gp target continuity and suspension details remain target-unproven.
+Classification:
 
-### E4 — offline-training counter mechanics
+- level >=20 + Premium core eligibility: `DERIVED / very strong primary continuity`;
+- exact 20,000 gp July-28 continuity: `UNKNOWN`;
+- exact Premium-lapse suspension/reactivation July-28 semantics: `UNKNOWN`.
+
+### E2 — offline-training counter mechanics
 
 Official 2012 introduction material records:
 
-- training begins only after at least 10 minutes offline;
+- at least 10 minutes offline before training gain;
 - maximum 12 consecutive hours;
-- each training second consumes one pool second;
-- one pool second regenerates per second online;
-- one pool second regenerates per second offline without training;
-- depletion while offline may refill later, but using the refilled pool requires reactivation;
-- training is deliberately less effective than online training;
+- one pool second consumed per training second;
+- one pool second restored per second online;
+- one pool second restored per second offline without training;
+- pool can refill after depletion while offline, but renewed training requires another activation;
+- offline training is intentionally less effective than online training;
 - vocation affects advancement;
-- full advancement formulas were not published there.
+- exact advancement formulas were not fully published there.
 
 Primary sources:
 
@@ -122,41 +104,58 @@ Primary sources:
 - `https://www.tibia.com/news/?id=2125&subtopic=newsarchive`
 - `https://www.tibia.com/news/?id=2197&subtopic=newsarchive`
 
-Current official FAQ/manual materially preserves the counter/timing model.
+Current official FAQ/manual materially preserves the timer/pool family.
 
-### E5 — death/blessing base model
+Classification:
 
-Official 2009 death-penalty redesign records the level-scaled experience/skill-loss family, 30% promotion reduction, 8% experience/skill-loss reduction per regular blessing, and the equipment-loss protection ladder 30/55/75/90/100% for 1/2/3/4/5 blessings:
+- timer/pool state machine: `DERIVED / strong primary continuity`;
+- exact July-28 effectiveness coefficients/rounding/modifier interactions: `UNKNOWN`.
+
+### E3 — base death/blessing model
+
+Official 2009 death-penalty redesign records:
+
+- level-scaled experience/skill-loss family;
+- promotion reduction of 30%;
+- 8% experience/skill-loss reduction per regular blessing;
+- equipment-loss protection ladder 30/55/75/90/100% for 1/2/3/4/5 blessings.
+
+Primary source:
 
 - `https://www.tibia.com/news/?id=944&subtopic=newsarchive`
 
-Current official documentation materially retains the base family while later systems/world types add edge rules.
+Current official character documentation materially retains the base family while newer systems/world types add edges.
 
-### E6 — Twist of Fate and world-type specificity
+Classification: `DERIVED / strong continuity` for the base family, not exhaustive proof of every July-28 death edge.
 
-Official PvP history establishes Twist of Fate and explicitly documents profiles/world types where Twist/fair-fight behavior is absent or different:
+### E4 — Twist of Fate / world-type specificity / Adventurer's Blessing
+
+Official PvP history establishes Twist of Fate and profiles where Twist/fair-fight behavior is absent or materially different:
 
 - `https://www.tibia.com/news/?id=2405&subtopic=newsarchive`
 - `https://www.tibia.com/news/?id=2946&subtopic=newsarchive`
 - `https://www.tibia.com/news/?id=4128&subtopic=newsarchive`
 
-Official 2023 blessing-price material states Twist of Fate itself was not adjusted, supporting feature continuity before target:
+Official 2023 blessing-price material states Twist itself was not adjusted, supporting pre-target continuity:
 
 - `https://www.tibia.com/news/?id=7260&subtopic=newsarchive`
 
-Official Character Bazaar entries starting around the July-28 maintenance boundary expose `Twist of Fate active: yes/no` with regular blessing counts. Because the public maintenance notice provides an expected rather than cryptographically exact resume time, classify this `OBSERVED / strong target alignment`, not minute-exact target proof.
+Official Character Bazaar entries around the July-28 boundary expose `Twist of Fate active: yes/no` with regular blessing counts. Because public maintenance evidence gives an expected rather than cryptographically exact resume time, classify the target-boundary observations as `OBSERVED / strong target alignment`.
 
-### E7 — Adventurer's Blessing
-
-Official 2014 production material states it protects from PvP loss until level 21, is lost when attacking another player and is granted automatically under the documented low-level/no-player-kill conditions:
+Official 2014 material establishes Adventurer's Blessing core behavior around the level-20/21 boundary:
 
 - `https://www.tibia.com/news/?id=2894&subtopic=newsarchive`
 
-Current official docs materially retain the core protection family.
+Classification:
 
-### E8 — Wheel / Promotion Points
+- existence of world/profile-sensitive PvP death policy: `PROVEN`;
+- Twist existence and target-era state surface: strong;
+- exact July-28 Twist/fair-fight/skull/qualification edge matrix: `UNKNOWN`;
+- Adventurer's Blessing core family: `DERIVED / strong continuity`; exact target edge matrix remains incomplete.
 
-Official 2022 Wheel design describes Promotion Points as progression used to specialise the character, with one point per level from level 51 for promoted Premium characters and vocation-specific Wheel definitions:
+### E5 — Wheel / Promotion Points
+
+Official 2022 Wheel design describes Promotion Points as progression used to specialise a character, with vocation-specific Wheel definitions:
 
 - `https://www.tibia.com/news/?id=7013&subtopic=newsarchive`
 
@@ -164,11 +163,13 @@ Official 2023 presets describe saved Wheel configurations:
 
 - `https://www.tibia.com/news/?id=7336&subtopic=newsarchive`
 
-Official 2026 fixes reference persistent character Promotion Point state, including excess points granted through hunting tasks:
+Official 2026 fixes refer to persistent character Promotion Point state, including excess points granted through hunting tasks:
 
 - `https://www.tibia.com/news/?id=8747&subtopic=newsarchive`
 
-### E9 — Weapon Proficiency progress ownership
+Classification: `DERIVED / strong character-build ownership candidate` for earned points/player allocations; perk definitions/formulas remain ruleset/ability/content-owned.
+
+### E6 — Weapon Proficiency progress ownership
 
 Official 2025 Weapon Proficiency design states directly that **Proficiency Progress is bound to the character and cannot be transferred**. Each weapon has its own proficiency tree/definition and Character Bazaar exposes progress:
 
@@ -179,19 +180,17 @@ Official 2026 update preserves the character-progress/weapon-definition split an
 - `https://www.tibia.com/news/?id=8850&subtopic=newsarchive`
 - `https://www.tibia.com/news/?id=8845&subtopic=newsarchive`
 
-### E10 — current official Experience Table
+Classification:
 
-CipSoft currently publishes an exact total-experience-per-level table:
+- per-weapon Proficiency Progress character-specific ownership: **`PROVEN`**;
+- tree/perk definitions: definition-scoped ruleset/content state, not item-instance ownership;
+- dust conservation/economy boundary: still requires GAME-ITEM/DUR-03 reconciliation.
 
-- `https://www.tibia.com/library/?subtopic=experiencetable`
+### E7 — Character Bazaar transfer boundary
 
-This proves a deterministic public relation today. It does not by itself prove unchanged July-28 arithmetic.
+Official Character Bazaar FAQ/launch material explicitly separates account-bound and **character-specific** state. Character-specific state includes, among other things:
 
-### E11 — Character Bazaar transfer boundary for character-specific progression
-
-Official Character Bazaar FAQ/launch material defines a transfer boundary between account-bound and **character-specific** state. Character-specific state includes, among other things:
-
-- experience and skills;
+- XP and skill levels;
 - blessings;
 - charms, charm points and charm expansion;
 - Hunting Task Points;
@@ -201,106 +200,53 @@ Official Character Bazaar FAQ/launch material defines a transfer boundary betwee
 - completed map areas;
 - quest lines, titles, achievements and bestiary progress.
 
-This is strong primary evidence that these are character-specific product state for transfer/ownership purposes. It does **not** prove they must all be fields of one physical Character row or one transaction aggregate.
-
-Official source family:
-
-- Character Bazaar announcement/FAQ and `charactertrade` documentation on `tibia.com` (2020).
-
-### E12 — Animus Mastery progression
-
-Official 2024 Soulpit/Animus material describes obtaining Animus Mastery for creatures and accumulating mastery across creatures to unlock character-relevant bonuses. Official Character Bazaar listings in 2025/2026 expose `Animus Masteries unlocked` as part of the traded character state.
-
 Primary source:
+
+- `https://www.tibia.com/news/?id=5692&subtopic=latestnews`
+
+Classification:
+
+- character-specific product scope for the listed progression/capabilities: **`PROVEN` by official transfer contract**;
+- this does **not** imply one giant physical Character row or transaction aggregate.
+
+### E8 — Animus Mastery
+
+Official Soulpit/Animus design describes accumulating Animus Mastery for creatures and gaining bonuses from the number of mastered creatures:
 
 - `https://www.tibia.com/news/?id=7944&subtopic=newsarchive`
 
-Classification: strong **character-specific progression candidate / transfer-observed state**, while creature definitions, bonus formulas and compatibility remain ruleset/content-owned.
+Official Character Bazaar listings in 2025/2026 expose `Animus Masteries unlocked` as state of the traded character.
 
-## 4. Revised evidence matrix
+Classification: **strong character-specific progression candidate**. Creature definitions, mastery criteria, bonus formulas and compatibility remain ruleset/content-owned.
 
-| Stage-B subject | Delta result | Freeze-readiness consequence |
-|---|---|---|
-| Character-name namespace scope | `DERIVED / strong historical continuity`: global cross-world uniqueness | **Strong architecture candidate**; detailed naming still open |
-| Exact naming normalization/case/space/repertoire | `UNKNOWN` | **NOT READY** |
-| Deleted-name recycling/hold | current `>=6 months`; target continuity `UNKNOWN` | **NOT READY as Reference value** |
-| Active-character quota 25 | `DERIVED / strong continuity` | **Strong candidate** |
-| Total active+deletion quota 30 | current-only; target continuity `UNKNOWN` | **NOT READY as Reference value** |
-| Reversible deletion 60 days | current-only; target continuity `UNKNOWN` | **NOT READY as Reference value** |
-| Promotion minimum level 20 | `DERIVED / very strong primary continuity` | **Strong candidate rule** |
-| Promotion Premium eligibility | `DERIVED / very strong primary continuity` | **Strong candidate rule** |
-| Promotion cost 20,000 gp | target continuity `UNKNOWN` | **NOT READY as exact value** |
-| Promotion Premium-lapse behavior | target continuity `UNKNOWN` | **NOT READY as exact edge** |
-| Offline 10-minute activation | `DERIVED / strong continuity` | **Strong candidate rule** |
-| Offline 12-hour max | `DERIVED / strong continuity` | **Strong candidate rule** |
-| Offline pool drain/refill state machine | `DERIVED / strong primary continuity` | **Strong semantic candidate** |
-| Offline effectiveness/formulas | `UNKNOWN` | **Reference implementation blocker, not necessarily schema blocker** |
-| Twist of Fate existence/state | pre-target existence + target-boundary `OBSERVED / strong alignment` | **Strong feature candidate** |
-| Twist exact PvP/fair-fight edges | `UNKNOWN` | **NOT READY** |
-| Adventurer's Blessing core family | `DERIVED / strong continuity` | **Strong candidate rule family** |
-| World-type death exceptions | `PROVEN` that material profile differences exist; exact target matrix incomplete | **Must be profile/ruleset-scoped** |
-| Wheel Promotion Point progress/allocations | `DERIVED / strong character-build evidence` | **Ownership candidate improved** |
-| Weapon Proficiency progress | **`PROVEN` character-bound/non-transferable** | **Semantic ownership ready** |
-| Weapon Proficiency tree/perk definitions | definition-scoped, not Character-owned item instances | **Boundary candidate improved** |
-| Charms/charm points/charm expansion | **`PROVEN` character-specific by Bazaar transfer contract** | **Semantic ownership ready** |
-| Hunting Task Points | **`PROVEN` character-specific by Bazaar transfer contract** | **Semantic ownership ready** |
-| Permanent Hunting Task/Prey slots | **`PROVEN` character-specific by Bazaar transfer contract** | **Semantic ownership ready; purchase/entitlement source remains separate** |
-| Animus Mastery count/progress | primary design + Bazaar transfer-observed character state | **Strong character-specific candidate** |
-| Exact XP→level target formula | current exact table; July-28 continuity `UNKNOWN` | **Reference fixture blocker; recommend not generic-schema blocker** |
-| Exact skill curves | `UNKNOWN` | **Reference fixture/ruleset blocker; recommend formula-neutral persistence** |
+### E9 — current official Experience Table
 
-## 5. B1 naming — blocker reduced, not closed
+CipSoft currently publishes exact total experience by level:
 
-The namespace scope is no longer an evidence-free product choice: official historical material explicitly describes globally unique character names across worlds.
+- `https://www.tibia.com/library/?subtopic=experiencetable`
 
-For July-28 contract purposes:
+Classification: exact current relation is primary evidence today; full July-28 continuity remains `UNKNOWN` without target continuity evidence.
 
-- global name namespace: `DERIVED / strong historical continuity candidate`;
-- exact normalization/canonicalization: `UNKNOWN`;
-- case/space equivalence: `UNKNOWN`;
-- permitted repertoire/technical normalization pipeline: `UNKNOWN`;
-- recycling/redirect/history after delete/rename: `UNKNOWN`.
+## 4. B4 — progression facts versus arithmetic
 
-**Recommendation:** future Character Authority should prefer a global canonical namespace unless contrary target evidence appears, while DUR-02 must not freeze physical collation/index normalization yet.
+### Current evidence state
 
-B1 remains **PARTIALLY OPEN**.
-
-## 6. B2 deletion/quota — lifecycle is safe; exact policy values still open
-
-25 active characters has explicit pre-target production evidence plus current continuity: `DERIVED / strong continuity`.
-
-This delta still lacks target-era dated proof for:
-
-- 60-day reversible deletion;
-- active + deletion-scheduled total `30`;
-- deleted-name hold `>=6 months`.
-
-These remain `UNKNOWN target continuity`.
-
-Stage A already safely freezes the semantic lifecycle:
-
-```text
-ACTIVE -> DELETION_SCHEDULED -> RETIRED
-```
-
-**Recommendation:** exact durations/quotas should be versioned Reference policy values, not baked into lifecycle identity or database topology. This recommendation is not owner-accepted here.
-
-## 7. B4 progression formulas — separate ownership from arithmetic
+Stage-B and Bazaar evidence already establish the target-era progression vocabulary: level, experience, HP, mana, capacity, speed and skill categories. Historical capacity migration evidence additionally proves that some persisted state cannot safely be assumed to be a pure function of current level/vocation.
 
 ### Mandatory decision test
 
 **Must exact XP/skill formulas be decided now for durable schema ownership?**
 
-**RECOMMENDATION: NO**, if the durable contract preserves:
+**RECOMMENDATION: NO**, if the eventual durable contract preserves:
 
 1. authoritative total experience/progression facts;
 2. authoritative skill facts at sufficient precision/range;
 3. explicit ruleset/profile revision context;
 4. deterministic migration/versioning hooks;
-5. no schema constraint that assumes an unproven formula;
-6. exact formula/rounding fixtures before Reference implementation/parity claim.
+5. no physical invariant that assumes an unproven formula;
+6. exact formula/rounding fixtures before target-accurate Reference implementation/parity claim.
 
-Unknown formulas continue to block:
+Unknown formulas still block:
 
 - target-accurate Reference advancement implementation;
 - deterministic parity fixtures;
@@ -308,39 +254,70 @@ Unknown formulas continue to block:
 
 They need not alone block:
 
-- Character ownership of XP/skills;
-- revision/fencing/transaction discovery;
+- Character ownership of persisted XP/skills;
+- revision/fencing/transaction-boundary discovery;
 - formula-neutral durable representation.
 
-Exact arithmetic belongs with the relevant ruleset and `SIM-DETERMINISM-01` before executable Reference parity is claimed.
+### Owning later gate
 
-## 8. B5 promotion — stable core versus value/entitlement edges
+Exact arithmetic should be frozen under the relevant ruleset and `SIM-DETERMINISM-01`/gameplay gates before executable Reference parity is claimed.
 
-Level >=20 + Premium eligibility + vocation-specific promoted identity has very strong primary continuity and is a strong Stage-B candidate.
+### Supersession condition
 
-Still target-unproven:
+If evidence proves a formula choice changes identity, ownership, atomicity, irreversible representation or migration semantics, that formula becomes a DUR-02/GAME-CHAR prerequisite again.
 
-- 20,000 gp fee continuity;
+## 5. B5 — promotion
+
+### Strong candidate core
+
+Promotion as character profession/build state with:
+
+- level >=20;
+- Premium eligibility;
+- vocation-specific promoted identity;
+
+has very strong primary continuity.
+
+### Still unresolved for the exact target
+
+- exact 20,000 gp fee continuity;
 - exact Premium-lapse suspension/reactivation behavior;
-- final split between durable promotion achievement and entitlement-derived active benefits.
+- final representation of durable promotion achievement versus entitlement-derived active benefits.
 
-**Recommendation:** Character owns promotion achievement/state; active benefits are derived from ruleset + current entitlement rather than erasing promotion history when Premium lapses. This remains nonbinding until accepted.
+### Architecture recommendation
 
-## 9. B6 death/PvP — profile boundary proven, full edge matrix open
+Character should own promotion achievement/state; current benefit activation should be derived from ruleset + current entitlement rather than erasing promotion history when Premium lapses.
 
-Twist of Fate existed before target and is visible in target-boundary Character Bazaar state. Exact qualification/consumption/fair-fight semantics remain incomplete.
+This remains **RECOMMENDATION / NOT ACCEPTED**.
 
-Official world-type history proves death/PvP rules materially differ by profile. Therefore the architecture must not model all death/blessing behavior as one universal world-independent Character formula.
+## 6. B6 — death/PvP
 
-Adventurer's Blessing has strong pre/post continuity for its core low-level PvP-protection family. Exact July-28 edge cases remain incomplete.
+### Base family
 
-Death Redemption existed before target but changed over time; current semantics must not be projected backward without dated continuity evidence.
+The base death/blessing family has strong continuity evidence.
 
-B6 remains **PARTIALLY OPEN**.
+### Profile boundary
 
-## 10. B7 offline training — semantic state near freeze-ready
+Official history **proves** death/PvP behavior differs materially by world/ruleset profile. Therefore one universal world-independent Character death formula is invalid architecture.
 
-The 2012 primary source defines a real character-owned timer/pool state machine:
+### Still unresolved
+
+- complete July-28 Twist qualification/consumption/fair-fight rules;
+- skull-specific and attacker-level/fair-fight edge behavior by profile;
+- exact Death Redemption target-era recovery-count/history semantics;
+- full persistent-state ownership split for all PvP-specific counters/locks where required.
+
+### Decision-timing implication
+
+Exact PvP edge matrices should not be silently forced into the generic Character aggregate before `GAME-CHANNEL-01`/world-profile/PvP policy selects the relevant world-type scope. However, any durable PvP fact actually required by the selected profile must be owned/fenced explicitly before final schema acceptance.
+
+This is **RECOMMENDATION / NOT ACCEPTED**.
+
+## 7. B7 — offline training
+
+### Near-freeze-ready semantic state
+
+The primary 2012 design defines a per-character activation/counter/pool state machine:
 
 ```text
 activation selected
@@ -349,13 +326,13 @@ activation selected
 -> max 12 h effective continuous training
 -> regenerate 1 pool second / second online
 -> regenerate 1 pool second / second offline without training
--> depletion can refill while offline
+-> depletion may refill while offline
 -> refilled pool requires new activation before use
 ```
 
 With current continuity this is `DERIVED / strong primary continuity`.
 
-Still unknown:
+### Still unresolved
 
 - exact July-28 effectiveness coefficients;
 - exact selectable-skill matrix where version-sensitive;
@@ -363,30 +340,32 @@ Still unknown:
 - loyalty/event/modifier interactions;
 - migration edge cases.
 
+### Architecture implication
+
 Split B7 into:
 
 - semantic counter/capability ownership — **near freeze-ready**;
-- target arithmetic/effectiveness — still ruleset/evidence-blocked.
+- target arithmetic/effectiveness — Reference/ruleset/SIM evidence blocker.
 
-## 11. B8 modern build/progression ownership — materially reduced
+## 8. B8 — modern build/progression ownership
 
 ### Wheel / Promotion Points
 
-Strong primary design evidence makes earned Promotion Points and player allocations character-build state candidates. Perk definitions/formulas remain ruleset/ability/content definitions; Premium entitlement remains Platform-owned input.
+Earned Promotion Point facts and player allocations are strong character-build state candidates. Perk catalogue/formulas remain ruleset/ability/content definitions. Premium entitlement source remains Platform-owned input.
 
 ### Weapon Proficiency
 
-Primary official evidence explicitly states Proficiency Progress is character-bound and non-transferable.
+Primary official evidence explicitly fixes Proficiency Progress as character-bound/non-transferable.
 
-Recommended boundary:
+Recommended semantic boundary:
 
 ```text
-Character
+Character domain
 owns per-weapon Proficiency Progress / reached progress
-owns character-selected proficiency choices where they are player state
+owns player-selected proficiency choices where they are character state
 
 weapon/content/ruleset definition
-owns tree structure, thresholds, perk definitions and compatibility
+owns tree structure, thresholds, perks and compatibility
 
 GAME-ITEM / DUR-03
 owns item-instance conservation/location/value-transfer invariants
@@ -394,132 +373,111 @@ owns item-instance conservation/location/value-transfer invariants
 
 ### Bazaar-proven character-specific progression
 
-The official Bazaar transfer contract is strong evidence that these are character-specific product state:
+The official Bazaar transfer contract proves character-specific scope for:
 
-- charms / charm points / charm expansion;
+- charms/charm points/charm expansion;
 - Hunting Task Points;
 - permanent Hunting Task slots;
 - permanent Prey slots;
-- bestiary and other listed character progression/history.
+- and other explicitly listed character progression/history.
 
-This **does not require one giant Character aggregate/table**. Stage B only needs to preserve game-domain character ownership/scoping; dedicated sub-aggregates may remain appropriate when transaction, size or lifecycle evidence requires them.
+This proves **character-specific product ownership/scope**, not physical aggregate placement. Dedicated child aggregates remain possible when transaction/lifecycle/size evidence justifies them.
 
 ### Animus Mastery
 
-Official design describes accumulated creature masteries as player progression and Bazaar exposes mastery count in traded character state. Classify as **strong character-specific candidate**. Exact mastery definitions/bonus formulas remain content/ruleset-owned.
+Primary design + Bazaar traded-state surface make Animus Mastery a strong character-specific progression candidate. Definition/formula semantics remain content/ruleset-owned.
 
-### Dust and purchase provenance
+### Dust / purchased permanent capabilities
 
-Character-bound dust and purchased permanent capabilities may be character-scoped state while their economy/commerce transaction evidence belongs to GAME-ITEM/DUR-03 and/or Platform entitlement contracts. Do not erase the ownership distinction by putting purchase authority into Character.
+A resource can be character-bound while its acquisition/conservation/commercial authority remains outside core Character. Do not turn character scope into economy/Platform authority.
 
-### Remaining B8 uncertainty
+### Residual B8 uncertainty
 
 - exact migration/versioning of Wheel/proficiency/Animus/charm/task definitions;
-- newer fields not covered by the historical Bazaar transfer contract;
-- exact sub-aggregate versus core-Character placement where independent lifecycle/transaction evidence exists.
+- newer systems not covered by explicit transfer/ownership evidence;
+- core-Character versus child-aggregate placement where independent lifecycle/transaction evidence exists.
 
-B8 is now **SUBSTANTIALLY REDUCED**. Charms, Hunting Task Points, permanent Hunting Task/Prey slots and Weapon Proficiency progress should no longer be listed as ownership-unknown.
+B8 is **SUBSTANTIALLY REDUCED**; Weapon Proficiency progress, charms/charm points, Hunting Task Points and permanent Hunting Task/Prey slots should no longer be treated as ownership-unknown.
 
-## 12. Revised blocker classification
+## 9. Revised B4-B8 blocker state
 
-### Hard blockers before a complete GAME-CHAR Stage-B owner package
+### B4 progression
 
-1. **B1 exact naming normalization/recycling** — global namespace is strong; canonicalization is not.
-2. **B3 creation/starter template** — insufficient target-period primary evidence.
-3. **B6 persistent death/PvP edge matrix** — profile boundary is known, target edge set incomplete.
-4. **B8 residual modern-state migration/sub-aggregate boundaries** — much smaller after Bazaar/Weapon Proficiency evidence, but not zero.
+**Semantic ownership largely ready; exact arithmetic open.**
 
-### Values/formulas recommended to remain versioned without blocking generic semantic ownership
+Recommendation: exact XP/skill formulas remain Reference fixture/ruleset/SIM blockers unless they prove to constrain durable identity/representation.
 
-If the owner later accepts this split:
+### B5 promotion
 
-1. B2 deletion duration/total quota/name-hold exact values;
-2. B4 exact XP/skill arithmetic;
-3. B5 promotion fee/Premium-lapse edge behavior;
-4. B7 offline-training effectiveness coefficients.
+**Core strongly evidenced; target monetary/entitlement edges open.**
 
-These still block a **Reference parity implementation/release claim** where applicable. The recommendation is only that they need not automatically block every generic durable Character schema decision when persistence is versioned, formula-neutral and migration-safe.
+### B6 death/PvP
 
-## 13. DUR-02 implications
+**Base family/profile scoping strongly evidenced; full target edge matrix open.**
 
-DUR-02 remains bounded by Stage A and is not authorized to freeze physical schema from this delta.
+### B7 offline training
 
-Nonbinding extension points to preserve:
+**Counter/capability semantics near ready; effectiveness arithmetic open.**
 
-- global canonical name reservation without premature collation/normalization selection;
-- versioned deletion policy values;
+### B8 modern build/progression
+
+**Ownership substantially reduced.** Residual work is mostly definition migration/sub-aggregate placement plus newer systems without explicit transfer evidence.
+
+## 10. DUR-02 implications
+
+DUR-02 remains bounded by Stage A; this delta creates no physical-schema authority.
+
+Nonbinding extension points worth preserving:
+
 - authoritative XP/skill facts independent from exact arithmetic implementation;
 - persisted/derived distinction for migration-sensitive stats such as capacity;
 - Character-scoped offline-training pool/capability state;
 - Character-scoped Wheel/promotion-point state;
-- Character-scoped per-weapon proficiency progress keyed by stable weapon definition identity;
-- Character-scoped charms/task/permanent-slot progression or explicit child aggregates under the same ownership domain;
-- profile/ruleset-scoped death/blessing semantics.
+- Character-scoped per-weapon proficiency progress keyed by stable definition identity;
+- character-scoped charms/task/permanent-slot progression or explicit child aggregates under the same game-domain ownership scope;
+- profile/ruleset-scoped death/blessing semantics rather than one universal death formula.
 
-None of this creates DDL authority.
-
-## 14. Later ruleset/SIM implications
-
-Before any target-accurate Reference implementation or `PARITY_CONFIRMED` fixture, exact formulas/effects still require evidence and deterministic tests.
-
-```text
-DURABLE OWNERSHIP QUESTION
-Who owns the authoritative fact and how is it versioned/fenced/migrated?
-
-RULESET/SIM QUESTION
-How does the target revision calculate, advance or transform that fact?
-```
-
-Separating these concerns avoids baking uncertain arithmetic into persistence. It must never be used to ship unproven Reference behavior.
-
-## 15. Decision timing
+## 11. Decision timing
 
 ### Must full Stage B be accepted now?
 
 **NO.**
 
-### Must the formula-vs-schema split be accepted in this task?
+### Must formula-vs-schema split be accepted in this evidence task?
 
-**NO.** Include it in a later owner Stage-B closure package after remaining semantic blockers are reduced.
+**NO.** Carry it into a later owner Stage-B closure package.
 
-### Still blocked
+### Downstream still blocked
 
 - final character-bearing DUR-02 schema acceptance;
-- broad Reference character implementation;
-- target-accurate naming/creation/death fixtures;
-- final Stage-B owner contract.
+- broad target-accurate Reference character implementation;
+- final GAME-CHAR Stage-B contract;
+- parity fixtures for unresolved formulas/edges.
 
-### Still safe to continue
+### Safe parallel work
 
-- historical primary evidence acquisition;
+- B1-B3 evidence follow-up only with a new source/hypothesis per #185 stopping rule;
 - bounded DUR-02 discovery under Stage A;
 - GAME-CHANNEL/GAME-ITEM evidence work under separate ownership;
 - SIM/ruleset formula evidence gathering;
 - evidence-manifest/tooling design.
 
-### Supersession evidence
+## 12. Next evidence priorities after combined #183/#185/this delta
 
-Reopen these classifications only with stronger target-period primary snapshots, owner-provided target-era captures with provenance, an accepted Stage-B baseline or evidence that an unresolved formula materially changes durable identity/ownership/atomicity/representation.
+1. resolve only B1-B3 gaps for which genuinely new target-era primary evidence appears; do not repeat generic search exhausted by #185;
+2. determine which B6 PvP/death edges belong to GAME-CHAR versus world/profile policy before demanding one exhaustive matrix;
+3. acquire migration/versioning evidence for modern character-specific progression definitions;
+4. obtain exact formulas only where required for Reference fixtures or where evidence proves they constrain durable representation;
+5. then prepare an owner Stage-B closure packet that explicitly separates accepted semantic ownership from still-deferred versioned policy/arithmetic.
 
-## 16. Next evidence priorities
-
-1. target-era official account/creation snapshots for B1/B2/B3;
-2. target-era/current-continuity evidence for death/PvP blessing edges by world type;
-3. modern progression migration/versioning evidence, especially Animus and post-2020 Bazaar-added systems;
-4. exact progression/skill/offline formulas only where needed for Reference fixtures or proven to constrain durable representation;
-5. assemble an owner Stage-B closure packet only after residual semantic blockers are materially reduced.
-
-## 17. Deliberately not decided
+## 13. Deliberately not decided
 
 - no Stage-B rule is owner accepted;
-- no physical name index/collation;
-- no 60-day/30/6-month Reference acceptance;
-- no exact starter template;
-- no exact XP/skill formula;
-- no exact promotion price/entitlement transition target rule;
-- no complete death/PvP matrix;
+- no XP/skill formula;
+- no exact promotion price/Premium-lapse target rule;
+- no complete PvP/death edge matrix;
 - no offline-training effectiveness formula;
-- no final sub-aggregate layout for every modern progression system;
+- no final physical sub-aggregate/table layout;
 - no DDL/runtime/protocol/content implementation.
 
 Until explicit owner acceptance, this document remains **PRE-DECISION EVIDENCE DELTA / NOT ACCEPTED** and does not change `GAME-CHAR-01 = PROPOSED / PLANNED / NOT_STARTED`.
