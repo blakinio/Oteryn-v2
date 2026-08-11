@@ -12,7 +12,7 @@ delivery_pr: 193
 base_sha: e56e56b29b40937fa4d377486cceb2e2479cd2a3
 final_head_sha: bc4942cab0e58b3aa4ed9713cc3f23b11b83aaa6
 delivery_merge_sha: 08775e378db8c1fd6bb97bedf66bf08b3541f35f
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 194
 owner: released
 created_at: 2026-08-12T00:17:00+02:00
 completed_at: 2026-08-12T00:36:00+02:00
@@ -189,12 +189,12 @@ It may define physical-schema architecture, typed ownership, revision/fencing, t
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner-accepted GAME-CHAR Stage-B semantic closure delivered by PR #193 with repair cycle 1, exact-head self-review PASS and all required exact-head CI PASS; owner-baseline task archived and ownership released.
+last_progress: Owner-accepted GAME-CHAR Stage-B semantic closure delivered by PR #193 with repair cycle 1, exact-head self-review PASS and all required exact-head CI PASS; lifecycle closeout PR #194 archives the task, releases ownership and records GAME-CHAR as lifecycle-closed.
 status: completed
 delivery_pr: 193
 final_head_sha: bc4942cab0e58b3aa4ed9713cc3f23b11b83aaa6
 delivery_merge_sha: 08775e378db8c1fd6bb97bedf66bf08b3541f35f
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 194
 repair_cycles_for_current_gate: 1
 ci_run_ids:
   - 31542939497
