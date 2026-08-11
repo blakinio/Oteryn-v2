@@ -15,7 +15,7 @@ final_head_sha: c01f7478b70f47182c040efa8afb2dc7c54061f5
 final_head_frozen_at: 2026-08-11T13:11:00+02:00
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-11T13:02:00+02:00
-updated_at: 2026-08-11T13:15:00+02:00
+updated_at: 2026-08-11T13:20:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -42,7 +42,7 @@ delivery_pr: 169
 delivery_merge_sha: bf19f907003406bcab35c8dd5ba7f2fb611aa323
 delivery_repair_cycles: 0
 delivery_ci_recovery_actions: 0
-lifecycle_closeout_pr: null
+lifecycle_closeout_pr: 170
 implementation_status: NOT_APPLICABLE
 ```
 
@@ -52,7 +52,7 @@ Persisted the owner's explicit acceptance that **Reference gameplay mechanics fo
 
 The owner also accepted the progression/death/risk direction: Reference keeps selected baseline rules; the first Evolved package does not automatically redesign them; any Oteryn-specific progression/death/risk redesign requires a later explicit, versioned and measurable Evolved gate.
 
-The owner-accepted architecture delivery is complete. This archive preserves the full task record plus terminal delivery evidence. Lifecycle closeout only releases active task ownership and does not change the product decision.
+The owner-accepted architecture delivery is complete. This archive preserves the full task record plus terminal delivery evidence. Lifecycle PR #170 is only the archival/ownership-release mechanism; it does not change the product decision and no further action belongs to this completed task.
 
 ## Architecture and source of truth
 
@@ -159,12 +159,12 @@ This task did not:
 - related/superseded PRs: parallel disjoint draft PR #162; no supersession
 - protected auto-merge: `NOT_USED`; owner-authorized squash merge executed only after exact-head gates passed
 - merge commit/result: PR #169 squash-merged as `bf19f907003406bcab35c8dd5ba7f2fb611aa323`
-- ownership release: lifecycle closeout PR pending
+- ownership release: lifecycle PR #170 is the terminal archival/ownership-release mechanism; no remaining action belongs to this completed task
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner-accepted Reference parity-precedence and progression/risk direction delivered by PR #169 on exact head with all gates PASS; lifecycle closeout now preserves this full record while releasing active ownership.
+last_progress: Owner-accepted Reference parity-precedence and progression/risk direction delivered by PR #169 with all delivery gates PASS; lifecycle PR #170 is the terminal archival/ownership-release mechanism for this completed task.
 status: completed
 branch: docs/OTV2-20260811-reference-parity-precedence-risk-owner-baseline
 head_sha: c01f7478b70f47182c040efa8afb2dc7c54061f5
@@ -189,5 +189,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Open lifecycle closeout PR, record its number, make the archived checkpoint terminal, validate exact head, then squash-merge if clean.
+next_action: NONE
 ```
