@@ -23,18 +23,17 @@ This decision selects the **ordering and character of the first Evolved package*
 
 **YES.**
 
-Reference-first, hybrid Reference tracking and the internal player promise are already owner-accepted. The project therefore needs one stable rule for what kind of intentional evolution should be attempted first after the Reference baseline becomes trustworthy enough to compare against.
+Reference-first, hybrid Reference tracking and the internal player promise are already owner-accepted. `GAME-VISION-01_PREDECISION_ANALYSIS.md` also identifies the first Evolved strategy as one of the minimum owner decisions required to turn the pre-decision packet into an accepted product contract.
 
-### Concrete downstream work constrained by this baseline
+### Concrete downstream work blocked until this decision is recorded
 
-This partial baseline constrains:
+The following work cannot be closed safely while the first Evolved strategy remains ambiguous:
 
-- future Evolved profile/ruleset planning;
-- client UX and recovery proposals that may become first Evolved-facing improvements;
-- `DUR-04`/ruleset-content representation of explicit profile differences;
-- alpha milestone scope once an Evolved proof is scheduled;
-- prioritization of gameplay redesign proposals so death/progression/PvP/economy work is not accidentally treated as the first differentiation package;
-- acceptance evidence for the first Evolved release, which should be able to show improved trust/usability/recovery without obscuring the Reference gameplay oracle.
+1. **`GAME-VISION-01` minimum owner-decision packet item 5** — the product-vision gate cannot claim that the first Evolved strategy is resolved while reliability/UX-first, immediate systemic redesign and a broad feature pack remain equally valid interpretations.
+2. **Scope and acceptance plan for the first Evolved product proof / Evolved portion of a later alpha milestone** — the milestone cannot define a bounded, testable Evolved slice without knowing whether it is proving reliability/UX evolution or simultaneously redesigning progression, death, PvP, rewards and economy.
+3. **Prioritization of the first Evolved candidate backlog** — client/recovery/clarity work cannot be separated from systemic gameplay gates unless the project knows which category has owner priority first.
+
+This decision also constrains, but does not by itself block, later Evolved profile/ruleset planning, `DUR-04` representation of explicit profile differences, and evidence design for Evolved changes.
 
 This decision does not authorize implementation by itself.
 
