@@ -12,7 +12,7 @@ delivery_pr: 177
 base_sha: 55e576b4d6d5c51ca2531538e29acb2a0e6a1a3d
 final_head_sha: 6d7b77c9fc8d637cd6c830c35e57a51b908665ed
 delivery_merge_sha: 073bc666269f382f70ad034c18be86b3147641fd
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 178
 owner: released
 created_at: 2026-08-11T18:28:00+02:00
 completed_at: 2026-08-11T18:52:22+02:00
@@ -140,12 +140,13 @@ The next material GAME-CHAR input is the exact first named Global Tibia Referenc
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner-accepted GAME-CHAR Stage A partial baseline delivered by PR #177 with repair cycle 1, exact-head self-review PASS and all required CI PASS; task is ready for lifecycle archive/ownership release.
+last_progress: Owner-accepted GAME-CHAR Stage A partial baseline delivered by PR #177 with repair cycle 1, exact-head self-review PASS and all required CI PASS; lifecycle closeout PR #178 archives the task and releases ownership.
 status: completed
 delivery_branch: docs/OTV2-20260811-game-char-stage-a-owner-baseline
 delivery_pr: 177
 final_head_sha: 6d7b77c9fc8d637cd6c830c35e57a51b908665ed
 delivery_merge_sha: 073bc666269f382f70ad034c18be86b3147641fd
+lifecycle_closeout_pr: 178
 repair_cycles_for_current_gate: 1
 ci_run_ids:
   - 31514097919
