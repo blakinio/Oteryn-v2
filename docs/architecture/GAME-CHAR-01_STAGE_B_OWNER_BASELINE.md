@@ -420,7 +420,7 @@ DecisionStatus       = ACCEPTED
 DeliveryStatus       = LIFECYCLE_CLOSED
 ImplementationStatus = NOT_STARTED
 Runtime authority    = NONE
-Reference parity     = PARTIAL / evidence-gated per behavior; never implied by architecture acceptance
+Reference parity     = per-behavior evidence-gated; no aggregate parity status is implied by architecture acceptance
 ```
 
 The next allowed Character-durability step is **paper-only profile-neutral `DUR-02` schema architecture**, while `GAME-CHANNEL-01`, `GAME-ITEM-01`, ruleset/SIM/content evidence and profile-specific decisions retain their separate ownership gates.
