@@ -4,18 +4,18 @@
 task_id: OTV2-20260811-pvp-secondary-owner-baseline
 title: Persist GAME-VISION-01 PvP secondary-pillar owner baseline
 mode: COORDINATE
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260811-pvp-secondary-owner-baseline
-pr: null
+pr: 165
 base_sha: 78c08e658cb4acb2f6e7298841b223d2ebf3cf5d
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-11T11:46:00+02:00
-updated_at: 2026-08-11T11:46:00+02:00
+updated_at: 2026-08-11T11:50:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -89,6 +89,7 @@ This task must not:
 - Open PR at task start: #162 (`ci: enforce aggregate pull request merge gate`), currently a draft and owning repository-engineering/governance paths. No overlap exists with this task's two documentation paths.
 - Repository search found no existing PvP secondary-pillar owner baseline.
 - Added `docs/architecture/GAME-VISION-01_PVP_SECONDARY_PILLAR_OWNER_BASELINE.md` as a separate owner-accepted partial baseline.
+- Opened PR #165 with the required `## Summary`, `## Scope` and `## Validation` metadata headings.
 - The owner acceptance resolves only `GAME-VISION-01` owner-decision packet item 6; detailed PvP policy remains intentionally open.
 - The baseline explicitly distinguishes PvP feature breadth from PvP-sensitive safety/integrity invariants: breadth may be bounded by milestone, but correctness and exploit resistance cannot be weakened merely because PvP is secondary.
 
@@ -96,8 +97,8 @@ This task must not:
 
 ### Focused
 
-- command/run: compare owner acceptance with `GAME-VISION-01_PREDECISION_ANALYSIS.md`, accepted Reference/player-promise/Evolved baselines and ADR-0010; verify no existing owner PvP baseline; inspect parallel PR #162 for path collision
-- result: **PASS** for declared product scope before final-head freeze; exact-head self-review still required after PR metadata checkpoint
+- command/run: compare owner acceptance with `GAME-VISION-01_PREDECISION_ANALYSIS.md`, accepted Reference/player-promise/Evolved baselines and ADR-0010; verify no existing owner PvP baseline; inspect parallel PR #162 for path collision; inspect PR #165 metadata and declared changed-file scope
+- result: **PASS** for declared product scope before final-head freeze; exact-head self-review still required after this checkpoint commit
 
 ### Component/integration
 
@@ -111,9 +112,9 @@ This task must not:
 
 ### Exact-head CI
 
-- final head: pending PR creation/checkpoint
-- trigger source: pending
-- workflow/run/job: pending
+- final head: pending this PR metadata checkpoint commit
+- trigger source: `pull_request/synchronize`
+- workflow/run/job: pending fresh generation for final candidate head
 - runner assignment: pending
 - classification: repository-required documentation checks applicable to exact PR head
 - result: pending
@@ -122,12 +123,12 @@ This task must not:
 
 - scope: owner-authority fidelity, PvP-priority overreach, accidental detailed PvP-rule freeze, Reference/Evolved conflict, safety/integrity weakening, milestone-scope ambiguity, task-template completeness, parallel ownership collision
 - material findings: no material finding in focused pre-freeze review; exact-head audit pending
-- unresolved findings: pending PR review-thread verification
+- unresolved findings: pending exact-head PR review-thread verification
 - verdict: pending exact-head verification
 
 ## Self-review
 
-- exact head: pending
+- exact head: pending this checkpoint commit
 - method/reviewer: implementing/coordinating agent full-diff product/architecture/governance review
 - material findings: pending
 - verdict: pending
@@ -152,15 +153,15 @@ This task must not:
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner accepted PvP as a secondary pillar; verified no existing canonical owner baseline or collision with draft PR #162 and added a narrow architecture baseline plus active task record.
-status: implementing
+last_progress: Persisted the narrow owner-accepted PvP secondary-pillar baseline and opened PR #165; parallel draft PR #162 remains disjoint and untouched.
+status: validating
 branch: docs/OTV2-20260811-pvp-secondary-owner-baseline
 head_sha: null
-pr: null
+pr: 165
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
-ci_check_generation: pre-pr
+ci_trigger_source: pull_request/synchronize
+ci_check_generation: final-head-pending
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -174,5 +175,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Open the bounded PR, checkpoint PR metadata, freeze exact head, run mandatory self-review and repository-required CI, then merge only if clean.
+next_action: Freeze this checkpointed exact head, perform mandatory full-diff self-review, verify review threads/current main/parallel #162 state and repository-required CI, then squash-merge only if clean.
 ```
