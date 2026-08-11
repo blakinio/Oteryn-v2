@@ -11,7 +11,7 @@ delivery_pr: 185
 base_sha: 1411994c70abbf065273c0502c88413b61ca5ca0
 final_head_sha: 44e6d6da4368870f436aa070bc7266a043963881
 delivery_merge_sha: 60abba1188d5bfdeed53c468c243ed0fb0b01370
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 186
 owner: released
 completed_at: 2026-08-11T23:20:00+02:00
 implementation_status: NOT_APPLICABLE
