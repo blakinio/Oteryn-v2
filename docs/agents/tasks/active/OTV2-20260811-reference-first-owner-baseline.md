@@ -4,18 +4,18 @@
 task_id: OTV2-20260811-reference-first-owner-baseline
 title: Persist GAME-VISION-01 Reference-first owner baseline
 mode: COORDINATE
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260811-reference-first-owner-baseline
-pr: null
+pr: 156
 base_sha: ae5b6ff9feeb2a608583cd34e16675a1f4639299
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-11T09:31:00+02:00
-updated_at: 2026-08-11T09:31:00+02:00
+updated_at: 2026-08-11T09:36:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -46,14 +46,14 @@ Persist the owner's current-session acceptance that the first externally evaluat
 
 ## Acceptance criteria
 
-- [ ] Record first externally evaluated build as one Reference profile rather than Evolved-first or simultaneous Reference+Evolved.
-- [ ] Record that Evolved follows later from the same engine/client/protocol foundation rather than launching in parallel with the first external build.
-- [ ] Preserve one canonical engine/client/`protocol-oteryn`, distinct `WorldId` values and default cross-profile gameplay-value isolation.
-- [ ] Require the first external Reference build to name an immutable reference baseline/revision for reproducible claims, without selecting the exact Global Tibia version/date now.
-- [ ] Explicitly leave long-term pinned/continuous/hybrid tracking policy unresolved.
-- [ ] Explicitly leave the remaining GAME-VISION owner packet unresolved and do not claim full gate acceptance.
-- [ ] Include mandatory decision-timing, downstream-consumer, cost-of-delay and supersession-evidence records.
-- [ ] No runtime/client/server implementation, content production, public branding or production rollout is authorized.
+- [x] Record first externally evaluated build as one Reference profile rather than Evolved-first or simultaneous Reference+Evolved.
+- [x] Record that Evolved follows later from the same engine/client/protocol foundation rather than launching in parallel with the first external build.
+- [x] Preserve one canonical engine/client/`protocol-oteryn`, distinct `WorldId` values and default cross-profile gameplay-value isolation.
+- [x] Require the first external Reference build to name an immutable reference baseline/revision for reproducible claims, without selecting the exact Global Tibia version/date now.
+- [x] Explicitly leave long-term pinned/continuous/hybrid tracking policy unresolved.
+- [x] Explicitly leave the remaining GAME-VISION owner packet unresolved and do not claim full gate acceptance.
+- [x] Include mandatory decision-timing, downstream-consumer, cost-of-delay and supersession-evidence records.
+- [x] No runtime/client/server implementation, content production, public branding or production rollout is authorized.
 - [ ] Exact-head self-review and repository-required CI pass before merge.
 
 ## Excluded scope
@@ -68,7 +68,12 @@ Persist the owner's current-session acceptance that the first externally evaluat
 
 ## Implementation / findings
 
-Pending.
+- Added `docs/architecture/GAME-VISION-01_REFERENCE_FIRST_OWNER_BASELINE.md` as an owner-accepted partial GAME-VISION baseline.
+- The baseline freezes only the first external profile order: one Reference profile first; no simultaneous Reference+Evolved first evaluation; Evolved follows later on the shared foundation.
+- The evaluated Reference build must name an immutable baseline/revision so parity and regression evidence remain reproducible.
+- The exact Global Tibia patch/date and long-term Reference tracking cadence remain unresolved.
+- The baseline includes the required decision-timing record, named downstream consumers, cost-of-delay analysis and explicit supersession evidence.
+- Full `GAME-VISION-01` remains `NOT ACCEPTED`; no gameplay/content/runtime implementation is authorized by this documentation.
 
 ## Validation
 
@@ -77,7 +82,8 @@ Pending.
 - owner decision: current-session `USER_SOURCE`, explicit acceptance
 - base: `main@ae5b6ff9feeb2a608583cd34e16675a1f4639299`
 - open PRs at task start: 0
-- changed-file review: pending
+- pre-PR compare: `behind_by=0`, exactly two declared documentation paths
+- authority classification: accepted partial launch-order baseline only; full gate explicitly remains NOT ACCEPTED
 
 ### Component/integration
 
@@ -89,12 +95,12 @@ Pending.
 
 ### Exact-head CI
 
-- final head: pending
+- final head: pending this metadata checkpoint commit
 - result: pending
 
 ## Self-review
 
-- exact head: pending
+- exact head: pending current checkpoint commit
 - method/reviewer: implementing/coordinating agent full-diff product/architecture review
 - material findings: pending
 - verdict: pending
@@ -109,7 +115,8 @@ Pending.
 
 ## PR and closeout
 
-- changed-file review: pending
+- PR: #156
+- changed-file review: pending exact final head
 - unresolved review threads: pending
 - protected auto-merge: pending
 - merge commit/result: pending
@@ -118,15 +125,15 @@ Pending.
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner explicitly accepted Reference-first for the first externally evaluated Oteryn build; bounded task created to persist that partial GAME-VISION decision.
-status: implementing
+last_progress: Persisted the owner-accepted Reference-first launch-order baseline and opened PR #156 without accepting any remaining GAME-VISION decisions.
+status: validating
 branch: docs/OTV2-20260811-reference-first-owner-baseline
 head_sha: null
-pr: null
+pr: 156
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
-ci_check_generation: null
+ci_trigger_source: pull_request/synchronize
+ci_check_generation: final-head-pending
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -140,5 +147,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Write the narrow Reference-first owner baseline without accepting the remaining GAME-VISION-01 decisions.
+next_action: Freeze the exact final head, perform mandatory full-diff self-review, verify repository-required CI and squash-merge only if unchanged and clean.
 ```
