@@ -10,19 +10,19 @@
 
 ## 1. Executive result
 
-This evidence pass reduces **B1 naming** and **B3 creation/starter** uncertainty but does not close either blocker completely. **B2 deletion/quota remains materially unresolved for the July-28 target** beyond the already strong 25-active-character continuity evidence.
+This bounded pass makes meaningful progress on **B1 naming** and **B3 creation/starter**, but does not close either blocker. **B2 deletion/quota remains materially unresolved for the July-28 target** beyond the strong 25-active-character continuity evidence.
 
-No owner decision is required yet.
+No owner decision is useful yet; the remaining gaps are evidence questions.
 
 ### Result by blocker
 
-- **B1 naming:** partial progress. Tibia-wide name uniqueness is historically explicit and rename-history/search retention for six months has strong before/after primary continuity. Exact July-28 normalization, 29-character limit continuity, full permitted repertoire and deleted-name recycling remain unresolved.
-- **B2 deletion/quota:** little progress beyond the active limit. Current official manual clearly states 60-day reversible deletion, maximum 30 active+scheduled characters and at-least-six-month deleted-name hold, but this pass did not locate reliable target-era primary continuity for those exact values. They remain `UNKNOWN` for the target.
-- **B3 creation/starter:** meaningful chronology established. Newhaven and vocation-selection flow are primary-evidenced before the target; Targuna replaced the post-Newhaven Thais/Blue Valley route before July 28. Exact starter stats/items/home-state and exact target-era skip-tutorial starting state remain unresolved.
+- **B1 naming — PARTIALLY REDUCED:** Tibia-wide uniqueness is explicit historical primary evidence. Six-month old-name lookup after rename has strong primary before/after continuity. Exact July-28 normalization, 29-letter continuity, complete permitted repertoire and deleted-name recycling remain unresolved.
+- **B2 deletion/quota — LARGELY UNCHANGED:** current official documentation states 60-day reversible deletion, total 30 active+scheduled and at-least-six-month deleted-name hold, but this pass found no provenance-clear July-28 historical snapshot/change chronology for those exact values. They remain `UNKNOWN` for the target. Active limit 25 remains a strong continuity candidate.
+- **B3 creation/starter — PARTIALLY REDUCED:** official 2025/2026 chronology establishes Newhaven as the new entry area, planned/released vocation-selection flow and the later Targuna continuation before July 28. Exact starter stats/items/home state and exact target-era skip-tutorial level remain unresolved.
 
-## 2. Evidence-method rule
+## 2. Evidence rule
 
-This report follows the accepted first-Reference evidence model:
+Accepted evidence states remain:
 
 - `PROVEN`
 - `OBSERVED`
@@ -31,165 +31,153 @@ This report follows the accepted first-Reference evidence model:
 - `CONFLICT`
 - `DECLARED_DIFFERENCE`
 
-Current official documentation is primary **current** evidence, not automatic July-28 historical proof. Historical official announcements can establish dated rules or changes. A before/after match with no known contradiction may support `DERIVED` continuity, but absence of a discovered change notice is never enough by itself.
+Current official documentation is primary **current** evidence, not automatic July-28 proof. Pre-release official teasers establish planned semantics; when combined with a later production release/current official evidence and no material conflict they may support `DERIVED` continuity, but they are not relabelled as direct target `PROVEN` solely because the feature subsequently launched.
 
-The available search pass also attempted to locate archived/historical copies of the official account manual around July 28. It did not yield a provenance-clear target-era snapshot for the B2 numeric rules. That negative result is recorded as an evidence limitation, not evidence that the current values differed or matched.
+Likewise:
 
-## 3. B1 — naming evidence
+```text
+no discovered change note
+!= proof that a rule did not change
+```
 
-### 3.1 Tibia-wide uniqueness
+The available search also attempted to find provenance-clear archived official account-manual snapshots near July 28. None were resolved through the available search path. That is an evidence limitation, not evidence that current B2 values either matched or differed from the target.
 
-Official April 2, 2008 news explicitly described Tibia's policy as one in which every character across all then-existing game worlds had a unique name, contrasting it with games where uniqueness existed only per server.
+## 3. B1 — Tibia-wide uniqueness
+
+Official April 2, 2008 news explicitly described Tibia's naming policy as one in which every character across all game worlds had a unique name, contrasting this with per-server uniqueness in other games.
 
 Primary source:
 
 - `https://www.tibia.com/news/?id=708&subtopic=latestnews` — **Tibia Character Names - Now and in the Future**, 2008-04-02.
 
-Current official character creation/name-change surfaces continue to require a new name to be available before creation/rename succeeds.
+Current official creation/name-change surfaces still require a requested name to be available before the operation succeeds.
 
 ### Classification
 
-**`DERIVED` strong continuity candidate:** character-name uniqueness is game-wide/Tibia-wide rather than per-world.
+**`DERIVED` strong continuity candidate:** Reference character names use a Tibia-wide/global namespace rather than independent per-world namespaces.
 
-### What this is sufficient to constrain
+### Still unresolved
 
-Character Authority should not design July-28 Reference naming as a per-WorldId namespace merely because Oteryn has explicit worlds/channels. The Reference-facing namespace needs to preserve the evidence of global uniqueness unless later target evidence proves a scoped exception.
+This does not define the implementation-grade comparison function:
 
-### What remains open
-
-The exact machine-level uniqueness implementation is not yet proven, including:
-
-- normalization before uniqueness comparison;
+- Unicode normalization;
 - case folding;
-- whitespace folding/trimming;
-- locale/Unicode handling;
-- historical alias reservation interactions;
-- whether any reserved/system namespace is evaluated before or after canonicalization.
+- whitespace normalization;
+- exact permitted repertoire;
+- system/reserved namespace handling;
+- historical alias/deleted-name reservation interactions.
 
-Therefore the final database unique-index expression remains **not freeze-ready**.
+Final Character Authority/database uniqueness mechanics remain not freeze-ready.
 
-## 4. B1 — technical name format
+## 4. B1 — technical name-format restrictions
 
-Official April 8, 2008 patch notes state that new technical limits prohibited:
+Official April 8, 2008 patch notes introduced/confirmed technical creation restrictions including:
 
-- names with more than three words;
-- names containing special characters such as a hyphen.
+- no names with more than three words;
+- no special characters such as a hyphen.
 
 Primary source:
 
 - `https://www.tibia.com/news/?id=716&subtopic=newsarchive` — **Minor Patch Released - New Tibia Rules Valid Now!**, 2008-04-08.
 
-Current official creation documentation states additional/current constraints including:
+Current official creation documentation additionally states:
 
 - maximum 29 letters;
 - no numbers;
 - no special characters;
 - some words/letter combinations disallowed;
-- Tibia Rules still apply.
+- Tibia Rules apply.
 
 ### Classification
 
-- three-word/special-character historical restriction family: **`DERIVED` continuity support**, not an exact July-28 parser specification;
-- exact `29` maximum at July 28: **`UNKNOWN` target continuity**;
-- exact valid character repertoire/canonicalization: **`UNKNOWN`**;
-- exact reserved-word/restricted-pattern revision: **`UNKNOWN`**.
+- existence of long-lived technical name-format restrictions: **strong continuity evidence**;
+- exact July-28 maximum `29`: `UNKNOWN` continuity;
+- exact parser/repertoire/canonicalization: `UNKNOWN`;
+- exact restricted/reserved-pattern revision: `UNKNOWN`.
 
-The 2008 rules show that technical format constraints are long-lived product semantics, but they are not sufficient to reconstruct the 2026 validator byte-for-byte.
+The historical rule family is useful evidence, but it does not reconstruct the 2026 validator byte-for-byte.
 
-## 5. B1 — rename history and aliases
+## 5. B1 — rename history/alias semantics
 
-Official February 19, 2010 introduction of Character Name Change states that after a rename:
+Official February 19, 2010 introduction of Character Name Change states that after rename:
 
-- the old character name is listed on the character page for six months;
-- the character remains findable by the old name for six months.
+- the old name remains listed on the character page for six months;
+- the character can be found through the old name for six months.
 
 Primary source:
 
 - `https://www.tibia.com/news/?id=1240&subtopic=newsarchive` — **Release of New Extra Services**, 2010-02-19.
 
-Current official Store/product manual still states that the old name remains usable for six months in the Lost Account Interface or Characters search after a rename.
+Current official Store/product documentation still states that the former name remains usable for six months in the Lost Account Interface or Characters search.
 
 Current source:
 
-- `https://www.tibia.com/gameguides/?section=products&subtopic=manual` — Character Name Change section.
+- `https://www.tibia.com/gameguides/?section=products&subtopic=manual` — Character Name Change.
 
 ### Classification
 
-**`DERIVED` strong continuity candidate:** six-month old-name lookup/history after rename.
+**`DERIVED` strong continuity candidate:** six-month searchable old-name/history behavior after rename.
 
 ### Architecture consequence
 
-Name history/alias projection is semantically distinct from current authoritative name reservation. CharacterId remains stable through rename under Stage A. A former name may remain a searchable alias even though it is no longer the current display name.
+Current authoritative name, old-name searchable alias/history and deleted-name reservation are separate semantics. CharacterId remains stable through rename under Stage A.
 
-The exact storage/index/expiry mechanism remains DUR-02 work after target semantics are accepted.
+## 6. B1 — deleted-name recycling remains different and unresolved
 
-## 6. B1 — deleted-name reuse is not the same rule
+Current account documentation says names of deleted characters cannot be selected for new characters for **at least six months**. Current official support material also warns that a deleted character's former name may remain unavailable for several months or even years depending on factors.
 
-The current account manual states that names of deleted characters cannot be chosen for new characters for **at least six months**.
-
-Current official support material also warns that a deleted character's former name may remain unavailable for several months or even years depending on multiple factors.
-
-This is semantically different from the fixed six-month **rename-history/search** rule introduced in 2010.
+This is not equivalent to the fixed six-month old-name lookup period after rename.
 
 ### Classification
 
-- current deleted-name hold minimum `>= 6 months`: `PROVEN` current behavior/documentation;
+- current deleted-name hold `>=6 months`: current-primary fact;
 - exact July-28 continuity: `UNKNOWN`;
-- exact release algorithm/timing after permanent deletion: `UNKNOWN`;
-- treating deleted-name release as exactly six months: **rejected** by current primary evidence.
-
-### Architecture consequence
-
-Do not model deleted-name recycling as `retired_at + 6 months = available` merely by analogy with rename history.
+- exact release algorithm/timing: `UNKNOWN`;
+- model `retired_at + 6 months => available`: **not supported**.
 
 ## 7. B1 result
 
-B1 is **reduced but not closed**.
+**Partially reduced, not closed.**
 
-Strong candidates now exist for:
+Strong candidates:
 
 1. Tibia-wide/global name uniqueness;
-2. long-lived technical-format restrictions as a rule family;
+2. long-lived technical format-restriction family;
 3. six-month old-name lookup/history after rename.
 
 Still blocked:
 
-- exact July-28 29-letter continuity;
-- canonical normalization/case/space rules;
-- exact permitted repertoire;
+- exact normalization/case/space/repertoire;
+- exact 29-letter target continuity;
 - restricted/reserved pattern authority;
 - deleted-name release timing/algorithm;
-- exact rename collision/history mechanics beyond the six-month lookup fact.
+- complete rename collision/history rules.
 
 ## 8. B2 — active-character quota
 
-Official February 24, 2025 Monk product-management material announced that the character limit for all accounts would increase from 20 to 25. Official March 2025 live changes then stated that the limit had been increased from 20 to 25.
+Official February 24, 2025 Monk product-management material announced an increase from 20 to 25 characters per account. Later live Monk/balancing material confirmed the account limit had been increased from 20 to 25. Current manuals still state 25 active characters.
 
 Primary sources include:
 
 - `https://www.tibia.com/news/?id=8260&subtopic=latestnews` — **Monk: Product Management Insight Part 2**, 2025-02-24;
-- `https://www.tibia.com/news/?id=8307&subtopic=newsarchive` — live Monk/balancing changes confirming the increase.
-
-The current official account/creation manuals still state 25 active characters.
+- `https://www.tibia.com/news/?id=8307&subtopic=newsarchive` — live changes confirming the increase.
 
 ### Classification
 
 **`DERIVED` strong continuity candidate:** maximum 25 active characters at the July-28 target.
 
-This remains stronger than current-only evidence because the change is explicitly dated before the target and the same value is documented after the target.
-
 ## 9. B2 — current deletion/undelete contract
 
 Current official account manual states:
 
-- manual character deletion is not final for 60 days / two months;
-- during that period the deletion can be cancelled through Undelete Character;
-- after final deletion the character cannot be recovered;
-- deletion-scheduled characters do not count as active;
-- active characters may not exceed 25;
-- active + scheduled-for-deletion characters may not exceed 30;
-- undelete may fail until another active character is scheduled for deletion when the 25-active limit would otherwise be exceeded;
-- deleted names cannot be chosen for new characters for at least six months.
+- deletion is reversible for 60 days / two months;
+- Undelete Character cancels deletion during that period;
+- final deletion is irreversible;
+- scheduled-for-deletion characters do not count as active;
+- active limit is 25;
+- active + scheduled-for-deletion total may not exceed 30;
+- undelete can be blocked by the 25-active limit;
+- deleted names cannot be selected for at least six months.
 
 Current source:
 
@@ -197,33 +185,26 @@ Current source:
 
 ### Historical-target search result
 
-The targeted official-news/search pass did not locate a dated primary introduction/change record for:
+The targeted official-news/manual/archive search did not resolve a dated primary July-28 snapshot or introduction/change record for:
 
-- `60 days` / two-month manual deletion grace;
-- total `30` active+scheduled limit;
+- 60-day manual deletion grace;
+- total 30;
 - exact undelete/quota interaction;
 - deleted-name minimum hold.
 
-Attempts to locate provenance-clear archived snapshots of the official account manual around July 28 through available web search also did not produce a target-era snapshot.
-
-### Classification
-
-For the July-28 target:
+### July-28 classification
 
 - deletion grace = 60 days: `UNKNOWN` continuity;
 - scheduled deletion excluded from active quota: `UNKNOWN` continuity;
 - total 30: `UNKNOWN` continuity;
-- undelete active-quota interaction: `UNKNOWN` continuity;
-- final deletion irreversible: likely consistent with Stage-A semantics but exact target public workflow remains `UNKNOWN` from this evidence pass;
-- deleted-name minimum hold: `UNKNOWN` continuity.
+- undelete interaction: `UNKNOWN` continuity;
+- deleted-name hold/release: `UNKNOWN` continuity.
 
-### Important negative conclusion
-
-This task **does not** infer continuity merely because no contrary patch note was found.
+No contrary change note was found, but that does not promote continuity to proof.
 
 ## 10. B2 interaction with Stage A
 
-The evidence gap does not threaten the accepted baseline-neutral lifecycle:
+The target-value gap does not invalidate the accepted baseline-neutral lifecycle:
 
 ```text
 ACTIVE
@@ -231,78 +212,68 @@ ACTIVE
 -> RETIRED
 ```
 
-Stage A already safely captures:
-
-- reversible nonterminal deletion intent;
-- terminal retirement distinct from temporary scheduling;
-- no CharacterId reuse after retirement;
-- privacy erasure as a separate data-lifecycle concern.
-
-B2 therefore blocks **numeric/product-policy parameters and exact Reference workflow**, not the safe semantic lifecycle boundary.
+Stage A already safely captures reversible nonterminal intent, terminal retirement, CharacterId non-reuse and privacy-erasure separation. B2 blocks numeric/product-policy values and exact Reference workflow, not the semantic lifecycle boundary.
 
 ## 11. B2 result
 
-B2 remains **open**.
+**Largely unchanged.**
 
-Freeze-ready/strong candidate:
+Strong candidate:
 
-- 25 active characters: `DERIVED` strong continuity.
+- 25 active characters.
 
-Still target-`UNKNOWN`:
+Still `UNKNOWN` for July 28:
 
 - 60-day grace;
 - total 30;
 - exact undelete constraints;
 - exact deleted-name hold/release.
 
-No owner preference is useful yet; this remains a historical-evidence problem.
+## 12. B3 — Newhaven release chronology
 
-## 12. B3 — Newhaven and vocation-selection anchor
+Official October 2025 material defines the Newhaven redesign before the selected target.
 
-Official October 2025 Newhaven rollout material provides a strong pre-target creation/early-game anchor.
+October 15, 2025 pre-release material describes:
 
-Official October 15, 2025 teaser states that:
-
-- a redesigned tutorial begins the new-player flow;
-- after finishing it, the player may teleport to Rookgaard or take the portal to Newhaven;
-- in Newhaven the player selects a vocation through a new pop-up;
-- Newhaven contains the early progression services/areas;
-- the western exit requires level 8 and account email confirmation.
+- a redesigned tutorial;
+- post-tutorial choice to Rookgaard or portal to Newhaven;
+- vocation selection in Newhaven through a pop-up;
+- Newhaven's early progression services/areas;
+- a level-8/email-confirmation requirement on the western exit.
 
 Primary source:
 
 - `https://www.tibia.com/news/?id=8543&subtopic=newsarchive` — **A New Helping Hand II**, 2025-10-15.
 
-Official October 8, 2025 material also states that players can no longer change vocation after their initial choice or return to Newhaven after leaving it.
+October 8, 2025 pre-release material states that players would no longer be able to change vocation after their initial choice or return to Newhaven after leaving it.
 
 Primary source:
 
 - `https://www.tibia.com/news/?id=8541&subtopic=newsarchive` — **A New Helping Hand**, 2025-10-08.
 
-Official October 21, 2025 release states Newhaven opened as Tibia's new entry point and Dawnport was retired.
+October 21, 2025 production news states that Newhaven opened as Tibia's new entry point and Dawnport was retired.
 
 Primary source:
 
 - `https://www.tibia.com/news/?id=8553&subtopic=newsarchive`.
 
+Current starting documentation still places skip-tutorial characters in Newhaven ready to select a vocation.
+
 ### Classification
 
-- Newhaven as entry/progression area before July 28: `PROVEN`;
-- tutorial → Rookgaard-or-Newhaven fork: `PROVEN` pre-target release semantics;
-- vocation selection in Newhaven: `PROVEN` pre-target release semantics;
-- no vocation change after initial choice / no return to Newhaven after leaving: `PROVEN` pre-target release semantics unless later target evidence supersedes it; no superseding evidence was established in this pass.
+- Newhaven live as entry point before July 28: `PROVEN` by dated production release;
+- tutorial/Newhaven/vocation-selection model: **`DERIVED` strong continuity** from pre-release primary + production launch + current primary, not direct July-28 snapshot proof;
+- no casual re-vocation/return-to-Newhaven rule: **`DERIVED` candidate**, not promoted to target `PROVEN` solely from the teaser.
 
-For exact July-28 continuity, these are strong pre-target anchors and are additionally corroborated by target-era Character Bazaar `Newhaven` quest-line state.
+This correction prevents planned pre-release semantics from being overstated as direct target observation.
 
-## 13. B3 — Targuna changed the level-8+ continuation before target
+## 13. B3 — Targuna superseded the old level-8+ route before target
 
-Official March 17, 2026 news states that from level 8 onward characters would no longer travel directly from Newhaven to Thais Peninsula; all characters, including monks, would instead continue to Targuna.
+Official March 17, 2026 news states that level-8+ characters would no longer travel directly from Newhaven to Thais Peninsula and that all characters, including monks, would continue to Targuna. Subsequent March/April live-fix chronology refers to the Newhaven/Targuna production flow, establishing it as live before July 28.
 
 Primary source:
 
 - `https://www.tibia.com/news/?id=8733&subtopic=newsarchive` — **Greater Lessons for Young Tibians**, 2026-03-17.
-
-Follow-up March/April 2026 live-fix chronology refers to Targuna/Newhaven production behavior, showing the flow was live months before July 28.
 
 The currently indexed official Quick Start still says Newhaven exits to Thais Peninsula and monks to Blue Valley.
 
@@ -312,74 +283,64 @@ Current source:
 
 ### Classification
 
-- Targuna as post-Newhaven level-8+ continuation before target: `PROVEN` dated chronology;
-- current Quick Start Thais/Blue Valley wording: `CONFLICT / stale official documentation` for July-28 route;
-- target architecture must follow the dated production chronology, not the stale current paragraph.
+- Targuna continuation live before target: `PROVEN` by dated release/follow-up chronology;
+- current Quick Start Thais/Blue Valley wording: `CONFLICT / stale official documentation` for the July-28 route.
 
-## 14. B3 — current skip-tutorial starting state
+Dated production chronology outranks the stale paragraph for target reconstruction.
 
-Current official starting manual states that players who already have a character on the main continent may skip the tutorial and that those characters start at **level 2 in Newhaven**, ready to select a vocation.
+## 14. B3 — current skip-tutorial level-2 state
+
+Current starting manual says players eligible to skip the tutorial start at **level 2 in Newhaven**, ready to select a vocation.
 
 Current source:
 
 - `https://www.tibia.com/gameguides/?section=starting&subtopic=manual`.
 
-### Historical search result
-
-The targeted official-news search did not locate a dated 2025/2026 primary release note explicitly specifying the same `skip tutorial -> level 2 in Newhaven` value.
-
-The 2025 Newhaven release material proves the tutorial/Newhaven/vocation architecture, but not this exact skip-start level.
+The targeted historical search did not resolve a dated 2025/2026 release note explicitly fixing the same `skip tutorial -> level 2` value.
 
 ### Classification
 
-- current skip-tutorial level-2 rule: `PROVEN` current;
+- current level-2 skip rule: current-primary fact;
 - exact July-28 continuity: `UNKNOWN`.
 
 ## 15. B3 — exact starter template remains unresolved
 
-Historical official material proves that tutorials provide early equipment and that Newhaven is the vocation-selection/early-progression area, but this evidence pass does not establish a complete July-28 starter template including:
+The historical material establishes tutorial/Newhaven architecture but not a complete July-28 starter template including:
 
 - exact initial level for every creation path;
-- exact initial HP/mana/capacity/skill values;
-- exact starter inventory/equipment/containers;
-- exact home town/citizenship state;
-- exact position/temple/respawn state;
-- exact Rookgaard/Newhaven selection eligibility for every account state;
-- exact retry/idempotency visible behavior of web/client creation;
-- exact account-confirmation constraints at each transition.
+- initial HP/mana/capacity/skills;
+- starter inventory/equipment;
+- home town/citizenship/respawn state;
+- exact Rookgaard/Newhaven eligibility by account state;
+- web/client creation retry/error semantics;
+- all account-confirmation constraints.
 
-These remain `UNKNOWN` for Stage B.
+These remain `UNKNOWN`.
 
-## 16. B3 — Character Bazaar corroboration
+## 16. B3 — target-era corroboration
 
-Official Character Bazaar pages indexed in 2026 include the `Newhaven` completed quest line on multiple characters, including entries whose character-title data was updated before the July-28 target.
+Official Character Bazaar pages indexed around the target include `Newhaven` as a completed quest line on characters whose character-state metadata predates July 28. This corroborates Newhaven's presence in durable/public target-era character data.
 
-This corroborates that Newhaven progression state was present in target-era durable/public character data.
-
-It does **not** define which part of that quest/progression belongs in the core Character aggregate versus content/quest authority.
-
-Stage A remains binding: public display on a character page does not transfer semantic ownership into Character.
+It does **not** establish that Newhaven quest state belongs in the core Character aggregate. Stage A remains binding: display on a character page does not transfer semantic ownership from content/quest authority.
 
 ## 17. B3 result
 
-B3 is **reduced but not closed**.
+**Partially reduced, not closed.**
 
-Strong pre-target/target-aligned facts:
+Strong anchors:
 
-1. Newhaven replaced Dawnport as the new entry point before target;
-2. redesigned tutorial feeds into a Rookgaard-or-Newhaven choice;
-3. vocation selection occurs in Newhaven;
-4. vocation cannot be casually changed after the initial Newhaven choice under the 2025 release model;
-5. post-Newhaven level-8+ continuation was changed to Targuna before July 28;
-6. stale current Quick Start content must not override dated production chronology.
+1. Newhaven was live as the new entry point before target;
+2. tutorial/Newhaven/vocation-selection flow has strong continuity evidence;
+3. Targuna replaced the old post-Newhaven Thais/Blue-Valley continuation before target;
+4. current Quick Start is stale for that route.
 
-Still unresolved:
+Still blocked:
 
-- exact target-era skip-tutorial level 2 continuity;
-- exact creation web/client input validation at target;
-- full starter stats/items/template;
-- exact home/citizenship/respawn fields;
-- exact account-state eligibility and error semantics.
+- exact target-era skip-tutorial level-2 continuity;
+- exact creation input validation/error semantics;
+- exact starter stats/items/template;
+- home/citizenship/respawn details;
+- precise account-state eligibility rules.
 
 ## 18. Revised B1-B3 blocker state
 
@@ -389,16 +350,16 @@ Still unresolved:
 
 Strong candidates:
 
-- global/Tibia-wide uniqueness;
-- long-lived technical format-restriction family;
+- Tibia-wide/global uniqueness;
+- technical format-restriction family;
 - six-month old-name lookup/history after rename.
 
 Still blocked:
 
 - exact normalization/case/space/repertoire;
-- exact 29-character target continuity;
-- reserved/restricted pattern revision;
-- deleted-name recycling algorithm/timing.
+- exact 29-letter target continuity;
+- restricted/reserved patterns;
+- deleted-name release algorithm/timing.
 
 ### B2 deletion/quota
 
@@ -421,8 +382,8 @@ Still blocked:
 
 Strong anchors:
 
-- Newhaven entry and vocation selection;
-- no casual re-vocation/return-to-Newhaven under release model;
+- Newhaven entry point;
+- tutorial/Newhaven/vocation-selection continuity;
 - Targuna continuation before target.
 
 Still blocked:
@@ -434,45 +395,45 @@ Still blocked:
 
 ## 19. Architecture consequences
 
-This evidence pass reinforces several already accepted constraints without creating new binding architecture:
+This nonbinding evidence pass reinforces existing accepted boundaries without creating new authority:
 
-- Character Authority needs a game-wide Reference name namespace, not silently per-world uniqueness;
-- current name, old-name searchable alias/history and deleted-name reservation are distinct concepts;
-- B2 numeric deletion policies belong in a versioned Reference/product policy, not in the semantic lifecycle enum itself;
-- starter state must remain a versioned ruleset/content template, not hard-coded Character constructor defaults;
-- early-game route/quest content belongs to content/quest authority even when it affects character progression;
-- final naming indexes, deletion timers and starter-state physical fields must not be frozen by DUR-02 until target semantics are accepted.
+- Reference naming should preserve a game-wide namespace rather than silently per-world uniqueness;
+- current name, searchable old-name alias/history and deleted-name reservation are distinct concepts;
+- B2 numeric policies belong in versioned Reference/product policy, not in the semantic lifecycle enum itself;
+- starter state remains a versioned ruleset/content template, not hard-coded Character-constructor defaults;
+- early-game route/quest content remains content/quest authority even when it affects character progression;
+- DUR-02 must not freeze final naming indexes, deletion timers or starter-state fields until target semantics are accepted.
 
-## 20. Evidence-acquisition stopping rule for B1-B3
+## 20. Evidence-acquisition stopping rule
 
-This bounded pass made meaningful progress but reached diminishing returns for primary web evidence.
+This bounded pass reached diminishing returns for general primary-web search on B1-B3.
 
-The next B1-B3 evidence improvement should come from one of:
+Further B1-B3 progress should require a new evidence source/hypothesis, such as:
 
 1. provenance-clear archived official manual snapshots near July 28;
 2. owner-provided historical official captures;
-3. a rule-specific official change notice newly discovered through a narrower chronology;
-4. controlled current observation only when continuity to July 28 can be independently evidenced.
+3. newly discovered rule-specific official change chronology;
+4. controlled current observation only when continuity to July 28 is independently established.
 
-Repeated general web search for the same 60/30/skip-level-2 phrases should not continue without a new hypothesis.
+Do not repeat generic searches for the same 60/30/skip-level-2 phrases without new evidence leverage.
 
-## 21. Owner decision result
+## 21. Owner-decision result
 
 **No owner decision required.**
 
-This pass does not produce a complete target-accurate B1/B2/B3 owner package. Asking the owner to choose values that should be determined by Reference evidence would be premature.
+The pass does not produce a complete target-accurate B1/B2/B3 owner package. Asking the owner to choose values that should be determined by Reference evidence would be premature.
 
-If historical evidence remains unavailable later, the owner may need to choose an explicit Reference fallback/difference policy, for example adopting a current documented rule as a declared approximation. That decision is **not required yet**.
+If historical evidence ultimately proves unavailable, a later owner decision may choose an explicit Reference fallback/difference policy. That point has not yet been reached.
 
 ## 22. Next programme evidence work
 
-Proceed autonomously to the next Stage-B blockers with high downstream leverage:
+Proceed autonomously to the remaining high-leverage Stage-B evidence blockers:
 
 1. **B4 progression formulas / authoritative-vs-derived mapping**;
 2. **B5 promotion continuity and entitlement boundary**;
 3. then B6/B7 death-edge and offline-effectiveness evidence;
-4. B8 modern build-state ownership in conjunction with GAME-ITEM/ability/content boundaries.
+4. B8 modern build-state ownership with GAME-ITEM/ability/content boundaries.
 
-B1-B3 remain registered as open evidence gaps and should be revisited only when new primary historical evidence becomes available.
+B1-B3 remain registered as open evidence gaps and should be revisited when genuinely new historical primary evidence becomes available.
 
 Until Stage B receives an owner-accepted complete evidence-backed contract, overall `GAME-CHAR-01` remains **PROPOSED / PLANNED / NOT_STARTED** and runtime/schema authority remains **NONE**.
