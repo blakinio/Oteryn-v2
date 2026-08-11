@@ -4,18 +4,18 @@
 task_id: OTV2-20260811-game-char-stage-b-minimum-closure
 title: Prepare minimum GAME-CHAR Stage B closure decision packet
 mode: COORDINATE
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260811-game-char-stage-b-minimum-closure
-pr: null
+pr: 190
 base_sha: 4dce1e4da5c7c9e442abe99975aac3e7913b46b4
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-11T23:46:00+02:00
-updated_at: 2026-08-11T23:46:00+02:00
+updated_at: 2026-08-11T23:54:00+02:00
 execution_budget_minutes: 60
 owned_paths:
   - docs/agents/tasks/active/OTV2-20260811-game-char-stage-b-minimum-closure.md
@@ -40,38 +40,68 @@ external_repositories: []
 
 ## Outcome
 
-Prepare one nonbinding owner decision packet that converts the accumulated #183/#185/#187 evidence into the smallest safe Stage-B semantic architecture closure, explicitly separating durable ownership/versioning/migration decisions from Reference values/formulas that remain fail-closed implementation/parity gates.
+Prepare one nonbinding owner decision packet that converts #183/#185/#187 evidence into the smallest safe Stage-B semantic architecture closure, separating durable ownership/versioning/migration decisions from Reference values/formulas that remain fail-closed implementation/parity gates.
 
 ## Source of truth
 
 - `PROVEN`: trusted base is `main@4dce1e4da5c7c9e442abe99975aac3e7913b46b4`.
 - `PROVEN`: first Reference target is owner-accepted as Global Tibia production-observable behavior after the 2026-07-28 server-save/maintenance boundary.
 - `PROVEN`: Stage A is owner-accepted; overall `GAME-CHAR-01` remains `PROPOSED / PLANNED / NOT_STARTED`.
-- `PROVEN`: #183, #185 and #187 are nonbinding evidence packages; no Stage-B rule has yet been owner-accepted.
-- `PROVEN`: final character-bearing DUR-02 schema currently waits for accepted Stage B/full GAME-CHAR closure.
-- `PROVEN`: exact first Reference world/PvP type remains unresolved; PvP is an accepted secondary product pillar but exact world-type/ruleset taxonomy is downstream.
-- `PROVEN`: open PR #162 owns disjoint CI/repository-governance paths and is out of scope.
+- `PROVEN`: #183/#185/#187 are lifecycle-closed nonbinding evidence packages; no Stage-B rule is accepted yet.
+- `PROVEN`: final character-bearing DUR-02 schema architecture currently waits for accepted Stage B/full GAME-CHAR closure.
+- `PROVEN`: exact first Reference world/PvP type remains unresolved; PvP is secondary pillar but exact world types/rules remain downstream.
+- `PROVEN`: PR #162 is disjoint CI/governance work and untouched.
 
 ## Acceptance criteria
 
-- [ ] Define a minimum semantic Stage-B closure that is sufficient for durable Character architecture without pretending unresolved formulas/values are known.
-- [ ] Explicitly classify which unresolved items remain hard blockers for final durable semantics and which may move to versioned Reference policy/ruleset/SIM/content/parity-fixture gates.
-- [ ] Preserve fail-closed Reference parity: deferred values/formulas cannot be implemented/claimed until evidenced or explicitly declared different.
-- [ ] Preserve Stage-A Character/FND-ID/FND-04, Platform entitlement, GAME-ITEM/DUR-03, world/profile/PvP and content/ruleset ownership boundaries.
-- [ ] Define the effect on final GAME-CHAR and DUR-02 only as a recommendation awaiting owner acceptance.
-- [ ] Do not update current status/register/horizon because no owner acceptance exists yet.
-- [ ] Do not implement runtime/schema/protocol/content/Platform behavior.
+- [x] Defined minimum semantic Stage-B closure sufficient for durable Character architecture without pretending unresolved formulas/values are known.
+- [x] Classified unresolved items between semantic architecture and versioned Reference policy/ruleset/SIM/content/parity gates.
+- [x] Preserved fail-closed parity: unresolved values/formulas cannot be implemented/claimed until evidenced or explicitly declared different.
+- [x] Preserved Stage-A/FND-ID/FND-04, Platform entitlement, GAME-ITEM/DUR-03, world/profile/PvP and content/ruleset boundaries.
+- [x] Added explicit Reference vocabulary for five vocation families/promoted forms, pre-vocation state and eight target-observed skill categories.
+- [x] Defined final GAME-CHAR/DUR-02 effect only as recommendation awaiting owner acceptance.
+- [x] Did not update current status/register/horizon.
+- [x] Did not implement runtime/schema/protocol/content/Platform behavior.
+- [x] Added explicit supersession/reopening evidence rule for DERIVED recommendations.
 - [ ] Perform full exact-head self-review and required documentation CI before merge.
+
+## Key recommendation
+
+If owner later accepts the packet:
+
+- `GAME-CHAR-01` architecture may become `ACCEPTED / LIFECYCLE_CLOSED / NOT_STARTED` after its separate acceptance-delivery lifecycle;
+- final paper-only DUR-02 Character schema architecture may proceed;
+- unresolved target values/formulas remain hard feature/ruleset/SIM/content/world-profile parity gates and never become defaults;
+- no runtime/schema implementation authority is created.
+
+## Review repair
+
+### Repair cycle 1 — semantic catalogue omission
+
+Pre-PR self-review found that the initial packet closed ownership/formula boundaries but did not explicitly freeze the target-observed vocation/skill vocabulary required by durable Character semantics.
+
+Repair:
+
+- added five Reference vocation families and promoted forms;
+- added explicit pre-vocation/unselected state requirement;
+- added eight evidenced Reference skill categories;
+- added general supersession/reopening evidence for DERIVED target decisions;
+- retained ruleset/profile versioning so these do not become universal engine enums.
+
+No owner acceptance or implementation authority was created.
+
+Repair budget used: `1/3`.
 
 ## Excluded scope
 
-No Stage-B acceptance, no GAME-CHAR status change, no physical schema, no exact unproven Reference formula/value, no first Reference world-type selection, no runtime/content/Platform/external-repository implementation.
+No Stage-B acceptance, no GAME-CHAR status mutation, no physical schema, no exact unproven formula/value, no first Reference world-type selection, no runtime/content/Platform/external-repository implementation.
 
 ## Validation
 
 ### Focused
 
-Reconcile the closure packet against Stage A, the accepted Reference target/evidence hierarchy, #183/#185/#187 evidence, current horizon/status model and architecture decision discipline.
+- reconciled packet against Stage A, accepted Reference target/evidence hierarchy, #183/#185/#187, PvP secondary-pillar boundary, status model and architecture decision discipline;
+- result: **PASS before final-head freeze**; recommended scope preserves strict parity while separating durable topology from later arithmetic/policy evidence.
 
 ### Component/integration/E2E
 
@@ -79,23 +109,27 @@ Reconcile the closure packet against Stage A, the accepted Reference target/evid
 
 ### Exact-head CI
 
-Pending final immutable PR head.
+Pending final immutable PR head after this bookkeeping commit.
 
 ## Self-review
 
 Pending final immutable PR head.
 
+## Independent review
+
+- required: `NO` unless final diff introduces an accepted security/protocol/durable-data/production authority change; intended scope is nonbinding pre-decision synthesis only.
+
 ## Context checkpoint
 
 ```yaml
-last_progress: B1-B3 and B4-B8 evidence tasks are lifecycle-closed; combined evidence is sufficient to synthesize a minimum semantic Stage-B closure rather than continue generic searching.
-status: implementing
+last_progress: Stage-B minimum closure packet is in draft PR #190; repair cycle 1 added missing Reference vocation/skill catalogue and supersession rules; no owner acceptance exists.
+status: validating
 branch: docs/OTV2-20260811-game-char-stage-b-minimum-closure
-pr: null
+pr: 190
 final_head_sha: null
 ci_checks_for_current_head: 0
-repair_cycles_for_current_gate: 0
+repair_cycles_for_current_gate: 1
 owner_action_required: null
 blocker: null
-next_action: Write a nonbinding Stage-B closure packet that separates durable semantic decisions from still-pending Reference policy/formula/content evidence.
+next_action: Freeze final head, perform full-diff self-review, run exact-head documentation CI, merge/archive only if all gates pass, then present the owner decision package.
 ```
