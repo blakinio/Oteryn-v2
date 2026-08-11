@@ -15,18 +15,14 @@ final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-11T13:02:00+02:00
-updated_at: 2026-08-11T13:02:00+02:00
+updated_at: 2026-08-11T13:05:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
   - docs/agents/tasks/active/OTV2-20260811-reference-parity-precedence-risk-owner-baseline.md
   - docs/architecture/GAME-VISION-01_REFERENCE_PARITY_PRECEDENCE_OWNER_BASELINE.md
-  - docs/architecture/GAME-VISION-01_PVP_SECONDARY_PILLAR_OWNER_BASELINE.md
-  - docs/architecture/GAME-VISION-01_SOLO_VIABLE_PARTY_REWARDED_OWNER_BASELINE.md
 public_contracts:
   - docs/architecture/GAME-VISION-01_REFERENCE_PARITY_PRECEDENCE_OWNER_BASELINE.md
-  - docs/architecture/GAME-VISION-01_PVP_SECONDARY_PILLAR_OWNER_BASELINE.md
-  - docs/architecture/GAME-VISION-01_SOLO_VIABLE_PARTY_REWARDED_OWNER_BASELINE.md
 depends_on:
   - GAME-VISION-01_REFERENCE_FIRST_OWNER_BASELINE.md
   - GAME-VISION-01_REFERENCE_HYBRID_TRACKING_OWNER_BASELINE.md
@@ -55,8 +51,8 @@ The owner also accepted the progression/death/risk direction: Reference keeps th
 - `USER_SOURCE`: on 2026-08-11 the owner explicitly accepted the recommended progression/death/risk direction and clarified that solo/party and PvP should be reproduced from Global Tibia in Reference, asking whether Vision describes how the target Oteryn game should eventually look.
 - `PROVEN`: Reference-first and hybrid tracking already require named immutable Reference revisions and explicit promotion of upstream changes.
 - `PROVEN`: player-promise and shared architecture decisions impose reliability, server-authority and explicit-difference requirements across profiles.
-- `PROVEN`: the PvP-secondary and solo-viable/party-rewarded baselines are product-level emphasis decisions and explicitly leave exact mechanics unresolved.
-- `DERIVED`: Reference parity must therefore take precedence over those future gameplay-emphasis choices wherever applying them directly would change the selected Reference baseline.
+- `PROVEN`: the existing PvP-secondary and solo-viable/party-rewarded baselines already state that actual Reference mechanics remain governed by the named parity baseline; therefore no historical baseline rewrite is required.
+- `DERIVED`: the new canonical precedence baseline centralizes the owner's clarification and prevents future-facing gameplay preferences from being misread as Reference overrides.
 
 ## Acceptance criteria
 
@@ -82,6 +78,7 @@ This task must not:
 - define XP/skill loss, blessings, death penalties, PvP formulas, shared-XP formulas, party bonuses or content requirements;
 - redefine channel/PvP switching policy;
 - freeze a concrete Evolved progression/death redesign;
+- rewrite historical owner baselines where their existing Reference boundary is already correct;
 - change public branding/marketing claims;
 - modify parallel draft PR #162 repository-engineering/governance paths;
 - authorize production rollout.
@@ -91,14 +88,15 @@ This task must not:
 - Main at task start: `5b141e009f929226a59c2f13cd5075f20a2aeea6`.
 - Open PR at task start: draft #162 (`ci: enforce aggregate pull request merge gate`), owning disjoint repository-engineering/governance paths.
 - Active tasks at task start: foundation preimplementation contracts plus two disconnect-analysis tasks; no path overlap with this bounded GAME-VISION delivery.
-- This task will add one owner baseline and narrowly clarify the existing PvP and solo/party owner baselines so future readers cannot interpret them as permission to diverge Reference.
+- Added `docs/architecture/GAME-VISION-01_REFERENCE_PARITY_PRECEDENCE_OWNER_BASELINE.md` as the canonical precedence/interpretation record.
+- Re-read the existing PvP and solo/party owner baselines. Both already preserve named Reference parity for actual mechanics, so this task intentionally avoids unnecessary edits to historical accepted baselines and instead centralizes the new owner clarification in the dedicated precedence document.
 
 ## Validation
 
 ### Focused
 
-- command/run: compare the current owner clarification against Reference-first/hybrid/player-promise/PvP/solo-party baselines, `GAME-VISION-01_PREDECISION_ANALYSIS.md` item 8 and ADR-0010; verify no parallel ownership collision
-- result: pending final diff
+- command/run: compare current owner clarification against Reference-first/hybrid/player-promise/PvP/solo-party baselines, `GAME-VISION-01_PREDECISION_ANALYSIS.md` item 8 and ADR-0010; verify no parallel ownership collision
+- result: **PASS** for declared owner scope before PR/final-head freeze; exact-head review still required after PR checkpoint
 
 ### Component/integration
 
@@ -112,7 +110,7 @@ This task must not:
 
 ### Exact-head CI
 
-- final head: pending
+- final head: pending PR checkpoint
 - trigger source: pending
 - workflow/run/job: pending
 - runner assignment: pending
@@ -122,7 +120,7 @@ This task must not:
 ## Audit
 
 - scope: owner-source fidelity, Reference-vs-Evolved authority, accidental parity override, accidental detailed gameplay freeze, cross-profile quality interpretation, task-template completeness and parallel ownership collision
-- material findings: pending exact-head self-review
+- material findings: no material finding in focused pre-freeze review; exact-head audit pending
 - unresolved findings: pending
 - verdict: pending
 
@@ -143,7 +141,7 @@ This task must not:
 
 ## PR and closeout
 
-- changed-file review: pending
+- changed-file review: pending exact final head
 - unresolved review threads: pending
 - related/superseded PRs: parallel disjoint draft PR #162; no supersession
 - protected auto-merge: pending
@@ -153,7 +151,7 @@ This task must not:
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner accepted Reference parity precedence for gameplay interpretation and the Reference-first progression/death/risk direction; task scope claimed with no ownership collision.
+last_progress: Added the dedicated owner baseline that makes Reference parity authoritative for solo/party, PvP and progression/death/risk while distinguishing long-term Evolved gameplay direction from shared cross-profile quality rules.
 status: implementing
 branch: docs/OTV2-20260811-reference-parity-precedence-risk-owner-baseline
 head_sha: null
@@ -175,5 +173,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Add the Reference parity-precedence owner baseline and narrow clarifications to PvP/solo-party baselines, then open the bounded PR.
+next_action: Open the bounded documentation PR, checkpoint its number, freeze exact head, then run mandatory self-review and repository-required CI.
 ```
