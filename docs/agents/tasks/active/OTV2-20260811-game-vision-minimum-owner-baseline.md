@@ -4,18 +4,18 @@
 task_id: OTV2-20260811-game-vision-minimum-owner-baseline
 title: Persist accepted GAME-VISION-01 minimum product baseline
 mode: COORDINATE
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260811-game-vision-minimum-owner-baseline
-pr: null
+pr: 173
 base_sha: fc937dae0ea6bed8e64b4190d66a7fbb49bdf1cc
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-11T16:37:00+02:00
-updated_at: 2026-08-11T16:37:00+02:00
+updated_at: 2026-08-11T16:52:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -59,14 +59,14 @@ Persist the product owner's explicit acceptance of the complete recommended mini
 
 ## Acceptance criteria
 
-- [ ] Add a canonical owner baseline recording the complete accepted minimum package and its exact acceptance boundary.
-- [ ] Preserve all seven earlier owner baselines without rewriting their history.
-- [ ] Mark current `GAME-VISION-01` DecisionStatus accepted for the minimum product-vision gate while keeping runtime ImplementationStatus `NOT_STARTED`.
-- [ ] Update current programme ordering so `GAME-CHAR-01` is the next product-sensitive architecture gate, with `GAME-CHANNEL-01` and bounded `DUR-02` discovery allowed in parallel as already defined.
-- [ ] Preserve the exact Global Reference baseline as a fail-closed hard gate wherever concrete parity semantics are required.
-- [ ] Preserve exact gameplay/economy formulas, numeric KPI thresholds, branding, monetization, exact Evolved feature inventory and LiveOps cadence as downstream/deferred decisions.
-- [ ] Do not authorize runtime/client/server/protocol/persistence/content/production implementation.
-- [ ] Keep PR #162 and all external repositories untouched.
+- [x] Add a canonical owner baseline recording the complete accepted minimum package and its exact acceptance boundary.
+- [x] Preserve all seven earlier owner baselines without rewriting their history.
+- [x] Mark current `GAME-VISION-01` DecisionStatus accepted for the minimum product-vision gate while keeping runtime ImplementationStatus `NOT_STARTED`.
+- [x] Update current programme ordering so `GAME-CHAR-01` is the next product-sensitive architecture gate, with `GAME-CHANNEL-01` and bounded `DUR-02` discovery allowed in parallel as already defined.
+- [x] Preserve the exact Global Reference baseline as a fail-closed hard gate wherever concrete parity semantics are required.
+- [x] Preserve exact gameplay/economy formulas, numeric KPI thresholds, branding, monetization, exact Evolved feature inventory and LiveOps cadence as downstream/deferred decisions.
+- [x] Do not authorize runtime/client/server/protocol/persistence/content/production implementation.
+- [x] Keep PR #162 and all external repositories untouched.
 - [ ] Perform full final-diff self-review and all repository-required exact-head documentation checks before merge.
 
 ## Excluded scope
@@ -84,14 +84,19 @@ This task does not:
 
 ## Implementation / findings
 
-Pending owner-baseline and narrow current-status/register/horizon synchronization.
+- Added `docs/architecture/GAME-VISION-01_MINIMUM_OWNER_BASELINE.md` as the canonical record of the owner's explicit acceptance of the complete minimum closure package.
+- Synchronized `FOUNDATION_PROGRAMME_CURRENT_STATUS.md`, `GLOBAL_ARCHITECTURE_DECISION_REGISTER.md` and `GAMEPLAY_AND_PRODUCT_ARCHITECTURE_HORIZON.md` so they no longer present `GAME-VISION-01` as unresolved.
+- The status/register/horizon preserve `ImplementationStatus = NOT_STARTED` and explicitly deny runtime authority from this architecture acceptance.
+- The exact first Global Reference baseline remains `DEFERRED WITH HARD GATE`; baseline-neutral `GAME-CHAR-01` architecture may proceed, but concrete Reference semantics must stop rather than guess.
+- While synchronizing the global register, stale progress-only statuses for already accepted/lifecycle-closed FND-02/FND-03/FND-04/DUR-01/ANL-01 were reconciled to the pre-existing canonical `FOUNDATION_PROGRAMME_CURRENT_STATUS.md`. This is status reconciliation only and introduces no new technical decision.
+- PR #173 changes exactly the five declared documentation paths. Parallel PR #162 remains disjoint and untouched.
 
 ## Validation
 
 ### Focused
 
-- command/run: reconcile owner acceptance against the delivered decision packet, seven prior owner baselines, current programme status, global register and gameplay/product horizon
-- result: pending
+- command/run: reconcile owner acceptance against the delivered decision packet, seven prior owner baselines, current programme status, global register, gameplay/product horizon, live `main` and PR #162 changed scope
+- result: **PASS before final-head freeze**; no owner-source mismatch, Reference/Evolved precedence conflict or runtime-authority leakage found
 
 ### Component/integration
 
@@ -105,7 +110,7 @@ Pending owner-baseline and narrow current-status/register/horizon synchronizatio
 
 ### Exact-head CI
 
-- final head: pending
+- final head: pending immutable PR/check evidence after final repository commit
 - trigger source: pending
 - workflow/run/job: pending
 - runner assignment: pending
@@ -114,14 +119,14 @@ Pending owner-baseline and narrow current-status/register/horizon synchronizatio
 
 ## Self-review
 
-- exact head: pending
+- exact head: pending immutable PR evidence after final repository commit
 - method/reviewer: implementing/coordinating agent full-diff architecture/product/governance review
-- material findings: pending
+- material findings: pending final-head review
 - verdict: pending
 
 ## Independent review
 
-- required: `NO` unless final diff introduces a high-risk authority/security/protocol/durable-data/production change; intended scope is product/architecture documentation only
+- required: `NO` under the trusted-base risk policy — this package records an explicit owner product decision and synchronizes paper-only architecture/status documents; it changes no executable security/protocol/persistence/multichannel authority/production behavior and introduces no unresolved material uncertainty
 - exact head: `NOT_APPLICABLE`
 - method/auditor: `NOT_APPLICABLE`
 - material findings: `NOT_APPLICABLE`
@@ -129,9 +134,9 @@ Pending owner-baseline and narrow current-status/register/horizon synchronizatio
 
 ## PR and closeout
 
-- changed-file review: pending
-- unresolved review threads: pending
-- related/superseded PRs: PR #162 parallel/disjoint
+- changed-file review: five declared documentation paths; final-head verification pending
+- unresolved review threads: 0 before final freeze
+- related/superseded PRs: PR #162 parallel/disjoint; no supersession
 - protected auto-merge: pending
 - merge commit/result: pending
 - ownership release: pending
@@ -139,11 +144,11 @@ Pending owner-baseline and narrow current-status/register/horizon synchronizatio
 ## Context checkpoint
 
 ```yaml
-last_progress: Product owner accepted the full minimum GAME-VISION closure package; dedicated paper-only owner-baseline branch claimed from current main.
-status: implementing
+last_progress: Owner-accepted minimum GAME-VISION baseline and current programme/register/horizon synchronization are in draft PR #173; focused reconciliation passed and the package is ready for final-head self-review and documentation CI.
+status: validating
 branch: docs/OTV2-20260811-game-vision-minimum-owner-baseline
 head_sha: null
-pr: null
+pr: 173
 final_head_sha: null
 final_head_frozen_at: null
 ci_trigger_source: null
@@ -161,5 +166,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Persist the canonical GAME-VISION minimum owner baseline and synchronize current programme/register/horizon status.
+next_action: Freeze the final PR head, perform exact-head full-diff self-review, run required documentation CI, and merge only if all applicable gates pass.
 ```
