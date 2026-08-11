@@ -15,13 +15,15 @@ final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-11T08:40:00+02:00
-updated_at: 2026-08-11T08:50:30+02:00
+updated_at: 2026-08-11T08:56:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
   - docs/agents/tasks/active/OTV2-20260811-game-vision-channel-decision-dossier.md
   - docs/architecture/GAME-VISION-01_PREDECISION_ANALYSIS.md
+  - docs/architecture/GAME-VISION-01_PREDECISION_ECONOMY_SCARCITY_ADDENDUM.md
   - docs/architecture/GAME-CHANNEL-01_PREDECISION_ANALYSIS.md
+  - docs/architecture/GAME-CHANNEL-01_PREDECISION_CAPACITY_TRIGGERS_ADDENDUM.md
 public_contracts: []
 depends_on:
   - ADR-0010-reference-and-evolved-world-product-profiles.md
@@ -37,13 +39,13 @@ external_repositories:
 
 ## Outcome
 
-Produce two nonbinding, owner-decision-ready architecture analyses for `GAME-VISION-01` and `GAME-CHANNEL-01`. Each dossier separates accepted invariants from open product choices, evaluates realistic options, states risks/trade-offs, gives an explicit recommendation, identifies the exact owner decisions that remain, and does not convert recommendations into accepted product policy.
+Produce nonbinding, owner-decision-ready architecture analyses for `GAME-VISION-01` and `GAME-CHANNEL-01`. The dossier separates accepted invariants from open product choices, evaluates realistic options, states risks/trade-offs, gives explicit recommendations, identifies the exact owner decisions that remain, and does not convert recommendations into accepted product policy.
 
 ## Architecture and source of truth
 
 - `PROVEN`: ADR-0010 accepts Reference and Evolved profile families over one engine/client/`protocol-oteryn`, but does not require simultaneous launch.
 - `PROVEN`: `PRODUCT_DIRECTION_BASELINE.md` accepts Global Tibia observable behavior as the initial reference direction while leaving exact parity target, launch sequence and first Oteryn differences unresolved.
-- `PROVEN`: `ARCHITECTURE_REVIEW_REFINEMENTS_2026-08-10.md` requires a minimum `GAME-VISION-01` before broad gameplay/content production and a dedicated `GAME-CHANNEL-01` before multichannel becomes a player-facing feature.
+- `PROVEN`: `ARCHITECTURE_REVIEW_REFINEMENTS_2026-08-10.md` requires a minimum `GAME-VISION-01` before broad gameplay/content production and a dedicated `GAME-CHANNEL-01` before multichannel becomes a player-facing feature. It explicitly requires economy source/sink/scarcity goals and channel creation/removal/capacity-trigger policy.
 - `PROVEN`: `MULTICHANNEL_SYSTEM_SCOPE_MATRIX.md` already freezes system ownership such as channel-local simulation, world-shared market/social state, shared character durability and channel-switch safety gates; this task does not redesign those accepted boundaries.
 - `PROVEN`: task base `main@c1f115621acd7ba87fc47954f0e8b7d94f63e037` had no open Oteryn-v2 PR.
 - `PROVEN`: read-only comparative evidence from Blizzard documents sharding/layering trade-offs with persistent-world/event semantics; ESO support documents player-visible phasing/co-location failure and a regroup mechanism.
@@ -54,14 +56,16 @@ Produce two nonbinding, owner-decision-ready architecture analyses for `GAME-VIS
 
 - [x] `GAME-VISION-01_PREDECISION_ANALYSIS.md` contains problem, constraints, realistic options, trade-offs, risks, recommendation, future impact and mandatory decision-timing test.
 - [x] Vision analysis gives a recommended launch sequencing and parity-baseline policy without marking it owner-accepted.
+- [x] Vision dossier includes an explicit economy source/sink/scarcity decision frame and owner choice without guessing rates/prices/formulas.
 - [x] Vision analysis identifies the minimum owner decisions necessary to unblock `GAME-CHAR-01`, broad gameplay/content work and later alpha milestone design.
 - [x] `GAME-CHANNEL-01_PREDECISION_ANALYSIS.md` separates already accepted system ownership from unresolved player-facing channel policy.
 - [x] Channel analysis covers assignment/co-location, visibility/manual switching, anti-hopping, spawn/resource multiplication, boss/event eligibility, PvP, social fragmentation, recovery and capacity lifecycle.
+- [x] Channel dossier defines semantic create/drain/abort/remove trigger conditions while deferring numeric thresholds/hysteresis/orchestration to `PERF-01`/`OPS-CHANNEL-01`.
 - [x] Channel analysis states which decisions block `VSL-MULTICHANNEL-01` versus which can remain deferred while single-channel vertical slices proceed.
 - [x] Relevant external MMO observations are used only as comparative evidence, not copied as policy or implementation.
 - [x] Existing disconnect/forensics active checkpoints are audited for lifecycle relevance; direct evidence does not justify archiving them in this task.
 - [x] No runtime code, wire schema, persistence schema, production policy or owner-only gameplay rule is implemented or silently accepted.
-- [ ] Exact-head self-review and repository-required CI pass before merge.
+- [ ] Repaired exact-head self-review and repository-required CI pass before merge.
 
 ## Excluded scope
 
@@ -75,22 +79,25 @@ Produce two nonbinding, owner-decision-ready architecture analyses for `GAME-VIS
 
 ## Implementation / findings
 
-- Added `GAME-VISION-01_PREDECISION_ANALYSIS.md` with three realistic launch-profile options, parity-baseline options, recommended Reference-first/hybrid-release-train path, candidate player promise, design pillars/anti-pillars, core-loop frame, success-measure categories and an eight-question owner decision packet.
+- Added `GAME-VISION-01_PREDECISION_ANALYSIS.md` with realistic launch-profile options, parity-baseline options, recommended Reference-first/hybrid-release-train path, candidate player promise, design pillars/anti-pillars, core-loop frame, success-measure categories and an owner decision packet.
 - Added `GAME-CHANNEL-01_PREDECISION_ANALYSIS.md` with explicit separation between accepted ownership semantics and open player policy. It recommends soft-visible sticky channels, automatic assignment with social co-location preference, safe-state manual switching, server-authoritative anti-hopping eligibility, explicit encounter/reward scope, no PvP escape via channel switching, world-level social continuity and same-channel recovery semantics.
 - Comparative evidence is deliberately non-normative. Blizzard's Classic layering discussion demonstrates that capacity partitioning can conflict with world-event semantics; ESO's phasing support demonstrates that invisible phase separation creates real co-location UX problems.
 - Read-only `blakinio/canary` proposal classification confirms there is a large Evolved-feature inventory. The vision dossier explicitly rejects treating it as an initial launch checklist and recommends reliability/UX-first differences before broad systemic redesign.
 - Audited `docs/agents/tasks/active/OTV2-20260807-disconnect-forensic-evidence-analysis.md` and `OTV2-20260807-lag-disconnect-protection-analysis.md` against their merged architecture packages and later FND-04/ANL work. They still preserve unresolved downstream questions including PvP disconnect semantics, post-grace behavior, detector/enforcement policy and remaining forensic policy/detail. They are therefore not proven stale or fully superseded; no lifecycle mutation is justified here.
-- Initial full-diff self-review found one task-metadata omission only: the read-only `blakinio/canary` evidence repository was not listed under `external_repositories`, and the task had not yet recorded PR #152. This checkpoint repairs those declarations without changing either analysis recommendation or any accepted architecture.
-- Current intended diff remains exactly three declared paths. No accepted ADR, runtime, dependency, workflow or public contract is changed.
+- Initial self-review repaired task metadata only: PR #152 and the read-only Canary evidence repository were declared.
+- After the first frozen head passed self-review and CI, an automatically triggered Codex review surfaced two useful P2 completeness findings. The merge was correctly blocked by unresolved conversations. Repair cycle 2 adds only nonbinding pre-decision completeness:
+  - `GAME-VISION-01_PREDECISION_ECONOMY_SCARCITY_ADDENDUM.md` supplies the missing launch-level source/sink/scarcity options and ninth owner decision, recommending Reference-rule mechanical economy first while explicitly rejecting fabricated price/supply parity and deferring numeric economics;
+  - `GAME-CHANNEL-01_PREDECISION_CAPACITY_TRIGGERS_ADDENDUM.md` freezes candidate semantic `DEMAND_PRESSURE`, `RECOVERY_PRESSURE`, low-load consolidation, unhealthy/recovery, drain-abort and terminal-remove predicates while leaving numbers and orchestration later.
+- No accepted ADR, runtime, dependency, workflow or public contract is changed.
 
 ## Validation
 
 ### Focused
 
 - source reconciliation: PASS against ADR-0010, product baseline, 2026-08-10 architecture refinements, multichannel scope matrix, current programme status and read-only comparative sources
-- pre-final changed-file set: exactly 3 declared paths; `behind_by=0`
-- authority classification: both new documents state `PRE-DECISION ANALYSIS / NOT ACCEPTED` and explicitly forbid implementation/acceptance inference
-- PR metadata: PR #152 uses required `## Summary`, `## Scope` and `## Validation` headings
+- pre-repair exact head `8eefbcce9ffefb902882f2cd65612ad669211ff1`: exact-head self-review PASS and Agent Governance / Dependency Review / CodeQL all PASS, but terminal merge blocked by two newly surfaced review P2s; therefore that evidence is superseded for merge readiness
+- repair scope: task metadata + two pre-decision addenda only; accepted architecture remains untouched
+- authority classification: every analysis/addendum remains `PRE-DECISION ANALYSIS / NOT ACCEPTED`
 
 ### Component/integration
 
@@ -102,30 +109,30 @@ Produce two nonbinding, owner-decision-ready architecture analyses for `GAME-VIS
 
 ### Exact-head CI
 
-- final head: pending this metadata checkpoint commit
+- final head: pending repair-cycle-2 checkpoint commit
 - result: pending
 
 ## Self-review
 
-- initial candidate head `18d82d02772d29c69b5f796642a3e4c7dad2ebdb`: one low-risk task-metadata omission found and repaired
-- exact final head: pending current checkpoint commit
+- pre-repair exact head `8eefbcce9ffefb902882f2cd65612ad669211ff1`: PASS, superseded by review-driven repair
+- exact repaired head: pending current checkpoint commit
 - method/reviewer: implementing/coordinating agent full-diff architecture review
-- material findings: pending repaired final-head review
+- material findings: economy/scarcity completeness and semantic capacity-trigger completeness repaired; final recheck pending
 - verdict: pending
 
 ## Independent review
 
-- required: `NO` under current risk policy — this task creates explicitly nonbinding pre-decision analyses only; it changes no accepted authority/security/protocol/persistence/product contract and cannot authorize implementation. Mandatory self-review and exact-head validation remain required.
+- required: `NO` under current risk policy — this task remains explicitly nonbinding pre-decision analysis; it changes no accepted authority/security/protocol/persistence/product contract and cannot authorize implementation. Automatic Codex review activity is incidental and is not relied upon as a required gate, although its valid findings are repaired.
 - exact head: `NOT_APPLICABLE`
 - method/auditor: `NOT_APPLICABLE`
-- material findings: `NOT_APPLICABLE`
+- material findings: `NOT_APPLICABLE` as a required independent gate
 - verdict: `NOT_APPLICABLE`
 
 ## PR and closeout
 
 - PR: #152
-- changed-file review: exactly 3 declared paths before final checkpoint commit
-- unresolved review threads: pending exact-head recheck
+- changed-file review: pending repaired final head; intended scope now 5 declared paths
+- unresolved review threads: two P2 threads pending verification/resolution after repaired head is visible
 - related/superseded PRs: none
 - protected auto-merge: pending
 - merge commit/result: pending
@@ -134,7 +141,7 @@ Produce two nonbinding, owner-decision-ready architecture analyses for `GAME-VIS
 ## Context checkpoint
 
 ```yaml
-last_progress: Repaired the only self-review finding by declaring the read-only Canary evidence repository and PR #152 in the task metadata; analysis content and authority classification remain unchanged.
+last_progress: Repaired two automatic-review completeness findings with nonbinding economy/scarcity and semantic channel-capacity trigger addenda; no owner decision or accepted architecture was changed.
 status: validating
 branch: docs/OTV2-20260811-game-vision-channel-decision-dossier
 head_sha: null
@@ -142,7 +149,7 @@ pr: 152
 final_head_sha: null
 final_head_frozen_at: null
 ci_trigger_source: pull_request/synchronize
-ci_check_generation: repaired-final-head-pending
+ci_check_generation: repair-cycle-2-head-pending
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -151,10 +158,10 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 1
+repair_cycles_for_current_gate: 2
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Freeze the repaired exact head, perform mandatory full-diff self-review, verify exact-head CI and squash-merge only if the unchanged head is clean.
+next_action: Freeze the repaired exact head, perform mandatory full-diff self-review, verify exact-head CI, resolve the two repaired conversations and squash-merge only if the unchanged head is clean.
 ```
