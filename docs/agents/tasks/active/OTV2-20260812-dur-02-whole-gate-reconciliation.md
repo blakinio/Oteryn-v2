@@ -4,24 +4,23 @@
 task_id: OTV2-20260812-dur-02-whole-gate-reconciliation
 title: Reconcile the complete historical DUR-02 Persistence-v1 gate
 mode: COORDINATE
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260812-dur-02-whole-gate-reconciliation
-pr: null
+pr: 199
 base_sha: 710c4b5e00de9f14224a6949c3bc7364f4c724a4
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-12T09:12:00+02:00
-updated_at: 2026-08-12T09:12:00+02:00
+updated_at: 2026-08-12T09:24:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
   - docs/agents/tasks/active/OTV2-20260812-dur-02-whole-gate-reconciliation.md
   - docs/architecture/DUR-02_PERSISTENCE_V1_WHOLE_GATE_RECONCILIATION.md
-  - docs/architecture/FOUNDATION_PROGRAMME_CURRENT_STATUS.md
 public_contracts: []
 depends_on:
   - docs/architecture/FOUNDATION_DECISION_BACKLOG.md
@@ -41,7 +40,7 @@ external_repositories: []
 
 ## Outcome
 
-Reconcile every historical subject listed under stable gate `DUR-02 — Persistence v1` against the architecture that was accepted later. Produce one nonbinding closure packet that distinguishes:
+Reconcile every historical subject listed under stable gate `DUR-02 — Persistence v1` against the architecture accepted later. Deliver one nonbinding decision packet that distinguishes:
 
 - already satisfied by binding architecture;
 - still genuinely owned by DUR-02;
@@ -56,22 +55,61 @@ No SQL DDL, database migration, Rust persistence code, runtime behavior or produ
 - `PROVEN`: current trusted base is `main@710c4b5e00de9f14224a6949c3bc7364f4c724a4`.
 - `PROVEN`: profile-neutral Character persistence is already a binding `OWNER_ACCEPTED PARTIAL BASELINE / LIFECYCLE_CLOSED / NOT_STARTED`.
 - `PROVEN`: overall `DUR-02` remains `PROPOSED / PLANNED / NOT_STARTED` specifically because historical Persistence-v1 scope is broader than that Character sub-scope.
-- `PROVEN`: historical `FOUNDATION_DECISION_BACKLOG.md` lists migration mechanism/schema ownership, Character/lease state, item transfers, idempotency, isolation, outbox/audit, checkpoint/progress loss, market/guild/house/reward consistency, partitioning, backup/PITR/RPO/RTO and rollout/rollback under DUR-02.
-- `PROVEN`: later accepted architecture gives item/economy conservation to `GAME-ITEM-01` + `DUR-03`, event/audit semantics to `ANL-01`, Character/session persistence semantics to the accepted partial baseline + FND-04, runtime checkpoint/replay semantics to FND-03, and production capacity/operations objectives to PERF/OPS gates.
+- `PROVEN`: historical `FOUNDATION_DECISION_BACKLOG.md` lists fourteen material Persistence-v1 subjects: migration/schema ownership, Character state, lease state, item transfers, idempotency, isolation/retries, outbox, audit/telemetry, atomic value/security evidence, checkpoint/progress loss, market/guild/house/reward consistency, partitioning, backup/PITR/RPO/RTO and migration rollout/rollback.
+- `PROVEN`: ADR-0004 already establishes PostgreSQL, separate Platform/game databases, one semantic/migration owner per persistent data set, no shared-table free-for-all, no cross-database FKs, and game-schema ownership by `blakinio/Oteryn-v2`.
+- `PROVEN`: later architecture gives item/economy conservation to `GAME-ITEM-01` + `DUR-03`, event/audit semantics to `ANL-01`, Character/session persistence semantics to the accepted partial baseline + FND-04, runtime checkpoint/replay semantics to FND-03, and production capacity/operations objectives to PERF/OPS gates.
 - `PROVEN`: open PR #191 is a disjoint GAME-CHAR factual provenance correction and PR #162 is disjoint CI/governance work; neither is owned or modified here.
 
 ## Acceptance criteria
 
-- [ ] Enumerate every historical DUR-02 subject without omission.
-- [ ] Assign exactly one primary disposition to each subject: `SATISFIED`, `RETAIN_DUR02`, `MOVED`, or `IMPLEMENTATION_DEFERRED`.
-- [ ] Name the canonical evidence/owner for every `SATISFIED` or `MOVED` subject.
-- [ ] Do not silently move item/currency/market/house/social semantics back into generic Persistence-v1.
-- [ ] Preserve the accepted Character persistence partial baseline unchanged.
-- [ ] Separate architecture requirements from exact library/tool/index/partition/backup cadence choices.
-- [ ] Define the smallest remaining owner decision package required for honest overall DUR-02 acceptance.
-- [ ] State precisely what whole-DUR-02 acceptance would and would not unblock.
-- [ ] Keep runtime/DDL/migrations/production unauthorized.
+- [x] Enumerate every historical DUR-02 subject without omission.
+- [x] Assign exactly one primary disposition to each subject: `SATISFIED`, `RETAIN_DUR02`, `MOVED`, or `IMPLEMENTATION_DEFERRED`.
+- [x] Name the canonical evidence/owner for every `SATISFIED` or `MOVED` subject.
+- [x] Do not silently move item/currency/market/house/social semantics back into generic Persistence-v1.
+- [x] Preserve the accepted Character persistence partial baseline unchanged.
+- [x] Separate architecture requirements from exact library/tool/index/partition/backup cadence choices.
+- [x] Define the smallest remaining owner decision package required for honest overall DUR-02 acceptance.
+- [x] State precisely what whole-DUR-02 acceptance would and would not unblock.
+- [x] Keep runtime/DDL/migrations/production unauthorized.
 - [ ] Complete full exact-head self-review and repository-required documentation CI before merge.
+
+## Findings
+
+### Historical scope classification
+
+All fourteen backlog subjects are accounted for in `DUR-02_PERSISTENCE_V1_WHOLE_GATE_RECONCILIATION.md`.
+
+Primary disposition summary:
+
+- `SATISFIED`: Character state/revision, Character lease ownership, idempotency identity/duplicate-command foundation, critical audit-vs-telemetry semantics;
+- `MOVED`: item/inventory/ground transfer; atomic item/currency/security evidence semantics; market/guild/house/reward consistency;
+- `IMPLEMENTATION_DEFERRED`: partitioning/sharding and exact Rust DB/migration library unless implementation evidence creates a correctness constraint;
+- `RETAIN_DUR02`: migration artifact/authority model, common isolation/locking/retry principle, common audit/outbox substrate boundary, durable-ack/runtime-checkpoint/disaster-loss distinction, PITR/restore safety envelope, common schema-evolution discipline.
+
+### Minimum remaining closure package
+
+The nonbinding recommendation reduces the remaining whole gate to six rules:
+
+1. one game-owned migration ledger/history for the current `oteryn_game` boundary with immutable explicit migration artifacts, dedicated least-privilege migrator and no production runtime auto-schema-sync;
+2. READ COMMITTED only with explicit anomaly-closing locks/constraints, otherwise bounded SERIALIZABLE or stricter accepted domain mechanism, preserving semantic operation identity across retry;
+3. one ANL-compatible durable journal + mutable publication-state substrate pattern for authoritative game domains, atomically committed when evidence is mandatory;
+4. explicit separation between acknowledged durable commits, FND-03 runtime checkpoint/replay and disaster-recovery RPO;
+5. PITR-capable, restore-tested, fail-closed recovery with non-rollback authority fencing while numeric objectives remain OPS/PERF-owned;
+6. game-wide expand -> migrate/backfill -> validate -> cut over -> contract schema-evolution discipline with writer fencing and evidence-based recovery/rollback.
+
+### Repair cycle 1 — status and future-topology scope
+
+Pre-freeze self-review found two issues:
+
+1. the packet described overall DUR-02 `DeliveryStatus=OPEN` even though this is a pre-decision analysis task rather than owner-baseline delivery, while the canonical overlay correctly remains `PLANNED`;
+2. the one-migration-ledger recommendation needed to be bounded to the current `oteryn_game` database boundary so a future explicitly accepted separate game-domain database/service is not accidentally prohibited.
+
+Repair:
+
+- restored overall status to `PROPOSED / PLANNED / NOT_STARTED` during this nonbinding analysis;
+- bounded one migration ledger/history to the current game database and required a later ADR for any genuinely separate persistence authority.
+
+Repair budget used: `1/3`.
 
 ## Excluded scope
 
@@ -85,26 +123,14 @@ No SQL DDL, database migration, Rust persistence code, runtime behavior or produ
 - no Platform writes or external-repository mutation;
 - no production deployment.
 
-## Initial reconciliation hypothesis
-
-The historical gate has accumulated subjects that no longer belong to one monolithic persistence contract. The likely remaining whole-DUR-02 architecture core is much smaller:
-
-1. game-owned migration artifact/authority model;
-2. cross-domain transaction/isolation policy principle;
-3. common durable audit/outbox persistence substrate boundary;
-4. durable-acknowledgement versus runtime-checkpoint/progress-loss distinction;
-5. PostgreSQL backup/PITR/restore safety envelope without numeric operational targets;
-6. game-wide compatible schema-evolution discipline.
-
-Everything else must be proven already satisfied, moved to another gate, or deferred as an implementation/operations choice rather than kept as an artificial blocker.
-
 ## Validation
 
 ### Focused
 
-- compare every historical backlog bullet with current binding architecture and named owner;
-- verify no later gate is silently pre-accepted;
-- result: pending.
+- exact backlog-to-owner reconciliation: **PASS after repair cycle 1**;
+- ADR-0004 ownership compatibility: **PASS**;
+- accepted Character/FND-04/ANL/FND-03 boundaries preserved: **PASS**;
+- no later gameplay gate pre-accepted: **PASS**.
 
 ### Component/integration/runtime E2E
 
@@ -124,22 +150,25 @@ Pending final immutable PR head.
 
 ## PR and closeout
 
-- intended changed files: task + reconciliation packet + narrow current-status `PLANNED -> OPEN` while this concrete gate delivery exists;
+- delivery PR: #199;
+- intended changed files: exactly task + reconciliation packet;
+- `FOUNDATION_PROGRAMME_CURRENT_STATUS.md` remains unchanged because this task is pre-decision analysis rather than owner-baseline delivery;
 - PR #191 and #162 remain untouched;
-- closeout after merge returns overall DUR-02 delivery to `PLANNED` until owner decision is recorded.
+- after delivery merge, separate lifecycle closeout archives the task without changing overall DUR-02 status;
+- owner decision follows only after the reconciliation packet is lifecycle-closed.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Whole-DUR-02 reconciliation task claimed from main after the Character persistence partial baseline lifecycle closed.
-status: implementing
+last_progress: Exhaustive 14-subject DUR-02 reconciliation and six-rule minimum closure package are on draft PR #199; repair cycle 1 corrected status semantics and bounded migration-ledger scope.
+status: validating
 branch: docs/OTV2-20260812-dur-02-whole-gate-reconciliation
-pr: null
+pr: 199
 final_head_sha: null
 final_head_frozen_at: null
 ci_checks_for_current_head: 0
-repair_cycles_for_current_gate: 0
+repair_cycles_for_current_gate: 1
 owner_action_required: null
 blocker: null
-next_action: Write the exhaustive historical-subject reconciliation and minimum whole-DUR-02 closure decision package.
+next_action: Perform terminal full-diff self-review, freeze exact head, run documentation CI, merge/archive only if all gates pass, then present the six-rule whole-DUR-02 owner decision.
 ```
