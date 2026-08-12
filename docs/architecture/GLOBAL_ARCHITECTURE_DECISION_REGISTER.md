@@ -75,6 +75,7 @@ Stable IDs are canonical across tasks, prompts and PRs. Stage labels are descrip
 - `GAME-CHANNEL-01`, `GAME-ITEM-01`, `DUR-04` and `SIM-DETERMINISM-01` may continue in parallel under separate ownership.
 - ADR-0012 fixes native Character Authority versus Platform lifecycle/orchestration ownership without authorizing runtime or persistence implementation.
 - ADR-0013 removes Platform database migration from the native gameplay critical path while preserving PostgreSQL for native game persistence and all ADR-0004 ownership/least-privilege invariants.
+- ADR-0014 accepts TCP-default/future-QUIC dual transport only as architecture direction; ADR-0016 keeps every gameplay transport runtime mode unavailable until implemented and proven, and ADR-0015 preserves ADR-0009's one-process GameNode identity while leaving only internal decomposition and genuinely distinct adjacent-service placement evidence-driven.
 - bounded technical spikes may inform contracts only when reversible, isolated, non-production and explicitly non-canonical.
 - accepted `ANL-01` event/audit semantics constrain DUR-02/DUR-03 physical outbox/audit mechanics; analytics consumers never replace authoritative invariants.
 - `QA-E2E-01` is accepted; its three-tier implementation and named evidence block completion of `VSL-01`.
