@@ -10,12 +10,12 @@ base_branch: main
 branch: agent/otv2-20260812-game-item-01-architecture
 pr: 205
 base_sha: 93a49731ad91620748b87cdaba9525c9df70bc12
-head_sha: e60188ff0fa60b00dd59edb9afe09ffcad7364b7
+head_sha: 4270fa6001e1676742d6e3fd9274635e697f0a18
 final_head_sha: null
 final_head_frozen_at: null
 owner: architecture-coordinator/current-session
 created_at: 2026-08-12T11:37:00+02:00
-updated_at: 2026-08-12T12:10:00+02:00
+updated_at: 2026-08-12T12:15:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -103,61 +103,81 @@ All exact Reference item behavior not established by accepted evidence remains p
 
 ### Exact-head CI
 
-- final head: pending after this checkpoint commit freezes content.
-- trigger source: PR #205 / exact final delivery head.
-- workflow/run/job: pending.
-- runner assignment: pending.
+- parent reviewed head: `4270fa6001e1676742d6e3fd9274635e697f0a18`.
+- Dependency Review run `31586112275`: PASS.
+- CodeQL run `31586112271`: PASS.
+- Agent Governance run `31586112278`: FAIL at PR metadata validation only; title exceeded 72 characters and PR body lacked `## Summary` and `## Validation`. No repository validation step ran in that failed generation.
+- repair: PR title shortened to `docs(architecture): define GAME-ITEM-01 item semantics`; body now contains mandatory `## Summary`, `## Scope`, `## Validation` and records the frozen head/evidence. Metadata repair did not alter `4270fa...`.
+- current exact head after this audit checkpoint: pending from this commit; fresh PR `synchronize` workflows are required and supersede the failed generation.
+- trigger source: PR #205 / exact current delivery head.
+- runner assignment: GitHub-hosted Ubuntu 24.04 for the failed governance generation; fresh generation pending.
 - classification: documentation/governance exact-head CI.
-- result: pending.
+- result: pending fresh generation.
 
 ## Self-review
 
-- exact head: pending after this checkpoint commit.
+- parent exact head `4270fa6001e1676742d6e3fd9274635e697f0a18`: review `4915367495`, PASS, zero material architecture findings.
+- current exact head: pending after this task-only audit checkpoint.
 - method/reviewer: architecture-coordinator/current-session; full changed-path + per-file diff + boundary/authority audit.
-- material findings: pending terminal review.
-- verdict: pending.
+- material findings: PR metadata governance failure only after parent-head content review; repository architecture content unchanged by the metadata repair/checkpoint.
+- verdict: pending current-head confirmation.
 
 ## Independent review
 
 - required: YES — this package makes item-integrity semantics binding and directly constrains later anti-duplication/conservation design.
-- exact head: pending after this checkpoint commit.
-- method/auditor: `@codex review` on frozen exact head; implementing-agent self-review is not independent evidence.
+- parent exact head request: issue comment `5265327419` for `4270fa6001e1676742d6e3fd9274635e697f0a18`; superseded for terminal evidence by this audit-checkpoint commit.
+- current exact head: pending after this commit.
+- method/auditor: fresh `@codex review` on current exact head; implementing-agent self-review is not independent evidence.
 - material findings: pending.
 - verdict: pending.
 
 ## PR and closeout
 
-- changed-file review: seven declared task/architecture paths before this checkpoint; terminal recount pending.
+- changed-file review: exactly seven declared task/architecture paths.
 - unresolved review threads: pending terminal review.
 - related/superseded PRs: none found for GAME-ITEM-01 at task start; unrelated open PRs #191/#162 left untouched.
-- protected auto-merge: pending after exact-head evidence.
+- protected auto-merge: pending after current exact-head evidence.
 - merge commit/result: pending.
 - ownership release: pending lifecycle-closeout PR after delivery merge.
+
+## Repair history
+
+### Repair cycle 1 — transient status-overlay evidence typo
+
+A historical DUR-01 closeout SHA was mistyped while editing `FOUNDATION_PROGRAMME_CURRENT_STATUS.md`. Self-review found and corrected it before terminal review. The net PR diff preserves the canonical historical SHA.
+
+### Repair cycle 2 — PR metadata governance
+
+Exact-head Agent Governance run `31586112278` failed only its metadata preflight because the initial PR title exceeded 72 characters and the body lacked mandatory `## Summary` / `## Validation` headings. The PR metadata was corrected without changing architecture content. This task-only checkpoint intentionally creates a new PR head so GitHub emits a fresh `synchronize` validation generation using the corrected metadata.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Authored and reconciled the bounded GAME-ITEM-01 analysis/contract and coordination overlays in draft PR #205; content is ready to freeze for terminal exact-head self-review, independent Codex review and CI.
+last_progress: Corrected PR #205 metadata after exact-head Agent Governance identified title/body contract violations; recorded the repair in-task to force a fresh synchronize generation without changing GAME-ITEM architecture semantics.
 status: reviewing
 branch: agent/otv2-20260812-game-item-01-architecture
-head_sha: e60188ff0fa60b00dd59edb9afe09ffcad7364b7
+head_sha: 4270fa6001e1676742d6e3fd9274635e697f0a18
 pr: 205
 final_head_sha: null
 final_head_frozen_at: null
 ci_trigger_source: PR #205
-ci_check_generation: pending
+ci_check_generation: pending fresh synchronize generation
 ci_checks_for_current_head: 0
-ci_run_ids: []
-ci_job_ids: []
-runner_assignment_state: unknown
+ci_run_ids:
+  - 31586112278
+  - 31586112275
+  - 31586112271
+ci_job_ids:
+  - 94080213201
+runner_assignment_state: GitHub-hosted Ubuntu 24.04 observed for failed governance generation; fresh exact-head state pending
 terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 1
-ci_recovery_actions_for_current_head: 0
+repair_cycles_for_current_gate: 2
+ci_recovery_actions_for_current_head: 1
 stall_warnings: 0
 owner_action_required: false
 blocker: null
-next_action: Freeze the new exact head, mark PR #205 ready, run terminal self-review + independent @codex review + exact-head CI, then merge and perform lifecycle closeout if all evidence passes.
+next_action: Freeze the new exact head from this checkpoint, re-run terminal self-review and independent @codex review on that SHA, require fresh exact-head governance/dependency/CodeQL PASS, then merge and lifecycle-close if all evidence passes.
 ```
