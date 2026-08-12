@@ -13,7 +13,7 @@ base_sha: c0b7b3b5928b194f8b51a4a51d9eb2d01e32ce44
 final_head_sha: 77e68ffb9e9e0e31ca751d42ff5f7c03466b2b23
 delivery_merge_sha: 568236c33cd23da017bca1dbd1ed98afc8da71f4
 lifecycle_closeout_branch: docs/OTV2-20260813-dur-04-closeout
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 213
 owner: released_after_closeout
 created_at: 2026-08-12T23:21:00+02:00
 completed_at: 2026-08-13T00:30:00+02:00
@@ -170,23 +170,17 @@ PR #212 was squash-merged unchanged from the frozen head as `568236c33cd23da017b
 
 ## Lifecycle closeout discipline
 
-The separate closeout must not change DUR-04 semantic analysis or contract. It may only:
-
-1. complete active -> archive movement and retain complete delivery/review/repair/CI history;
-2. promote `DUR-04` to `ACCEPTED / LIFECYCLE_CLOSED / NOT_STARTED` in maintained programme/register/horizon/index sources;
-3. preserve runtime/client/compiler/loader/Studio/DDL/Platform/production/content-import authority as unauthorized;
-4. refresh the non-owning programme checkpoint and successor handoff to exactly one next safe paper-only architecture action;
-5. release DUR-04 path ownership only after closeout merge.
+The separate closeout does not change DUR-04 semantic analysis or contract. Closeout PR #213 owns only archive/status/register/horizon/index/checkpoint/handoff reconciliation and releases DUR-04 ownership after merge.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: DUR-04 delivery PR #212 passed final owner-directed exact-head self-review after repair budget 3/3 and all exact-head CI, then squash-merged unchanged as 568236c33cd23da017bca1dbd1ed98afc8da71f4; lifecycle closeout is in progress.
+last_progress: DUR-04 delivery PR #212 passed final owner-directed exact-head self-review after repair budget 3/3 and all exact-head CI, then squash-merged unchanged as 568236c33cd23da017bca1dbd1ed98afc8da71f4; lifecycle closeout is PR #213.
 status: completed
 delivery_pr: 212
 final_head_sha: 77e68ffb9e9e0e31ca751d42ff5f7c03466b2b23
 delivery_merge_sha: 568236c33cd23da017bca1dbd1ed98afc8da71f4
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 213
 owner_directed_self_review: 4921665072
 ci_run_ids:
   - 31646998515
@@ -195,5 +189,5 @@ ci_run_ids:
 repair_cycles_for_delivery_gate: 3
 owner_action_required: false
 blocker: null
-next_action: Complete the bounded DUR-04 lifecycle closeout; after closeout merge follow the canonical programme checkpoint and successor handoff for the next paper-only gate.
+next_action: None for this completed task; follow the canonical programme checkpoint and successor handoff for future work.
 ```
