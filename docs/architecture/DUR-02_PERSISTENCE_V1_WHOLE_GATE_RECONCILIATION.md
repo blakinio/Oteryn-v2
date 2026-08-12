@@ -4,7 +4,7 @@
 - Date: 2026-08-12
 - Stable gate: `DUR-02 — Persistence v1`
 - Trusted base: `blakinio/Oteryn-v2@710c4b5e00de9f14224a6949c3bc7364f4c724a4`
-- Current overall status: `PROPOSED / OPEN / NOT_STARTED` while this concrete reconciliation delivery is active
+- Current overall status: `PROPOSED / PLANNED / NOT_STARTED`; this pre-decision analysis task is not an owner-baseline delivery of the gate
 - Existing accepted sub-scope: `DUR-02_PROFILE_NEUTRAL_CHARACTER_PERSISTENCE_OWNER_BASELINE.md`
 - Runtime / PostgreSQL DDL authority: **NONE**
 - Decision owner: product/architecture owner
@@ -78,7 +78,7 @@ These six decisions are the **minimum whole-DUR-02 closure package** recommended
 
 ### Recommendation
 
-Use one authoritative ordered migration history for the native game database boundary, with project-owned immutable migration artifacts checked into `blakinio/Oteryn-v2`.
+Use one authoritative ordered migration history for the current native game database boundary, with project-owned immutable migration artifacts checked into `blakinio/Oteryn-v2`.
 
 Architecture rules:
 
@@ -92,6 +92,8 @@ Architecture rules:
 - multiple crates/modules may own migration source fragments, but application ordering resolves into one authoritative game migration ledger/history rather than independent competing schema histories inside the same game database;
 - migration identifiers are unique, ordered according to the chosen mechanism and never reused/reinterpreted after merge/release;
 - concurrent migration runners must have a single-winner database-visible exclusion mechanism before implementation is accepted.
+
+This one-ledger rule applies to the current `oteryn_game` database boundary. A later accepted ADR may create a genuinely separate game-domain database/service with its own migration authority; it must not silently fork the same authoritative schema history.
 
 ### Deliberately not frozen
 
@@ -270,7 +272,7 @@ Library selection is downstream as long as the selected stack can prove the acce
 
 Accept these six rules as the remaining whole-Persistence-v1 architecture:
 
-1. **Migration authority:** one game-owned ordered migration history; immutable project-owned explicit migration artifacts; dedicated least-privilege migrator; no production runtime auto-schema-sync; exact Rust migration library deferred.
+1. **Migration authority:** one game-owned ordered migration history for the current native game database boundary; immutable project-owned explicit migration artifacts; dedicated least-privilege migrator; no production runtime auto-schema-sync; exact Rust migration library deferred.
 2. **Transaction correctness:** no blanket isolation as proof; READ COMMITTED only with explicit anomaly-closing locks/constraints, otherwise bounded SERIALIZABLE/stricter accepted mechanism; same semantic identity across retry.
 3. **Common audit/outbox substrate:** one ANL-compatible durable journal + mutable publication-state pattern shared by authoritative game domains; mandatory evidence commits atomically with its owning mutation; telemetry stays separate.
 4. **Progress-loss separation:** acknowledged durable mutation means committed and reconstructible across ordinary process/node restart; FND-03 runtime checkpoint/replay is separate; disaster restore RPO is a separately measured operational/product policy.
@@ -388,4 +390,4 @@ ORM defaults, library preference, OTS database schemas, convenience or desire to
 - production deployment;
 - runtime implementation.
 
-Until the owner accepts or modifies section 12, overall `DUR-02` remains **PROPOSED** and this document is only the reconciliation/decision packet.
+Until the owner accepts or modifies section 12, overall `DUR-02` remains **PROPOSED / PLANNED / NOT_STARTED** and this document is only the reconciliation/decision packet.
