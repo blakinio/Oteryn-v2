@@ -13,7 +13,7 @@ base_sha: 93a49731ad91620748b87cdaba9525c9df70bc12
 final_head_sha: 53d0189a114c99b4e7d44ca8d0db7a6bf5f3ea1a
 delivery_merge_sha: 5c502d24557621efc798def87b68f137ba23fad8
 lifecycle_closeout_branch: docs/OTV2-20260812-game-item-01-architecture-closeout
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 206
 owner: released_after_closeout
 created_at: 2026-08-12T11:37:00+02:00
 completed_at: 2026-08-12T13:28:06+02:00
@@ -86,24 +86,26 @@ PR #205 was squash-merged unchanged from the frozen head as `5c502d24557621efc79
 
 ## Lifecycle closeout consequence
 
-This archive becomes terminal only when the separate closeout PR merges. That closeout must atomically:
+This archive becomes terminal and GAME-ITEM path ownership releases only when closeout PR #206 merges. That closeout atomically:
 
-1. promote GAME-ITEM-01 to `ACCEPTED / LIFECYCLE_CLOSED / NOT_STARTED` in maintained status/register/horizon/index sources;
-2. expose `DUR-03` as the next eligible **paper-only** architecture gate while leaving `DUR-03 = PROPOSED / PLANNED / NOT_STARTED`;
-3. keep all item runtime/client/DDL/migration/production authority unauthorized;
-4. preserve the unaccepted `PROD-ENTITLEMENTS-01` consumer/enforcement gate;
-5. refresh the canonical programme/handoff next action to DUR-03;
-6. release GAME-ITEM path ownership.
+1. promotes GAME-ITEM-01 to `ACCEPTED / LIFECYCLE_CLOSED / NOT_STARTED` in maintained status/register/horizon/index sources;
+2. exposes `DUR-03` as the next eligible **paper-only** architecture gate while leaving `DUR-03 = PROPOSED / PLANNED / NOT_STARTED`;
+3. keeps all item runtime/client/DDL/migration/production authority unauthorized;
+4. preserves the unaccepted `PROD-ENTITLEMENTS-01` consumer/enforcement gate;
+5. refreshes the canonical programme/handoff next action to DUR-03;
+6. releases GAME-ITEM path ownership after merge.
+
+No closeout merge SHA is recorded before it exists.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: GAME-ITEM-01 delivery PR #205 passed exact-head self-review, independent Codex no-suggestion review and all required exact-head CI, then squash-merged unchanged as 5c502d24557621efc798def87b68f137ba23fad8.
+last_progress: GAME-ITEM-01 delivery PR #205 passed exact-head self-review, independent Codex no-suggestion review and all required exact-head CI, then squash-merged unchanged as 5c502d24557621efc798def87b68f137ba23fad8; lifecycle closeout is PR #206.
 status: completed
 delivery_pr: 205
 final_head_sha: 53d0189a114c99b4e7d44ca8d0db7a6bf5f3ea1a
 delivery_merge_sha: 5c502d24557621efc798def87b68f137ba23fad8
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 206
 self_review: 4915880173
 independent_review_request: 5266011485
 independent_review_pr_reaction: 450215687
@@ -113,5 +115,5 @@ ci_run_ids:
   - 31591336340
 owner_action_required: false
 blocker: null
-next_action: Complete the bounded lifecycle closeout; only after closeout merge may a new bounded paper-only DUR-03 architecture task be opened.
+next_action: Complete PR #206 lifecycle closeout; only after its merge may a new bounded paper-only DUR-03 architecture task be opened.
 ```
