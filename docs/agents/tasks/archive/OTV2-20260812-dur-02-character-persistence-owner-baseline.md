@@ -12,7 +12,7 @@ delivery_pr: 197
 base_sha: c98f463b26f22df99dd10ef3819086a59c25250b
 final_head_sha: 3a0695bb659e5f052c2fd0dfe14f3e791ff5daf3
 delivery_merge_sha: a88c15e6bf77fe4b775005011ec3cc38837f2a0a
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 198
 owner: released_after_closeout
 created_at: 2026-08-12T08:25:00+02:00
 completed_at: 2026-08-12T08:48:00+02:00
@@ -185,7 +185,7 @@ It must not implement PostgreSQL DDL/migrations/runtime merely because the Chara
 ## Lifecycle closeout
 
 - closeout branch: `docs/OTV2-20260812-dur-02-character-persistence-owner-baseline-closeout`;
-- closeout PR: pending;
+- closeout PR: #198;
 - closeout scope: active -> full archive plus current-status `DUR-02 DeliveryStatus OPEN -> PLANNED` and immutable delivery evidence only;
 - owner release: effective when closeout merges;
 - no owner semantic change permitted in closeout.
@@ -198,7 +198,7 @@ status: completed
 delivery_pr: 197
 final_head_sha: 3a0695bb659e5f052c2fd0dfe14f3e791ff5daf3
 delivery_merge_sha: a88c15e6bf77fe4b775005011ec3cc38837f2a0a
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 198
 repair_cycles_for_delivery: 0
 ci_run_ids:
   - 31570888666
