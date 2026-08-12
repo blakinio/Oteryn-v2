@@ -5,7 +5,7 @@
 - Delivery task: `OTV2-20260812-dur-03-item-transaction-architecture`
 - Delivery PR: #207
 - Status on delivery branch: **CANDIDATE / NONBINDING**
-- Canonical semantic effect: only after accepted delivery merge; programme `ACCEPTED / LIFECYCLE_CLOSED` promotion and successor exposure require a separate lifecycle closeout
+- Canonical semantic effect: only after accepted delivery merge; programme `ACCEPTED / LIFECYCLE_CLOSED` promotion requires a separate lifecycle closeout
 - ImplementationStatus: **NOT_STARTED**
 - Runtime authority: **NONE**
 - PostgreSQL DDL/migration authority: **NONE**
@@ -18,23 +18,21 @@ Freeze the minimum native transaction and anti-duplication semantics required be
 
 This contract owns:
 
-- one authoritative immediate location for each live ItemInstance;
+- one authoritative immediate location for every live ItemInstance;
 - create/retire/split/merge/quantity-transfer/transform ItemInstanceId transition rules;
 - item/currency/value transfer, mint, burn, transform and conversion conservation semantics;
-- stable transaction/operation identity across retry and ambiguous commit;
-- durable idempotency/reconciliation obligations;
+- stable transaction/operation identity through retry and ambiguous commit;
+- durable idempotency and reconciliation obligations;
 - authority/fencing requirements for durable value mutation;
-- bounded atomic transaction participant rules;
+- bounded atomic participant/effect rules;
 - safe typed custody for multi-transaction workflows;
 - mandatory durable provenance/evidence sufficient for independent anti-duplication reconciliation;
 - restore/recovery item/value integrity gates;
-- cross-world/cross-authority fail-closed behavior.
+- cross-world and cross-authority fail-closed behavior.
 
-It does **not** own runtime code, physical PostgreSQL schema, wire payloads, item legality, market/trade/business policy, exact Reference formulas/rates or production rollout.
+It does **not** own runtime code, physical PostgreSQL schema, wire payloads, item legality, market/trade business policy, exact Reference formulas/rates or production rollout.
 
 ## 2. Authority chain
-
-Binding ownership is:
 
 ```text
 stable authored item definitions / content identity -> ADR-0005 + DUR-04
@@ -52,55 +50,50 @@ loot/trade/market/bank/depot/mail/reward/house policy -> owning domain gates
 
 No layer may redefine another owner's semantics for persistence convenience.
 
+Where older coordination prose conflicts with later accepted FND-02/FND-04 authority semantics, the accepted component contracts and current-status overlay govern; DUR-03 does not revive historical `session_generation` or Gateway-issued canonical GameSession assumptions.
+
 ## 3. Core safety theorem
 
-A future DUR-03-conforming implementation must be able to prove:
+For every committed logical durable value transaction `T`, a conforming implementation must prove:
 
-```text
-For every committed logical durable value transaction T:
-
-1. T has exactly one semantic TransactionId.
-2. Every pre-existing live ItemInstance touched by T is accounted for exactly once.
-3. Every surviving live ItemInstance has exactly one authoritative immediate location after T.
-4. Every newly created concrete ItemInstance has a fresh ItemInstanceId never previously live/retired.
+1. `T` has exactly one semantic TransactionId.
+2. Every pre-existing live ItemInstance touched by `T` is accounted for exactly once in the committed effect set.
+3. Every surviving live ItemInstance has exactly one authoritative immediate location after `T`.
+4. Every newly created concrete ItemInstance has a fresh ItemInstanceId allocated to `T` and never assigned to another logical transaction/lifecycle.
 5. Every retired ItemInstanceId is never reused.
-6. Pure transfer/split/merge operations do not create or lose units/value.
-7. Mint/burn/transform/conversion occurs only under explicit typed authorized cause/rule lineage.
+6. Pure transfer/split/merge operations create or lose no conserved units/value.
+7. Mint/burn/transform/conversion occurs only under an explicit typed authorized cause/rule and complete lineage.
 8. Mandatory durable receipt/audit evidence commits atomically with the authoritative mutation.
-9. Retry, duplicate command, stale authority, crash, timeout or lost response cannot create a second effect for the same logical transaction/operation.
+9. Retry, duplicate command, stale authority, crash, timeout or lost response cannot create a second authoritative effect for the same logical transaction/operation.
 10. Failed/aborted transactions leave no partial authoritative value mutation.
-```
 
-If the implementation cannot prove one of these properties for an operation class, that operation class is not DUR-03-conforming.
+If one property cannot be proven for an operation class, that operation class is not DUR-03-conforming.
 
 ## 4. Canonical immediate-location model
 
-### 4.1 One immediate location
+### 4.1 Exactly one immediate location
 
-Every live concrete ItemInstance has exactly one authoritative immediate location.
-
-Conceptually:
+Every live concrete ItemInstance has exactly one authoritative immediate location:
 
 ```text
-ItemInstanceId
--> exactly one ItemLocationRef
+ItemInstanceId -> exactly one ItemLocationRef
 ```
 
-This relation is semantic and does not freeze SQL table layout.
+This is a semantic relation and does not freeze SQL table layout.
 
-### 4.2 Initial typed location families
+### 4.2 Typed location families
 
-The model must be able to represent at least:
+The model must be able to represent, as accepted owners require:
 
 ```text
 CharacterInventory {
   character_id: CharacterId
-  position: typed inventory position owned by the inventory/gameplay contract
+  position: typed inventory position
 }
 
 CharacterEquipment {
   character_id: CharacterId
-  occupancy: semantic equipment claim owned by GAME-ITEM-01
+  occupancy: complete semantic equipment claim
 }
 
 Container {
@@ -110,22 +103,29 @@ Container {
 
 Ground {
   world_id: WorldId
-  runtime_scope: ChannelId or InstanceId with WorldId scope
-  spatial_position: typed world position owned by world/movement/content contracts
-}
-
-TypedDomainCustody {
-  registered custody family
-  stable domain-owned custody reference
-  explicit world/scope ownership
+  runtime_scope: ChannelRef or InstanceRef
+  spatial_position: typed world position
 }
 ```
 
-Exact Rust/SQL encodings are deferred.
+Future world-shared spatial state or downstream custody such as house/trade/market/depot/mail/reward custody is introduced only as a separately typed/versioned location/custody family with a named semantic owner and explicit WorldId/scope semantics.
 
-### 4.3 No generic location escape hatch
+### 4.3 `TypedDomainCustody` is not a generic escape hatch
 
-The following are prohibited as canonical authority:
+`TypedDomainCustody` is an architecture registry concept, not one generic runtime record carrying arbitrary strings, JSON or EAV.
+
+Each accepted custody family must define its own:
+
+- stable semantic type/key;
+- owner;
+- scope;
+- legal reference shape;
+- lifecycle/compatibility semantics;
+- authorization boundary.
+
+### 4.4 Prohibited competing authorities
+
+The following are rejected as canonical item-location authority:
 
 - arbitrary location strings;
 - generic JSON location objects;
@@ -133,9 +133,7 @@ The following are prohibited as canonical authority:
 - multiple independent nullable owner/location columns treated as peer authorities;
 - a generic `owner_id` whose meaning changes by subsystem.
 
-Every new custody/location family requires a typed versioned contract with a named semantic owner.
-
-### 4.4 Binding, ownership and authorization remain separate
+### 4.5 Binding, custody and authorization are distinct
 
 An item's:
 
@@ -147,77 +145,80 @@ current gameplay authorization
 presentation ownership
 ```
 
-remain distinct concepts.
-
-Possession, CharacterId equality, account binding or a custody reference never grants mutation authority by itself.
+remain distinct. Possession, CharacterId equality, binding or custody does not grant mutation authority.
 
 ## 5. Container immediate-parent semantics
 
-GAME-ITEM-01 defines containment as a bounded directed acyclic graph.
-
-DUR-03 freezes the transaction consequence:
+GAME-ITEM-01 owns containment legality. DUR-03 freezes the transaction consequence:
 
 - a contained item is immediately located in its parent container;
-- moving a container changes the container's own immediate location, not every descendant relation;
-- descendants remain in their immediate parent containers;
-- all affected GAME-ITEM capacity/weight/type/nesting constraints required by the proposed operation must validate before commit;
-- destroying/replacing a container that still has live descendants is invalid unless the same bounded transaction explicitly relocates/transforms/retires every affected descendant required by that operation;
+- moving a container changes the container's own immediate location, not each descendant relation;
+- descendants remain located in their immediate parents;
+- affected GAME-ITEM capacity/weight/type/nesting constraints required by the proposed operation validate before commit;
+- destroying/replacing a container that still has live descendants is invalid unless the same bounded transaction explicitly relocates/transforms/retires every affected descendant required by the operation;
 - no committed transaction may leave an orphaned live descendant or create a containment cycle.
-
-This is a semantic relation model, not a physical-schema mandate.
 
 ## 6. Item lifecycle and identity transitions
 
-### 6.1 Preserve identity for same concrete lifecycle
+### 6.1 Same concrete lifecycle preserves identity
 
 A legal typed-state mutation on the same concrete item lifecycle preserves ItemInstanceId.
 
-Examples, only where the owning GAME-ITEM/ruleset semantics permit:
+Examples, only where the owning item/ruleset semantics permit:
 
 - charge change;
 - durability change;
 - binding/restriction change;
-- compatible upgrade/modifier state change;
-- quantity increase/decrease on an existing stack when no additional independently locatable concrete stack is created;
+- compatible upgrade/modifier change;
+- quantity adjustment of an existing stack when no additional independently locatable stack lifecycle is created;
 - an explicitly identity-preserving one-to-one transform.
 
-### 6.2 Fresh identity for a new concrete lifecycle
+A state mutation that consumes or creates a bounded resource such as charges/durability still requires its owning typed cause/rule and before/after evidence; `STATE_MUTATION` is not permission for unexplained value drift.
+
+### 6.2 New concrete lifecycle gets fresh identity
 
 A fresh ItemInstanceId is mandatory whenever an operation creates a new independently locatable concrete ItemInstance lifecycle.
 
 Examples:
 
-- a new non-stackable item instance;
-- a new stack object;
+- new non-stackable item;
+- new stack object;
 - split output stack;
 - replacement transform output;
-- explicit multi-output transform/crafting output that is a concrete item instance.
+- concrete multi-output crafting/transform output.
 
-### 6.3 Retirement
+### 6.3 Transaction-scoped output identities
 
-A concrete ItemInstance lifecycle becomes terminal when it no longer exists as a live instance.
+Every new ItemInstanceId planned by a logical TransactionId is allocated before the first durable commit attempt that could make it authoritative and remains assigned to that logical transaction/output slot across physical retry.
 
-Its ItemInstanceId:
+Rules:
 
-- is never reused;
-- is not reassigned to another ItemType or actor after terminal retirement;
-- may remain in durable audit/provenance/tombstone evidence as required by DUR-01/ANL/privacy policy.
+- a serialization/deadlock retry does not replace planned output ItemInstanceIds merely because the DB attempt aborted;
+- an ambiguous commit must reconcile the same exact output identities;
+- an output ID allocated to one TransactionId is never reassigned to another logical transaction, even if the original transaction later terminates without commit;
+- no uncommitted output is exposed as an authoritative live item before commit.
 
-### 6.4 Quantity zero
+This prevents retry identity drift from becoming duplicate-mint ambiguity.
 
-GAME-ITEM-01 forbids quantity zero as live stack state.
+### 6.4 Retirement
 
-Therefore a transaction reducing a stack to zero must retire that ItemInstance in the same atomic outcome.
+When a concrete lifecycle ceases to exist, its ItemInstanceId becomes terminal and is never reused.
+
+Retention of retirement/tombstone evidence follows DUR-01/ANL/privacy requirements; DUR-03 does not require unlimited history solely to enforce the concept of non-reuse.
+
+### 6.5 Quantity zero
+
+GAME-ITEM-01 forbids quantity zero as live stack state. A transaction reducing a stack to zero retires that ItemInstance in the same atomic outcome.
 
 ## 7. Split semantics
 
-For a live stack `S` with quantity `q` and requested split amount `x`:
+For live stack `S` quantity `q` and split amount `x`:
 
 ```text
 0 < x < q
 ```
 
-Committed split outcome:
+Committed outcome:
 
 ```text
 S:
@@ -226,7 +227,7 @@ S:
   remains live
 
 N:
-  fresh ItemInstanceId
+  fresh transaction-scoped ItemInstanceId
   quantity = x
   independently locatable
 ```
@@ -235,120 +236,109 @@ Rules:
 
 - `x == 0` invalid;
 - `x >= q` is not a valid split;
-- moving all quantity is a move of the existing stack instance, not a split/new-ID operation;
-- source + output quantities equal the pre-split quantity exactly;
-- all stack/type/revision/location constraints validate atomically.
+- moving all quantity is a move of the existing instance, not split/new identity;
+- source + output quantity equals pre-split quantity exactly;
+- item revision/location/stack constraints validate atomically.
 
-## 8. Quantity transfer and merge semantics
+## 8. Quantity transfer and merge
 
-For compatible live stacks A and B, an authoritative quantity transfer of `x` units from A to B:
+For compatible live stacks A and B and exact amount `x` transferred A -> B:
 
 - B retains B's ItemInstanceId;
-- B quantity increases by `x` without exceeding accepted bounds;
+- B quantity increases by `x` within accepted bounds;
 - A quantity decreases by `x`;
-- A retains A's ItemInstanceId if its post-transaction quantity is positive;
-- A is terminally retired if its post-transaction quantity is zero;
-- no temporary ItemInstance is required merely to represent fungible units moving between existing stacks;
-- total units for the same conserved asset/type are identical before and after a pure transfer/merge.
+- A retains A's ItemInstanceId if post-state quantity is positive;
+- A retires if post-state quantity is zero;
+- no temporary ItemInstance is required solely to represent fungible units between existing stacks;
+- total conserved units are identical before/after a pure transfer/merge.
 
-The authoritative operation, not client list order or UUID ordering, identifies the source/receiving stack semantics.
+Client ordering or UUID ordering never selects semantic survivor/receiver.
 
 ## 9. Create/mint semantics
 
-### 9.1 Concrete instance mint
+### 9.1 New concrete instance mint
 
-Creating a new concrete item object/stack lifecycle requires a fresh ItemInstanceId fixed before the first possibly ambiguous durable commit.
+A new concrete item/stack uses its transaction-scoped fresh ItemInstanceId from section 6.3.
 
-### 9.2 Quantity mint into an existing stack
+### 9.2 Quantity mint into existing stack
 
 A typed authorized source may increase quantity on an existing compatible stack without creating a temporary ItemInstance solely for newly produced fungible units.
 
-The transaction must still retain exact mint cause and quantity lineage.
+Exact source/cause, quantity delta and resulting state remain part of transaction lineage/evidence.
 
-### 9.3 Stable source cause
+### 9.3 Stable source occurrence
 
-Every value-creating operation must have an authoritative typed source/cause identity sufficient to prevent duplicate application.
+Every value-producing operation has an authoritative typed source/cause identity sufficient to prevent duplicate application.
 
-Conceptual sources include later owning-domain occurrences such as:
+Conceptual later-owned causes include:
 
-- loot resolution;
-- reward grant;
-- crafting output;
-- static-placement materialization;
+- loot resolution occurrence;
+- reward grant occurrence;
+- crafting operation;
+- StaticItemPlacement materialization occurrence;
 - system source;
 - administrative compensation.
 
-DUR-03 does not decide business eligibility for those sources.
+DUR-03 does not decide whether the business cause is valid. It requires:
 
-It requires:
-
-- one logical source occurrence cannot mint twice through retry/crash;
-- repeated attempt under the same source/operation identity reconciles the original result;
-- same source identity with conflicting output set is an integrity conflict;
-- repeatable sources use distinct authoritative occurrence identities per occurrence.
+- one logical occurrence cannot mint twice through retry/crash;
+- duplicate same occurrence reconciles the original result;
+- same occurrence with conflicting output intent is an integrity conflict;
+- repeatable sources use distinct authoritative occurrence identities.
 
 ## 10. Destroy/burn semantics
 
-A burn/destruction transaction must explicitly identify:
+A burn/destruction transaction identifies:
 
 - affected ItemInstance/quantity/value asset;
 - typed sink/cause;
 - whether the instance survives with reduced quantity/state or retires;
 - required lineage/audit evidence.
 
-Silent deletion, `quantity = 0` persistence, raw administrative row removal or disappearance during error recovery is not a valid sink.
+Silent row deletion, persisted `quantity = 0`, or disappearance during error recovery is not a valid sink.
 
 ## 11. Transform semantics
 
-### 11.1 Identity policy is explicit
+### 11.1 Internal identity policy is explicit and versioned
 
-Every executable type-changing transform edge has a versioned identity transition policy.
-
-Allowed architecture modes:
+Every executable type-changing transform edge has an Oteryn lifecycle identity policy:
 
 ```text
 PRESERVE_INSTANCE
 REPLACE_INSTANCE
 ```
 
-### 11.2 PRESERVE_INSTANCE
+This policy is an internal Oteryn integrity decision. It is **not** inferred from Global/Tibia ItemInstanceId behavior because the external Reference does not expose Oteryn's UUID identity.
 
-May be used only when:
+Reference evidence constrains observable transform inputs/outputs and player-visible behavior. If observable transform semantics are unknown, that transform remains parity-pending/unsupported for claimed Reference execution; the internal UUID policy is not “discovered” from nonexistent Reference IDs.
 
-- one input concrete instance maps to one output concrete instance;
-- the owning transform rule explicitly proves it remains the same lifecycle;
-- resulting ItemType/capability state is compatible and fully specified;
-- no second live output is created from the same ItemInstanceId.
+### 11.2 `PRESERVE_INSTANCE`
 
-The ItemInstanceId survives.
+Allowed only when:
 
-### 11.3 REPLACE_INSTANCE
+- one concrete input maps to one concrete output;
+- the versioned Oteryn transform rule explicitly declares the same lifecycle;
+- resulting ItemType/capability state is fully defined/compatible;
+- no second live output is created from the same ID.
 
-The old instance retires and every concrete output receives fresh ItemInstanceId.
+### 11.3 `REPLACE_INSTANCE`
+
+The old instance retires and each concrete output uses a fresh transaction-scoped ItemInstanceId.
 
 ### 11.4 Multi-input/multi-output
 
-Each input has an explicit disposition:
+Every input has one explicit disposition: survives/mutates, quantity decreases, or retires.
 
-- survives/mutates;
-- quantity decreases;
-- retires.
+Every concrete output is either:
 
-Each output is either:
-
-- an explicitly preserved one-to-one survivor permitted by the transform policy; or
-- a new concrete lifecycle with a fresh ItemInstanceId; or
-- a non-item fungible value line under the owning conversion/asset contract.
+- the one explicitly permitted identity-preserving survivor; or
+- a fresh lifecycle with a fresh transaction-scoped ItemInstanceId.
 
 One ItemInstanceId may never become two live outputs.
 
-### 11.5 Parity unknown
-
-If a Reference-sensitive transform's identity behavior is not established by accepted evidence, it remains `PARITY_PENDING_EVIDENCE` / unsupported for claimed Reference execution rather than choosing a convenient default.
-
 ## 12. Conservation classifications
 
-Every authoritative value mutation line belongs to one explicit class:
+Every authoritative value mutation line has exactly one explicit semantic class:
 
 ```text
 TRANSFER
@@ -360,85 +350,78 @@ TRANSFORM
 CONVERSION
 ```
 
-A generic unclassified signed delta is prohibited.
+A generic unclassified signed value delta is prohibited.
 
-### 12.1 TRANSFER
+### 12.1 `TRANSFER`
 
-Existing live value changes immediate location/custody without source/sink creation.
+Existing live value changes immediate location/custody with no source/sink creation.
 
-### 12.2 SPLIT_MERGE_QUANTITY
+### 12.2 `SPLIT_MERGE_QUANTITY`
 
-Units of one conserved stackable asset/type redistribute across stack instances; total units are exact before/after.
+Units of one conserved stackable asset/type redistribute among stack instances; exact units are preserved.
 
-### 12.3 STATE_MUTATION
+### 12.3 `STATE_MUTATION`
 
-One concrete lifecycle changes legal typed state with no implicit value creation/destruction beyond the owning explicit semantic rule.
+One concrete lifecycle changes legal typed state under an explicit owning cause/rule. It cannot silently change stack quantity or non-item ledger balance outside their owning conservation class.
 
-### 12.4 MINT/BURN
+### 12.4 `MINT` / `BURN`
 
-Value enters/leaves the live system only under an explicit typed source/sink cause.
+Value enters/leaves the live system only under explicit typed source/sink cause.
 
-### 12.5 TRANSFORM
+### 12.5 `TRANSFORM`
 
-A versioned rule explicitly maps an input set to output set and identity outcomes.
+A versioned rule maps explicit inputs to explicit outputs and identity outcomes.
 
-### 12.6 CONVERSION
+### 12.6 `CONVERSION`
 
-A versioned rule explicitly maps exact asset A inputs/debits to exact asset B outputs/credits.
+A versioned rule maps exact asset-A inputs/debits to exact asset-B outputs/credits.
 
-DUR-03 does not infer conversion rate from market price or historical economy state.
+DUR-03 never infers conservation/conversion from market price or historical economy state.
 
 ## 13. Non-item fungible value
 
-Non-item balances such as bank/ledger/token balances are not forced into ItemInstance.
+Non-item balances are not forced into ItemInstance.
 
-For every authoritative non-item fungible asset:
+For each authoritative non-item fungible asset:
 
-- the owning domain defines stable asset identity/denomination and valid account/custody scopes;
-- arithmetic uses a bounded exact representation;
-- binary floating point is not the authoritative conservation basis;
-- pure transfers balance exact debits and credits for the same asset;
-- net creation/destruction requires explicit MINT/BURN source/sink cause;
-- conversion requires explicit input/output asset rule;
-- retries and ambiguous commits follow the same DUR-03 TransactionId/OperationId semantics.
+- the owning domain defines stable asset identity/denomination and legal account/custody scopes;
+- arithmetic uses bounded exact representation;
+- binary floating point is not authoritative conservation arithmetic;
+- pure transfer balances exact debits/credits for the same asset;
+- net creation/destruction requires explicit mint/burn source/sink;
+- conversion requires explicit versioned input/output asset rule;
+- retry/ambiguous commit follows the same TransactionId/OperationId contract.
 
-Exact SQL scalar and product/business rules are deferred.
+Exact SQL scalar and business semantics are deferred.
 
-## 14. World scope conservation
+## 14. World-scope conservation
 
-Every live ItemInstance belongs to exactly one WorldId gameplay-value scope under GAME-ITEM-01.
-
-DUR-03 rules:
+Every live ItemInstance belongs to one WorldId gameplay-value scope under GAME-ITEM-01.
 
 - direct cross-world item/currency/value transfer is forbidden by default;
-- a burn in world A followed by mint in world B is still semantically a cross-world value transfer and cannot bypass the prohibition merely because it uses two transactions;
+- burn in world A plus mint in world B is still semantically a cross-world transfer and cannot bypass the rule;
 - a future dedicated world-transfer contract must define value/identity lineage, balance policy, custody, retry, rollback/recovery and authority fencing explicitly;
-- current DUR-03 does not authorize such a feature.
+- DUR-03 does not authorize that feature.
 
 ## 15. Transaction identity
 
 ### 15.1 TransactionId
 
-Every logical atomic durable item/currency/value mutation has exactly one ANL-01 TransactionId.
+Every logical atomic durable item/currency/value mutation has exactly one ANL-01 TransactionId allocated before its first durable commit attempt.
 
-It is fixed before the first potentially ambiguous durable commit attempt.
+TransactionId identifies logical atomic transaction **intent**, not a physical DB attempt.
 
-For the same logical atomic transaction:
+Across physical attempts:
 
-- retry preserves TransactionId;
-- serialization/deadlock retry preserves TransactionId;
-- ambiguous commit reconciliation preserves TransactionId;
-- semantic participants/effects/cause remain identical;
-- same TransactionId with conflicting semantic intent is an integrity conflict, never last-write-wins.
+- TransactionId remains stable;
+- source/cause, requested operation class, logical participants/destination semantics and transaction-scoped planned output identities remain the same logical intent;
+- same TransactionId with a different business intent is an integrity conflict.
 
 ### 15.2 New TransactionId
 
-A new TransactionId means:
+A new TransactionId means the prior logical transaction is proven terminal and an intentionally new logical transaction begins.
 
-- the prior logical transaction is proven terminal; and
-- an intentionally new logical atomic mutation is beginning.
-
-Timeout alone is not proof of terminal abort.
+A timeout alone is not proof of terminal abort.
 
 ## 16. CommandRef boundary
 
@@ -448,110 +431,136 @@ For player-originated commands:
 CommandRef = (GameSessionId, CommandId)
 ```
 
-remains FND-02 authority for ordered command identity and duplicate non-reexecution.
+remains FND-02 authority for ordered ingress identity and duplicate non-reexecution.
 
-DUR-03 consumes but does not redefine:
+DUR-03 consumes, but does not redefine:
 
-- monotonic command reservation;
+- command reservation;
 - bounded outstanding window;
-- duplicate CommandId behavior;
-- same-GameSession reconnect command continuity.
+- duplicate behavior;
+- same-GameSession reconnect continuity.
 
 A connection-generation change by itself does not create a new semantic command/transaction.
 
 ## 17. OperationId boundary
 
-An ANL-01 OperationId is required when the owning value workflow is logically retryable beyond one atomic transaction/CommandRef scope, including when it:
+Use ANL-01 OperationId when the owning value workflow is logically retryable beyond one atomic transaction/CommandRef scope, including when it:
 
 - spans multiple durable transactions;
 - continues asynchronously;
 - may be resumed/retried across GameSessions/processes;
-- has explicit durable workflow lifecycle/custody.
+- has durable workflow/custody lifecycle.
 
 OperationId remains stable for the same logical operation.
 
-DUR-03 does not require OperationId for every simple command whose semantics are fully bounded by CommandRef and authoritative state preconditions.
+DUR-03 does not require OperationId for every simple command whose semantics are fully bounded by CommandRef and authoritative preconditions.
 
-## 18. Durable idempotency and receipts
+## 18. Retry contract: known abort versus ambiguous commit
 
-For every operation class whose safe retry cannot be proven solely from FND-02 ingress + current authoritative state, durable receipt/reconciliation state is mandatory.
+This distinction is binding.
 
-It must be sufficient to classify:
+### 18.1 Stable logical intent
+
+A retry under the same TransactionId never changes the business intent, source/cause, requested mutation class, destination semantics or planned output identity slots.
+
+### 18.2 Known non-committed abort
+
+When a physical DB attempt is **proven non-committed** (for example a serialization/deadlock abort):
+
+- same TransactionId and logical intent are retained;
+- implementation may re-read current authoritative before-state and rematerialize legal mutable details/effect rows required to execute that same intent;
+- transaction-scoped output ItemInstanceIds remain the same;
+- if current state makes the same intent no longer legal, the transaction terminates/rejects instead of adapting into a different business operation;
+- no external side effect from the aborted attempt may have escaped.
+
+This allows anomaly-safe retry without creating a new semantic transaction.
+
+### 18.3 Ambiguous commit
+
+Once a physical commit attempt has an **ambiguous outcome**:
+
+- its exact materialized candidate mutation set, planned output identities and mandatory evidence set are frozen for reconciliation;
+- no different candidate may be attempted under that TransactionId until the ambiguous attempt is classified;
+- durable receipt/state/evidence for that TransactionId is queried;
+- found committed => reconcile/return that exact result;
+- proven aborted/non-committed => retry same logical transaction under section 18.2;
+- cannot classify safely => fail/hold; never mint a new TransactionId as a guess.
+
+This prevents lost-response double mint while preserving valid known-abort retry.
+
+## 19. Durable idempotency and receipts
+
+Whenever FND-02 ingress + current authoritative state cannot alone prove replay safety, durable receipt/reconciliation state is mandatory.
+
+It must distinguish at least semantically:
 
 ```text
-NOT_SEEN / safely retryable
-COMMITTED / return original authoritative result
-TERMINAL_REJECTED when the owning domain makes rejection durable
-AMBIGUOUS / reconciliation still required
-CONFLICT / same identity used with different semantic intent
+NOT_APPLIED / safely retryable
+COMMITTED / return original result
+TERMINAL_REJECTED where owning domain persists it
+AMBIGUOUS / reconciliation required
+CONFLICT / same identity with different intent
 ```
 
-Exact names/storage are implementation-defined; the semantic distinctions are binding.
+Exact names/storage/retention durations are implementation-owned.
 
-Receipt retention must cover the full owning replay/idempotency horizon. Once-only mint/grant/source identities cannot be forgotten while the same source can be replayed.
+Retention must cover the owning replay/idempotency horizon; a once-only source/grant/occurrence key cannot be forgotten while replay remains possible.
 
-## 19. Ambiguous commit algorithm
-
-A transport/DB timeout or lost response is not evidence that a durable transaction aborted.
-
-Required behavior:
+## 20. Ambiguous outcome algorithm
 
 ```text
 execute logical transaction T
 
-if commit is known successful:
+if commit known successful:
     reconcile/return committed result
 
-if attempt is known aborted and retry policy permits:
-    retry same T with same TransactionId
+if attempt proven aborted and retry policy permits:
+    retry same logical T / same TransactionId under current authoritative state
 
-if commit outcome is ambiguous:
-    inspect durable receipt/state/evidence for T
+if commit outcome ambiguous:
+    inspect durable receipt/state/evidence for the frozen candidate
     if committed:
-        reconcile/return original committed result
-    else if safely proven not committed/aborted:
-        retry same T
+        return/reconcile original committed result
+    else if safely proven non-committed:
+        retry same logical T / same TransactionId
     else:
-        fail/hold safely
+        fail/hold
         DO NOT create a new transaction as a guess
 ```
 
-A lost client response after commit never justifies duplicate effect.
+## 21. Compensation after commit
 
-## 20. Compensation after commit
+Committed historical mutation/audit facts are immutable.
 
-Once a transaction is committed, its historical authoritative/audit fact is immutable.
+Correction uses a **new compensating transaction** with:
 
-Undo/correction uses a **new compensating transaction** with:
-
-- new TransactionId;
-- explicit causation/reference to the original transaction/operation;
+- a new TransactionId;
+- causation/reference to the original transaction/operation;
 - current authorization;
 - complete conservation/source-sink evidence.
 
 Direct historical row/audit rewrite is not compensation.
 
-## 21. Atomic participant set
+## 22. Atomic participant/effect set
 
-Before commit, every logical atomic transaction has a bounded closed participant/effect set sufficient to prove its invariants.
+Every physical commit attempt has a bounded closed materialized participant/effect set sufficient to prove its invariants.
 
-May include:
+It may include:
 
-- pre-existing ItemInstances;
-- immediate locations/custodies;
+- ItemInstances and immediate locations;
 - item capability/quantity state;
 - equipment/container claims;
-- non-item value accounts and asset lines;
-- durable idempotency/receipt state;
-- domain workflow/custody state;
+- non-item value accounts/asset lines;
+- custody/workflow state;
+- durable receipt/idempotency state;
 - required authority/fence state;
 - mandatory ANL durable audit + publication state.
 
-The participant/effect set cannot expand without bounds during commit.
+The set cannot expand without bounds during commit.
 
-## 22. Resource bounds
+## 23. Resource bounds
 
-DUR-03 implementation requires absolute security/resource ceilings for all variable-size transaction structures, including at minimum:
+Before implementation acceptance, absolute security/resource ceilings are required for all variable-size transaction structures, including at minimum:
 
 - touched ItemInstance count;
 - location/custody mutation count;
@@ -559,14 +568,14 @@ DUR-03 implementation requires absolute security/resource ceilings for all varia
 - transform input/output count;
 - container graph validation expansion;
 - workflow/custody participant count;
-- mandatory audit event/payload contribution size;
+- mandatory audit event count/payload contribution;
 - retry/reconciliation work per request.
 
 Ruleset/product limits may be lower but never exceed absolute ceilings.
 
-This architecture candidate does not invent numeric values without workload/security evidence. Missing mandatory ceilings are an implementation blocker, not “unlimited”.
+This paper-only candidate does not fabricate numeric ceilings without workload/security evidence. Missing mandatory ceilings block implementation; they never mean unlimited.
 
-## 23. Isolation, locking and anomaly closure
+## 24. Isolation, locking and anomaly closure
 
 DUR-02 remains binding:
 
@@ -576,378 +585,338 @@ name invariant
 + prove anomaly closure under selected isolation/locks/constraints
 ```
 
-DUR-03 adds:
+DUR-03 additionally requires:
 
 - application-only check-then-write is insufficient for single-location/value-conservation correctness;
-- deterministic lock/acquisition ordering or another proven deadlock/anomaly-closing mechanism is required for multi-participant transactions;
-- READ COMMITTED is permitted only with explicit invariant proof;
-- otherwise bounded SERIALIZABLE or stricter accepted domain mechanism applies;
-- deadlock/serialization retry preserves TransactionId/OperationId/Command identity;
+- deterministic lock/acquisition ordering or another proven anomaly-closing mechanism for multi-participant transactions;
+- READ COMMITTED only with explicit invariant proof;
+- otherwise bounded SERIALIZABLE or stricter accepted mechanism;
+- deadlock/serialization retry preserves TransactionId/OperationId/CommandRef identity;
 - advisory locks are not the sole durable authority for location, custody, uniqueness or conservation.
 
-Exact SQL syntax/lock ordering implementation is deferred.
+Exact SQL/lock syntax is deferred.
 
-## 24. Player/character authority fencing
+## 25. Player/character authority fencing
 
-A transaction mutating Character-controlled value must consume current FND authority.
+A transaction mutating Character-controlled value consumes current accepted FND authority as applicable:
 
-Applicable proof may include:
-
-- valid GameSession identity/command ingress;
-- current CharacterLease generation/authority;
-- current actor/domain state preconditions;
+- valid GameSession/CommandRef for player-originated intent;
+- current CharacterLease authority/generation;
+- current actor/domain preconditions;
 - current runtime scope ownership generation for channel/instance-scoped participants.
 
-Rules:
+Binding/location/ItemInstanceId/NodeId are not credentials. Client-supplied quantity/location/item state is intent only and is re-read/validated authoritatively.
 
-- binding/ownership/location metadata is not authority;
-- stale lease/session/runtime owner cannot commit new value mutation;
-- ItemInstanceId itself is not a credential;
-- client-supplied quantity/location/item state is intent only and must be re-read/validated authoritatively.
+## 26. Connection-generation nuance
 
-## 25. Connection generation nuance
+FND-02/FND-04 permit eligible reconnect of the same GameSession with a newer connection_generation while preserving previously reserved pending CommandRefs.
 
-FND-02/FND-04 allow eligible reconnect of the same GameSession with a newer connection_generation while preserving previously reserved pending CommandRefs.
-
-Therefore DUR-03 does not require that the **old transport generation itself** still be current at DB commit for every valid command already accepted into authoritative ingress.
+Therefore DUR-03 does **not** require the old transport generation itself to remain current at DB commit for every valid already-reserved command.
 
 It requires instead:
 
-- command was reserved under valid authoritative binding;
-- the logical GameSession/CharacterLease/runtime authority remains valid under FND-03/FND-04 continuation rules;
-- no superseding/terminal authority event invalidates the pending mutation;
-- commit-time domain/runtime fences required by the affected participants are current.
+- the command was authoritatively reserved under a valid binding;
+- logical GameSession/CharacterLease/runtime authority remains valid under FND continuation rules;
+- no superseding/terminal authority transition invalidates the pending mutation;
+- commit-time fences required by touched participants are current.
 
-This prevents stale writers without breaking same-session reconnect correctness.
+## 27. Channel/instance scope fencing
 
-## 26. Channel/instance scope fencing
+Any durable mutation touching channel/instance-scoped ground/custody state proves current runtime-scope ownership generation or an equivalently accepted durable fence at the transaction boundary.
 
-Any durable mutation touching channel/instance-scoped ground or custody state must prove current runtime-scope ownership generation or an equivalently accepted durable fence at the transaction boundary.
+A stale former GameNode/ChannelRuntime/InstanceRuntime owner cannot commit after authority moved. NodeId alone is not authority.
 
-A stale former GameNode/ChannelRuntime/InstanceRuntime owner cannot commit after ownership transfer/recovery.
+A future world-shared spatial owner such as an accepted house topology uses its own separately typed location/authority family rather than being silently encoded as channel-local ground.
 
-DUR-03 does not use NodeId alone as authority.
+## 28. Equipment atomicity
 
-## 27. Equipment atomicity
-
-GAME-ITEM-01 owns equip legality and complete occupancy claims.
-
-DUR-03 requires equip/unequip to commit atomically with all authoritative item locations/occupancy consequences.
-
-Valid result:
+GAME-ITEM-01 owns equip legality/occupancy. DUR-03 requires equip/unequip to commit atomically with all authoritative location/occupancy consequences:
 
 ```text
-all old locations/claims released as required
+all required old locations/claims released
 + complete new occupancy claim established
-+ every displaced item placed legally if operation permits displacement
-+ required durable evidence
++ every displaced item legally located where displacement is permitted
++ required receipt/audit
 OR
-none of those changes become authoritative
+none becomes authoritative
 ```
 
-A partial two-handed/mutually-exclusive occupancy commit is invalid.
+Partial two-hand/mutually-exclusive occupancy is invalid.
 
-## 28. Ground and inventory atomicity
+## 29. Ground and inventory atomicity
 
-Pickup/drop/move transactions must preserve:
+Pickup/drop/move preserves:
 
 - one immediate location before/after;
-- world/runtime scope correctness;
+- correct WorldId/runtime scope;
 - current authority/fences;
 - container/inventory/equipment legality;
-- no client-created quantity/item/location facts;
-- one transaction identity across retry;
-- mandatory audit/receipt where required.
+- no client-created item/quantity/location facts;
+- same logical TransactionId across retry;
+- mandatory receipt/audit where required.
 
-A lost pickup response may reconcile a committed inventory result; it must not leave both ground and inventory copies.
+Lost pickup response may reconcile committed inventory state; it can never justify a second ground/inventory copy.
 
-## 29. Multi-transaction workflows and typed custody
+## 30. Multi-transaction workflows and typed custody
 
-A future value workflow may span multiple durable transactions only when each committed step is itself safe.
+A future value workflow may span multiple durable transactions only when each committed step is independently safe.
 
-Required pattern:
+Pattern:
 
 ```text
-logical OperationId where needed
--> transaction 1: transfer value into explicit typed custody
+stable OperationId where needed
+-> transaction 1: move value into explicit typed custody
 -> zero or more idempotent workflow steps
--> transaction N: transfer/transform value out of custody
+-> transaction N: move/transform value out of custody
 ```
 
 Rules:
 
-- custody is an immediate authoritative location/reference, not a boolean flag beside the old location;
-- after custody transfer commits, the item/value cannot remain spendable from the prior location;
-- every step has its own TransactionId and is independently conservation-safe;
+- custody is the immediate authoritative location/reference, not a boolean beside the old location;
+- after custody commit, value is no longer spendable from its prior location;
+- each step has its own TransactionId and is independently conservation-safe;
 - workflow state is restartable/idempotent;
-- no hidden end-to-end all-or-nothing assumption spans separate transactions;
+- no hidden end-to-end all-or-nothing claim spans separate commits;
 - compensation is explicit new transaction;
-- the owning domain gate defines business state transitions/eligibility.
+- owning domain gate defines business lifecycle/eligibility.
 
-## 30. Current database boundary
+## 31. Current database authority boundary
 
-Under accepted ADR-0004/DUR-02 current architecture, atomic DUR-03 v1 value mutation is one game-owned PostgreSQL transaction inside the current `oteryn_game` persistence authority.
+Under ADR-0004/DUR-02, current atomic DUR-03 v1 value mutation uses one game-owned PostgreSQL transaction inside the current `oteryn_game` persistence authority.
 
 This contract does not authorize or define:
 
-- Platform/game distributed two-phase commit;
+- Platform/game distributed 2PC;
 - cross-database foreign keys;
-- dual-authority mirrored item ownership;
+- mirrored dual-authority item ownership;
 - implicit remote-service atomicity.
 
-If a future custody surface belongs to another database/service authority, direct atomic transfer is unsupported until a dedicated contract proves a safe handoff/custody protocol.
+A future external persistence/service custody boundary requires a dedicated safe handoff/custody contract before direct value transfer becomes supported.
 
-## 31. StaticItemPlacement materialization
+## 32. StaticItemPlacement materialization
 
-GAME-ITEM-01 establishes that authored StaticItemPlacement is not automatically a durable ItemInstance.
+When gameplay materializes an authored StaticItemPlacement occurrence into durable mutable state:
 
-When gameplay materializes a placement/occurrence into durable mutable item state:
+- authoritative occurrence/cause identity is stable enough to deduplicate crash/retry;
+- new concrete output uses transaction-scoped fresh ItemInstanceId;
+- same one-shot occurrence cannot mint a second output;
+- same occurrence with conflicting output intent is an integrity conflict;
+- repeatable respawn/reset behavior uses distinct authorized occurrence identities under its owning content/gameplay contract.
 
-- the authoritative occurrence/cause identity must be stable enough to deduplicate retry/crash;
-- every new concrete ItemInstance receives fresh ItemInstanceId;
-- same one-shot materialization occurrence cannot mint a second output on retry;
-- same occurrence with conflicting outputs is an integrity conflict;
-- repeatable respawn/reset behavior requires distinct authorized occurrences under its owning content/gameplay contract;
-- DUR-03 does not invent the respawn/reset business rule.
+DUR-03 does not define respawn/reset business policy.
 
-## 32. Loot/reward/crafting cause boundary
+## 33. Loot/reward/crafting source boundary
 
-DUR-03 does not determine:
+DUR-03 does not determine what loot drops, who is eligible, reward schedules, crafting recipes, market prices or entitlement benefits.
 
-- what loot drops;
-- who is eligible;
-- reward schedules;
-- crafting recipes;
-- market prices;
-- entitlement benefits.
+Any owning domain that produces/consumes durable value must provide a stable authoritative cause/rule context such that retry/recovery cannot apply the same logical output twice.
 
-It requires any owning domain that produces/consumes durable value to provide a stable authoritative cause/rule context such that retry/recovery cannot apply the same logical output twice.
+A transaction fixes its intended output/input identity slots and source/cause before durable commit. Physical retries preserve them.
 
-A future loot/craft/reward transaction must fix its exact output/input mutation set before ambiguous commit.
+## 34. Surface ownership boundary
 
-## 33. Trade/market/depot/mail/bank/house boundary
-
-DUR-03 supplies reusable transaction/custody/conservation rules only.
-
-| Surface | DUR-03 owns | Domain owner retains |
+| Surface | DUR-03 owns | Downstream owner retains |
 |---|---|---|
-| trade | atomic item/value exchange + custody safety | consent/state machine/eligibility |
-| market | value conservation + escrow/custody mechanics | offers, pricing, fills, fees, cancellation policy |
+| pickup/drop/ground/inventory | atomic location/conservation | movement/interaction eligibility |
+| loot | mint/transfer idempotency/lineage | kill/loot generation/eligibility |
+| trade | atomic exchange/custody safety | consent/lifecycle/policy |
+| market | conservation/escrow safety | offer/fill/fee/pricing state machine |
+| bank | exact item/ledger transfer/conversion | banking/economy policy |
 | depot | item move/custody conservation | access/depot semantics |
-| mail | item custody/move conservation | addressing/delivery lifecycle |
-| bank | exact item/ledger transfer/conversion conservation | banking/economy product policy |
-| rewards | mint/transfer idempotency/provenance | reward eligibility/schedule |
-| houses | item placement/move conservation | house ownership/access/rent/topology |
+| mail | item custody/move conservation | address/delivery lifecycle |
+| rewards | mint/transfer idempotency | eligibility/schedule |
+| houses | placement/move conservation | ownership/access/rent/topology |
+| crafting/upgrades | input/output lineage | recipes/formulas/eligibility |
+| entitlements | game-value delivery conservation if later accepted | Platform/payment/consumer activation policy |
 
-No surface becomes accepted merely because DUR-03 provides a transaction substrate.
+No surface becomes accepted merely because DUR-03 supplies transaction/custody primitives.
 
-## 34. Mandatory durable evidence
+## 35. Mandatory durable evidence
 
-Every committed transaction whose item/value mutation is authoritative requires ANL-01-compatible `DURABLE_AUDIT` evidence sufficient for independent reconciliation.
+ADR-0006 classifies security-relevant item/currency mutations as durable economy/security audit. Therefore every authoritative DUR-03 item/value transaction emits ANL-01-compatible durable evidence sufficient to reconcile its effects.
+
+The evidence may aggregate multiple touched mutation lines into one or more **bounded** transaction events/payloads. DUR-03 does not require one event per item/line.
+
+If required evidence cannot fit accepted hard ceilings, the operation must use a safe bounded/staged design or reject. It may not emit an unbounded audit event.
 
 Minimum semantic evidence, as applicable:
 
 - TransactionId;
-- OperationId and/or CommandRef/cause reference;
+- OperationId and/or CommandRef/cause;
 - WorldId and relevant channel/instance/runtime scope;
-- exact ruleset/content/item-definition revisions required to interpret the mutation;
+- exact ruleset/content/item-definition revisions needed to interpret the mutation;
 - touched ItemInstanceIds;
-- each touched instance before/after lifecycle disposition: `EXISTING_SURVIVED`, `MINTED`, `RETIRED` or equivalent typed semantics;
+- lifecycle disposition of each touched instance: survived/minted/retired or equivalent typed meaning;
 - immediate before/after location for moved/surviving instances;
 - ItemType/revision transition when changed;
-- exact quantity deltas for stackable units;
-- non-item asset/account debit/credit lines;
+- exact quantity/non-item asset lines;
 - mutation classification: transfer/split-merge/state/mint/burn/transform/conversion;
-- typed source/sink/transform/conversion cause/rule reference;
-- conservation summary sufficient to independently validate transaction closure;
-- relevant authority/fence references where safe and necessary, excluding secret credential/proof material.
+- typed source/sink/transform/conversion cause/rule;
+- conservation summary sufficient for independent validation;
+- relevant safe authority/fence references without secret credential/proof material.
 
-The evidence set is fixed before the first possibly ambiguous commit and commits atomically with authoritative state.
+The exact materialized evidence candidate for a physical commit attempt is fixed before that attempt can become ambiguous and commits atomically with authoritative state.
 
-## 35. ANL event-schema boundary
+## 36. ANL event-schema boundary
 
-This architecture contract deliberately does not allocate speculative gameplay event type IDs or select final protobuf payload layout.
+This architecture candidate does not allocate speculative gameplay event IDs or select final protobuf payload layout.
 
-Before any implementation claims DUR-03 conformance, the implementation/contract package must register concrete ANL-01 event types/schema revisions and resource ceilings implementing the mandatory evidence semantics in section 34.
+Before implementation claims DUR-03 conformance, the owning implementation/contract package must register concrete ANL-01 event types/schema revisions and resource ceilings implementing section 35.
 
-That registration must preserve:
+That registration preserves:
 
 - EventId immutability;
 - TransactionEventRef complete-set rules;
 - exact payload-byte retry stability;
-- privacy class/retention policy;
+- privacy/retention policy;
 - replay read-only behavior;
 - no high-cardinality ItemInstanceId metrics labels.
 
-## 36. Durable acknowledgement
+## 37. Durable acknowledgement
 
 For a DUR-03 mutation declared durable:
 
 ```text
 success acknowledged
 => owning PostgreSQL transaction committed
-=> mandatory durable receipt/audit committed
+=> required durable receipt/audit committed
 => ordinary process/GameNode restart can reconstruct the committed result
 ```
 
-A runtime checkpoint, network send or in-memory state change is not durable success.
+Runtime checkpoint, network send or in-memory state is not durable success.
 
-If response delivery is lost after commit, reconciliation returns/proves the committed result rather than reapplying the mutation.
+Lost response after commit reconciles committed state rather than reapplying mutation.
 
-## 37. Restore and disaster recovery
+## 38. Restore and disaster recovery
 
-DUR-02 PITR/recovery rules remain binding.
+DUR-02 PITR/recovery remains binding.
 
-Before authoritative item/value mutation resumes after restore, implementation must validate at least:
+Before authoritative item/value mutation resumes after restore/integrity incident, implementation validates at least:
 
 - supported schema/migration history;
-- each live ItemInstanceId is unique/non-nil/valid and not known retired;
-- each live ItemInstance has exactly one valid immediate location;
-- parent containers/custodies exist and container graph remains bounded/acyclic;
-- no quantity zero/overflow or incompatible item definition reinterpretation;
+- each live ItemInstanceId is valid/unique and consistent with available retained retirement/non-reuse evidence required by policy;
+- every live ItemInstance has exactly one valid immediate location;
+- parent containers/custodies exist and container graph is bounded/acyclic;
+- no zero/overflow quantity or incompatible definition reinterpretation;
 - TransactionId/OperationId/source-cause receipt uniqueness has no conflict;
-- mandatory committed audit TransactionEventRef sets are complete where required;
+- mandatory retained audit TransactionEventRef sets are complete where required;
 - non-item asset invariants reconcile;
 - restored pre-loss GameSession/CharacterLease/runtime authority is fenced by a newer accepted recovery fence;
-- audit replay does not execute gameplay mutation/remint outputs.
+- audit replay does not execute gameplay/remint outputs.
 
 Integrity failure keeps affected authoritative mutation closed until an explicit safe repair/compensation path is accepted.
 
-## 38. Analytics/Game Intelligence boundary
+## 39. Analytics/Game Intelligence boundary
 
-Game Intelligence/ANL consumers may:
+Game Intelligence may reconcile evidence, detect impossible duplicate location/lineage/value patterns, raise alerts/cases and reconstruct provenance.
 
-- reconcile transaction evidence;
-- detect impossible duplicate location/lineage/value patterns;
-- raise alerts/cases;
-- reconstruct provenance for investigation.
+It may not mutate item/value authority, auto-delete/merge duplicates, mint compensation, rewrite history, sanction automatically under DUR-03 or bypass domain authorization.
 
-They may not:
+Correction uses a new typed authorized transaction under the appropriate gameplay/admin/security contract.
 
-- mutate item/value authority;
-- delete/merge duplicate rows automatically;
-- mint compensation;
-- ban/sanction automatically under DUR-03;
-- rewrite history;
-- bypass domain authorization.
-
-Confirmed correction uses a new typed authorized gameplay/admin compensation transaction under later OPS-GM/security policy.
-
-## 39. Fail-closed error dispositions
-
-Minimum semantic dispositions:
+## 40. Fail-closed dispositions
 
 | Condition | Category | Required effect |
 |---|---|---|
 | invalid item/location/capability/type state | `INVALID_INPUT` | no authoritative mutation |
 | semantic item/equipment/container rule rejected | owning rejection category | no mutation |
 | wrong WorldId/runtime scope | `CONFLICT` | no mutation |
-| stale GameSession/CharacterLease/runtime owner | `CONFLICT` / stale-authority subtype | no mutation |
-| duplicate same semantic transaction/operation | idempotent replay/reconciliation | no second mutation |
-| same TransactionId/OperationId/source identity with conflicting intent | `CONFLICT` / integrity | no overwrite/reinterpretation |
-| serialization/deadlock retryable abort | transient internal/dependency category | bounded retry same semantic identity |
-| ambiguous commit | reconciliation required | no blind new TransactionId |
+| stale GameSession/CharacterLease/runtime owner | stale-authority `CONFLICT` subtype | no mutation |
+| duplicate same semantic transaction/operation | idempotent reconciliation | no second mutation |
+| same TransactionId/OperationId/source identity with conflicting intent | integrity `CONFLICT` | no overwrite/reinterpretation |
+| proven serialization/deadlock abort | retryable internal/transient category | bounded retry same logical identity |
+| ambiguous commit | reconciliation required | no blind new TransactionId/candidate |
 | participant/resource limit exceeded | `CAPACITY_EXCEEDED` | no partial mutation |
 | unsupported transform/definition/ruleset revision | `UNSUPPORTED_REVISION` | fail closed |
 | mandatory audit cannot commit | `DEPENDENCY_UNAVAILABLE` or owning internal category | no authoritative mutation where audit mandatory |
 | internal location/conservation/lineage violation | `INTERNAL_UNAVAILABLE` / integrity | stop affected path; preserve evidence |
 
-Exact client-visible error codes belong to owning protocol/domain registries when implementation payloads are introduced.
+Exact client-visible codes remain owning protocol/domain registry work.
 
-## 40. Transaction state versus client presentation
+## 41. Client presentation boundary
 
-Client UI state, optimistic visuals, drag/drop source slots or cached inventory snapshots do not define transaction authority.
+Client UI state, drag/drop source slots, optimistic visuals or cached inventory snapshots do not define transaction authority.
 
-The server may reconcile client-visible state through FND-02 domain revisions/snapshots/deltas after commit.
+Server may reconcile committed state through FND-02 domain revisions/snapshots/deltas. A stale-view rejection does not change conservation semantics.
 
-A client stale-view rejection does not alter durable conservation semantics.
+## 42. Derived/materialized state
 
-## 41. Derived/materialized state
+A derived index/projection/summary is either:
 
-If implementation maintains derived/materialized state such as:
-
-- inventory indexes;
-- equipment projections;
-- weight summaries;
-- search views;
-- client projection rows;
-
-then it must be either:
-
-1. atomically consistent with the authoritative transaction when the field itself participates in correctness; or
+1. atomically maintained when it participates in correctness; or
 2. explicitly rebuildable/non-authoritative from committed source state.
 
-No duplicate cache/projection becomes a second item-location authority.
+No cache/projection becomes a second item-location authority.
 
-## 42. Definition revision compatibility
+## 43. Definition revision compatibility
 
-Every transaction must interpret touched items under compatible explicit definition/ruleset/content revisions per GAME-ITEM-01.
-
-Rules:
+Every transaction interprets touched items under explicit compatible GAME-ITEM definition/ruleset/content revisions.
 
 - no silent reinterpretation because ItemTypeKey is unchanged;
-- `MIGRATION_REQUIRED` item state cannot be mutated under new meaning until accepted migration/validation completes;
+- `MIGRATION_REQUIRED` state is not mutated under a new meaning until accepted migration/validation;
 - unsupported mixed revision fails closed;
-- transform/conservation evidence retains enough revision context to interpret historical lineage.
+- transform/conservation evidence retains sufficient historical revision context.
 
-## 43. Concurrency with session recovery
+## 44. Session recovery consequence
 
-If an item/value transaction is already committed when transport/session response continuity fails:
+If transaction state is committed when response/session continuity fails:
 
-- the committed durable result remains authoritative;
-- reconnect/recovery cannot replay the mutation as new;
-- client/session reconciliation uses retained command/operation/transaction result/evidence as available;
-- if same-GameSession resume cannot safely reconstruct command state, FND-02/FND-04 may terminate that session, but committed item/value state is not rolled back merely for session convenience.
+- committed durable result remains authoritative;
+- reconnect/recovery cannot replay it as new;
+- reconciliation uses retained command/operation/transaction receipt/evidence where available;
+- if same-GameSession resume cannot reconstruct command state safely, FND-02/FND-04 may terminate that session, but committed item/value state is not rolled back for session convenience.
 
-## 44. Multi-channel invariants
+## 45. Multichannel invariants
 
-- Character-held durable value is not made channel-owned solely because the Character is currently attached to one channel.
-- channel/instance ground state remains explicitly runtime-scope fenced.
-- no stale channel owner writes durable ground value after ownership generation changes.
-- a direct durable transfer between two independent live channel/instance authorities is unsupported unless a later contract introduces an explicit one-winner handoff/custody coordinator.
-- cross-channel relog/recovery cannot duplicate character inventory because inventory ItemInstances retain one immediate location and one current Character authority relation.
+- Character-held durable value is not channel-owned solely because Character currently plays on one channel;
+- channel/instance ground state remains runtime-scope fenced;
+- stale channel owner cannot write durable ground value after ownership-generation change;
+- direct durable transfer between independent live channel/instance ground authorities is unsupported without explicit one-winner handoff/custody coordinator;
+- cross-channel relog/recovery cannot duplicate inventory because each live ItemInstance retains one immediate location plus current Character authority relation.
 
-## 45. Security and abuse invariants
+## 46. Security invariants
 
 Mandatory:
 
 - no client authority for item identity, quantity, location, source/sink or currency balance;
-- no arbitrary authoritative transaction JSON/EAV payload interpreted as domain semantics;
-- no unbounded transaction participant graph;
-- no cross-world value laundering by burn+mint;
-- no same cause/OperationId/TransactionId conflict resolved by last-write-wins;
-- no raw SQL/admin mutation path as ordinary gameplay correction;
-- no ItemInstanceId reuse;
+- no arbitrary authoritative transaction/location JSON/EAV escape hatch;
+- no unbounded participant graph;
+- no cross-world laundering by burn+mint;
+- no conflicting same cause/OperationId/TransactionId last-write-wins;
+- no raw SQL/admin mutation as ordinary gameplay correction;
+- no ItemInstanceId reuse/reassignment;
 - no binding/location metadata as session authority;
 - no stale GameNode/lease owner commit;
 - no mandatory audit downgrade to best-effort telemetry;
 - no audit replay as gameplay replay;
 - no automatic analytics repair authority.
 
-## 46. Implementation evidence requirements
+## 47. Required implementation evidence
 
-Any future implementation claiming DUR-03 conformance must prove, on exact revisions, at least:
+Any future implementation claiming DUR-03 conformance proves on exact revisions at least:
 
 ### Identity/location
 
-- create fresh ID/non-reuse;
+- create fresh output ID and no cross-transaction reassignment;
 - split source/new-ID behavior;
 - partial/full merge survivor/retirement behavior;
 - preserve/replace transform fixtures;
 - one immediate location across inventory/equipment/container/ground/custody;
-- container subtree move without descendant rewrite/orphan;
+- container root move without descendant rewrite/orphan;
 - cross-world rejection.
 
 ### Idempotency/concurrency
 
 - duplicate same CommandRef no second execution;
 - same TransactionId retry no second effect;
+- transaction-scoped planned output IDs stable through retry;
 - conflicting same TransactionId rejected;
-- lost response after commit reconciles original result;
-- serialization/deadlock retry preserves semantic identity;
+- known serialization/deadlock abort rematerializes same logical intent safely;
+- ambiguous commit freezes/reconciles exact candidate before retry;
+- lost response after commit returns original result;
 - stale CharacterLease rejected;
 - stale runtime ownership generation rejected;
-- same-GameSession reconnect does not duplicate valid pending command effect.
+- same-GameSession reconnect does not duplicate pending valid command effect.
 
 ### Conservation
 
@@ -956,36 +925,37 @@ Any future implementation claiming DUR-03 conformance must prove, on exact revis
 - mint/burn require cause;
 - duplicate mint cause rejected/reconciled;
 - transform complete input/output lineage;
-- non-item ledger debit/credit conservation;
+- non-item ledger debit/credit exact conservation;
 - conversion fixtures use exact accepted rule;
-- compensation is new transaction with causation.
+- compensation is a new causally linked transaction.
 
 ### Atomicity/failure
 
 - crash before commit => no authoritative mutation/audit;
 - crash after commit before response => committed state/evidence recoverable;
-- crash around publication => EventId-stable at-least-once publish, no gameplay replay;
-- equipment multi-slot move commits all/none;
-- custody transfer cannot leave item spendable in old location;
-- participant/resource overflow rejects without partial state.
+- publication crash => EventId-stable at-least-once publish, no gameplay replay;
+- equipment multi-slot move all/none;
+- custody transfer cannot leave old-location spendability;
+- participant/evidence bound overflow rejects without partial state.
 
 ### Restore
 
 - restore detects duplicate location/receipt/cause conflicts;
 - pre-restore authority fenced;
 - audit replay cannot remint;
-- mandatory integrity failures keep mutation closed.
+- integrity failure keeps mutation closed.
 
 ### Evidence
 
 - concrete registered ANL durable-audit event schemas/types;
-- TransactionEventRef complete-set/gap/duplicate validation;
+- TransactionEventRef complete-set/gap/duplicate tests;
+- bounded aggregated evidence payload/event count;
 - privacy/retention profiles;
 - no ItemInstanceId high-cardinality metrics labels.
 
 Architecture acceptance alone proves none of these runtime outcomes.
 
-## 47. Decision timing
+## 48. Decision timing
 
 ### Must decide now?
 
@@ -1002,29 +972,21 @@ Architecture acceptance alone proves none of these runtime outcomes.
 
 ### Future migration cost if changed late
 
-Changing after durable data exists can require migration of:
-
-- location authority representation;
-- ItemInstanceId lineage semantics;
-- receipts/idempotency keys;
-- source/sink provenance;
-- transaction evidence interpretation;
-- custody ownership;
-- restore verification.
+Changing after durable history exists can require migration of location authority, ItemInstanceId lineage, receipts/idempotency keys, source/sink provenance, transaction evidence interpretation, custody and restore verification.
 
 ### Supersession evidence
 
 Reopen only with named evidence such as:
 
-- proven first-Reference behavior incompatible with the typed extension model;
-- a PostgreSQL anomaly/correctness proof showing accepted atomicity cannot safely close a required operation;
+- proven externally observable Reference mechanic incompatible with the typed extension model;
+- PostgreSQL anomaly/correctness proof showing accepted atomicity cannot safely close a required operation;
 - measured scale evidence requiring a different bounded partition/custody architecture;
-- security/exploit evidence;
-- a future accepted cross-service/database custody protocol with equivalent one-authority/conservation guarantees;
+- exploit/security evidence;
+- future accepted cross-service/database custody protocol with equivalent one-authority/conservation guarantees;
 - privacy/legal retention constraints;
 - explicit later owner world-transfer/economy policy.
 
-OTS schema layout, library preference or convenience is insufficient.
+OTS schema layout, framework/library preference or convenience is insufficient.
 
 ### Deliberately not decided
 
@@ -1032,25 +994,25 @@ OTS schema layout, library preference or convenience is insufficient.
 - concrete Rust transaction API/crates;
 - numeric transaction/resource ceilings without evidence;
 - concrete ANL event IDs/protobuf payloads;
-- exact Reference source/sink/transform/crafting/decay/trade/market/bank/depot/mail/reward rules not evidenced;
-- business state machines of downstream surfaces;
+- exact unevidenced Reference source/sink/transform/crafting/decay/trade/market/bank/depot/mail/reward rules;
+- downstream business state machines;
 - cross-world transfer feature;
 - cross-database/service atomic transfer protocol;
 - production RPO/RTO/topology/backup cadence;
 - automatic remediation.
 
-## 48. Acceptance consequence
+## 49. Acceptance consequence
 
 Only after:
 
-1. this candidate delivery passes exact-head self-review;
+1. candidate delivery passes exact-head self-review;
 2. required genuinely independent review has zero open material findings;
 3. exact-head governance/document CI passes;
 4. review threads/ownership conflicts are clean;
 5. PR #207 is squash-merged unchanged; and
 6. a separate lifecycle closeout atomically promotes maintained programme status/handoff,
 
-may canonical programme state become:
+may programme state become:
 
 ```text
 DUR-03
@@ -1061,4 +1023,4 @@ Runtime authority    = NONE
 DDL/migration authority = NONE
 ```
 
-That acceptance does **not** authorize item/value runtime implementation or production mutation. It only allows a later separately authorized implementation task to consume the contract.
+Architecture acceptance does **not** authorize item/value runtime implementation or production mutation. A later implementation task requires separate owner authority and the evidence in section 47.
