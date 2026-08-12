@@ -14,7 +14,7 @@ This contract completes the architecture intentionally left open by ADR-0005 for
 
 It does not replace ADR-0005. It makes ADR-0005 implementable without freezing physical file encodings that still require the mandated spike/benchmark evidence.
 
-## 2. Normative language
+## 2. Normative language and fail-closed rule
 
 `MUST`, `MUST NOT`, `SHOULD` and `MAY` are normative.
 
@@ -22,24 +22,11 @@ Unknown physical-format details or numeric limits MUST fail closed at implementa
 
 ## 3. Canonical semantic identity
 
-### 3.1 Package identity
+Every package MUST have a stable namespaced `PackageKey`, immutable `PackageRevision`, semantic schema version, declared dependencies, provenance/licensing metadata and source-manifest digest.
 
-Every package MUST have:
+A runtime build MUST use a deterministic **Content Lock** resolving every dependency to an exact immutable package revision/digest. Runtime dependency resolution MUST NOT use floating versions, mutable branches or network-time “latest” selection.
 
-- a stable namespaced `PackageKey`;
-- an immutable `PackageRevision`;
-- a semantic schema version;
-- declared dependencies;
-- provenance/licensing metadata;
-- a source-manifest digest.
-
-A runtime build MUST use a deterministic **Content Lock** that resolves every dependency to an exact immutable package revision/digest. Runtime dependency resolution MUST NOT use floating versions, mutable branches or network-time “latest” selection.
-
-### 3.2 Content identity
-
-Every canonical content definition MUST have one stable namespaced `ContentKey`.
-
-Legacy numeric IDs and compact runtime IDs MUST NOT become canonical semantic identity. Compiled numeric IDs MAY exist only within the scope of one compiled revision/artifact.
+Every canonical content definition MUST have one stable namespaced `ContentKey`. Legacy numeric IDs and compact runtime IDs MUST NOT become canonical semantic identity. Compiled numeric IDs MAY exist only within one compiled revision/artifact.
 
 Aliases/deprecations MUST be explicit, deterministic and acyclic. Ambiguous or cyclic alias resolution MUST fail compilation.
 
@@ -60,7 +47,7 @@ A release/deployment record MAY bind them together, but one opaque revision numb
 
 The canonical Oteryn content model is a typed semantic graph independent of its concrete serializer.
 
-Therefore DUR-04 does **not** accept YAML, RON, JSON5, a custom text syntax, `.omap`, `.owb` or any specific binary container as the permanent canonical physical encoding.
+DUR-04 therefore does **not** accept YAML, RON, JSON5, a custom text syntax, `.omap`, `.owb` or any specific binary container as the permanent canonical physical encoding.
 
 Any final physical source/bundle encoding MUST be selected only after the ADR-0005 bounded non-canonical spike proves deterministic hashes, random access, corruption/decompression handling, source-to-bundle-to-load equivalence and representative chunk/floor-packing behavior.
 
@@ -109,25 +96,13 @@ Client artifacts MUST be produced by explicit allowlisted projection from the lo
 
 Server-only authoritative fields MUST NOT be serialized into client artifacts and then merely hidden by UI logic.
 
-Client and server artifacts MUST carry compatible revision/capability metadata so incompatible pairs fail closed.
-
-Client data MUST remain non-authoritative even when it mirrors server definitions.
+Client and server artifacts MUST carry compatible revision/capability metadata so incompatible pairs fail closed. Client data MUST remain non-authoritative even when it mirrors server definitions.
 
 ## 9. Immutable World Bundle
 
 A published World Bundle or equivalent runtime artifact MUST be immutable and content-addressed by integrity digest.
 
-It MUST contain sufficient metadata to identify:
-
-- format/schema version;
-- content/map/ruleset/world-policy compatibility where applicable;
-- compiler identity;
-- Content Lock digest;
-- artifact/manifest digest;
-- required runtime/protocol capabilities;
-- integrity metadata for independently loaded sections/chunks;
-- provenance summary;
-- client-safe or server-authoritative projection class.
+It MUST identify at least format/schema version, content/map/ruleset/world-policy compatibility where applicable, compiler identity, Content Lock digest, artifact/manifest digest, required runtime/protocol capabilities, section/chunk integrity metadata, provenance summary and projection class.
 
 Runtime MUST NOT deserialize unstable Rust memory layout as a public format contract.
 
@@ -147,33 +122,25 @@ Before authoritative publication it MUST perform, in bounded order:
 8. semantic consistency validation;
 9. isolated staging construction.
 
-No partially validated section MAY become authoritative runtime state.
-
-Unknown critical sections or required capabilities MUST fail closed.
+No partially validated section MAY become authoritative runtime state. Unknown critical sections or required capabilities MUST fail closed.
 
 All externally controlled counts, lengths, depths, compressed/decompressed sizes, ratios, memory/table counts and equivalent resources MUST have entries in `docs/contracts/RESOURCE_LIMITS_REGISTRY.json` before implementation acceptance.
 
-## 11. Staging and activation
+## 11. Staging, activation and rollback
 
 Loading and activation MUST be separate operations.
 
 A staged revision MAY be parsed, verified, indexed and prewarmed without becoming authoritative.
 
-Activation MUST bind an exact coherent revision/artifact set. A new authoritative simulation scope MUST NOT begin with a partial mixture of old/new definitions caused by incremental mutation.
-
-A currently active immutable revision MUST NOT be edited in place.
+Activation MUST bind an exact coherent revision/artifact set. A new authoritative simulation scope MUST NOT begin with a partial mixture of old/new definitions caused by incremental mutation. A currently active immutable revision MUST NOT be edited in place.
 
 A later rollout contract MAY permit old and new compatible scopes to coexist temporarily, but every authoritative scope MUST identify the exact revision set governing it.
 
-## 12. Rollback
-
-Rollback means activation of a previously verified compatible artifact.
-
-Rollback MUST NOT restore an older content artifact while leaving authoritative durable state in a semantically incompatible post-migration representation.
+Rollback means activation of a previously verified compatible artifact. Rollback MUST NOT restore older content while leaving authoritative durable state in a semantically incompatible post-migration representation.
 
 If activation requires durable migration, forward and rollback compatibility MUST be proven before production activation.
 
-## 13. Durable-state migration classes
+## 12. Durable-state migration classes
 
 Every content change affecting durable semantic interpretation MUST be classified as exactly one of:
 
@@ -189,35 +156,25 @@ Every content change affecting durable semantic interpretation MUST be classifie
 
 Player-value-bearing removals MUST NOT silently discard, reinterpret or duplicate durable value.
 
-## 14. Legacy conversion and provenance
+## 13. Legacy conversion and provenance
 
-Each external source area used for migration/evidence MUST record:
-
-- exact source repository revision/archive digest;
-- license/provenance status;
-- one disposition: `COPY`, `CONVERT`, `REWRITE`, `REFERENCE_ONLY` or `REJECT`;
-- importer/converter identity;
-- deterministic conversion report;
-- unresolved/lossy-semantics report;
-- legacy-ID mappings where relevant.
+Each external source area used for migration/evidence MUST record exact source revision/archive digest, license/provenance status, one disposition (`COPY`, `CONVERT`, `REWRITE`, `REFERENCE_ONLY`, `REJECT`), importer identity, deterministic conversion report, unresolved/lossy-semantics report and legacy-ID mappings where relevant.
 
 Legacy Intermediate Representation MUST remain an importer-boundary type and MUST NOT become canonical Oteryn content schema.
 
 Otheryn/Canary/other OTS sources MUST NOT by themselves establish Global Tibia parity truth.
 
-## 15. Scripting architecture
+## 14. Scripting architecture
 
 The target scripting boundary MUST use WebAssembly Component Model components with a **project-owned, versioned WIT capability ABI**, unless a later accepted ADR explicitly supersedes this decision.
 
 Wasmtime is the initial implementation candidate, but Wasmtime APIs/types MUST NOT define the public Oteryn script contract.
 
-A process-global Lua/game object model is NOT accepted as the target authoritative architecture. A bounded compatibility adapter MAY be considered only in a separate migration contract.
+A process-global Lua/game-object model is NOT accepted as the target authoritative architecture. A bounded compatibility adapter MAY be considered only in a separate migration contract.
 
-## 16. Script authority model
+## 15. Script authority model
 
-A script MUST be treated as a bounded decision/proposal component, not as an authoritative mutation owner.
-
-Conceptually:
+A script MUST be treated as a bounded decision/proposal component, not as an authoritative mutation owner:
 
 ```text
 InvocationContext + bounded read snapshot + explicit capabilities
@@ -227,30 +184,13 @@ InvocationContext + bounded read snapshot + explicit capabilities
  -> accepted authoritative command/transaction
 ```
 
-A script MUST NOT directly:
+A script MUST NOT directly commit PostgreSQL transactions, mutate arbitrary server/domain objects, bypass DUR-03 conservation/idempotency/fencing, bypass GAME-ITEM legality, bypass GAME-CHANNEL multiplicity/eligibility or mint trusted audit/economy truth outside the authoritative mutation boundary.
 
-- commit PostgreSQL transactions;
-- mutate arbitrary server/domain objects;
-- bypass DUR-03 conservation/idempotency/fencing;
-- bypass GAME-ITEM legality;
-- bypass GAME-CHANNEL multiplicity/eligibility;
-- mint trusted audit/economy truth outside the authoritative mutation boundary.
-
-## 17. Capability security
+## 16. Capability security
 
 Capabilities MUST be explicit versioned WIT imports.
 
-The default authoritative script environment MUST provide no ambient:
-
-- filesystem;
-- network/socket;
-- process spawning;
-- environment variable/secret access;
-- unrestricted wall clock;
-- OS randomness;
-- direct SQL;
-- global mutable Game object;
-- mutable Rust/server object reference.
+The default authoritative script environment MUST provide no ambient filesystem, network/socket, process spawning, environment variable/secret access, unrestricted wall clock, OS randomness, direct SQL, global mutable Game object or mutable Rust/server object reference.
 
 Capability absence is the default denial mechanism.
 
@@ -258,7 +198,7 @@ Candidate capability families MAY include bounded typed reads, scoped spatial qu
 
 Every capability call MUST remain subject to host/domain authorization and resource bounds.
 
-## 18. Deterministic script execution
+## 17. Deterministic script execution
 
 Authoritative script execution MUST use deterministic inputs/imports.
 
@@ -273,17 +213,19 @@ Deterministic semantic execution MUST use:
 - bounded action-plan size;
 - deterministic error/trap mapping.
 
+Host APIs returning collections or candidate sets MUST define stable ordering or canonicalize the result before exposing it to a script. A script MUST NOT observe hash-map iteration order, database default row order, scheduler order or another unspecified ordering source as gameplay input.
+
+Authoritative WIT/domain interfaces SHOULD prefer integer, enum and project-owned fixed-point/decimal semantics where practical. If floating-point values are permitted in authoritative script logic, the implementation MUST define and prove deterministic floating behavior, including NaN canonicalization where observable; platform-dependent NaN payloads or unspecified floating serialization MUST NOT influence authoritative outcome.
+
 Fuel exhaustion MUST terminate an invocation without committing its proposed action.
 
 Epoch/wall-clock interruption MAY exist as a secondary operational kill switch but MUST NOT define authoritative gameplay outcome or deterministic replay semantics.
 
-Unconstrained memory/table growth is forbidden for authoritative scripts. The implementation contract MUST choose deterministic memory/table constraints consistent with current runtime capabilities and register exact maxima before acceptance.
+Unconstrained memory/table growth is forbidden. Authoritative components MUST declare/enforce deterministic memory/table constraints, and implementation acceptance MUST prove that allocation/growth outcomes do not become host-resource-dependent gameplay nondeterminism.
 
-## 19. Script failure isolation
+## 18. Script failure isolation
 
-Required script validation/instantiation failure MUST block activation of the affected required content.
-
-Missing required capability MUST fail activation or invocation closed.
+Required script validation/instantiation failure MUST block activation of affected required content. Missing required capability MUST fail activation or invocation closed.
 
 On invocation trap, fuel exhaustion or invalid result:
 
@@ -296,22 +238,15 @@ An action plan containing any unauthorized/invalid authoritative action MUST be 
 
 Repeated failures MAY feed a circuit-breaker/disable mechanism, but failover MUST NOT silently substitute different reward/quest/economy semantics.
 
-## 20. Script persistent state
+## 19. Script persistent state
 
 VM linear memory/table state MUST NOT be treated as durable gameplay persistence.
 
-Persistent script-owned extension state MUST be:
-
-- typed;
-- namespaced;
-- schema-versioned;
-- size-bounded;
-- accessed through project-owned host/domain APIs;
-- persisted/fenced/migrated through accepted DUR-02/DUR-03 ownership.
+Persistent script-owned extension state MUST be typed, namespaced, schema-versioned, size-bounded, accessed through project-owned host/domain APIs and persisted/fenced/migrated through accepted DUR-02/DUR-03 ownership.
 
 Opaque arbitrary binary blobs are forbidden for authoritative durable state unless a later accepted contract defines their schema/version/limit/migration/audit semantics.
 
-## 21. Hot reload semantics
+## 20. Hot reload semantics
 
 “Hot reload” MUST NOT mean mutating a live immutable revision in place.
 
@@ -327,96 +262,54 @@ compile new revision
 
 Every authoritative scope MUST be able to report which exact content/script artifact revision governed it for replay, diagnostics and audit.
 
-## 22. Package/runtime supply-chain rules
+## 21. Package/runtime supply-chain rules
 
-Production runtime MUST NOT fetch unresolved content packages from the network.
-
-Activation MUST use a reviewed immutable lock and verified artifact digests.
-
-Script component digests MUST be bound into the content revision/manifest.
-
-Unknown script imports/capabilities MUST fail closed.
+Production runtime MUST NOT fetch unresolved content packages from the network. Activation MUST use a reviewed immutable lock and verified artifact digests. Script component digests MUST be bound into the content revision/manifest. Unknown script imports/capabilities MUST fail closed.
 
 Release signing/trust-root/CDN policy is deferred, but integrity hashes are mandatory now.
 
-## 23. Resource limits
+## 22. Resource limits
 
 DUR-04 deliberately does not invent numeric ceilings.
 
-Before any parser/compiler/loader/script runtime is accepted, `RESOURCE_LIMITS_REGISTRY.json` MUST contain applicable hard maxima and boundary tests at least for:
-
-- source file/package bytes and file counts;
-- manifest/dependency/key/reference counts and nesting;
-- bundle/section/chunk compressed bytes;
-- decompressed bytes and compression ratio;
-- index entries and spatial/object densities where allocation risk exists;
-- script component bytes;
-- script instance count;
-- memory/table minima/maxima and growth policy;
-- fuel per invocation;
-- host calls per invocation;
-- query/result/action-plan counts/bytes;
-- persistent script extension-state bytes.
+Before any parser/compiler/loader/script runtime is accepted, `RESOURCE_LIMITS_REGISTRY.json` MUST contain applicable hard maxima and boundary tests at least for source/package bytes and counts, dependency/key/reference counts and nesting, bundle/section/chunk compressed and decompressed bytes and ratio, indexes/densities where allocation risk exists, script component bytes, instance count, memory/table constraints, fuel, host calls, query/result/action-plan bounds and persistent extension-state bytes.
 
 Absent required limits block implementation acceptance.
 
-## 24. Required implementation evidence
+## 23. Required implementation evidence
 
 A future implementation MUST prove at minimum:
 
-- reproducible artifact digest under identical locked inputs;
-- source enumeration/order independence;
-- deterministic rejection of duplicate keys/ambiguous aliases/unresolved dependencies;
-- server-only fixture absent from client artifact;
-- corruption/integrity failure before activation;
-- decompression-bomb/oversized fixture rejection before unbounded allocation;
-- unsupported required capability/schema rejection;
-- mandatory resource-limit registry completeness;
-- infinite-loop script stopped by deterministic fuel with zero mutation;
-- forbidden filesystem/network/wall-clock capability inaccessible;
-- deterministic RNG/replay yields same action plan;
-- invalid action plan rejected before mutation;
-- migration-required content cannot activate before migration proof;
-- incompatible rollback rejected;
-- relevant channel-sensitive reward/encounter source lacking multiplicity/eligibility metadata fails compile;
-- incompatible content revisions cannot silently coexist under one claimed homogeneous world/channel revision set;
-- legacy conversion output/report reproducible from exact source/importer revisions.
+1. identical locked source/compiler inputs produce identical artifact digest;
+2. shuffled source enumeration does not change output;
+3. duplicate key/ambiguous alias/unresolved dependency fails compilation;
+4. client projection contains no server-only fixture;
+5. corrupt or oversized/decompression-bomb fixture fails before activation/unbounded allocation;
+6. unsupported required capability/schema fails closed;
+7. mandatory resource-limit registry is complete;
+8. infinite-loop script terminates by deterministic fuel with zero committed mutation;
+9. forbidden filesystem/network/wall-clock capability is inaccessible;
+10. deterministic RNG/replay yields identical proposed action plan;
+11. host-query result order is deterministic under intentionally shuffled underlying storage/enumeration;
+12. authoritative floating-point fixture either uses accepted deterministic canonicalization or is rejected by policy, with identical replay outcome across supported targets;
+13. invalid action plan is rejected before mutation;
+14. migration-required content cannot activate before migration proof;
+15. incompatible rollback is rejected;
+16. relevant channel-sensitive reward/encounter source lacking multiplicity/eligibility metadata fails compile;
+17. incompatible content revisions cannot silently coexist under one claimed homogeneous world/channel revision set;
+18. legacy conversion output/report is reproducible from exact source/importer revisions.
 
-## 25. Physical-format spike gate
+## 24. Physical-format spike gate
 
-Before final World Project/World Bundle encoding is accepted, a bounded reversible spike MUST compare candidate encodings against:
-
-- deterministic byte identity;
-- source-control diff/review behavior;
-- random access;
-- corruption detection;
-- decompression/resource safety;
-- source-to-bundle-to-load equivalence;
-- editor save/recovery requirements;
-- representative world scale;
-- 32x32 versus 64x64 candidate chunking and floor packing;
-- patch/download granularity;
-- client/server load locality.
+Before final World Project/World Bundle encoding is accepted, a bounded reversible spike MUST compare candidate encodings against deterministic byte identity, source-control diff/review behavior, random access, corruption detection, decompression/resource safety, source-to-bundle-to-load equivalence, editor save/recovery requirements, representative world scale, 32x32 versus 64x64 candidate chunking/floor packing, patch/download granularity and client/server load locality.
 
 Spike artifacts MUST remain non-canonical and non-production until a subsequent accepted contract freezes the encoding.
 
-## 26. Non-authority statements
+## 25. Non-authority statements
 
-Acceptance of DUR-04 does NOT authorize:
+Acceptance of DUR-04 does NOT authorize production compiler/loader/scripting crates, adding Wasmtime or scripting dependencies, WIT implementation files, PostgreSQL migrations, broad content import, production activation, Oteryn Studio implementation, final physical encoding, numeric limits, production signing/CDN or exact gameplay/NPC/quest/AI behavior.
 
-- creation of production compiler/loader/scripting crates;
-- adding Wasmtime or any scripting dependency;
-- WIT ABI implementation files;
-- PostgreSQL migrations;
-- broad content import;
-- production content activation;
-- Oteryn Studio implementation;
-- final physical source/bundle encoding;
-- final numeric resource limits;
-- production signing/CDN;
-- exact gameplay/NPC/quest/AI behavior.
-
-## 27. Lifecycle rule
+## 26. Lifecycle rule
 
 This document is a candidate while its delivery PR is open.
 
