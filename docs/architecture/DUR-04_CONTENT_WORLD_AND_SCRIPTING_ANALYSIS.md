@@ -487,33 +487,59 @@ A future implementation must prove at least:
 23. two channels of one world cannot silently run incompatible active content revisions under one claimed homogeneous revision set;
 24. legacy import report is reproducible from exact source revision and importer identity.
 
-## 20. Must decide now vs defer
+## 20. Decision timing and deliberate deferrals
 
-### Must decide now
+### Must decide now?
 
-- stable semantic package/content identity;
-- exact dependency lock for runtime builds;
-- deterministic compiler contract;
-- immutable artifact/staging/activation model;
-- migration class semantics;
-- server/client projection boundary;
-- capability-oriented deterministic script boundary;
-- proposal-only script mutation semantics and authority-scope limits;
-- versioned deterministic script execution profile;
-- no direct authoritative mutation from scripts;
-- fail-closed resource-limit policy.
+**YES** for the semantic content/package/activation invariants and for the target authoritative scripting boundary of Component Model + project-owned WIT capability ABI. **NO** for the exact source serializer, World Bundle container, chunk/floor packing, compression codec, exact Wasmtime version and numeric limits.
 
-### Deliberately defer
+### What concrete downstream work is blocked?
+
+Without the scripting-boundary decision, the project cannot safely define or implement the first authoritative script-host/WIT package, cannot classify and adapt reusable quest/NPC/action/event scripts behind a stable capability surface, and cannot accept broad durable scripted-content migration under the existing `DUR-04` gate. Starting those packages with direct Rust-object bindings, process-global Lua APIs or an unversioned host ABI would create a second authority surface that later contracts would have to unwind.
+
+The headless non-script content path (`source -> validator -> deterministic compiler -> bundle -> bounded loader`) may still be prototyped under its own explicit authority once DUR-04 is accepted; the WIT decision specifically blocks authoritative scripted-content implementation and legacy script adaptation, not every content-format experiment.
+
+### What becomes harder or impossible later?
+
+Changing the scripting boundary after guest content ships would require some combination of:
+
+- rewriting or dual-running guest scripts/components;
+- maintaining compatibility adapters for old host calls;
+- migrating script package manifests and capability declarations;
+- rebuilding deterministic replay/golden fixtures and incident-forensics tooling;
+- revalidating persistent extension-state schemas and migration logic;
+- repeating security review of every authority-bearing host capability;
+- preserving old execution-profile/fuel behavior long enough to replay or drain old content revisions.
+
+The expensive coupling is therefore not “Wasmtime forever”; it is the public guest/host capability model and its state/authority semantics. Selecting WIT now deliberately avoids exposing Wasmtime/Rust internal types so a future engine can be substituted behind the same or explicitly migrated project-owned ABI.
+
+### What evidence would justify superseding it?
+
+Reopen the Component Model/WIT decision through a newer explicit ADR/contract if named evidence shows one or more of:
+
+- a bounded prototype cannot meet required deterministic replay or resource-isolation properties without unsafe/opaque workarounds;
+- representative script workloads cannot meet accepted latency/CPU/memory budgets after those budgets are established;
+- required guest-language/tooling support is materially insufficient for the migration/content workload;
+- a security finding in the chosen component/host model cannot be mitigated while preserving the capability boundary;
+- Component Model/WIT stability or compatibility changes create unacceptable migration burden for the project-owned ABI;
+- product requirements materially change so authoritative scripting is no longer needed, or a demonstrably safer/easier capability model satisfies the same constraints with lower migration/operational cost.
+
+A library release, trend or preference alone is not superseding evidence. Any superseding decision must preserve proposal-only mutation, explicit authority scopes, deterministic replay inputs, bounded execution and typed/versioned persistent state unless it explicitly replaces those invariants with equally strong evidence.
+
+### What is deliberately not decided?
 
 - exact authoring syntax/serializer;
 - exact binary container/codec;
 - chunk dimensions/floor packing;
 - compression algorithm;
 - exact numeric limits;
-- final Wasmtime version;
-- production signing/CDN;
+- final Wasmtime version and crate feature set;
+- exact WIT package/interface function inventory and wire-level lowering details;
+- whether a bounded temporary legacy-language adapter is worth building for migration;
+- production signing/CDN/trust-root mechanism;
 - Studio implementation details;
-- domain-specific quest/NPC/combat formulas.
+- domain-specific quest/NPC/combat/AI formulas;
+- which critical behaviors should ultimately be typed Rust instead of scripts.
 
 ## 21. Recommendation
 
