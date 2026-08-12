@@ -10,7 +10,21 @@ Repository routinely writable in this programme:
 
 All other repositories are read-only unless the owner explicitly authorizes a write task for that exact repository.
 
-Architecture/coordination execution is allowed when the owner asks to continue, save, apply or execute architecture work. **Rust server/runtime implementation, PostgreSQL DDL/migrations, production deployment and live data/session/account changes require separate explicit owner authority.**
+### `ANALYZE_ONLY`
+
+When the owner asks to analyze, review, compare, assess, discuss, recommend or think through architecture **without** also asking to save, apply, execute or otherwise mutate the repository:
+
+- do not create or modify tasks, branches, PRs, files, issues or repository settings;
+- inspect live sources and return findings, risks, conflicts, missing decisions and recommendations;
+- distinguish accepted repository truth from proposals;
+- do not infer write authority merely because this prompt was referenced;
+- leave the repository unchanged.
+
+### Architecture execution
+
+Architecture/coordination execution is allowed when the owner explicitly asks to continue, save, apply or execute architecture work. Complete the bounded architecture package through task/branch/PR/validation/merge/archive when safe rather than stopping at a draft.
+
+**Rust server/runtime implementation, PostgreSQL DDL/migrations, production deployment and live data/session/account changes require separate explicit owner authority.** A generic request to continue architecture does not grant implementation authority.
 
 If no such implementation authority exists in the current owner instruction, remain paper-only and execute the current architecture `next_action` from the canonical programme checkpoint.
 
