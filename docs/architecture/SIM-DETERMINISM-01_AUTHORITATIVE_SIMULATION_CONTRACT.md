@@ -301,16 +301,17 @@ A deterministic checkpoint/hash MUST represent all **authoritative state that ca
 That includes, as applicable:
 
 - canonical gameplay/domain state;
+- the currently active behavior-affecting content/ruleset/world-policy/formula/SIM/script revision/profile set;
 - stateful authoritative RNG/substream state/cursors;
 - pending accepted timer/operation/continuation state whose later resolution is already semantically determined;
 - stable occurrence/work identities required to prevent duplicate/reordered continuation;
-- bound ruleset/content/world-policy/formula/SIM/script revision identities for pending work;
+- revision/profile identities bound to pending work where they differ from the currently active set;
 - relevant domain revisions and authority/fence state where they affect stale-result eligibility;
 - deterministic owner-local queue/pending metadata only when it can alter future authoritative resolution.
 
 For keyed/counter-style RNG without mutable stream state, the relevant root/profile/decision-derivation identity MUST still be represented by the replay envelope/profile so future decisions remain reconstructable.
 
-A state hash MUST NOT omit future-determining RNG/pending/revision state merely because current visible gameplay fields are identical.
+A state hash MUST NOT omit active/bound revision state, future-determining RNG state or pending semantic work merely because current visible gameplay fields are identical.
 
 Hash input MUST use versioned canonical semantic serialization independent of memory layout, padding, addresses, unordered collection iteration and non-authoritative cache/presentation state.
 
@@ -318,6 +319,7 @@ Hashing SHOULD be hierarchical, separating concerns where useful:
 
 ```text
 scope deterministic-state root
+ -> active revision/profile hash
  -> gameplay/domain hashes
  -> RNG/determinism-support hashes
  -> pending/timer/continuation hashes
@@ -325,7 +327,7 @@ scope deterministic-state root
  -> aggregate/entity/component hashes
 ```
 
-This allows two visually identical states with different future-determining state to diverge immediately in evidence rather than only after a later random/timer outcome.
+This allows visually identical states with different active semantics, RNG cursor or pending work to diverge immediately in evidence rather than only after a later input/random/timer outcome.
 
 Concrete hash algorithm/canonicalization belongs to the SIM profile implementation artifact and MUST NOT silently change under one profile revision.
 
@@ -425,12 +427,12 @@ A future implementation MUST prove at least:
 8. stateful stream advancement aborts with a failed resolution and survives committed checkpoint/recovery exactly once;
 9. process restart does not wall-clock-reseed gameplay RNG;
 10. exploit-sensitive RNG cannot be reconstructed from public-only inputs under the selected seed/derivation policy unless predictability is explicitly accepted;
-11. two states with identical visible gameplay fields but different RNG cursor/pending timer/bound revision produce different deterministic-state evidence hashes before their future outcomes diverge;
+11. two states with identical visible gameplay fields but different active revision set/RNG cursor/pending timer/bound revision produce different deterministic-state evidence hashes before future outcomes diverge;
 12. equal-deadline/simultaneous deterministic tie-break fixtures are stable where defined;
 13. recorded cross-source order replays concurrency-sensitive result under different test thread scheduling;
 14. stale worker/service results are rejected and cannot reorder authority;
 15. replay uses captured/canonicalized external facts rather than current mutable external-system responses;
-16. hierarchical hashes localize a seeded divergence to the first mismatching domain/support/component cut;
+16. hierarchical hashes localize a seeded divergence to the first mismatching revision/domain/support/component cut;
 17. authoritative floating fixture, where allowed, normalizes identically across supported targets;
 18. incompatible SIM/formula/script execution profile activation fails closed;
 19. script proposal replay with the same bound semantic revision set produces the same normalized accepted/rejected result;
