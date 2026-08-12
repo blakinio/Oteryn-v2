@@ -15,7 +15,7 @@ final_head_sha: null
 final_head_frozen_at: null
 owner: architecture-coordinator/current-session
 created_at: 2026-08-12T23:21:00+02:00
-updated_at: 2026-08-12T23:56:00+02:00
+updated_at: 2026-08-13T00:15:00+02:00
 execution_budget_minutes: 90
 large_budget_reason: Bounded architecture gate spans deterministic content compilation, immutable world bundles, migration/provenance, secure loading and capability-bounded deterministic scripting; no implementation is authorized.
 owned_paths:
@@ -57,9 +57,10 @@ Maintained current-status/register/horizon/index/handoff files remain outside th
 - `PROVEN`: ADR-0005 already accepts the native semantic world/content model and deliberately defers exact physical encoding/chunk/compression choices to a bounded spike.
 - `PROVEN`: Resource Limits Registry makes missing externally controlled hard limits a review failure, never implicit unlimited behavior.
 - `PROVEN`: GAME-ITEM/DUR-03/GAME-CHANNEL/FND-03 boundaries prohibit script-side authority bypass, unclassified per-channel value multiplication and unbounded authoritative work.
-- `PROVEN`: official Wasmtime documentation distinguishes deterministic fuel from nondeterministic epoch interruption and documents other determinism hazards including nondeterministic imports and memory/table behavior.
-- `PROVEN`: Component Model WIT defines typed import/export interfaces suitable for a project-owned capability ABI.
+- `PROVEN`: official Wasmtime documentation distinguishes deterministic fuel from nondeterministic epoch interruption, documents determinism hazards including nondeterministic imports, NaN behavior and memory/table growth, and exposes configurable operator-cost semantics for fuel.
+- `PROVEN`: Component Model/WIT defines typed import/export interfaces and explicit component worlds suitable for a project-owned capability ABI.
 - `PROVEN`: governance forbids new Codex/OpenAI API/owner-funded AI invocation without specific owner permission. None was invoked for DUR-04.
+- `PROVEN`: on 2026-08-13 the repository owner explicitly instructed the implementing coordinator to perform the review itself (`zrob sam review`) in direct response to the independent-review blocker. Under the repository instruction order this is a bounded owner override of the independent-review mechanism for PR #212. The resulting review remains a self-review and MUST NOT be described as independent.
 - `UNKNOWN/DEFERRED`: final source serializer, final bundle container, chunk/floor packing, compression codec, exact numeric resource ceilings and exact Wasmtime crate version.
 
 ## Candidate decisions delivered
@@ -67,7 +68,7 @@ Maintained current-status/register/horizon/index/handoff files remain outside th
 - [x] Stable `PackageKey`, immutable `PackageRevision`, stable `ContentKey` and exact Content Lock semantics.
 - [x] Typed semantic graph independent of YAML/RON/JSON5/custom physical encoding.
 - [x] Deterministic source -> validation -> lowering -> client/server projection -> immutable bundle -> staging -> activation pipeline.
-- [x] Distinct content/map/ruleset/world-policy/compiler/artifact revision concepts.
+- [x] Distinct content/map/ruleset/world-policy/compiler/artifact revision concepts plus a distinct versioned `script_execution_profile_revision`.
 - [x] Explicit allowlisted client-safe projection and server-only data non-leakage rule.
 - [x] Fail-closed loader with bounded allocation/decompression and no partial authoritative publication.
 - [x] Explicit staging/activation/rollback and durable migration classes.
@@ -75,7 +76,9 @@ Maintained current-status/register/horizon/index/handoff files remain outside th
 - [x] Reference OTS evidence cannot independently establish Global behavior.
 - [x] WebAssembly Component Model + project-owned versioned WIT capability ABI selected for target authoritative scripting boundary; Wasmtime is an implementation candidate rather than ABI owner.
 - [x] Scripts are bounded proposal producers and never direct SQL/domain mutation owners.
-- [x] Deterministic fuel, logical time, deterministic RNG, bounded host calls/collections/action plans, stable host-query ordering and deterministic floating/NaN policy.
+- [x] Authoritative host reads are invocation-snapshot-bound; extension-state writes are typed proposals committed only after domain validation.
+- [x] `ProposedActionPlan` cannot manufacture atomicity wider than accepted owner/transaction boundaries; wider workflows require an owning orchestrator/OperationId/idempotency/compensation contract.
+- [x] Deterministic fuel, logical time, invocation-local deterministic RNG, bounded host calls/collections/action plans, stable host-query ordering and deterministic floating/NaN policy are bound to a versioned execution profile.
 - [x] Typed/versioned script extension state through domain/persistence APIs; VM memory is not durable state.
 - [x] GAME-CHANNEL multiplicity/eligibility classification required for relevant value-producing content.
 - [x] Hot reload defined as immutable revision staging/activation, never in-place mutation.
@@ -85,9 +88,26 @@ Maintained current-status/register/horizon/index/handoff files remain outside th
 
 ### Repair cycle 1
 
-Adversarial pre-freeze review found that fuel alone does not close deterministic execution: host query result ordering and observable floating-point/NaN behavior also require a contract. The contract now requires canonical/stable host-return ordering and either project-owned deterministic numeric semantics or explicitly proven deterministic floating behavior including NaN canonicalization where observable.
+Adversarial pre-freeze review found that fuel alone does not close deterministic execution: host query result ordering and observable floating-point/NaN behavior also require a contract. The contract added canonical/stable host-return ordering and either project-owned deterministic numeric semantics or explicitly proven deterministic floating behavior including NaN canonicalization where observable.
 
-No second material repair has been consumed.
+### Repair cycle 2 — owner-directed terminal self-review
+
+The owner-directed full self-review found three related architecture gaps:
+
+1. immediate extension-state write capability could leave authoritative state changed before a later trap/invalid result, contradicting proposal-only/no-commit-on-failure semantics;
+2. a generic `ProposedActionPlan` could otherwise imply atomicity wider than an accepted owner/transaction boundary;
+3. deterministic fuel semantics need an explicit execution-profile identity because engine/config/operator-cost changes must not silently reinterpret the same content revision and fuel number.
+
+The repair therefore:
+
+- makes authoritative reads snapshot/revision-bound;
+- makes extension-state mutations proposal-only until owning transaction/workflow commit;
+- limits each plan type to a named accepted authority/transaction scope and requires explicit orchestrated workflows for wider multi-transaction behavior;
+- adds `script_execution_profile_revision` covering determinism-sensitive runtime semantics while keeping the public WIT ABI project-owned and engine-independent;
+- adds activation/replay/evidence requirements for WIT/execution-profile compatibility and mutable-global-RNG avoidance;
+- clarifies that artifact hashes are integrity evidence, not publisher-authenticity evidence.
+
+Repair budget used: `2/3`.
 
 ## Validation
 
@@ -96,19 +116,23 @@ No second material repair has been consumed.
 - source/ownership audit: `PASS`
 - exact changed-file scope: expected three owned paths only
 - architecture analysis/contract drafting: `PASS`
-- adversarial pre-freeze self-review: `PASS AFTER REPAIR 1`
+- first adversarial self-review: `PASS AFTER REPAIR 1`
+- owner-directed terminal self-review: `REPAIR 2 APPLIED`; final exact-head review pending after freeze
 - runtime/component/integration/E2E: `NOT_APPLICABLE` — paper-only architecture candidate
 
-### Owner-funded AI policy
+### Owner-funded AI policy and review mechanism
 
 - new Codex/OpenAI API/paid-review invocation: **NONE**
-- specific owner permission for such invocation: **NOT GIVEN**
-- independent review: **MANDATORY** because scripting sandbox/security and persistence-migration boundaries are material; if no genuinely independent non-owner-funded reviewer is available, the task must block at that gate rather than weakening it.
+- owner-funded AI permission: **NOT REQUESTED / NOT USED**
+- ordinary repository risk policy would require independent review for this scope;
+- explicit owner instruction on 2026-08-13 directs the implementing coordinator to perform the review itself for PR #212;
+- this is recorded as a bounded owner override of the review mechanism, **not** as independent review evidence;
+- terminal evidence must truthfully say `owner-directed self-review`, never `independent review`.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: DUR-04 analysis and contract are present in PR #212. Repair cycle 1 closed deterministic host-query ordering and floating/NaN behavior. Candidate scope remains exactly three owned paper-only paths.
+last_progress: Owner-directed self-review of DUR-04 found and repaired proposal-state side effects, cross-authority ActionPlan atomicity and execution-profile determinism gaps in one coherent repair cycle 2. No owner-funded AI service was invoked.
 status: validating
 branch: agent/otv2-20260812-dur-04-content-world-scripting
 head_sha: null
@@ -116,7 +140,7 @@ pr: 212
 final_head_sha: null
 final_head_frozen_at: null
 ci_trigger_source: pull_request
-ci_check_generation: pending
+ci_check_generation: pending_after_repair_2
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -125,10 +149,10 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 1
+repair_cycles_for_current_gate: 2
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: false
-blocker: independent-review availability must be proven without owner-funded AI
-next_action: Freeze exact head after final live-main/diff check, run exact-head self-review and standard CI, then satisfy the mandatory independent-review gate without owner-funded AI or stop BLOCKED with exact owner action.
+blocker: null
+next_action: Freeze the repaired exact head, perform one full exact-head owner-directed self-review, rerun exact-head Agent Governance / Dependency Review / CodeQL, and merge only if the unchanged head remains clean with zero unresolved material threads.
 ```
