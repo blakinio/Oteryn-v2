@@ -15,7 +15,7 @@ final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-12T10:20:00+02:00
-updated_at: 2026-08-12T10:29:00+02:00
+updated_at: 2026-08-12T10:34:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -89,6 +89,18 @@ This task does **not** authorize or implement Rust server/runtime code, PostgreS
 - handoff quality: one executable successor `next_action` exists and chat is not required;
 - runtime/component/E2E: `NOT_APPLICABLE` because this delivery changes only documentation/coordination state.
 
+### Repair cycle 1 — preserve explicit read-only analysis mode
+
+Full-diff self-review found that the initial prompt condensation removed the previous explicit `ANALYZE_ONLY` mode. That could have made a successor infer repository-write authority from a request such as "analyze" or "review".
+
+Repair:
+
+- restored an explicit `ANALYZE_ONLY` mode for analyze/review/compare/assess/discuss/recommend requests that do not also ask to save/apply/execute;
+- retained paper-only architecture execution for explicit architecture continuation/save/apply requests;
+- retained separate explicit owner authority as mandatory for Rust runtime, PostgreSQL DDL/migrations, production or live-data actions.
+
+Repair budget used: `1/3`.
+
 ### Exact-head CI
 
 Require Agent Governance, Dependency Review and CodeQL/documentation checks on the final unchanged PR head.
@@ -117,14 +129,14 @@ owned_paths:
   - docs/agents/prompts/OTV2_GLOBAL_ARCHITECTURE_DECISION_COORDINATOR.md
   - docs/agents/reports/OTV2-20260812-foundation-handover.md
 public_contracts: []
-last_progress: Successor handoff report, current programme checkpoint and continuation prompt are refreshed on draft PR #203; stale FND-01-era continuation guidance is removed without changing architecture or implementation authority.
+last_progress: Successor handoff report, current programme checkpoint and continuation prompt are refreshed on draft PR #203; repair cycle 1 restored explicit ANALYZE_ONLY behavior while preserving no implementation authority.
 validation_state: focused review pending terminal full-diff freeze
 audit_state: pending mandatory self-review; independent review not required unless semantic/authority drift is found
 e2e_state: NOT_APPLICABLE documentation-only
 ci_generation: null
 run_ids: []
 counters:
-  repair_cycles: 0
+  repair_cycles: 1
   unchanged_state_checks: 0
 blocker: null
 next_action: Perform terminal full-diff self-review of PR #203, freeze the exact head if clean, then run required documentation/governance CI before squash merge and lifecycle closeout.
