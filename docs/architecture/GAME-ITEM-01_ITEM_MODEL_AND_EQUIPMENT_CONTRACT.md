@@ -529,7 +529,11 @@ Mandatory invariants:
 
 `DUR-03` and broad authoritative item/content modeling are blocked without a stable definition/instance/capability/equipment/container semantic contract.
 
-### Downstream work unblocked after accepted merge
+### Downstream work unblocked after accepted merge and lifecycle closeout
+
+`DUR-03` remains blocked during the interval after the GAME-ITEM delivery merges and before the separate GAME-ITEM lifecycle closeout is merged. It becomes eligible for its own paper-only architecture task only after that closeout atomically promotes maintained status overlays.
+
+After accepted merge **and** lifecycle closeout, the following work is unblocked:
 
 - `DUR-03` paper-only item transaction and anti-duplication architecture;
 - bounded item-definition schema work under DUR-04 without inventing transaction semantics;
