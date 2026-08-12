@@ -13,7 +13,7 @@ base_sha: f89685d585aab9c2ed3c69cabe8a4d9a2544bd0e
 final_head_sha: ca1112191ede7d316c874189f3053ad7f8247579
 delivery_merge_sha: 54dddbcfcb64baaf66e6cfd9fcd2cc3e1b4f04f1
 lifecycle_closeout_branch: docs/OTV2-20260812-game-channel-01-closeout
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 210
 owner: released_after_closeout
 created_at: 2026-08-12T16:16:00+02:00
 completed_at: 2026-08-12T17:26:00+02:00
@@ -223,15 +223,25 @@ The separate closeout must not change GAME-CHANNEL semantic content. It may only
 
 No closeout merge SHA is invented before it exists.
 
+## Closeout review reconciliation
+
+PR #210 review found three lifecycle-record inconsistencies and this closeout repairs them together without changing GAME-CHANNEL semantics:
+
+- the maintained gameplay/product horizon must stop naming GAME-CHANNEL as the next unresolved gate and point to `DUR-04`;
+- the archive records lifecycle closeout PR `210` explicitly;
+- this completed task no longer instructs a successor to perform its own closeout again.
+
+These are lifecycle/status/handoff repairs only. They do not consume a GAME-CHANNEL semantic repair cycle and do not authorize implementation.
+
 ## Context checkpoint
 
 ```yaml
-last_progress: GAME-CHANNEL-01 delivery PR #209 passed exact-head self-review, required independent no-suggestion Codex review and all required exact-head CI after repair budget 3/3, then squash-merged unchanged as 54dddbcfcb64baaf66e6cfd9fcd2cc3e1b4f04f1; lifecycle closeout is required.
+last_progress: GAME-CHANNEL-01 delivery PR #209 passed exact-head self-review, required independent review and all required exact-head CI after delivery repair budget 3/3, then squash-merged unchanged as 54dddbcfcb64baaf66e6cfd9fcd2cc3e1b4f04f1; lifecycle closeout is owned by PR #210.
 status: completed
 delivery_pr: 209
 final_head_sha: ca1112191ede7d316c874189f3053ad7f8247579
 delivery_merge_sha: 54dddbcfcb64baaf66e6cfd9fcd2cc3e1b4f04f1
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 210
 self_review: 4918161329
 independent_review_request: 5268790260
 independent_review_pr_reaction: 450588928
@@ -242,5 +252,5 @@ ci_run_ids:
 repair_cycles_for_delivery_gate: 3
 owner_action_required: false
 blocker: null
-next_action: Complete one bounded GAME-CHANNEL-01 lifecycle closeout; only after its merge is GAME-CHANNEL canonically ACCEPTED/LIFECYCLE_CLOSED and delivery ownership released.
+next_action: None for this completed task; follow the canonical programme checkpoint and successor handoff for future work.
 ```
