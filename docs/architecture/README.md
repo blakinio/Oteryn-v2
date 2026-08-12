@@ -54,6 +54,16 @@ Architecture acceptance is not runtime implementation. Use [Architecture Status 
 - [DUR-01 — Durable identifier representation](DUR-01_DURABLE_IDENTIFIER_REPRESENTATION_CONTRACT.md)
 - [ANL-01 — Game event and audit foundation](ANL-01_GAME_EVENT_AND_AUDIT_FOUNDATION_CONTRACT.md)
 
+## Accepted gameplay and persistence contracts
+
+- [GAME-VISION-01 — Minimum product baseline](GAME-VISION-01_MINIMUM_OWNER_BASELINE.md)
+- [GAME-VISION-01 — First Reference behavior cut](GAME-VISION-01_FIRST_REFERENCE_BASELINE_OWNER_BASELINE.md)
+- [GAME-CHAR-01 — Stage A baseline-neutral character semantics](GAME-CHAR-01_STAGE_A_OWNER_BASELINE.md)
+- [GAME-CHAR-01 — Stage B Reference-sensitive character semantics](GAME-CHAR-01_STAGE_B_OWNER_BASELINE.md)
+- [DUR-02 — Profile-neutral Character persistence baseline](DUR-02_PROFILE_NEUTRAL_CHARACTER_PERSISTENCE_OWNER_BASELINE.md)
+- [DUR-02 — Persistence v1 owner baseline](DUR-02_PERSISTENCE_V1_OWNER_BASELINE.md)
+- [GAME-ITEM-01 — Item model and equipment contract](GAME-ITEM-01_ITEM_MODEL_AND_EQUIPMENT_CONTRACT.md)
+
 ## Machine-readable contracts
 
 - [Transport policy](../contracts/PROTOCOL_OTERYN_TRANSPORT_POLICY.json) — one `protocol-oteryn`; TCP+TLS 1.3 profile `1` is the currently registered initial/default architecture profile, while **all gameplay transport runtime modes remain unavailable until implementation is separately authorized and proven**; QUIC is a future player-opt-in target blocked on protocol/FND-04 transport-profile reconciliation and evidence; no 0-RTT/DATAGRAM baseline.
@@ -63,17 +73,19 @@ Architecture acceptance is not runtime implementation. Use [Architecture Status 
 
 ## Current programme dependency refinement
 
-The 2026-08-10 review adds the following ordering constraints without claiming runtime implementation:
+The current dependency chain does not claim runtime implementation:
 
 ```text
 GAME-VISION-01 minimum
 + GAME-CHANNEL-01
 
 GAME-CHAR-01
--> final character-bearing DUR-02
+-> accepted Character-bearing DUR-02 baseline
 
-GAME-ITEM-01
+accepted GAME-ITEM-01
++ accepted DUR-01
 + accepted DUR-02
++ accepted ANL-01
 -> DUR-03
 
 SIM-DETERMINISM-01
@@ -81,7 +93,7 @@ SIM-DETERMINISM-01
 -> small real-boundary VSL sequence
 ```
 
-`DUR-02` discovery may continue from already accepted DUR-01/ANL-01 inputs, but its final durable character semantics wait for the character lifecycle/product gate.
+`GAME-ITEM-01` now supplies the typed item legality/definition boundary required by `DUR-03`; `DUR-03` still exclusively owns item/currency/value conservation, atomic location, idempotency and create/destroy/split/merge/transform identity-transition mechanics. Architecture acceptance does not authorize runtime item mutation.
 
 ## Transport rule
 
