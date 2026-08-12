@@ -273,7 +273,7 @@ A deterministic replay interval MUST identify at least:
 
 - semantic runtime scope;
 - relevant ownership-generation boundary;
-- initial canonical state/checkpoint reference + hash;
+- initial canonical deterministic state/checkpoint reference + composite hash;
 - ordered normalized inputs and RuntimeExecutionOrdinal evidence;
 - applicable CommandRef/OperationId/TransactionId/timer/event/work identities;
 - the exact semantic revision set bound to each long-lived/retryable occurrence where it differs from the interval default;
@@ -284,7 +284,7 @@ A deterministic replay interval MUST identify at least:
 - RNG root/substream/decision evidence required by the selected model;
 - normalized logical-time/calendar/external facts;
 - relevant state-domain revisions;
-- expected canonical state/result hashes at selected cuts.
+- expected canonical deterministic state/result hashes at selected cuts.
 
 Replay MUST NOT require original thread IDs, CPU count, NodeId placement or wall-clock scheduling jitter.
 
@@ -294,17 +294,38 @@ Replay/testing/investigation is read-only evidence reconstruction.
 
 A replay result MUST NOT directly mutate live gameplay, repair durable state, reissue historical commands as trusted live authority or bypass DUR/ANL correction mechanisms.
 
-## 22. Canonical state hashing
+## 22. Canonical deterministic state and hashing
 
-Determinism tooling MUST support versioned canonical semantic state hashing independent of memory layout, padding, addresses, unordered collection iteration and non-authoritative cache/presentation state.
+A deterministic checkpoint/hash MUST represent all **authoritative state that can change a future authoritative outcome without a new external normalized fact**.
 
-Hashing SHOULD be hierarchical:
+That includes, as applicable:
+
+- canonical gameplay/domain state;
+- stateful authoritative RNG/substream state/cursors;
+- pending accepted timer/operation/continuation state whose later resolution is already semantically determined;
+- stable occurrence/work identities required to prevent duplicate/reordered continuation;
+- bound ruleset/content/world-policy/formula/SIM/script revision identities for pending work;
+- relevant domain revisions and authority/fence state where they affect stale-result eligibility;
+- deterministic owner-local queue/pending metadata only when it can alter future authoritative resolution.
+
+For keyed/counter-style RNG without mutable stream state, the relevant root/profile/decision-derivation identity MUST still be represented by the replay envelope/profile so future decisions remain reconstructable.
+
+A state hash MUST NOT omit future-determining RNG/pending/revision state merely because current visible gameplay fields are identical.
+
+Hash input MUST use versioned canonical semantic serialization independent of memory layout, padding, addresses, unordered collection iteration and non-authoritative cache/presentation state.
+
+Hashing SHOULD be hierarchical, separating concerns where useful:
 
 ```text
-scope cut
- -> domain hashes
+scope deterministic-state root
+ -> gameplay/domain hashes
+ -> RNG/determinism-support hashes
+ -> pending/timer/continuation hashes
+ -> authority/fence hash when semantically relevant
  -> aggregate/entity/component hashes
 ```
+
+This allows two visually identical states with different future-determining state to diverge immediately in evidence rather than only after a later random/timer outcome.
 
 Concrete hash algorithm/canonicalization belongs to the SIM profile implementation artifact and MUST NOT silently change under one profile revision.
 
@@ -321,8 +342,9 @@ A deterministic comparison MUST be able to identify at least:
 - first mismatching RuntimeExecutionOrdinal/checkpoint cut;
 - normalized input identity/type;
 - active semantic revision/profile set;
-- first mismatching domain/component semantic hash path;
+- first mismatching deterministic-state domain/support/component hash path;
 - relevant RNG decision/stream evidence;
+- pending timer/operation state when relevant;
 - formula descriptor/rounding boundary;
 - script artifact/execution profile when applicable.
 
@@ -332,7 +354,7 @@ Cadence, retention and storage remain bounded QA/ANL/PERF choices. Divergence ev
 
 For the same replay envelope, every supported authoritative server target MUST produce the same normalized authoritative outcome.
 
-Exact discrete/conservation/fixed-scale outputs, RNG decisions and canonical state hashes MUST match exactly.
+Exact discrete/conservation/fixed-scale outputs, RNG decisions and canonical deterministic-state hashes MUST match exactly.
 
 Authoritative floating implementations are acceptable only if cross-target fixtures prove the same normalized authoritative result.
 
@@ -367,7 +389,7 @@ Process recovery MUST NOT reseed gameplay randomness from current wall clock/ent
 
 ## 27. Resource bounds
 
-Before implementation acceptance, Resource Limits Registry/equivalent owning limits MUST cover applicable replay/state-hash/RNG/formula resources, including replay input/bytes, checkpoint/replay bytes, RNG purpose/substream state, authored formula expression/depth/operations where applicable, state-hash work/bytes, divergence evidence and deterministic replay/test work budget.
+Before implementation acceptance, Resource Limits Registry/equivalent owning limits MUST cover applicable replay/state-hash/RNG/formula resources, including replay input/bytes, checkpoint/replay bytes, RNG purpose/substream state, pending continuation/timer evidence, authored formula expression/depth/operations where applicable, state-hash work/bytes, divergence evidence and deterministic replay/test work budget.
 
 Missing required limits block implementation; they do not mean unlimited.
 
@@ -393,7 +415,7 @@ A later explicit contract may supersede a SIM rule only with named evidence such
 
 A future implementation MUST prove at least:
 
-1. same replay envelope yields identical canonical final state/result hashes across supported authoritative server targets;
+1. same replay envelope yields identical canonical final deterministic-state/result hashes across supported authoritative server targets;
 2. exact arithmetic overflow/divide-by-zero/out-of-range fixtures fail identically across build modes/targets;
 3. each formula's named rounding points/modes match fixtures;
 4. changing an unrelated RNG purpose draw does not perturb another purpose's sequence;
@@ -403,16 +425,17 @@ A future implementation MUST prove at least:
 8. stateful stream advancement aborts with a failed resolution and survives committed checkpoint/recovery exactly once;
 9. process restart does not wall-clock-reseed gameplay RNG;
 10. exploit-sensitive RNG cannot be reconstructed from public-only inputs under the selected seed/derivation policy unless predictability is explicitly accepted;
-11. equal-deadline/simultaneous deterministic tie-break fixtures are stable where defined;
-12. recorded cross-source order replays concurrency-sensitive result under different test thread scheduling;
-13. stale worker/service results are rejected and cannot reorder authority;
-14. replay uses captured/canonicalized external facts rather than current mutable external-system responses;
-15. hierarchical hashes localize a seeded divergence to the first mismatching domain/component cut;
-16. authoritative floating fixture, where allowed, normalizes identically across supported targets;
-17. incompatible SIM/formula/script execution profile activation fails closed;
-18. script proposal replay with the same bound semantic revision set produces the same normalized accepted/rejected result;
-19. replay tooling cannot mutate live authority;
-20. required replay/hash/RNG/formula limits have explicit boundary tests.
+11. two states with identical visible gameplay fields but different RNG cursor/pending timer/bound revision produce different deterministic-state evidence hashes before their future outcomes diverge;
+12. equal-deadline/simultaneous deterministic tie-break fixtures are stable where defined;
+13. recorded cross-source order replays concurrency-sensitive result under different test thread scheduling;
+14. stale worker/service results are rejected and cannot reorder authority;
+15. replay uses captured/canonicalized external facts rather than current mutable external-system responses;
+16. hierarchical hashes localize a seeded divergence to the first mismatching domain/support/component cut;
+17. authoritative floating fixture, where allowed, normalizes identically across supported targets;
+18. incompatible SIM/formula/script execution profile activation fails closed;
+19. script proposal replay with the same bound semantic revision set produces the same normalized accepted/rejected result;
+20. replay tooling cannot mutate live authority;
+21. required replay/hash/RNG/formula/pending-state limits have explicit boundary tests.
 
 ## 31. Non-authority statements
 
