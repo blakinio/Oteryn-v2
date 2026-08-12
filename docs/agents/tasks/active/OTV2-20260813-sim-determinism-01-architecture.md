@@ -4,18 +4,18 @@
 task_id: OTV2-20260813-sim-determinism-01-architecture
 title: SIM-DETERMINISM-01 authoritative simulation determinism architecture
 mode: CONTRACT
-status: investigating
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: agent/otv2-20260813-sim-determinism-01-architecture
-pr: null
+pr: 214
 base_sha: 27c313a0c6032f0433ad9598c3cf53e4f0179813
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: architecture-coordinator/current-session
 created_at: 2026-08-13T00:55:00+02:00
-updated_at: 2026-08-13T00:55:00+02:00
+updated_at: 2026-08-13T01:08:00+02:00
 execution_budget_minutes: 90
 large_budget_reason: Cross-cutting paper-only determinism gate spans authoritative arithmetic, RNG ownership, logical time/order, replay inputs and cross-target evidence without authorizing runtime implementation.
 owned_paths:
@@ -42,91 +42,103 @@ external_repositories: []
 
 ## Outcome
 
-Produce one bounded paper-only `SIM-DETERMINISM-01 — Authoritative Simulation Determinism Contract` that refines, but does not replace, accepted FND-03 runtime order/RNG/replay foundations and DUR-04 script execution determinism.
+Produce one bounded paper-only `SIM-DETERMINISM-01 — Authoritative Simulation Determinism Contract` refining, not replacing, accepted FND-03 runtime order/RNG/replay foundations and DUR-04 script execution determinism.
 
-The gate must freeze only the cross-domain semantics needed before broad combat/AI/progression formula implementation: authoritative numeric representation classes, rounding/overflow/invalid numeric state, RNG stream identity/ownership/consumption, logical time and deterministic ordering/tie-break rules, replay input capture, state hashing/divergence evidence, supported-target determinism and formula/ruleset revision compatibility.
+The candidate freezes cross-domain deterministic semantics needed before broad combat/AI/progression formula implementation: authoritative numeric semantic classes, rounding/overflow/invalid numeric state, revision binding, RNG stream identity/ownership/consumption and anti-prediction boundary, logical time and owner-local ordering/tie-break rules, normalized external facts, replay envelope, future-determining canonical state hashing/divergence evidence, supported-target determinism and formula/ruleset compatibility.
 
-No Rust/runtime/client/combat/AI/script implementation, PostgreSQL DDL/migrations, Platform write, production configuration/deployment or formula/balance-value acceptance is authorized.
+No Rust/runtime/client/combat/AI/script implementation, PostgreSQL DDL/migrations, Platform write, production configuration/deployment or exact formula/balance-value acceptance is authorized.
 
-Maintained programme/register/horizon/index/handoff files stay outside the delivery PR and may be promoted only through a separate lifecycle closeout after a reviewed delivery merge.
+Maintained programme/register/horizon/index/handoff files remain outside this delivery PR and may be promoted only by a separate lifecycle closeout after reviewed delivery merge.
 
-## Verified start facts
+## Verified source and ownership facts
 
-- `PROVEN`: post-DUR-04-closeout `main@27c313a0c6032f0433ad9598c3cf53e4f0179813` selects `SIM-DETERMINISM-01 = PROPOSED / PLANNED / NOT_STARTED` as the one next bounded paper-only architecture action.
-- `PROVEN`: no active SIM-DETERMINISM task and no open SIM delivery PR existed at task start.
-- `PROVEN`: FND-03 already owns one logical authoritative writer per Channel/Instance, owner-scoped `RuntimeExecutionOrdinal`, separation of execution order from monotonic deadlines and wall-clock timestamps, deterministic authoritative RNG/replay requirements and stale-result rejection. SIM must refine these semantics rather than create a competing runtime order.
-- `PROVEN`: GAME-CHAR deliberately keeps authoritative progression facts formula-neutral and delegates exact arithmetic/rounding to ruleset/SIM parity gates where those details do not constrain identity/ownership/migration.
-- `PROVEN`: GAME-ITEM requires deterministic modifier contribution ordering while exact arithmetic/rounding remains SIM/ruleset-owned.
-- `PROVEN`: DUR-03 conservation uses exact item/asset quantities and bounded non-floating value arithmetic; SIM may define formula arithmetic but must not weaken conservation or transaction authority.
-- `PROVEN`: DUR-04 owns authoritative script execution determinism through `script_execution_profile_revision`, snapshot-bound inputs, invocation-local deterministic RNG, stable query order and deterministic numeric/fuel/resource semantics. SIM must define how script results enter core simulation order without making the script profile a competing global simulation authority.
+- `PROVEN`: post-DUR-04-closeout `main@27c313a0c6032f0433ad9598c3cf53e4f0179813` selects `SIM-DETERMINISM-01 = PROPOSED / PLANNED / NOT_STARTED` as the next bounded paper-only architecture action.
+- `PROVEN`: no active SIM task and no competing open SIM delivery PR existed at task start.
+- `PROVEN`: FND-03 already owns one logical authoritative writer per Channel/Instance, owner-scoped `RuntimeExecutionOrdinal`, wall/monotonic/execution-order separation, no universal fixed tick, deterministic gameplay RNG/replay evidence and stale-result rejection. SIM cannot invent a competing scheduler or global order.
+- `PROVEN`: GAME-CHAR keeps authoritative progression facts formula-neutral and delegates exact arithmetic/rounding to ruleset/SIM parity work where identity/ownership/migration is unaffected.
+- `PROVEN`: GAME-ITEM requires deterministic modifier contribution ordering while SIM/ruleset own arithmetic/rounding.
+- `PROVEN`: DUR-03 exact conservation/value arithmetic cannot be weakened by SIM formula choices.
+- `PROVEN`: DUR-04 owns guest/script execution determinism through immutable invocation snapshots, invocation-local deterministic RNG, stable query order, proposal-only mutation and `script_execution_profile_revision`; SIM owns composition with core simulation/replay, not guest engine internals.
 - `PROVEN`: GAME-VISION Reference claims remain evidence-gated; deterministic implementation convenience cannot fill `UNKNOWN/CONFLICT` Global behavior.
-- `PROVEN`: current governance forbids Codex/OpenAI API/owner-funded AI use without specific owner permission for that exact use. The prior owner review override was recorded for PR #212 only and is not assumed to be standing permission for this task.
+- `PROVEN`: current governance forbids Codex/OpenAI API/owner-funded AI use without exact current-task permission. The PR #212 owner review override is not standing permission and has not been used for #214.
 
-## Candidate decision goals
+## Candidate semantic closure
 
-- [ ] Define authoritative numeric semantic classes rather than one universal number type.
-- [ ] Keep identifiers/counts/currency/conservation exact and separate from formula-domain numeric policy.
-- [ ] Decide deterministic fixed-point/integer/rational/floating boundaries and when float is forbidden or requires an explicit deterministic profile.
-- [ ] Define rounding mode, rounding stage, overflow/underflow, divide-by-zero, NaN/infinity and invalid-state handling.
-- [ ] Define formula/ruleset revision identity so an unchanged revision cannot silently reinterpret arithmetic.
-- [ ] Define RNG root identity, deterministic stream/substream derivation, ownership and consumption rules without one mutable process-global RNG stream.
-- [ ] Prevent unrelated random consumers from perturbing another mechanic's future sequence.
-- [ ] Define replay-safe treatment of rejection/cancellation/retry so random draws are not invisibly consumed by failed authority paths.
-- [ ] Consume FND-03 `RuntimeExecutionOrdinal` as owner-scoped authoritative order; do not invent a global total order.
-- [ ] Define deterministic tie-breakers for commands, timers, system inputs, worker results and simultaneous-domain actions at the normalization boundary.
-- [ ] Keep wall clock observational/policy input distinct from authoritative logical simulation time/order.
-- [ ] Define which external nondeterminism must be captured as normalized authoritative input before it can affect simulation.
-- [ ] Define replay envelope: exact input identities, revisions, RNG streams, content/ruleset/script execution profiles and initial/checkpoint state required for reproducibility.
-- [ ] Define canonical state-hash scopes and first-divergence localization without treating hash as gameplay authority.
-- [ ] Define supported-target determinism: which outputs must be bit-identical or semantically identical across Linux/Windows/CPU architectures and how exceptions are explicit.
-- [ ] Define boundary between core SIM determinism and DUR-04 `script_execution_profile_revision`.
-- [ ] Define deterministic acceptance scenarios for arithmetic edge cases, RNG isolation, replay, cross-target comparison and divergence diagnosis.
-- [ ] Apply full architecture decision tests for any technology/representation choice that would be costly to change later.
-- [ ] Preserve all implementation/non-authority boundaries.
-- [ ] Perform full exact-head self-review and required exact-head Agent Governance / Dependency Review / CodeQL.
-- [ ] Evaluate independent-review requirement truthfully under current root risk policy; do not invoke owner-funded AI without a new explicit permission for this task.
+- [x] Core reproducibility invariant is based on canonical starting deterministic state + exact accepted owner-local normalized input order + exact semantic revision/profile set + normalized external facts, not OS/thread/network timing.
+- [x] `SimulationDeterminismProfileRevision` versions cross-cutting numeric/RNG/tie-break/hash/target semantics without replacing ruleset/content/world-policy or DUR-04 script execution profiles.
+- [x] Long-lived/retryable logical occurrences bind their exact behavior-affecting semantic revision set and cannot silently recalculate under a newer revision after retry/reconnect/failover/delayed completion.
+- [x] Authoritative numeric classes separate exact discrete, DUR-03 exact conservation/value, formula fixed/exact, explicitly proven deterministic floating and non-authoritative approximate values.
+- [x] Formula descriptors own units, representation, operation-order constraints, explicit rounding boundaries/modes, invalid-value disposition, output range and Reference evidence state.
+- [x] Implicit wrap/truncation/debug-vs-release numeric drift is forbidden.
+- [x] Gameplay RNG is deterministic/replayable but separate from security and presentation randomness; one mutable process-global gameplay RNG is forbidden.
+- [x] Random decisions use stable semantic purpose identity and isolated keyed/counter decisions or isolated checkpointed substreams so unrelated draws cannot perturb each other.
+- [x] Retry-stable random decisions derive from stable logical occurrence identity and bound semantic revisions, not Node/thread placement or transient RuntimeExecutionOrdinal alone.
+- [x] Exploit-sensitive deterministic seed/root/substream state may remain confidential; public-only seed derivation is forbidden unless predictability is explicitly accepted.
+- [x] Stateful RNG advancement is authoritative state and cannot survive an aborted resolution independently or be consumed by speculative workers.
+- [x] Wall clock, process-local monotonic time and authoritative execution order remain distinct; no universal fixed tick is introduced.
+- [x] Semantically simultaneous/conflicting inputs use commutative semantics, stable domain tie-break or exact recorded FND-03 RuntimeExecutionOrdinal order; no pointer/hash-map/thread tie-breaks.
+- [x] External nondeterminism must become typed normalized authority input/fact, with canonicalized collection order or retained exact accepted order.
+- [x] Replay envelope binds scope/order, input identities, initial deterministic state, semantic revisions/profiles, formula/script identities, RNG evidence, normalized time/external facts and expected hashes.
+- [x] Canonical deterministic state includes every authoritative fact able to change a future result without a new external normalized fact: active revision/profile set, gameplay state, RNG cursors/state, pending timers/operations/continuations, occurrence identities and relevant fence/revision metadata.
+- [x] Hierarchical deterministic-state hashing/localization is evidence only and cannot repair live state.
+- [x] Supported authoritative server targets must produce identical normalized authoritative outcomes; deterministic floating requires cross-target proof.
+- [x] Replay/investigation is read-only and cannot mutate live authority.
+- [x] Resource/security/privacy boundaries are explicit and fail closed.
+- [x] Full architecture decision test records must-decide timing, concrete blocked work, migration cost, superseding evidence and deliberate deferrals.
 
-## Excluded scope
+## Repair history
 
-- concrete Rust numeric/RNG crate selection or dependency changes;
-- implementation of RNG, replay, state hashing, simulation loop, combat, AI, progression or scripts;
-- exact combat/skill/XP/item/balance formulas or numeric Global values;
-- fixed global tick rate, thread/worker counts, CPU affinity or scheduler library;
-- PostgreSQL schema/migrations;
-- protocol packet/schema changes unless a later owner explicitly expands scope;
-- production deployment/configuration;
-- Reference behavior guessing from OTS implementations.
+### Repair cycle 1 — retry revision binding and RNG anti-prediction
+
+Adversarial self-review found two gaps:
+
+1. a retry/delayed completion could otherwise be re-evaluated under a newer content/ruleset/SIM/script revision activated after the logical occurrence began;
+2. deterministic RNG could otherwise be reproducible but trivially predictable if derived only from public client-known facts.
+
+Repair 1 therefore requires exact behavior-affecting semantic revision binding for long-lived/retryable occurrences and explicit transition/reconciliation rather than silent recalculation. It also distinguishes deterministic/replayable gameplay RNG from public predictability: exploit-sensitive seed/root/substream evidence is server-controlled/access-controlled and public-only derivation is rejected unless an owning product/security contract explicitly accepts predictability.
+
+### Repair cycle 2 — future-determining deterministic state
+
+Adversarial self-review found that visible gameplay state alone is insufficient for divergence hashing: equal HP/position with a different RNG cursor, active semantic revision set or pending timer can yield a different next authoritative result.
+
+Repair 2 expands canonical deterministic checkpoint/hash scope to every authoritative fact able to change future outcome without a new external normalized fact, including active behavior-affecting revision/profile set, RNG state/cursors, pending accepted timers/operations/continuations, stable occurrence identities and relevant fence/revision metadata. Hierarchical hashing now separates revision, gameplay, RNG/determinism support, pending continuation and authority/fence scopes where useful.
+
+Repair budget used: `2/3`.
 
 ## Validation
 
 ### Focused
 
-- live main/ownership preflight: PASS
-- accepted-source audit: in progress
-- analysis/contract drafting: pending
-- full-diff self-review: pending
+- live main/ownership preflight: `PASS`
+- accepted-source audit: `PASS`
+- analysis/contract drafting: `PASS`
+- adversarial self-review cycles: `2` material repair cycles applied
+- exact changed-file scope: expected task + analysis + contract only
+- terminal full-diff self-review: pending on next frozen head
 
 ### Component/integration/runtime E2E
 
 - `NOT_APPLICABLE` — paper-only architecture task
 
-### Owner-funded AI policy
+### Review and owner-funded AI
 
-- Codex/OpenAI API/paid AI reviewer: **NOT AUTHORIZED / NOT INVOKED**
-- prior owner override for PR #212: **NOT INHERITED**
+- current task includes unusual cross-cutting deterministic correctness/replay/RNG complexity; independent review is therefore expected to be required by the root risk policy unless a later exact owner instruction changes that mechanism.
+- Codex/OpenAI API/paid AI reviewer: **NOT AUTHORIZED / NOT INVOKED**.
+- prior owner override for PR #212: **NOT INHERITED**.
+- implementing-agent self-review will remain self-review and will not be relabeled independent.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: DUR-04 lifecycle closeout merged as main@27c313a0c6032f0433ad9598c3cf53e4f0179813; live active-task/open-PR preflight found no SIM-DETERMINISM owner, so this bounded paper-only task claimed exactly task + analysis + contract paths.
-status: investigating
+last_progress: SIM analysis and contract are complete through adversarial repair cycle 2/3: repair 1 bound retryable occurrences to exact semantic revisions and protected exploit-sensitive deterministic RNG; repair 2 expanded deterministic state/hash scope to active revisions, RNG state and pending future-determining authority state.
+status: validating
 branch: agent/otv2-20260813-sim-determinism-01-architecture
 head_sha: null
-pr: null
+pr: 214
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
-ci_check_generation: null
+ci_trigger_source: pull_request
+ci_check_generation: pending_after_task_checkpoint
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -135,10 +147,10 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 0
+repair_cycles_for_current_gate: 2
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: false
 blocker: null
-next_action: Audit accepted FND-03/GAME-CHAR/GAME-ITEM/DUR-03/DUR-04 determinism ownership, then draft the bounded SIM analysis and contract without implementing runtime behavior.
+next_action: Freeze the current three-path candidate after one full adversarial diff review; if no third material finding exists, run exact-head self-review and Agent Governance / Dependency Review / CodeQL, then enforce the current independent-review policy without invoking owner-funded AI.
 ```
