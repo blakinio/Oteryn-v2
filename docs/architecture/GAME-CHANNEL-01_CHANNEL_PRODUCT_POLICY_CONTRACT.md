@@ -11,14 +11,27 @@
 - PostgreSQL DDL/migration authority: **NONE**
 - Production authority: **NONE**
 - Analysis source: `GAME-CHANNEL-01_CHANNEL_PRODUCT_POLICY_ANALYSIS.md`
+- Historical lifecycle framework consumed: `GAME-CHANNEL-01_PREDECISION_CAPACITY_TRIGGERS_ADDENDUM.md` and `GAME-CHANNEL-01_PREDECISION_ANALYSIS.md` as repository evidence only; historical numeric thresholds remain nonbinding
 
 ## 1. Purpose
 
-Freeze the minimum product semantics required before Oteryn's accepted multichannel technical capability becomes a player-visible feature.
+Freeze the minimum Oteryn product policy required before the accepted multichannel technical capability becomes player-visible.
 
-This contract owns channel discovery/selection, co-location, queue meaning, voluntary switching/anti-hopping, channel multiplicity and reward/source scope policy, PvP/social cross-channel consequences, player-facing drain/recovery behavior and the boundary with OPS/PERF/runtime/downstream domains.
+GAME-CHANNEL owns:
 
-It does not own GameNode/ChannelRuntime code, process orchestration, FND admission mechanics, DUR value mechanics, exact PvP/reward/economy formulas, physical persistence, Platform implementation or production rollout.
+- public Channel identity/presentation semantics;
+- recommendation versus explicit target selection;
+- bounded target-Channel queue meaning;
+- party/friend co-location policy boundary;
+- voluntary Channel switching and durable anti-hopping semantics;
+- public Channel create/drain/drain-abort/retirement product predicates;
+- Channel multiplicity versus durable source/reward eligibility policy;
+- world-global event/reward scope requirements;
+- cross-Channel PvP consequences and community safeguards;
+- player-facing capacity/drain/recovery semantics;
+- the boundary with FND, DUR, PERF, OPS and downstream gameplay domains.
+
+It does **not** own GameNode/ChannelRuntime implementation, process/container orchestration, FND admission/session/lease mechanics, DUR value transaction mechanics, physical persistence, exact PvP/reward/economy formulas, Platform implementation or production rollout.
 
 ## 2. Authority chain
 
@@ -30,15 +43,15 @@ minimum product/economy/party/PvP direction          -> GAME-VISION-01
 Character semantics                                  -> GAME-CHAR-01
 item legality                                        -> GAME-ITEM-01
 item/currency/value conservation                     -> DUR-03
-channel product policy                               -> GAME-CHANNEL-01
-numeric capacity                                     -> PERF-01
-activation/deactivation/process orchestration        -> OPS-CHANNEL-01
+channel product/lifecycle policy                     -> GAME-CHANNEL-01
+numeric capacity/service objectives                  -> PERF-01
+activation algorithms/hysteresis/orchestration       -> OPS-CHANNEL-01
 exact PvP/event/reward/economy/social business rules -> owning domain gates
 ```
 
 No layer may redefine another owner's semantic authority for convenience.
 
-## 3. Canonical channel model
+## 3. Canonical model
 
 ```text
 WorldId
@@ -55,38 +68,20 @@ current Character Channel placement
 != social namespace
 ```
 
-Different ruleset/profile families are different Worlds, not special Channels. InstanceId is not ChannelId. House/instance transitions never silently change ChannelId.
+Different profile/ruleset families remain different WorldId values. InstanceId is not ChannelId. House/instance transitions never silently change ChannelId.
 
-## 4. Identity versus presentation
+Canonical identity is ChannelRef. Display labels/ordinals are presentation only, never queue/admission/switch/audit/reward identity. Same semantic Channel recovery preserves ChannelId; semantic retirement never permits ChannelId reuse.
 
-Canonical identity is ChannelRef.
+## 4. Public directory, recommendation and explicit target
 
-- ChannelId is strongly typed and never inferred from display text/index;
-- restart/recovery/relocation of the same semantic Channel preserves ChannelId;
-- retired ChannelId is never reused for another semantic Channel;
-- display label/ordinal may change or later be reused only as presentation;
-- display identity never drives queue, admission, switch, audit, reward or durable eligibility;
-- NodeId/ownership generation are not player Channel identity.
-
-## 5. Directory and entry modes
-
-A public directory/offer is a bounded control-plane view of current policy-eligible Channels. It may expose a safe reference, display label, product availability class, queue availability and privacy-permitted co-location/recommendation hints.
+A bounded public directory/offer exposes only current product-eligible Channels and safe presentation/availability information. It does not expose hidden presence, NodeId, ownership generation or grant gameplay authority merely by listing a target.
 
 Accepted entry modes:
 
-### `RECOMMENDED`
+- `RECOMMENDED` — control plane suggests one current eligible target;
+- `EXPLICIT` — player selects another current eligible visible target.
 
-Control plane suggests one current eligible target.
-
-### `EXPLICIT`
-
-Player selects another current eligible visible target.
-
-Recommendation is a hint, explicit target is a request, and FND-04 remains final admission authority.
-
-Recommendation may use capacity/health, previous-channel affinity, party/friend hints subject to privacy, demand balancing and maintenance state. Exact scoring remains downstream.
-
-## 6. Explicit target failure
+Recommendation may consider capacity/health, previous-Channel affinity, party/friend hints subject to privacy, maintenance state and demand balancing. Exact scoring remains downstream. Recommendation never bypasses FND-04 final admission.
 
 For explicit Channel C:
 
@@ -103,7 +98,7 @@ If C becomes capacity-limited, draining, recovering, unavailable, stale or incom
 - fresh directory/offer/grant is required for another target;
 - failed target creates no GameSession/lease/value authority.
 
-## 7. Queue contract
+## 5. Queue contract
 
 A World may support an optional bounded target-Channel **pre-admission queue**.
 
@@ -120,62 +115,47 @@ Rules:
 
 - one queue target resolves exactly one ChannelRef;
 - priority/order is control-plane authoritative, never client-declared;
-- entries/references are bounded, purpose-limited and expire/cancel explicitly;
-- duplicate/cancel/expiry is idempotent and non-gameplay-mutating;
+- queue state is bounded, purpose-limited and expires/cancels explicitly;
+- duplicate/cancel/expiry is idempotent and creates no gameplay mutation;
 - final admission revalidates current target/security/revision/account/Character/lease facts;
-- short-lived FND-04 admission material is issued/refreshed only when the queued attempt is ready, not parked for a long queue;
-- queue reference is never bearer gameplay authority;
+- short-lived FND-04 admission material is issued/refreshed only when the queued attempt is ready, not held as a long-lived queue credential;
+- queue reference is never gameplay bearer authority;
 - exact storage/service/algorithm/timeouts/limits/priority remain downstream/cross-repository implementation work.
 
-Automatic entry should normally prefer another healthy eligible Channel over needless target-specific waiting when the player did not explicitly request a target.
+First generation does not queue/reserve a destination while the Character continues authoritative mutation in the source Channel. Any live-session destination reservation requires a separate lease/capacity/fairness/failure contract.
 
-## 8. No first-generation live-session destination reservation
-
-ADR-0001 safe switch flow reaches a safe source-session boundary before destination selection/admission.
-
-GAME-CHANNEL therefore does not authorize queueing/reserving a destination while the Character continues authoritative mutation in the source Channel. A future live-session reservation requires a dedicated lease/capacity/fairness/failure contract.
-
-## 9. Party/friend co-location
+## 6. Party/friend co-location and privacy
 
 - co-location is a privacy-bounded recommendation/target preference, not authority;
 - every Character is independently admitted with independent GameSession/lease;
 - no all-or-nothing party admission transaction;
 - no PartyId owns/reserves a Channel by itself;
 - no automatic teleport/migration when another party member changes Channel;
-- Full target uses ordinary queue/alternate-choice policy;
-- shared-exp/proximity/combat effects require actual co-location under their owners;
-- exact placement visibility remains social/privacy-owned.
+- target Full follows ordinary queue/alternate-choice policy;
+- gameplay effects requiring co-location activate only when members actually share the authoritative simulation;
+- exact Channel-placement visibility remains social/privacy-owned and hidden presence cannot be inferred through co-location endpoints.
 
 Atomic group-capacity reservation is deferred.
 
-## 10. Reconnect is not channel switch
+## 7. Reconnect is not Channel switch
 
-### Same-Channel eligible reconnect/recovery
+Same-Channel eligible reconnect/recovery:
 
 - uses FND-04 continuity;
 - may preserve GameSessionId when permitted;
-- keeps the same semantic ChannelId;
-- does not count as voluntary Channel switch.
+- keeps the same ChannelId;
+- is not a voluntary Channel switch.
 
-### Completed Channel switch
+A completed Channel switch uses ADR-0001 safe source exit/checkpoint, fresh destination authorization, fresh FND-04 admission and a fresh canonical GameSessionId. It is never an in-place transport rebind or teleport.
 
-- safe source exit/checkpoint under ADR-0001;
-- source session/lease authority ends or advances as required;
-- fresh destination authorization;
-- fresh FND-04 destination admission;
-- fresh canonical GameSessionId;
-- destination ChannelRuntime placement.
+## 8. Hard switch locks
 
-A switch is never an in-place transport rebind or teleport.
-
-## 11. Hard switch locks
-
-Voluntary switch fails closed while any accepted blocker applies, including:
+Voluntary switching fails closed while any accepted blocker applies, including:
 
 - combat/protected PvP;
 - direct trade;
 - unresolved item/currency/value transaction;
-- protected boss/raid/event participation where hopping affects eligibility;
+- protected boss/raid/event participation where hopping changes eligibility;
 - unsafe instance/house transition;
 - pending Character checkpoint/handoff/authority transition;
 - stale/unavailable session/lease/runtime evidence;
@@ -184,69 +164,52 @@ Voluntary switch fails closed while any accepted blocker applies, including:
 
 Client cannot override these locks.
 
-## 12. Durable voluntary anti-hopping guard
-
-Hard locks alone do not prevent repeated safe-boundary hopping.
+## 9. Durable voluntary anti-hopping guard
 
 GAME-CHANNEL requires durable game-domain world channel-policy state:
 
 ```text
 scope: CharacterId + WorldId
-semantic owner: GAME-CHANNEL / world channel-policy authority
+semantic owner: GAME-CHANNEL / game-domain world channel-policy authority
 lifetime: may outlive GameSession/connection/GameNode
 interpretation: world_policy_revision
 ```
 
 The guard is not automatically GAME-CHAR progression state merely because it is Character-scoped.
 
-It must retain enough durable semantic state to classify later admissions unambiguously, including:
+It retains enough semantic state to classify later admissions unambiguously, including `last_successful_channel_ref` or an equivalent durable prior-placement representation, plus current switch eligibility/cooldown state and policy context.
 
-```text
-last_successful_channel_ref
-OR an equivalently unambiguous durable prior-placement representation
-```
+## 10. Switch classification and cooldown
 
-plus current switch eligibility/cooldown state and policy-version context as required.
-
-Physical schema/storage remains downstream.
-
-## 13. Switch classification across logout/relog
-
-The durable prior-placement fact closes the relog loophole:
-
-- first admission with no prior successful Channel establishes the baseline Channel without counting as a switch;
+- first admission with no prior successful Channel establishes baseline and is not a switch;
 - fresh admission to the same prior Channel is not a switch;
-- fresh admission to a different Channel is a switch even when the prior GameSession already ended;
-- an unexpired guard still applies after logout/relog;
-- failed destination attempt leaves the last successful Channel/guard unchanged;
-- successful different-Channel admission updates the remembered Channel and advances the guard exactly once;
-- same-Channel reconnect/recovery never rewrites the event as a switch.
-
-A Channel retirement/maintenance/failure that forces a different destination may later use the trusted non-voluntary exception policy, but cannot make the prior placement unknowable.
-
-## 14. Switch cooldown
+- fresh admission to a different Channel is a switch even after the old GameSession ended;
+- failed destination attempt leaves remembered Channel/guard unchanged;
+- successful different-Channel admission updates remembered Channel and advances guard exactly once;
+- same-Channel reconnect/recovery never becomes a switch.
 
 The first voluntary anti-hopping mechanism is **time-based cooldown + hard locks**.
 
-- exact duration is deliberately not guessed and must be accepted from product/playtest/economy/PvP evidence before activation;
+- exact duration is deliberately not guessed and requires product/playtest/economy/PvP evidence before activation;
 - guard survives logout/relog/fresh GameSession/reconnect/GameNode restart;
 - client wall time is not authoritative;
-- policy evolution is version-aware;
-- implementation cannot claim voluntary switch conformance until a concrete accepted duration and trusted durable time interpretation exist.
+- incompatible policy changes require explicit version-aware migration/interpretation.
 
-## 15. Destination admission + guard atomicity/recovery invariant
+An implementation cannot claim voluntary switching conformance until the numeric duration and trusted durable time interpretation are accepted.
+
+## 11. Destination admission + guard recovery invariant
 
 This outcome is invalid:
 
 ```text
 new destination GameSession/placement becomes playable
-AND durable ChannelSwitchGuard / last successful Channel did not advance consistently
+AND remembered Channel / ChannelSwitchGuard did not advance consistently
 ```
 
-For a voluntary different-Channel admission, final destination admission must include guard classification/update in the **same authoritative acceptance boundary** as destination session/placement authority, or an equivalently proven recovery protocol satisfying all of:
+For a voluntary different-Channel admission, final destination admission must include switch classification/guard/prior-placement update in the **same authoritative acceptance boundary** as destination session/placement authority, or an equivalently proven recovery protocol satisfying:
 
 1. no playable destination authority before durable switch outcome is determined;
-2. final admission revalidates current world-scoped locks/guard instead of trusting earlier source checks;
+2. final admission revalidates current world-scoped locks/guard rather than trusting stale source checks;
 3. ambiguous outcome reconciles the same admission/switch attempt;
 4. retry cannot create a second destination authority or skip guard;
 5. current Channel, remembered successful Channel and guard cannot disagree silently;
@@ -254,80 +217,48 @@ For a voluntary different-Channel admission, final destination admission must in
 
 Physical transaction/session persistence mechanics remain FND/DUR implementation work.
 
-No mandatory `ChannelSwitchId` is introduced: existing FND admission-attempt/session and ANL correlation/operation identities are reused unless later evidence proves a separate durable lifecycle identity is necessary.
+No mandatory `ChannelSwitchId` is introduced; existing FND admission-attempt/session and ANL correlation/operation identities are reused unless later evidence proves a separate durable lifecycle identity is necessary.
 
-## 16. Guard policy evolution
+## 12. Trusted non-voluntary exception
 
-Incompatible world-policy change affecting guard state explicitly chooses transition semantics, such as preserving prior deadline, deterministic version-aware migration or applying new policy only to later switches. Silent retroactive reinterpretation is prohibited.
+Maintenance/incident/admin-safe evacuation may later define a typed exception only when it is server/operator-authored, audited, unforgeable by client, reaches a safe authority/value boundary, preserves PvP/reward/value consequences, keeps remembered prior-placement semantics deterministic and still uses fresh admission when ChannelId changes.
 
-## 17. Trusted non-voluntary exception
+There is no generic bypass boolean.
 
-Maintenance/incident/admin-safe evacuation may later define a typed exception only when:
+## 13. Runtime locality is not durable source multiplicity
 
-- server/operator authored and audited;
-- client cannot request/forge it;
-- source actor reaches a safe authority/value boundary;
-- PvP/combat/reward eligibility is not cleared/weakened;
-- DUR-03 state remains valid;
-- different ChannelId still uses fresh admission;
-- remembered successful Channel/guard transition remains deterministic;
-- exception is versioned/bounded.
-
-No generic bypass boolean exists.
-
-## 18. Channel locality is not durable source multiplicity
-
-Channel-local runtime examples include position, creatures/spawns/AI, combat, ground runtime, local NPC and local speech. World/Character-shared durable examples include committed Character state, world economy domains and shared reward eligibility under their owners.
-
-Critical rule:
+Critical invariant:
 
 ```text
 runtime object is Channel-local
 != durable reward/source is automatically repeatable per Channel
 ```
 
-## 19. Fail-closed source multiplicity classification
+For every value-producing source/encounter family whose durable output can differ with active Channel count, compiled/validated authored policy must explicitly select a supported multiplicity class. **There is no runtime fallback class for a value-producing source.** Missing classification blocks multichannel activation of that source.
 
-For every value-producing source/encounter family whose durable output can differ with active Channel count, compiled/validated authored policy must explicitly select a supported class.
+A reviewed content/profile package may define a versioned default for a bounded source category, but that default is explicit authored policy rather than runtime assumption.
 
-**There is no runtime fallback class for a value-producing source.**
-
-Missing classification blocks that source's multichannel activation/implementation.
-
-A reviewed content/profile package may define a default for a bounded source category, but that default itself is explicit/versioned authored policy, not a runtime assumption.
-
-## 20. Multiplicity classes
+## 14. Multiplicity classes
 
 ### `CHANNEL_LOCAL_REPEATABLE`
 
-- independent source/simulation per Channel;
-- output may repeat independently under unchanged in-Channel ruleset mechanics;
-- aggregate World supply may scale with active Channel count/player demand;
-- no hidden automatic rate division by Channel count;
-- exact source/loot formula remains content/Reference-owned;
-- DUR-03 prevents duplicate transaction effects.
+Independent source/simulation per Channel; output may repeat independently under unchanged in-Channel mechanics; aggregate World supply may scale with active Channels/player demand. No hidden automatic rate division by active Channel count.
 
 ### `CHANNEL_LOCAL_SHARED_ELIGIBILITY`
 
-- simulation can exist in multiple Channels;
-- durable eligibility is shared at declared Character/Account/World/etc. scope;
-- Channel change/new GameSession cannot reset eligibility;
-- durable delivery uses owning reward + DUR-03 idempotency.
+Simulation may exist in multiple Channels while durable eligibility is shared at an explicitly declared Character/Account/World/etc. scope. Channel change/new GameSession does not reset eligibility.
 
 ### `WORLD_SCOPED_UNIQUE`
 
-- one semantic World occurrence/eligibility regardless of Channel count;
-- event/world-service owner defines execution/presentation placement;
-- Channel copies cannot independently mint another world occurrence.
+One semantic World occurrence/eligibility exists regardless of Channel copies. Event/world-service owner controls execution/presentation placement.
 
 ### `EXPLICIT_EVENT_POLICY_REQUIRED`
 
-- no generic classification is safe;
-- high-impact boss/raid/event must declare exact simulation/eligibility model before activation.
+No generic class is safe; high-impact boss/raid/event owner must declare exact simulation and eligibility semantics before activation.
 
-## 21. Simulation scope != eligibility scope
+## 15. Simulation scope and durable eligibility scope
 
-Any reward-bearing event where Channels matter declares at least:
+Every reward-bearing event where Channels matter declares at least:
 
 ```text
 simulation_scope
@@ -338,72 +269,177 @@ stable reward/source occurrence semantics
 
 ChannelId is not silently inserted into Character/Account/World reward reset/idempotency keys.
 
-GAME-CHANNEL defines scope requirements; event/reward domains define business rules; DUR-03 defines transaction/conservation.
+GAME-CHANNEL defines scope requirements. Event/reward domains define business eligibility. DUR-03 defines transaction/conservation/idempotency mechanics.
 
-## 22. Dynamic scaling boundary
+## 16. Dynamic lifecycle ownership split
 
-### GAME-CHANNEL
+GAME-CHANNEL freezes **qualitative product predicates** for creating/draining/removing public Channels.
 
-Owns player-visible multiplicity model, source/reward classification requirement, social/PvP/fairness guardrails and versioned World policy envelope.
+PERF-01 supplies measured numeric capacity/headroom/service objectives. OPS-CHANNEL-01 supplies operational trend windows, hysteresis, timers, orchestration, placement and algorithms implementing these predicates.
 
-### PERF-01
+This prevents OPS/PERF from accidentally becoming product/economy policy owners.
 
-Owns numeric players/Channel/GameNode/World capacities, headroom and benchmark objectives.
+## 17. Lifecycle trigger vocabulary
 
-### OPS-CHANNEL-01
+The current candidate adopts the qualitative vocabulary recorded in the predecision capacity-trigger addendum, without adopting its historical numbers.
 
-Owns activation/deactivation algorithm, hysteresis, GameNode placement, health/readiness orchestration, recovery concurrency and numeric operational thresholds.
+### `DEMAND_PRESSURE`
 
-Operational load cannot silently authorize economy semantics. No client gameplay command directly creates/removes a public Channel.
+Eligible public-channel demand exceeds currently healthy/selectable capacity for a **sustained** evidence window under accepted service-objective/headroom policy.
 
-## 23. Fresh/recovered Channel abuse prevention
+`Sustained`, `service objective` and `required headroom` are semantic requirements; numeric evaluation belongs PERF/OPS.
+
+### `RECOVERY_PRESSURE`
+
+Current World public capacity is unavailable/insufficient because a Channel or hosting capacity has failed or cannot safely serve eligible demand.
+
+Recovery pressure never permits affected actors to be silently moved to a different semantic Channel. If the failed Channel is recoverable, ADR-0009 same-ChannelId recovery remains authoritative.
+
+### `LOW_LOAD_CONSOLIDATION_CANDIDATE`
+
+A public Channel has sustained low utilization such that consolidation may be safe if retained eligible Channels can absorb expected demand with required headroom and no event/recovery/product policy requires that Channel.
+
+### `CHANNEL_UNHEALTHY`
+
+A Channel is not safely routable/authoritative under runtime health/fencing/recovery policy.
+
+`CHANNEL_UNHEALTHY` maps primarily to Recovering/Unavailable/fencing and is not authority to move players silently into another Channel.
+
+## 18. New semantic Channel creation predicate
+
+Creating/activating a **new semantic public ChannelId** is product-legitimate only when all applicable conditions hold:
+
+1. trigger is `DEMAND_PRESSURE`, or `RECOVERY_PRESSURE` requires additional public capacity beyond safe same-Channel recovery/current healthy capacity;
+2. for demand creation, eligible demand is sustained and no current eligible healthy Channel can satisfy the accepted service objective while preserving required headroom;
+3. for recovery-driven creation, a new semantic Channel serves fresh/general capacity need and never becomes silent continuation of actors bound to the failed ChannelId;
+4. extra Channel multiplicity does not violate World/ruleset/content/event/reward source/eligibility policy;
+5. safe infrastructure capacity exists under PERF/OPS authority;
+6. the candidate reaches the accepted fully Ready/compatible runtime state before becoming `SELECTABLE` or receiving ordinary admission;
+7. canonical ChannelId is issued by the accepted topology authority and is not derived from a display ordinal.
+
+The following alone are **forbidden creation triggers**:
+
+- one party/friend group wants a private copy;
+- a player prefers an emptier Channel;
+- rare spawn/loot/resource farming;
+- PvP avoidance;
+- manual operator preference without demand/recovery/product justification.
+
+Such preferences may influence selection among already eligible Channels but cannot create new public simulation/economy capacity by themselves.
+
+## 19. Recovery pressure versus same-Channel recovery
+
+```text
+replace hosting/runtime capacity for failed Channel A
+-> preserve ChannelId A when semantic recovery is possible
+
+create new semantic Channel B because the World needs additional general capacity
+-> new ChannelId B
+-> affected Channel A actors are not moved automatically
+```
+
+`RECOVERY_PRESSURE` can justify infrastructure replacement or additional capacity, but never supersedes ADR-0009 Channel identity/recovery semantics.
+
+## 20. Drain eligibility predicate
+
+A Channel may enter product `DRAINING` for low-load consolidation only when all applicable conditions hold:
+
+1. it is a sustained `LOW_LOAD_CONSOLIDATION_CANDIDATE` under measured policy;
+2. retained eligible Channels can absorb expected demand with required headroom/service objective;
+3. no World/event/reward/recovery/reserved-capacity policy currently requires the candidate Channel;
+4. new ordinary admissions and voluntary switches into the candidate stop before drain progresses;
+5. incumbent actors can reach bounded safe exit/session boundaries without violating combat/session/item/value correctness;
+6. drain does not create hidden reward/source reset behavior.
+
+A merely `CHANNEL_UNHEALTHY` Channel follows recovery/fencing semantics; unhealthy is not synonymous with low-load consolidation drain.
+
+## 21. Drain abort/hold predicate
+
+Before terminal retirement/removal, drain must **abort or hold** if any material condition becomes true, including:
+
+- `DEMAND_PRESSURE` reappears and retained capacity can no longer satisfy service objective/headroom safely;
+- a retained eligible Channel becomes unhealthy/unavailable and reduces safe capacity;
+- `RECOVERY_PRESSURE` requires the candidate capacity;
+- World/event/reward/product policy requires the candidate Channel;
+- continuing drain risks GameSession/CharacterLease, item/currency/value, encounter, checkpoint or recovery correctness.
+
+If drain is reversed before terminal retirement:
+
+- canonical ChannelId remains unchanged;
+- runtime ownership/readiness must be revalidated before returning to `SELECTABLE`;
+- stale directory/queue/admission evidence from the earlier lifecycle state is not revived blindly; fresh control-plane evidence is required.
+
+## 22. Terminal removal/retirement predicate
+
+A semantic Channel may be terminally removed/retired only after all applicable conditions hold:
+
+1. no authoritative player GameSession/Character placement remains bound to it;
+2. no active Instance/encounter/event obligation depends on its runtime scope;
+3. no unresolved item/value transaction, handoff, checkpoint or recovery obligation depends on it;
+4. required durable checkpoint/audit/evidence finalization is complete under owning contracts;
+5. old runtime owner/ownership generation is fenced and cannot regain authority;
+6. directory/control plane has removed/invalidated stale routing, queue and admission references;
+7. policy confirms this is **semantic retirement**, not a temporary inactive/stopped state intended for later same-ChannelId reactivation.
+
+After semantic retirement, ChannelId is never reused.
+
+Temporary stop/inactivity is not retirement; later safe reactivation of the same semantic Channel preserves ChannelId.
+
+## 23. Numeric lifecycle policy remains PERF/OPS-owned
+
+GAME-CHANNEL deliberately does not freeze:
+
+- demand window length;
+- utilization percentages;
+- target queue latency;
+- headroom percentages;
+- players/Channel thresholds;
+- min/max public Channels;
+- drain grace time;
+- scaling cooldown/hysteresis timing;
+- GameNode placement capacity.
+
+PERF-01 measures supported capacity/service objectives. OPS-CHANNEL-01 implements bounded trend windows, hysteresis and orchestration satisfying the predicates above.
+
+## 24. Fresh/recovered Channel abuse prevention
 
 - stop/recover same ChannelId cannot reset durable shared eligibility;
 - new ChannelId cannot erase Character/Account/World eligibility;
 - display-label reuse cannot reset eligibility;
 - one-time/high-impact sources cannot use process/channel uptime alone as eligibility truth;
-- OPS lifecycle is not a player reward occurrence;
-- exact ordinary spawn initialization timing stays content/runtime-owned.
+- Channel lifecycle trigger is not a player reward occurrence;
+- exact ordinary spawn initialization remains content/runtime-owned.
 
-## 24. PvP implications
+## 25. PvP implications
 
-- direct PvP execution is current Channel/Instance-local;
+- direct PvP execution remains current Channel/Instance-local;
 - Character/World-scoped PvP consequences survive Channel/GameSession transition;
 - active combat/protected PvP blocks voluntary switch;
-- switching cannot clear/re-arm/reduce consequences merely through new GameSession;
-- channel failure cannot silently relocate actor to another combat simulation;
-- client disconnect claim cannot create trusted exception;
+- switching cannot clear/re-arm/reduce consequences through a new GameSession;
+- Channel failure cannot silently relocate an actor to another combat simulation;
+- client disconnect claims cannot create trusted switch exceptions;
 - exact PvP/skull/frag/combat formulas remain profile/parity-owned.
 
-## 25. One World community
+## 26. One-World community
 
 - guild identity/membership is not per Channel;
 - market/bank/depot/rankings are not separate Channel economies;
-- accepted world/guild/private communication remains cross-channel;
+- accepted World/guild/private communication remains cross-channel;
 - local speech remains channel/spatial;
 - party membership may span Channels while gameplay co-location effects require shared simulation;
 - recommendation should reduce involuntary fragmentation;
-- future client clearly exposes current World/Channel;
+- future client makes current World/Channel understandable;
 - Channel is not protocol/ruleset/account namespace.
 
-## 26. Product-facing availability classes
+## 27. Product-facing availability classes
 
 - `SELECTABLE` — fresh attempt may proceed subject to FND-04;
-- `CAPACITY_LIMITED` — no immediate admission, queue may be offered;
-- `DRAINING` — no new ordinary admission, existing actors approach safe boundary;
-- `RECOVERING` — same ChannelId recovery path for affected actor;
+- `CAPACITY_LIMITED` — no immediate admission; target queue may be offered;
+- `DRAINING` — no new ordinary admission while drain predicate remains valid;
+- `RECOVERING` — same ChannelId recovery path for affected actors;
 - `UNAVAILABLE` — not selectable/routable.
 
-Internal NodeId/generation/Fenced/Suspected detail may map to these without verbatim exposure.
-
-## 27. Drain
-
-- remove from ordinary selectable/recommended targets;
-- stop new admission;
-- current actors reach safe FND/DUR lifecycle boundary;
-- no silent cross-channel migration;
-- after safe source termination, fresh target selection/admission may occur;
-- maintenance exception cannot clear combat/reward/value state.
+Internal runtime states may map to these without exposing infrastructure/security internals.
 
 ## 28. Failure and same-Channel recovery
 
@@ -413,183 +449,145 @@ failed Channel A
 -> never silently continue in Channel B
 ```
 
-ChannelId survives eligible recovery while NodeId/ownership generation may change. Stale owner cannot regain authority. If recovery cannot safely continue, actor first reaches proven safe offline/terminal state; only then can fresh selection/admission target another Channel. Failure does not erase combat/reward/value consequences.
+If recovery cannot continue, actor first reaches a proven safe offline/terminal authority state. Only then may fresh directory/selection/admission target another Channel. Failure does not erase combat/reward/value consequences.
 
-## 29. Channel lifecycle identity
+## 29. World-policy revision and cross-world boundary
 
-Temporary stop/recovery/reactivation preserves semantic ChannelId. Retirement differs from stop. Retired ChannelId is never reused. Display aliases are non-authoritative. Topology authority issues/retires canonical Channel identity.
+GAME-CHANNEL uses existing `world_policy_revision` for Channel product policy compatibility. Stale grants/offers cannot silently use superseded policy; durable guard/lifecycle state retains enough revision context for deterministic interpretation/migration.
 
-## 30. World-policy revision
+Changing WorldId is **not** a Channel switch. It remains a separate Character/world lifecycle/transfer/admission concern and cannot bypass world-scoped value/profile isolation.
 
-GAME-CHANNEL uses existing `world_policy_revision` for channel product policy compatibility rather than inventing a new protocol major/revision dimension.
+## 30. Client and Platform boundaries
 
-- stale grants/offers cannot silently apply superseded policy;
-- guard retains enough policy context for deterministic migration;
-- ChannelId does not change because policy changed;
-- exact policy registry/storage remains downstream.
+Client may display/select/request/queue but cannot decide target eligibility/capacity, queue priority, switch eligibility, hard locks, reward eligibility, Channel health/lifecycle, recovery target, final admission or lease/runtime authority.
 
-## 31. Cross-world boundary
+Future implementation may require separately authorized Platform/Gateway/World Registry changes for directory/recommendation/queue/target-bound grants. This Oteryn-v2 delivery grants no external-repository or production authority.
 
-Changing WorldId is not a Channel switch. It remains a separate Character/world lifecycle/transfer/admission concern and cannot use channel policy to bypass world-scoped value/profile isolation.
+## 31. DUR-03 and downstream boundaries
 
-## 32. Client authority boundary
+GAME-CHANNEL owns product eligibility/multiplicity/lifecycle. DUR-03 retains durable item/currency/value atomicity, transaction idempotency, semantic item location, source/sink lineage, typed custody, stale-authority rejection, ambiguous commit reconciliation and durable audit/restore anti-duplication.
 
-Client may display/select/request/queue, but cannot decide target eligibility/capacity, queue priority, switch eligibility/time, hard locks, reward eligibility, Channel health/lifecycle, recovery target, final admission or current lease/runtime authority.
+Party/social, market/trade/bank/depot/mail, boss/event/reward, exact PvP, houses/instances and entitlement business rules remain their own domains. `PROD-ENTITLEMENTS-01` remains unaccepted; no paid queue/switch priority is accepted.
 
-## 33. Platform/control-plane boundary
+## 32. Security invariants
 
-Future implementation may require separate explicitly authorized Platform/Gateway/World Registry work for recommendation, eligible-set, queue and target-bound grant issuance. This Oteryn-v2 delivery writes no Platform repository and grants no cross-repository/production authority.
-
-## 34. DUR-03 boundary
-
-GAME-CHANNEL owns product eligibility/multiplicity. DUR-03 retains durable item/currency/value atomicity, transaction idempotency, one semantic item location, source/sink lineage, typed custody, stale-authority rejection, ambiguous commit reconciliation and durable audit/restore anti-duplication.
-
-GAME-CHANNEL never authorizes value creation by itself.
-
-## 35. Downstream boundaries
-
-- party/social business rules remain social/party owner;
-- trade/market/bank/depot/mail business rules remain economy owners;
-- boss/event participation/reward formulas remain event/reward owner;
-- exact PvP formulas remain PvP/ruleset owner;
-- house/instance topology remains owning contracts;
-- `PROD-ENTITLEMENTS-01` remains unaccepted; no paid queue/switch priority is accepted.
-
-## 36. Failure dispositions
-
-| Condition | Required effect |
-|---|---|
-| stale/ineligible target | no admission; fresh offer |
-| capacity-limited target | no admission; queue/alternate policy |
-| draining target | no new admission |
-| recovering target | same-Channel recovery for affected actor |
-| revision/policy mismatch | no admission |
-| hard switch lock | no voluntary switch |
-| cooldown active | no voluntary switch |
-| queue expiry/cancel | no gameplay/session/value effect |
-| privacy-hidden co-location | no placement disclosure bypass |
-| missing source multiplicity class | fail content/implementation validation |
-| duplicate shared reward occurrence | owning reward/DUR reconciliation; no second value |
-| Channel lifecycle reset | no shared eligibility reset |
-| Channel failure | same-Channel recovery; no silent alternate |
-
-## 37. Security invariants
-
-Must prevent:
+A conforming implementation must prevent:
 
 - client-forged Channel eligibility/capacity/queue priority;
-- queue reference as bearer authority;
-- silent explicit-target retarget;
+- queue reference becoming bearer authority;
+- silent target retarget;
 - GameSession/relog reset of switch guard;
 - loss of prior successful Channel across logout/restart;
-- destination authority without recovery-safe guard/prior-placement update;
+- destination playable authority without recovery-safe guard advancement;
 - client-forged maintenance exception;
-- Channel label as authority;
-- dual active Character across Channels;
-- stale Channel owner durable write;
+- display label becoming Channel identity;
+- one Character authoritative on two Channels;
+- stale Channel owner durable writes;
 - switch bypass of combat/trade/item/event/instance locks;
-- runtime-locality fallback to per-Channel durable output;
-- per-Channel reset of shared eligibility;
-- hidden rate tuning by Channel count;
-- silent alternate-channel failure recovery;
+- runtime locality becoming implicit per-Channel durable output policy;
+- preference-only, farming-only or PvP-avoidance-only Channel creation;
+- draining past reappeared demand/recovery/safety need;
+- retirement with sessions/transactions/recovery/stale routes remaining;
+- per-Channel reset of shared reward eligibility;
+- hidden rate tuning by active Channel count;
+- silent alternate-Channel failure recovery;
 - co-location privacy bypass;
-- Channel lifecycle reward reset;
+- Channel lifecycle reward resets;
 - GAME-CHANNEL weakening DUR-03 conservation.
 
-## 38. Resource ceilings
+## 33. Resource ceilings and analytics
 
-Before implementation acceptance, concrete bounds must exist for applicable directory results, queue entries/bytes, per-account/Character queue requests, pending offers, co-location hints, refresh work, switch attempt state, policy size/complexity, multiplicity fan-out and pending recovery/queue references.
+Before implementation acceptance, concrete bounds must exist for applicable directory results, queue entries/bytes, per-actor queue requests, pending offers, co-location hints, switch-attempt state, lifecycle decision fan-out, policy size and event/reward multiplicity work. Numeric values are not invented here.
 
-Numeric values are deliberately not invented here. Missing limits block implementation rather than mean unlimited.
+Privacy-safe analytics should observe active Channel count, population, recommendation override, queue behavior, co-location, switch outcomes, lifecycle trigger/decision reasons, create/drain/abort/removal decisions, source/sink composition, reward conflicts, social fragmentation and same-Channel recovery.
 
-## 39. Analytics
+Game Intelligence remains read-only; it cannot autonomously open/close Channels, change rates, waive guards, alter eligibility, move players or repair value.
 
-Measure privacy-safely: active Channel count/player distribution, recommendation override, queue wait/cancel, co-location success, switch success/rejection/cause, source/sink composition by Channel-hours/player population, reward conflicts, social fragmentation and same-Channel recovery outcomes.
+## 34. Required implementation evidence
 
-Game Intelligence cannot automatically open/close Channels, change source rates, waive guards, change reward eligibility, move players or repair value.
+Architecture acceptance alone proves no runtime behavior. Future conformance proves at least:
 
-## 40. Required implementation evidence
-
-Architecture acceptance alone proves no runtime behavior.
-
-Future conformance proves at least:
-
-### Selection/queue
+### Selection/queue/co-location
 
 - recommendation remains non-authoritative;
 - explicit target cannot silently retarget;
-- stale/full/draining/recovering/incompatible targets fail safely;
-- queue creates no GameSession/lease/value authority;
-- queue admission revalidates fresh facts;
-- queue duplicate/cancel/expiry is idempotent;
-- priority forgery and bounded overload fail safely.
-
-### Co-location/privacy
-
-- party/friend hint only when visible/eligible;
-- independent admissions preserve one-session rule;
-- hidden placement is not leaked;
-- unadmitted member gains no authority.
+- stale/full/draining/recovering/incompatible target fails safely;
+- queue creates no GameSession/lease/value authority and revalidates fresh facts;
+- queue duplicate/cancel/expiry and bounded overload are safe;
+- co-location hints preserve privacy and one-session authority.
 
 ### Switching
 
-- hard blockers fail closed;
+- all hard blockers fail closed;
 - guard survives logout/new GameSession/reconnect/restart;
-- first admission establishes prior Channel without counting as switch;
-- same prior Channel fresh login is not switch;
-- different Channel fresh login is switch even after prior GameSession ended;
+- first admission establishes prior Channel without a switch;
+- same prior Channel fresh login is not a switch;
+- different Channel fresh login is a switch even after prior GameSession ended;
 - failed target leaves prior Channel/guard unchanged;
-- different-Channel destination admission + prior-Channel/guard update survive crash as one semantic outcome;
-- ambiguous retry cannot skip guard or duplicate session;
-- same-Channel reconnect does not count;
+- destination admission + remembered Channel/guard update survive crash as one semantic outcome;
+- ambiguous retry cannot skip guard or duplicate destination authority;
+- same-Channel reconnect is not a switch;
 - trusted exception is unforgeable and consequence-preserving.
 
 ### Multiplicity/reward
 
 - every channel-sensitive value source has explicit compiled class;
 - missing class fails closed;
-- repeatability only when explicitly authored;
+- repeatability occurs only when explicitly authored;
 - shared eligibility does not repeat on new Channel/GameSession;
-- world-unique occurrence cannot mint per Channel;
+- World-unique occurrence cannot mint per Channel;
 - stop/restart/new Channel/display alias cannot reset shared eligibility.
 
-### Drain/recovery/community
+### Lifecycle predicates
+
+- preference/rare-spawn/PvP-avoidance alone cannot create a public Channel;
+- demand-driven creation proves sustained eligible demand, insufficient healthy eligible capacity with required headroom, policy compatibility, safe resources and Ready-before-selectable;
+- recovery-driven capacity preserves same ChannelId recovery for affected actors and never uses new Channel B as silent continuation of failed A;
+- low-load drain proves retained capacity/headroom, no policy need and safe incumbent boundary;
+- drain aborts/holds when demand returns, retained capacity degrades, recovery pressure appears, policy requires the Channel or safety is threatened;
+- terminal retirement occurs only with no sessions/dependent instances/events/transactions/checkpoints/recovery obligations, evidence finalization, fencing and stale-route removal;
+- temporary stop/reactivation preserves ChannelId, terminal retirement never reuses it;
+- lifecycle numeric windows/thresholds remain PERF/OPS evidence and do not alter qualitative predicates.
+
+### Failure/community
 
 - Full blocks new admission without moving existing actors;
-- Draining stops new admission and never silently migrates;
+- Draining never silently migrates actors;
 - recoverable failure returns same ChannelId;
 - stale owner cannot resume;
-- alternate Channel only after safe state + fresh admission;
+- alternate Channel only after safe actor state + fresh admission;
 - failure does not erase combat/reward/value state;
-- world-shared social/economy domains remain shared while local speech/combat/position remain Channel-local.
+- World-shared social/economy remains shared while local speech/combat/position remains Channel-local.
 
-## 41. Decision timing
+## 35. Decision timing
 
-**Must decide now: YES.** Blocks player-visible multichannel selection, queue/co-location, voluntary switching, multiplicity/reward policy, PvP-safe switching, recovery UX and VSL multichannel product proof.
+**Must decide now: YES.** Blocks player-visible multichannel selection, queue/co-location, switch/anti-hopping, create/drain/remove product semantics, multiplicity/reward policy, PvP-safe switching, recovery UX and VSL multichannel proof.
 
-Late changes can force migration/rework of Gateway offers, guard/prior-placement persistence, reward keys, event definitions, presence/client UX, telemetry, support and E2E.
+Late changes can force migration/rework of Gateway offers, guard persistence, control-plane lifecycle, reward keys/event definitions, presence/client UX, telemetry, support and E2E.
 
-Supersession requires named playtest/channel-friction, economy, PvP abuse, availability/recovery, privacy/security, PERF/OPS or explicit product-strategy evidence.
+Supersession requires named product/playtest, economy, PvP abuse, availability/recovery, privacy/security, PERF/OPS or explicit product-strategy evidence.
 
-## 42. Deliberately deferred
+## 36. Deliberately deferred
 
 - numeric switch cooldown;
 - queue limits/timeouts/priority;
+- demand/load windows and percentages;
 - min/max public Channel count;
 - capacity/autoscaling thresholds;
+- scaling/drain hysteresis/cooldowns;
 - orchestrator/service topology;
 - exact client UI;
 - complete presence visibility matrix;
-- exact PvP/boss/reward/spawn/loot formulas;
+- exact PvP/boss/reward/spawn/loot/economy formulas;
 - market/trade/bank/depot/mail rules;
 - physical DB/control-plane schema;
 - concrete ANL/protocol IDs;
 - production admin exception implementation;
 - Premium/VIP/commerce or paid queue priority.
 
-## 43. Acceptance consequence
+## 37. Acceptance consequence
 
-Only after exact-head self-review, required independent review, exact-head documentation/governance CI, clean threads/ownership, unchanged squash merge of #209 and separate lifecycle closeout may programme state become:
+Only after exact-head self-review, required independent review, exact-head documentation/governance CI, clean review/ownership, unchanged squash merge of #209 and separate lifecycle closeout may programme state become:
 
 ```text
 GAME-CHANNEL-01
@@ -601,4 +599,4 @@ DDL/migration authority  = NONE
 production authority     = NONE
 ```
 
-Architecture acceptance does not authorize multichannel runtime, Gateway queue/recommendation, switch persistence, client UI, autoscaling, PvP/reward implementation or production activation.
+Architecture acceptance does not authorize multichannel runtime, Gateway queue/recommendation, switch persistence, dynamic scaling implementation, client UI, PvP/reward implementation or production activation.
