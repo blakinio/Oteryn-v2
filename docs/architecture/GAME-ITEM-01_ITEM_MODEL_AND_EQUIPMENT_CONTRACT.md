@@ -251,7 +251,7 @@ The transaction that moves an item into/out of equipment remains DUR-03-owned.
 Equipment requirements consume authoritative typed inputs only, including where applicable:
 
 - Character progression/build/vocation/profile facts owned by GAME-CHAR/ruleset contracts;
-- explicit entitlement inputs owned by the accepted Platform/game entitlement boundary;
+- Platform-owned entitlement facts only through a separately accepted Oteryn-v2 consumer/enforcement contract; GAME-ITEM-01 does not accept or activate `PROD-ENTITLEMENTS-01`;
 - item capability/state;
 - world/profile/ruleset capability state.
 
@@ -476,7 +476,7 @@ High-cardinality ItemInstanceId remains prohibited as an ordinary metrics label 
 
 The accepted first Reference cut is unchanged: Global Tibia production-observable behavior after the 2026-07-28 server-save/maintenance boundary.
 
-This contract intentionally accepts **representation capability without inventing exact target mechanics**.
+This contract intentionally defines **representation capability without inventing exact target mechanics**.
 
 For every exercised Reference item behavior, release/implementation evidence must classify it as:
 
