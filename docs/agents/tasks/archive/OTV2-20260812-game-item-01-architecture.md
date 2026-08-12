@@ -125,6 +125,19 @@ Independent Codex P1 `3765563501` remained applicable: the contract said accepte
 
 P2 `3765563506` (unsupported `reviewing` task status) had already been fixed by the blocker checkpoint. The resumed record used valid status `validating`.
 
+## Superseded validation history
+
+The following evidence was valid for its exact head when recorded but became non-terminal after later material repairs. It is retained for complete task provenance and must not be read as final readiness evidence.
+
+### Pre-owner-authorization head `f0d62331d71deedcb2b9a3b1fe0a1a32578200ed`
+
+- implementing-agent exact-head self-review `4915520214`: **PASS** for the then-known content;
+- Agent Governance `31587838775`: **success**;
+- Dependency Review `31587838756`: **success**;
+- CodeQL `31587838750`: **success**.
+
+These results were superseded when the owner-authorized lifecycle-unblock repair moved the delivery head. They did not satisfy terminal delivery readiness after that change and are recorded only as historical validation evidence.
+
 ## Terminal delivery validation
 
 Frozen delivery head: `53d0189a114c99b4e7d44ca8d0db7a6bf5f3ea1a`.
