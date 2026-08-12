@@ -17,56 +17,113 @@ lifecycle_closeout_pr: 206
 owner: released_after_closeout
 created_at: 2026-08-12T11:37:00+02:00
 completed_at: 2026-08-12T13:28:06+02:00
+execution_budget_minutes: 60
+large_budget_reason: null
+repair_budget_extension: USER_SOURCE-2026-08-12-one-additional-cycle
 implementation_status: NOT_STARTED
 runtime_authority: NONE
 postgresql_ddl_migration_authority: NONE
-repair_budget_extension: USER_SOURCE-2026-08-12-one-additional-cycle
+owned_paths:
+  - docs/agents/tasks/archive/OTV2-20260812-game-item-01-architecture.md
+  - docs/architecture/GAME-ITEM-01_ITEM_MODEL_AND_EQUIPMENT_ANALYSIS.md
+  - docs/architecture/GAME-ITEM-01_ITEM_MODEL_AND_EQUIPMENT_CONTRACT.md
 public_contracts:
   - GAME-ITEM-01
-next_gate_after_closeout:
+depends_on:
+  - GAME-VISION-01
+  - DUR-01
+  - DUR-02
+  - ANL-01
+  - ADR-0005
+blocks:
   - DUR-03
+cross_repository_coordination_id: OTV2-GLOBAL-ARCHITECTURE
+external_repositories: []
 ```
 
 ## Outcome
 
-Delivered the paper-only `GAME-ITEM-01` item-model and equipment semantic contract through PR #205. The accepted delivery defines the native item semantic object that later `DUR-03` transaction/conservation architecture must preserve, without implementing runtime, client, SQL, migrations or production behavior.
+Delivered one bounded, paper-only `GAME-ITEM-01` architecture package defining native item semantics, equipment/container legality and item-definition compatibility. Delivery PR #205 is merged; lifecycle closeout PR #206 promotes the canonical maintained status and releases GAME-ITEM path ownership only after its own merge.
 
-Canonical design:
+No runtime, PostgreSQL DDL/migration, entitlement activation or production authority was granted.
+
+## Owner repair-budget extension
+
+The repository default is `max_repair_cycles_per_gate: 3`. Four material repair cycles had already occurred and the task correctly stopped `blocked` at commit `8b2fa27003202351e93e86dc20ff9c10418f4378`.
+
+On 2026-08-12 the owner explicitly replied `wykonaj` to the requested authorization for **one additional GAME-ITEM-01 repair cycle**. This is `USER_SOURCE` authority for exactly one further material cycle. It did not waive any other governance, review, CI, merge, production or cross-repository rule.
+
+The authorized additional cycle was used only to repair independent-review P1 `3765563501` and resume validation. No further material GAME-ITEM delivery repair cycle was authorized by that instruction.
+
+## Binding sources and boundaries
+
+- `GAME-VISION-01_FIRST_REFERENCE_BASELINE_OWNER_BASELINE.md`: first Reference target is production-observable Global Tibia after the 2026-07-28 server-save/maintenance boundary; unresolved exact behavior stays fail-closed.
+- ADR-0005: stable namespaced content identity is canonical; compact numeric IDs are revision-scoped mappings.
+- DUR-01: `ItemInstanceId` is strongly typed UUIDv7; DUR-03 owns split/merge/transform/create/destroy identity transitions.
+- DUR-02: common persistence/transaction substrate only; item/currency/value conservation remains downstream.
+- ANL-01: event/audit identity and durable evidence; analytics is never gameplay authority.
+- `PROD-ENTITLEMENTS-01` remains `PROPOSED / PLANNED / NOT_STARTED`; GAME-ITEM may consume Platform-owned entitlement facts only through a separately accepted Oteryn-v2 consumer/enforcement contract.
+
+## Accepted design
+
+The accepted contract selects typed capability composition over stable ItemType definitions and separates:
 
 ```text
-ItemType
--> stable namespaced immutable/versioned authored semantic definition
-
-ItemInstance
--> one concrete mutable lifecycle using DUR-01 ItemInstanceId
-
-StaticItemPlacement
--> authored world placement; not automatically a durable ItemInstance
+ItemType            -> immutable/versioned authored semantic definition
+ItemInstance        -> concrete mutable lifecycle with DUR-01 ItemInstanceId
+StaticItemPlacement -> authored world placement, not automatically a durable instance
 ```
 
-Typed capability composition is accepted for stack quantity, charges, durability, temporal/decay state, equipment, containers, binding/restrictions and upgrade/modifier state. Arbitrary authoritative JSON/EAV/free-form script state is rejected.
+It defines typed stack, charge, durability, temporal/decay, equipment, container, binding/restriction and upgrade/modifier capability state; rejects authoritative JSON/EAV/free-form script escape hatches; defines server-authoritative atomic equipment occupancy; requires bounded acyclic containment; and requires explicit definition compatibility/migration rather than silent reinterpretation.
 
-Equipment legality is server-authoritative and uses atomic occupancy claims. Container legality is bounded and acyclic. Definition revisions require explicit compatibility classification/migration and may not silently reinterpret persisted state.
+DUR-03 retains atomic location, idempotency, retry/crash handling, stale-writer rejection, item/currency/value conservation and identity-transition rules.
 
-Exact first-Reference item values/formulas/mechanics not established by accepted evidence remain `PARITY_PENDING_EVIDENCE`; no OTS implementation is Reference proof.
+## Acceptance criteria
 
-## Preserved ownership boundaries
-
-- DUR-01 retains durable `ItemInstanceId` representation and non-reuse.
-- DUR-03 retains create/destroy/split/merge/transform identity transitions, atomic location, idempotency/retry/crash behavior and item/currency/value conservation/anti-duplication.
-- DUR-02 retains common persistence/transaction substrate only.
-- DUR-04 retains concrete content schema/bundle/compiler/scripting choices.
-- SIM/ruleset owners retain exact numeric formulas and rounding.
-- ANL-01 retains event/audit identity and durable evidence semantics.
-- `PROD-ENTITLEMENTS-01` remains separately gated; GAME-ITEM does not activate entitlement consumption.
+- [x] Definition/instance/static-placement boundary frozen.
+- [x] Typed bounded capability model with no generic authoritative data escape hatch.
+- [x] Server-authoritative equipment occupancy and typed requirements.
+- [x] Deterministic item-modifier contribution ordering requirement without capturing SIM formulas.
+- [x] Bounded acyclic container legality while leaving atomic moves to DUR-03.
+- [x] Explicit item-definition compatibility and migration classes.
+- [x] World/binding/location/authorization concepts remain distinct.
+- [x] Item versus non-item currency/value distinction.
+- [x] Reference-sensitive exact behavior remains `PARITY_PENDING_EVIDENCE` unless separately proven.
+- [x] Maintained programme/status/register/horizon/index overlays stayed live-main while delivery candidate PR #205 was open.
+- [x] `PROD-ENTITLEMENTS-01` consumer/enforcement remains separately gated.
+- [x] Independent-review P1 `3765563501` repaired: DUR-03 becomes eligible only after GAME-ITEM accepted merge **and** lifecycle closeout.
+- [x] Task used repository-supported status vocabulary.
+- [x] Owner explicitly authorized one additional repair cycle beyond the default budget.
+- [x] Terminal exact-head self-review PASS on final delivery head.
+- [x] Independent exact-head review completed with zero suggestions/material findings.
+- [x] Required exact-head CI PASS.
+- [x] Zero unresolved material review threads before delivery merge.
+- [x] PR #205 squash-merged unchanged from frozen exact head.
+- [ ] PR #206 lifecycle closeout promotes canonical overlays, archives this task and releases ownership; this item becomes true only when #206 merges.
 
 ## Repair history
 
-1. **Status-overlay evidence typo** — transient historical DUR-01 SHA typo detected/corrected; maintained overlay later restored exactly to live main before delivery.
-2. **PR metadata / CI recovery** — original Agent Governance metadata failure was corrected. A subsequent task-only commit used only to retrigger CI was a process violation identified by Codex P2 `3765519022`; recorded and not repeated.
-3. **Premature acceptance/unblocking** — Codex P1 `3765519016` found GAME-ITEM marked accepted and DUR-03 unblocked before delivery merge. Maintained status/register/horizon/index files were restored to live-main state; PR #205 narrowed to task + analysis + candidate contract.
-4. **Entitlement consumer boundary** — wording was corrected at `f0d62331d71deedcb2b9a3b1fe0a1a32578200ed` so Platform-owned entitlement facts require a separately accepted Oteryn-v2 consumer/enforcement contract.
-5. **Owner-authorized additional lifecycle repair** — after the repository default repair budget was exhausted, the owner explicitly authorized one additional GAME-ITEM repair cycle (`wykonaj`). The final repair made DUR-03 remain blocked until **both** delivery merge and lifecycle closeout and restored task status to the supported `validating` vocabulary.
+### Cycle 1 — status-overlay evidence typo
+
+A transient historical DUR-01 SHA typo was detected and corrected; the status overlay was later restored bit-for-bit to live `main`, so it was not in the delivery diff.
+
+### Cycle 2 — PR metadata governance / invalid CI recovery
+
+Agent Governance `31586112278` correctly failed the original PR title/body metadata. Metadata was repaired. A task-only commit was then incorrectly used solely to retrigger CI; Codex P2 `3765519022` correctly identified the process violation. It is recorded and was not repeated.
+
+### Cycle 3 — premature acceptance/unblocking overlays
+
+Codex P1 `3765519016` correctly identified pre-merge `ACCEPTED`/DUR-03-unblocked status in maintained overlays. All four maintained overlay/index files were restored to exact live-main blobs. PR #205 was narrowed to task + analysis + candidate contract.
+
+### Cycle 4 — entitlement consumer boundary self-audit
+
+Commit `f0d62331d71deedcb2b9a3b1fe0a1a32578200ed` removed wording that could imply an accepted Oteryn-v2 entitlement consumer and replaced pre-acceptance `accepts representation capability` wording with `defines representation capability`.
+
+### Owner-authorized additional cycle — lifecycle-unblock repair
+
+Independent Codex P1 `3765563501` remained applicable: the contract said accepted merge alone unblocked DUR-03 although lifecycle policy required accepted merge + closeout. Owner explicitly authorized one additional repair cycle. Commit `746f2a3e61632a1ff86da350c460a24887acc183` repaired the contract so DUR-03 remained blocked through the post-merge/pre-closeout interval.
+
+P2 `3765563506` (unsupported `reviewing` task status) had already been fixed by the blocker checkpoint. The resumed record used valid status `validating`.
 
 ## Terminal delivery validation
 
@@ -84,23 +141,24 @@ Frozen delivery head: `53d0189a114c99b4e7d44ca8d0db7a6bf5f3ea1a`.
 
 PR #205 was squash-merged unchanged from the frozen head as `5c502d24557621efc798def87b68f137ba23fad8`.
 
-## Lifecycle closeout consequence
+## PR and closeout discipline
 
-This archive becomes terminal and GAME-ITEM path ownership releases only when closeout PR #206 merges. That closeout atomically:
+Closeout PR #206 is status/coordination-only. It may not change accepted GAME-ITEM semantics. It must:
 
-1. promotes GAME-ITEM-01 to `ACCEPTED / LIFECYCLE_CLOSED / NOT_STARTED` in maintained status/register/horizon/index sources;
-2. exposes `DUR-03` as the next eligible **paper-only** architecture gate while leaving `DUR-03 = PROPOSED / PLANNED / NOT_STARTED`;
-3. keeps all item runtime/client/DDL/migration/production authority unauthorized;
-4. preserves the unaccepted `PROD-ENTITLEMENTS-01` consumer/enforcement gate;
-5. refreshes the canonical programme/handoff next action to DUR-03;
-6. releases GAME-ITEM path ownership after merge.
+1. complete active -> archive movement and retain this full task/evidence history;
+2. promote GAME-ITEM-01 to `ACCEPTED / LIFECYCLE_CLOSED / NOT_STARTED` in maintained status/register/horizon/index sources;
+3. expose DUR-03 as the next eligible **paper-only** architecture gate while leaving DUR-03 `PROPOSED / PLANNED / NOT_STARTED`;
+4. preserve runtime/DDL/production authority as `NONE`/unauthorized;
+5. preserve `PROD-ENTITLEMENTS-01` as separately unaccepted;
+6. refresh the non-owning programme checkpoint and successor handoff;
+7. release GAME-ITEM ownership only after closeout merge.
 
-No closeout merge SHA is recorded before it exists.
+No closeout merge SHA or self-referential final head is invented before it exists.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: GAME-ITEM-01 delivery PR #205 passed exact-head self-review, independent Codex no-suggestion review and all required exact-head CI, then squash-merged unchanged as 5c502d24557621efc798def87b68f137ba23fad8; lifecycle closeout is PR #206.
+last_progress: GAME-ITEM-01 delivery PR #205 passed exact-head self-review, independent Codex no-suggestion review and all required exact-head CI and squash-merged unchanged as 5c502d24557621efc798def87b68f137ba23fad8; lifecycle closeout is PR #206.
 status: completed
 delivery_pr: 205
 final_head_sha: 53d0189a114c99b4e7d44ca8d0db7a6bf5f3ea1a
