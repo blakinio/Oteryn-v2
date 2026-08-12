@@ -12,7 +12,7 @@ delivery_pr: 203
 base_sha: 22b64e1b20cf2220828f5a3d47b30df29f9a60b6
 final_head_sha: 67915ee1bf87e517221c3cf3896cccbb881a1a65
 delivery_merge_sha: e61502e4037ce962e10974f2f60fed122d548773
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 204
 owner: released_after_closeout
 created_at: 2026-08-12T10:20:00+02:00
 completed_at: 2026-08-12T10:35:00+02:00
@@ -122,7 +122,7 @@ For `67915ee1bf87e517221c3cf3896cccbb881a1a65`:
 ## Lifecycle closeout
 
 - closeout branch: `docs/OTV2-20260812-foundation-handoff-refresh-closeout`;
-- closeout PR: pending;
+- closeout PR: #204;
 - closeout changes: active -> archive plus immutable PR #203 validation evidence in the handoff report only;
 - semantic/authority changes permitted: none;
 - owner release: effective after closeout merge.
@@ -134,7 +134,7 @@ status: completed
 delivery_pr: 203
 final_head_sha: 67915ee1bf87e517221c3cf3896cccbb881a1a65
 delivery_merge_sha: e61502e4037ce962e10974f2f60fed122d548773
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 204
 last_progress: Successor handoff, non-owning programme checkpoint and continuation prompt were refreshed and merged with exact-head self-review and CI PASS.
 validation_state: PASS
 audit_state: self-review PASS; independent review NOT_REQUIRED
