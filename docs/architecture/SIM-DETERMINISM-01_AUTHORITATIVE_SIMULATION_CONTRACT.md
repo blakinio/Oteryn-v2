@@ -10,19 +10,19 @@
 
 ## 1. Purpose
 
-This contract defines the deterministic execution semantics required before broad authoritative combat, AI, progression and formula implementation.
+This contract defines deterministic execution semantics required before broad authoritative combat, AI, progression and formula implementation.
 
-It refines FND-03 runtime ordering/RNG/replay requirements and composes with DUR-04 script determinism. It MUST NOT replace FND-03 authority/order, DUR-03 exact value conservation, or ruleset/content ownership of actual gameplay formulas.
+It refines FND-03 runtime ordering/RNG/replay requirements and composes with DUR-04 script determinism. It MUST NOT replace FND-03 authority/order, DUR-03 exact value conservation or ruleset/content ownership of actual gameplay formulas.
 
 ## 2. Core reproducibility invariant
 
-For one semantic runtime scope, the implementation MUST satisfy:
+For one semantic runtime scope:
 
 ```text
 same canonical authoritative starting state
 + same ownership-generation/order evidence
 + same ordered normalized authoritative inputs
-+ same content/ruleset/world-policy revisions
++ same exact semantic revision set bound to those inputs
 + same SimulationDeterminismProfileRevision
 + same applicable script artifact/WIT/execution profiles
 + same normalized external authoritative facts
@@ -33,7 +33,7 @@ Thread IDs, CPU count, worker placement, OS scheduling, socket wake-up timing an
 
 ## 3. FND-03 authority remains binding
 
-`RuntimeExecutionOrdinal` remains owner-local to `(semantic scope, ownership generation)` and is the authoritative runtime input-linearization evidence.
+`RuntimeExecutionOrdinal` remains owner-local to `(semantic scope, ownership generation)` and remains the authoritative runtime input-linearization evidence.
 
 SIM MUST NOT create a second runtime commit counter or global total order.
 
@@ -47,7 +47,7 @@ Every authoritative simulation execution MUST bind one immutable/versioned:
 SimulationDeterminismProfileRevision
 ```
 
-The profile MUST identify all cross-cutting deterministic semantics that can alter normalized authoritative outcome, including:
+The profile MUST identify cross-cutting deterministic semantics that can alter normalized authoritative outcome, including:
 
 - numeric semantic-class policy;
 - checked overflow/invalid-number defaults;
@@ -56,34 +56,49 @@ The profile MUST identify all cross-cutting deterministic semantics that can alt
 - RNG decision/consumption semantics;
 - SIM-owned tie-break/canonical-order profiles;
 - canonical state-hash serialization/profile;
-- supported authoritative target policy;
+- supported authoritative-target policy;
 - compatibility with applicable DUR-04 `script_execution_profile_revision`.
 
 An implementation MUST NOT change those semantics under an unchanged profile revision.
 
 The SIM profile MUST NOT replace `ruleset_revision`, `content_revision`, `world_policy_revision` or DUR-04 script execution profile identity.
 
-## 5. Numeric semantic classes
+## 5. Semantic revision binding
+
+Every accepted authoritative occurrence that can outlive immediate synchronous resolution or be retried MUST bind the exact behavior-affecting semantic revision set needed to reproduce it, including as applicable:
+
+- ruleset/formula revision;
+- content revision;
+- world-policy revision;
+- `SimulationDeterminismProfileRevision`;
+- script artifact/WIT/`script_execution_profile_revision`.
+
+A physical retry, reconnect, failover or delayed completion MUST NOT silently re-evaluate the same logical occurrence under a newer incompatible revision merely because activation advanced in the meantime.
+
+The owning domain MUST either:
+
+1. complete/replay the occurrence under its originally bound compatible semantics; or
+2. fail/reconcile through an explicit version-transition policy.
+
+It MUST NOT simply reroll/recalculate the same occurrence under the new revision.
+
+## 6. Numeric semantic classes
 
 Every authoritative numeric field/formula MUST declare a semantic class.
 
-### 5.1 Exact discrete
+### 6.1 Exact discrete
 
-Identifiers, counts, ordinals, quantities and intrinsically discrete values MUST use exact checked integer semantics.
+Identifiers, counts, ordinals, quantities and intrinsically discrete values MUST use exact checked integer semantics. Implicit overflow wrapping is forbidden.
 
-Implicit overflow wrapping is forbidden.
-
-### 5.2 Exact conservation/value
+### 6.2 Exact conservation/value
 
 DUR-03 item/currency/value conservation quantities MUST remain exact. Binary floating point and tolerance comparison MUST NOT be authoritative conservation arithmetic.
 
-### 5.3 Formula exact/fixed-scale
+### 6.3 Formula exact/fixed-scale
 
-Rates, coefficients, percentages and formula intermediates SHOULD use explicit integer/fixed-scale/rational semantics where the accepted behavior allows it.
+Rates, coefficients, percentages and formula intermediates SHOULD use explicit integer/fixed-scale/rational semantics where accepted behavior allows it. No one global scale is required; scale/denominator is formula/profile-owned.
 
-No one global fixed scale is required; scale/denominator is formula/profile-owned.
-
-### 5.4 Deterministic floating
+### 6.4 Deterministic floating
 
 Authoritative binary floating point MAY be used only when explicitly declared by the owning formula/profile and cross-target evidence proves identical normalized authoritative outcome.
 
@@ -91,11 +106,11 @@ The profile MUST define finite-input rules, NaN/infinity handling, conversion/se
 
 Platform-dependent NaN payloads, reassociation-sensitive parallel reductions or tolerance-only branches MUST NOT decide authoritative gameplay.
 
-### 5.5 Non-authoritative approximate
+### 6.5 Non-authoritative approximate
 
-Renderer/UI/telemetry/analytics MAY use approximate floating values where those values cannot feed back into authoritative gameplay. Re-entry into authority requires validated conversion to an authoritative semantic class.
+Renderer/UI/telemetry/analytics MAY use approximate floating values where they cannot feed back into authoritative gameplay. Re-entry into authority requires validated conversion to an authoritative semantic class.
 
-## 6. Formula semantics descriptor
+## 7. Formula semantics descriptor
 
 Every authoritative formula family affecting combat, progression, item modifiers, eligibility or other gameplay state MUST have a versioned descriptor/equivalent defining at least:
 
@@ -112,15 +127,9 @@ Every authoritative formula family affecting combat, progression, item modifiers
 
 An unchanged formula/ruleset/SIM revision MUST NOT silently change arithmetic semantics.
 
-## 7. Rounding
+## 8. Rounding and invalid numeric state
 
-Rounding MUST occur only at explicit semantic boundaries declared by the formula profile.
-
-Rounding modes MUST be named/versioned rather than inherited from language/library defaults.
-
-No rounding rule is assumed to match the Reference target without evidence.
-
-## 8. Invalid numeric state
+Rounding MUST occur only at explicit semantic boundaries declared by the formula profile. Rounding modes MUST be named/versioned rather than inherited from language/library defaults.
 
 Unless an explicitly accepted formula says otherwise:
 
@@ -132,6 +141,8 @@ Unless an explicitly accepted formula says otherwise:
 
 Debug/release or supported-target build mode MUST NOT change the result/disposition.
 
+No rounding rule is assumed to match the Reference target without evidence.
+
 ## 9. Randomness classes
 
 The implementation MUST separate:
@@ -140,23 +151,25 @@ The implementation MUST separate:
 - authoritative gameplay randomness — deterministic/replayable under SIM;
 - presentation randomness — non-authoritative.
 
-Gameplay RNG MUST NOT generate credentials/secrets.
+Gameplay RNG MUST NOT generate credentials/secrets. A process-global mutable gameplay RNG stream is forbidden.
 
-A process-global mutable gameplay RNG stream is forbidden.
-
-## 10. RNG semantic ownership
+## 10. RNG semantic ownership and seed protection
 
 Every authoritative random decision MUST belong to a named semantic scope/domain and stable purpose identity.
 
 RNG identity MUST NOT depend on NodeId, OS thread, worker identity, pointer address, source-code line number or unordered-container position.
 
-The current runtime owner is authorized to consume/resolve RNG decisions; changing process placement MUST NOT reseed gameplay semantics.
+Changing process placement MUST NOT reseed gameplay semantics.
+
+Server-controlled gameplay seed/root state MAY be deterministic and durable/replayable while still being security-sensitive. For exploit-sensitive decisions, seed/derivation MUST NOT be based only on public client-known values unless the owning product/security contract explicitly accepts predictability.
+
+If secrecy is required to prevent loot/spawn/combat prediction, seed/root/substream evidence MUST be access-controlled and MUST NOT be exposed to clients or ordinary telemetry. Replay retention of such evidence follows security/privacy policy.
 
 ## 11. Purpose isolation
 
 Unrelated mechanics MUST NOT share accidental draw-order coupling.
 
-Every random decision MUST have a stable purpose/effect path equivalent to a versioned `RngPurposeKey`.
+Every random decision MUST have a stable purpose/effect path equivalent to a versioned `RngPurposeKey`/semantic purpose identity.
 
 An added unrelated draw in one purpose MUST NOT silently perturb another purpose's future authoritative sequence.
 
@@ -169,9 +182,11 @@ The chosen RNG algorithm/profile/parameters/stream derivation MUST be immutable 
 
 ## 12. Retry-stable random decisions
 
-The same idempotently retried logical authoritative occurrence MUST NOT receive a new random outcome merely because physical execution was retried or runtime ownership moved.
+The same idempotently retried logical authoritative occurrence MUST NOT receive a new random outcome merely because physical execution was retried, runtime ownership moved or a newer content/ruleset/SIM revision became active.
 
 Random decision identity MUST derive from stable owning semantic identity such as CommandRef, OperationId/TransactionId, stable timer/event occurrence identity or another accepted parent occurrence plus stable purpose path.
+
+The random decision MUST use the semantic revision set bound under section 5 for that logical occurrence.
 
 Transient RuntimeExecutionOrdinal/generation MAY be retained as order evidence but MUST NOT alone force a new random result for the same retry-safe semantic occurrence.
 
@@ -184,6 +199,7 @@ Therefore:
 - work rejected before authoritative acceptance consumes no gameplay RNG;
 - speculative workers consume no owner RNG state;
 - abort/retry cannot advance one logical occurrence twice;
+- if the owning resolution aborts before authoritative commit, tentative RNG advancement MUST NOT survive independently;
 - committed advancement is checkpoint/replay state;
 - draw count/order is deterministic for the purpose stream.
 
@@ -193,9 +209,9 @@ DUR-04 remains authoritative for guest execution behavior under `script_executio
 
 SIM owns how an authoritative script invocation receives stable semantic random-decision/seed identity and how its proposal enters core FND-03 execution order.
 
-Scripts MUST NOT receive a mutable core/process-global RNG handle.
+Scripts MUST NOT receive a mutable core/process-global RNG handle. Script rejection/retry MUST NOT perturb unrelated core RNG sequences.
 
-Script rejection/retry MUST NOT perturb unrelated core RNG sequences.
+A retried script-backed logical occurrence MUST remain bound to the same compatible SIM/content/ruleset/script semantic revision set or use an explicit transition/reconciliation policy.
 
 ## 15. Time semantics
 
@@ -207,7 +223,7 @@ wall clock != monotonic elapsed time != authoritative execution order
 
 No universal fixed global tick is required.
 
-An authoritative formula that consumes time MUST receive an explicit normalized semantic time value with declared unit/precision/counting semantics. Direct system-clock reads are forbidden as hidden formula inputs.
+An authoritative formula consuming time MUST receive an explicit normalized semantic time value with declared unit/precision/counting semantics. Direct system-clock reads are forbidden as hidden formula inputs.
 
 Replay MUST use recorded/injected normalized time/calendar facts, never the replayer's current clock.
 
@@ -215,7 +231,7 @@ Replay MUST use recorded/injected normalized time/calendar facts, never the repl
 
 For semantically simultaneous inputs, the owning domain MUST define one of:
 
-1. commutative/set semantics that make order irrelevant;
+1. commutative/set semantics making order irrelevant;
 2. stable deterministic tie-break key;
 3. FND-03 accepted RuntimeExecutionOrdinal order retained in replay evidence.
 
@@ -237,13 +253,17 @@ If concurrently eligible results can produce different gameplay outcomes, the ow
 
 Worker wake-up order MUST NOT be gameplay authority.
 
+A delayed result whose bound semantic revision is no longer compatible MUST fail/reconcile explicitly rather than being reinterpreted by current code/config.
+
 ## 19. External nondeterminism
 
-Any external fact that affects authoritative gameplay MUST be normalized into a typed authoritative input/fact before use.
+Any external fact affecting authoritative gameplay MUST be normalized into a typed authoritative input/fact before use.
 
 Replay MUST retain the accepted behavior-affecting value, identity and revision needed to reconstruct behavior, subject to privacy/security rules.
 
 Runtime replay MUST NOT requery mutable external systems to rediscover historical gameplay facts.
+
+Collections returned by an external source MUST be canonicalized to a defined semantic order before authority or have the exact accepted order retained as replay evidence where order is itself meaningful.
 
 Secrets/reusable credentials/security randomness MUST NOT be stored merely to satisfy replay.
 
@@ -256,6 +276,7 @@ A deterministic replay interval MUST identify at least:
 - initial canonical state/checkpoint reference + hash;
 - ordered normalized inputs and RuntimeExecutionOrdinal evidence;
 - applicable CommandRef/OperationId/TransactionId/timer/event/work identities;
+- the exact semantic revision set bound to each long-lived/retryable occurrence where it differs from the interval default;
 - content/ruleset/world-policy revisions;
 - active `SimulationDeterminismProfileRevision`;
 - applicable formula profile revisions;
@@ -265,7 +286,7 @@ A deterministic replay interval MUST identify at least:
 - relevant state-domain revisions;
 - expected canonical state/result hashes at selected cuts.
 
-Replay MUST NOT require original thread IDs, CPU count, NodeId placement or wall-clock scheduling jitter except where NodeId itself is an explicitly replayed semantic external fact (normally it is not).
+Replay MUST NOT require original thread IDs, CPU count, NodeId placement or wall-clock scheduling jitter.
 
 ## 21. Replay is not authority
 
@@ -285,35 +306,29 @@ scope cut
  -> aggregate/entity/component hashes
 ```
 
-This supports first-divergence localization.
-
 Concrete hash algorithm/canonicalization belongs to the SIM profile implementation artifact and MUST NOT silently change under one profile revision.
 
 State hashes are evidence, not gameplay authority.
 
-## 23. Hash cadence
+## 23. Hash cadence and divergence evidence
 
 This contract does not require production hashing after every input.
 
 Test/replay profiles MAY hash every ordinal; production/soak MAY hash checkpoint/domain cuts; incident tooling MAY increase detail on demand.
 
-Cadence, retention and storage remain bounded QA/ANL/PERF choices.
-
-## 24. Divergence evidence
-
 A deterministic comparison MUST be able to identify at least:
 
 - first mismatching RuntimeExecutionOrdinal/checkpoint cut;
 - normalized input identity/type;
-- active revision/profile set;
+- active semantic revision/profile set;
 - first mismatching domain/component semantic hash path;
 - relevant RNG decision/stream evidence;
 - formula descriptor/rounding boundary;
 - script artifact/execution profile when applicable.
 
-Divergence evidence MUST NOT autonomously repair state.
+Cadence, retention and storage remain bounded QA/ANL/PERF choices. Divergence evidence MUST NOT autonomously repair state.
 
-## 25. Supported authoritative targets
+## 24. Supported authoritative targets
 
 For the same replay envelope, every supported authoritative server target MUST produce the same normalized authoritative outcome.
 
@@ -323,9 +338,9 @@ Authoritative floating implementations are acceptable only if cross-target fixtu
 
 A target unable to satisfy the current SIM profile MUST fail compatibility/readiness rather than silently diverge.
 
-Client prediction/rendering is not authoritative and is not required to match every server intermediate bit pattern; reconciliation remains the trust boundary.
+Client prediction/rendering is non-authoritative and need not match every server intermediate bit pattern; reconciliation remains the trust boundary.
 
-## 26. Formula/ruleset compatibility
+## 25. Formula/ruleset compatibility
 
 Formula/ruleset content MUST declare compatibility with required SIM profile capabilities/revisions.
 
@@ -336,9 +351,9 @@ Activation MUST fail closed if:
 - claimed Reference behavior is still `UNKNOWN/CONFLICT` for the exercised path;
 - required cross-target deterministic evidence is missing.
 
-A newer SIM profile MUST NOT silently reinterpret old replay/content/ruleset revisions.
+A newer SIM profile MUST NOT silently reinterpret old replay/content/ruleset revisions or pending retryable occurrences bound to older compatible semantics.
 
-## 27. Failure semantics
+## 26. Failure semantics
 
 On numeric/RNG/determinism invariant failure:
 
@@ -350,29 +365,23 @@ On numeric/RNG/determinism invariant failure:
 
 Process recovery MUST NOT reseed gameplay randomness from current wall clock/entropy merely because NodeId/ownership generation changed.
 
-## 28. Resource bounds
+## 27. Resource bounds
 
-Before implementation acceptance, Resource Limits Registry/equivalent owning limits MUST cover applicable replay/state-hash/RNG/formula resources, including:
-
-- replay interval input count/bytes;
-- checkpoint/replay bytes;
-- RNG purpose/substream count/state;
-- authored formula expression/depth/operation count if such formulas exist;
-- state-hash component/work/bytes;
-- divergence evidence bytes;
-- deterministic replay/test work budget.
+Before implementation acceptance, Resource Limits Registry/equivalent owning limits MUST cover applicable replay/state-hash/RNG/formula resources, including replay input/bytes, checkpoint/replay bytes, RNG purpose/substream state, authored formula expression/depth/operations where applicable, state-hash work/bytes, divergence evidence and deterministic replay/test work budget.
 
 Missing required limits block implementation; they do not mean unlimited.
 
-## 29. Security/privacy
+## 28. Security/privacy
 
-Gameplay RNG seed/state MUST NOT be exposed to clients when doing so enables prediction/abuse.
+Gameplay RNG seed/root/substream state MUST NOT be exposed to clients where prediction enables abuse.
+
+A deterministic scheme that is trivially derivable from public identifiers/timestamps is unacceptable for exploit-sensitive decisions unless an explicit product/security contract chooses public predictability.
 
 Replay/divergence artifacts are potentially sensitive player/world/security evidence and MUST use ANL/privacy access/retention/export controls.
 
 Determinism MUST NOT require retention of reusable credentials, secret keys or raw security RNG.
 
-## 30. Architecture decision timing
+## 29. Architecture decision timing
 
 The numeric/RNG/order/replay semantic boundary MUST be accepted before broad combat/AI/progression formula implementation.
 
@@ -380,7 +389,7 @@ Concrete Rust libraries, exact gameplay RNG algorithm, per-formula fixed scale, 
 
 A later explicit contract may supersede a SIM rule only with named evidence such as Reference behavior, cross-target divergence, replay/fault evidence, representative deterministic-profile performance evidence, security findings or changed product requirements.
 
-## 31. Required implementation evidence
+## 30. Required implementation evidence
 
 A future implementation MUST prove at least:
 
@@ -388,36 +397,28 @@ A future implementation MUST prove at least:
 2. exact arithmetic overflow/divide-by-zero/out-of-range fixtures fail identically across build modes/targets;
 3. each formula's named rounding points/modes match fixtures;
 4. changing an unrelated RNG purpose draw does not perturb another purpose's sequence;
-5. retry/failover of the same logical occurrence preserves its random decision;
-6. rejected/speculative work does not advance owner RNG state;
-7. stateful stream advancement survives checkpoint/recovery exactly once;
-8. process restart does not wall-clock-reseed gameplay RNG;
-9. equal-deadline/simultaneous deterministic tie-break fixtures are stable where the domain defines one;
-10. recorded cross-source order replays concurrency-sensitive result even with different test thread scheduling;
-11. stale worker/service results are rejected and cannot reorder authority;
-12. replay uses captured external facts rather than current external-system responses;
-13. hierarchical hashes localize a seeded divergence to the first mismatching domain/component cut;
-14. authoritative floating fixture, where allowed, normalizes identically across supported targets;
-15. incompatible SIM/formula/script execution profile activation fails closed;
-16. script proposal replay with the same SIM + DUR-04 execution profiles produces the same normalized accepted/rejected result;
-17. replay tooling cannot mutate live authority;
-18. required replay/hash/RNG/formula limits have explicit boundary tests.
+5. retry/failover of the same logical occurrence preserves its random decision and originally bound compatible semantic revision set;
+6. activation of a newer revision while an occurrence is pending cannot silently cause that occurrence to be recalculated under new semantics;
+7. rejected/speculative work does not advance owner RNG state;
+8. stateful stream advancement aborts with a failed resolution and survives committed checkpoint/recovery exactly once;
+9. process restart does not wall-clock-reseed gameplay RNG;
+10. exploit-sensitive RNG cannot be reconstructed from public-only inputs under the selected seed/derivation policy unless predictability is explicitly accepted;
+11. equal-deadline/simultaneous deterministic tie-break fixtures are stable where defined;
+12. recorded cross-source order replays concurrency-sensitive result under different test thread scheduling;
+13. stale worker/service results are rejected and cannot reorder authority;
+14. replay uses captured/canonicalized external facts rather than current mutable external-system responses;
+15. hierarchical hashes localize a seeded divergence to the first mismatching domain/component cut;
+16. authoritative floating fixture, where allowed, normalizes identically across supported targets;
+17. incompatible SIM/formula/script execution profile activation fails closed;
+18. script proposal replay with the same bound semantic revision set produces the same normalized accepted/rejected result;
+19. replay tooling cannot mutate live authority;
+20. required replay/hash/RNG/formula limits have explicit boundary tests.
 
-## 32. Non-authority statements
+## 31. Non-authority statements
 
-Acceptance of SIM-DETERMINISM-01 does NOT authorize:
+Acceptance of SIM-DETERMINISM-01 does NOT authorize Rust simulation implementation, RNG/numeric/hash dependency adoption, combat/AI/progression/script implementation, exact Reference/gameplay/balance formulas, protocol changes, PostgreSQL DDL/migrations, Platform writes, live/production replay correction or production deployment/configuration.
 
-- Rust simulation implementation;
-- RNG/numeric/hash dependency adoption;
-- combat/AI/progression/script implementation;
-- exact Reference/gameplay/balance formulas;
-- protocol changes;
-- PostgreSQL DDL/migrations;
-- Platform writes;
-- live/production replay correction;
-- production deployment/configuration.
-
-## 33. Lifecycle rule
+## 32. Lifecycle rule
 
 This document remains a candidate while its delivery PR is open.
 
