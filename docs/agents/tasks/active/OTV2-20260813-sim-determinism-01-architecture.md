@@ -15,7 +15,7 @@ final_head_sha: null
 final_head_frozen_at: null
 owner: architecture-coordinator/current-session
 created_at: 2026-08-13T00:55:00+02:00
-updated_at: 2026-08-13T01:08:00+02:00
+updated_at: 2026-08-13T01:12:00+02:00
 execution_budget_minutes: 90
 large_budget_reason: Cross-cutting paper-only determinism gate spans authoritative arithmetic, RNG ownership, logical time/order, replay inputs and cross-target evidence without authorizing runtime implementation.
 owned_paths:
@@ -44,7 +44,7 @@ external_repositories: []
 
 Produce one bounded paper-only `SIM-DETERMINISM-01 — Authoritative Simulation Determinism Contract` refining, not replacing, accepted FND-03 runtime order/RNG/replay foundations and DUR-04 script execution determinism.
 
-The candidate freezes cross-domain deterministic semantics needed before broad combat/AI/progression formula implementation: authoritative numeric semantic classes, rounding/overflow/invalid numeric state, revision binding, RNG stream identity/ownership/consumption and anti-prediction boundary, logical time and owner-local ordering/tie-break rules, normalized external facts, replay envelope, future-determining canonical state hashing/divergence evidence, supported-target determinism and formula/ruleset compatibility.
+The candidate freezes cross-domain deterministic semantics needed before broad combat/AI/progression formula implementation: authoritative numeric semantic classes, rounding/overflow/invalid numeric state, exact semantic revision binding, RNG stream identity/ownership/consumption and anti-prediction policy, logical time and owner-local order/tie-break rules, normalized external facts, replay envelope, future-determining canonical deterministic state/hash/divergence evidence, supported-target determinism and formula/ruleset compatibility.
 
 No Rust/runtime/client/combat/AI/script implementation, PostgreSQL DDL/migrations, Platform write, production configuration/deployment or exact formula/balance-value acceptance is authorized.
 
@@ -64,46 +64,42 @@ Maintained programme/register/horizon/index/handoff files remain outside this de
 
 ## Candidate semantic closure
 
-- [x] Core reproducibility invariant is based on canonical starting deterministic state + exact accepted owner-local normalized input order + exact semantic revision/profile set + normalized external facts, not OS/thread/network timing.
+- [x] Core reproducibility invariant is canonical starting deterministic state + exact owner-local normalized input order + exact semantic revision/profile set + normalized external facts, not OS/thread/network timing.
 - [x] `SimulationDeterminismProfileRevision` versions cross-cutting numeric/RNG/tie-break/hash/target semantics without replacing ruleset/content/world-policy or DUR-04 script execution profiles.
-- [x] Long-lived/retryable logical occurrences bind their exact behavior-affecting semantic revision set and cannot silently recalculate under a newer revision after retry/reconnect/failover/delayed completion.
-- [x] Authoritative numeric classes separate exact discrete, DUR-03 exact conservation/value, formula fixed/exact, explicitly proven deterministic floating and non-authoritative approximate values.
-- [x] Formula descriptors own units, representation, operation-order constraints, explicit rounding boundaries/modes, invalid-value disposition, output range and Reference evidence state.
-- [x] Implicit wrap/truncation/debug-vs-release numeric drift is forbidden.
-- [x] Gameplay RNG is deterministic/replayable but separate from security and presentation randomness; one mutable process-global gameplay RNG is forbidden.
-- [x] Random decisions use stable semantic purpose identity and isolated keyed/counter decisions or isolated checkpointed substreams so unrelated draws cannot perturb each other.
-- [x] Retry-stable random decisions derive from stable logical occurrence identity and bound semantic revisions, not Node/thread placement or transient RuntimeExecutionOrdinal alone.
-- [x] Exploit-sensitive deterministic seed/root/substream state may remain confidential; public-only seed derivation is forbidden unless predictability is explicitly accepted.
-- [x] Stateful RNG advancement is authoritative state and cannot survive an aborted resolution independently or be consumed by speculative workers.
-- [x] Wall clock, process-local monotonic time and authoritative execution order remain distinct; no universal fixed tick is introduced.
-- [x] Semantically simultaneous/conflicting inputs use commutative semantics, stable domain tie-break or exact recorded FND-03 RuntimeExecutionOrdinal order; no pointer/hash-map/thread tie-breaks.
-- [x] External nondeterminism must become typed normalized authority input/fact, with canonicalized collection order or retained exact accepted order.
-- [x] Replay envelope binds scope/order, input identities, initial deterministic state, semantic revisions/profiles, formula/script identities, RNG evidence, normalized time/external facts and expected hashes.
-- [x] Canonical deterministic state includes every authoritative fact able to change a future result without a new external normalized fact: active revision/profile set, gameplay state, RNG cursors/state, pending timers/operations/continuations, occurrence identities and relevant fence/revision metadata.
+- [x] Long-lived/retryable logical occurrences bind exact behavior-affecting semantics and cannot silently recalculate under a newer revision after retry/reconnect/failover/delayed completion.
+- [x] Numeric classes separate exact discrete, DUR-03 exact conservation/value, formula exact/fixed-scale, explicitly proven deterministic floating and non-authoritative approximate values.
+- [x] Formula descriptors own units, representation, operation order, rounding boundaries/modes, invalid-value disposition, outputs and Reference evidence state.
+- [x] Gameplay RNG is deterministic/replayable but separate from security/presentation randomness; one process-global mutable gameplay RNG is forbidden.
+- [x] Stable semantic RNG purposes isolate unrelated mechanics; keyed/counter decisions or isolated checkpointed substreams remain possible implementations.
+- [x] Retry-stable random decisions derive from stable logical occurrence identity and bound revisions rather than process placement or transient order alone.
+- [x] Exploit-sensitive deterministic seed/root/substream evidence can remain confidential; public-only derivation is forbidden unless predictability is explicitly accepted.
+- [x] Stateful RNG advancement is authoritative state and cannot survive aborted resolution independently or be consumed by speculative workers.
+- [x] Wall clock, monotonic elapsed time and authoritative execution order remain distinct; no universal fixed tick is introduced.
+- [x] Simultaneous/conflicting inputs use commutative semantics, stable tie-break or retained FND-03 RuntimeExecutionOrdinal; no pointer/hash-map/thread ordering authority.
+- [x] External nondeterminism must become typed normalized authority input/fact with canonicalized or retained meaningful collection order.
+- [x] Replay envelope binds initial deterministic state, accepted input order/identities, semantic revisions/profiles, formula/script identities, RNG evidence and normalized external/time facts.
+- [x] Canonical deterministic state includes all future-determining authority state: active revision/profile set, gameplay state, RNG cursors/state, pending timers/operations/continuations, occurrence identities and semantically relevant fence/revision metadata.
 - [x] Hierarchical deterministic-state hashing/localization is evidence only and cannot repair live state.
-- [x] Supported authoritative server targets must produce identical normalized authoritative outcomes; deterministic floating requires cross-target proof.
-- [x] Replay/investigation is read-only and cannot mutate live authority.
-- [x] Resource/security/privacy boundaries are explicit and fail closed.
-- [x] Full architecture decision test records must-decide timing, concrete blocked work, migration cost, superseding evidence and deliberate deferrals.
+- [x] Supported authoritative server targets must produce identical normalized outcomes; authoritative floating requires cross-target proof.
+- [x] Replay/investigation remains read-only and cannot mutate live authority.
+- [x] Resource/security/privacy boundaries fail closed.
+- [x] Architecture decision test records must-decide timing, concrete blocked work, migration cost, superseding evidence and deliberate deferrals.
 
 ## Repair history
 
 ### Repair cycle 1 — retry revision binding and RNG anti-prediction
 
-Adversarial self-review found two gaps:
-
-1. a retry/delayed completion could otherwise be re-evaluated under a newer content/ruleset/SIM/script revision activated after the logical occurrence began;
-2. deterministic RNG could otherwise be reproducible but trivially predictable if derived only from public client-known facts.
-
-Repair 1 therefore requires exact behavior-affecting semantic revision binding for long-lived/retryable occurrences and explicit transition/reconciliation rather than silent recalculation. It also distinguishes deterministic/replayable gameplay RNG from public predictability: exploit-sensitive seed/root/substream evidence is server-controlled/access-controlled and public-only derivation is rejected unless an owning product/security contract explicitly accepts predictability.
+Adversarial self-review found that retry/delayed completion could otherwise be re-evaluated under a newer semantic revision and deterministic RNG could be replayable yet trivially predictable from public facts. The repair binds long-lived/retryable occurrences to their exact behavior-affecting revision set and requires explicit transition/reconciliation rather than silent recalculation. Exploit-sensitive seed/root/substream evidence remains server-controlled/access-controlled and public-only derivation is rejected unless explicitly accepted.
 
 ### Repair cycle 2 — future-determining deterministic state
 
-Adversarial self-review found that visible gameplay state alone is insufficient for divergence hashing: equal HP/position with a different RNG cursor, active semantic revision set or pending timer can yield a different next authoritative result.
+Adversarial self-review found that visible gameplay state alone is insufficient for divergence hashing: equal position/HP with a different active revision, RNG cursor or pending timer can yield a different next authoritative result. The contract therefore includes active behavior revisions, RNG state, pending accepted work, occurrence identities and semantically relevant fence/revision metadata in canonical deterministic state and hierarchical hashes.
 
-Repair 2 expands canonical deterministic checkpoint/hash scope to every authoritative fact able to change future outcome without a new external normalized fact, including active behavior-affecting revision/profile set, RNG state/cursors, pending accepted timers/operations/continuations, stable occurrence identities and relevant fence/revision metadata. Hierarchical hashing now separates revision, gameplay, RNG/determinism support, pending continuation and authority/fence scopes where useful.
+### Repair cycle 3 — analysis/contract reconciliation
 
-Repair budget used: `2/3`.
+Final pre-freeze review found the analysis still described the pre-repair retry/hash model while the normative contract already required semantic revision binding, anti-prediction RNG and future-determining deterministic-state hashing. The analysis was rewritten/reconciled to the reviewed contract so the two candidate architecture sources no longer provide different interpretations.
+
+Repair budget used: **`3/3`**. Any new material finding on the frozen candidate must block/rotate instead of triggering a fourth repair without new owner authorization.
 
 ## Validation
 
@@ -112,9 +108,9 @@ Repair budget used: `2/3`.
 - live main/ownership preflight: `PASS`
 - accepted-source audit: `PASS`
 - analysis/contract drafting: `PASS`
-- adversarial self-review cycles: `2` material repair cycles applied
+- material repair cycles: `3/3`
 - exact changed-file scope: expected task + analysis + contract only
-- terminal full-diff self-review: pending on next frozen head
+- terminal full-diff exact-head self-review: pending after freeze
 
 ### Component/integration/runtime E2E
 
@@ -122,15 +118,15 @@ Repair budget used: `2/3`.
 
 ### Review and owner-funded AI
 
-- current task includes unusual cross-cutting deterministic correctness/replay/RNG complexity; independent review is therefore expected to be required by the root risk policy unless a later exact owner instruction changes that mechanism.
+- current task has unusual cross-cutting deterministic correctness/replay/RNG complexity; a genuinely independent second review is expected to be mandatory under root risk policy.
 - Codex/OpenAI API/paid AI reviewer: **NOT AUTHORIZED / NOT INVOKED**.
 - prior owner override for PR #212: **NOT INHERITED**.
-- implementing-agent self-review will remain self-review and will not be relabeled independent.
+- implementing-agent self-review remains self-review and will not be relabeled independent.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: SIM analysis and contract are complete through adversarial repair cycle 2/3: repair 1 bound retryable occurrences to exact semantic revisions and protected exploit-sensitive deterministic RNG; repair 2 expanded deterministic state/hash scope to active revisions, RNG state and pending future-determining authority state.
+last_progress: SIM candidate consumed repair budget 3/3: retry/revision + RNG anti-prediction, future-determining deterministic-state hashing, then analysis/contract reconciliation. No owner-funded AI was invoked.
 status: validating
 branch: agent/otv2-20260813-sim-determinism-01-architecture
 head_sha: null
@@ -138,7 +134,7 @@ pr: 214
 final_head_sha: null
 final_head_frozen_at: null
 ci_trigger_source: pull_request
-ci_check_generation: pending_after_task_checkpoint
+ci_check_generation: pending_after_repair_3
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -147,10 +143,10 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 2
+repair_cycles_for_current_gate: 3
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: false
 blocker: null
-next_action: Freeze the current three-path candidate after one full adversarial diff review; if no third material finding exists, run exact-head self-review and Agent Governance / Dependency Review / CodeQL, then enforce the current independent-review policy without invoking owner-funded AI.
+next_action: Freeze the current exact three-path head, perform one full exact-head self-review and Agent Governance / Dependency Review / CodeQL; if clean, enforce the mandatory independent-review gate without invoking owner-funded AI, and block/rotate if no permitted independent reviewer is available.
 ```
