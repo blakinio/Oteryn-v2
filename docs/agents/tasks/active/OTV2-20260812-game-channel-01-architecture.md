@@ -15,7 +15,7 @@ final_head_sha: null
 final_head_frozen_at: null
 owner: architecture-coordinator/current-session
 created_at: 2026-08-12T16:16:00+02:00
-updated_at: 2026-08-12T16:48:00+02:00
+updated_at: 2026-08-12T17:02:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -43,147 +43,116 @@ external_repositories: []
 
 ## Outcome
 
-Produce one bounded paper-only `GAME-CHANNEL-01` candidate defining player/economy/social/PvP policy for the already accepted multichannel technical model without redefining FND runtime/admission, DUR conservation, OPS/PERF orchestration/capacity or downstream gameplay domains.
+Produce one bounded paper-only `GAME-CHANNEL-01` candidate defining player/economy/social/PvP policy for the accepted multichannel technical model without redefining FND runtime/admission, DUR conservation, OPS/PERF orchestration/capacity or downstream gameplay domains.
 
-No Rust/runtime/client implementation, PostgreSQL DDL/migrations, Platform write, production configuration or entitlement activation is authorized. Shared canonical status/register/horizon/index/handoff files stay live-main while PR #209 is open; any `ACCEPTED/LIFECYCLE_CLOSED` promotion is a separate post-merge closeout.
+No runtime/client/Rust implementation, PostgreSQL DDL/migration execution, Platform write, production configuration or entitlement activation is authorized. Shared canonical status/register/horizon/index/handoff remain untouched while PR #209 is open; acceptance promotion is a separate post-merge closeout.
 
-## Architecture and source of truth
+## Source truth
 
-- `PROVEN`: `main@f89685d585aab9c2ed3c69cabe8a4d9a2544bd0e` closes DUR-03 and exposes `GAME-CHANNEL-01 = PROPOSED / PLANNED / NOT_STARTED` as the earliest remaining owner-accepted ordered paper-only product gate.
-- `PROVEN`: ADR-0001 defines one World economy/community with independent Channel simulations and already fixes Channel change as safe source exit -> fresh destination authorization/admission -> fresh GameSessionId.
-- `PROVEN`: FND-ID-01 defines `ChannelRef=WorldId+ChannelId`, topology-owned durable ChannelId, non-reuse after retirement and presentation label separate from identity.
-- `PROVEN`: ADR-0009/FND-03 own ChannelRuntime/GameNode lifecycle/capacity/recovery; failed players recover the same ChannelId and are not silently moved to another simulation.
-- `PROVEN`: FND-04 owns final admission and exact target-bound grants; no silent target retarget is allowed.
-- `PROVEN`: GAME-VISION-01 binds solo viability, party reward, PvP secondary pillar, conservation before tuning and no duplicated group eligibility/hidden macro tuning.
-- `PROVEN`: DUR-03 owns item/currency/value transaction idempotency, conservation, stale-authority rejection and reward/source duplicate prevention.
-- `PROVEN`: no active/open GAME-CHANNEL owner existed at task start.
-- `UNKNOWN`: exact PvP formulas, boss/reward business rules, numeric switch cooldown, queue limits, public Channel counts, capacity thresholds and economy targets remain unevidenced/downstream.
+- `PROVEN`: post-DUR-03 `main@f89685d585aab9c2ed3c69cabe8a4d9a2544bd0e` exposes `GAME-CHANNEL-01 = PROPOSED / PLANNED / NOT_STARTED` as the earliest remaining owner-accepted ordered paper-only product gate.
+- `PROVEN`: FND-ID/ADR-0001 own Channel identity, one-World community/economy and fresh-session Channel change semantics.
+- `PROVEN`: ADR-0009/FND-03 own runtime lifecycle/capacity/same-Channel recovery and prohibit silent alternate-Channel failure relocation.
+- `PROVEN`: FND-04 owns exact target-bound final admission and no silent grant retarget.
+- `PROVEN`: GAME-VISION binds party/PvP/economy fairness direction; DUR-03 binds value conservation/idempotency/stale-authority safety.
+- `UNKNOWN`: exact PvP/boss/reward/source formulas and all numeric cooldown/queue/channel-count/capacity thresholds remain downstream/evidence-owned.
 
 ## Candidate closure
 
-The candidate now defines:
+The candidate freezes:
 
-1. **One World, many simulations:** Channel placement is session/runtime placement, never Character/economy/social/progression identity.
-2. **Identity:** durable ChannelRef is canonical; labels/ordinals are presentation only.
-3. **Entry:** current eligible-set + recommendation with explicit eligible player override; recommendation is never admission authority.
-4. **Target failure:** stale/full/draining/recovering/incompatible target fails closed and requires a fresh offer/grant; no silent retarget.
-5. **Queue:** optional bounded target-Channel pre-admission queue; never GameSession/lease/value authority; short-lived FND grant created/refreshed only when ready.
-6. **No live-session destination reservation:** first generation preserves ADR-0001 safe source exit before destination queue/selection.
-7. **Co-location:** party/friend placement is a privacy-bounded hint; independent FND admissions; no atomic group admission or party-owned Channel.
-8. **Switch:** same-Channel reconnect is not a switch; completed switch uses fresh destination GameSession.
-9. **Hard blockers:** combat/PvP, trade, DUR-03 mutation, protected event, unsafe instance/house/authority transition and target unavailability remain fail-closed.
-10. **Anti-hopping:** durable `CharacterId+WorldId` guard owned by GAME-CHANNEL/world channel-policy authority, not automatically GAME-CHAR progression state; initial mechanism is time-based cooldown plus hard blockers, numeric duration deferred to evidence.
-11. **Switch atomicity:** destination playable admission and durable guard advancement form one authoritative/recovery-safe semantic outcome; crash/retry cannot create a destination session while skipping guard advancement.
-12. **No new identity by default:** no mandatory `ChannelSwitchId`; consume FND attempt/session and ANL correlation/operation identities unless later evidence proves a separate durable lifecycle.
-13. **Trusted exceptions:** maintenance/incident exception may exist only as typed, audited, server/operator-authoritative behavior that cannot clear PvP/reward/value consequences.
-14. **Fail-closed source classification:** Channel-local runtime placement does not automatically imply per-Channel durable output. Every channel-sensitive value-producing source/encounter family must explicitly compile/validate one supported multiplicity class; missing class blocks activation.
-15. **Multiplicity classes:** `CHANNEL_LOCAL_REPEATABLE`, `CHANNEL_LOCAL_SHARED_ELIGIBILITY`, `WORLD_SCOPED_UNIQUE`, `EXPLICIT_EVENT_POLICY_REQUIRED`.
-16. **Scope separation:** reward/event `simulation_scope` and `eligibility_scope` are different; ChannelId cannot silently enter shared reward reset keys.
-17. **Scaling boundary:** product multiplicity semantics here; numeric capacity PERF-01; activation/orchestration OPS-CHANNEL-01; no hidden inverse rate tuning.
-18. **PvP:** execution local, world/Character consequences survive switches; no failure/switch escape; exact formulas downstream.
-19. **Community:** one guild/economy/ranking/world communications boundary; local speech/combat/position remain Channel-local.
-20. **Availability/drain/recovery:** `SELECTABLE`, `CAPACITY_LIMITED`, `DRAINING`, `RECOVERING`, `UNAVAILABLE`; same-Channel recovery first; alternate Channel only after safe actor state + fresh admission.
-21. **World-policy:** use existing `world_policy_revision`; switch guard and offers migrate/invalidate explicitly under policy changes.
-22. **Cross-world:** WorldId change is not Channel switch and cannot bypass world-scoped value/profile/Character lifecycle policy.
+1. one World economy/community/profile boundary with canonical `ChannelRef=WorldId+ChannelId`; labels are presentation only;
+2. current eligible directory + non-authoritative recommendation + explicit eligible player target;
+3. fail-closed stale/full/draining/recovering/incompatible target with fresh offer/grant and no silent retarget;
+4. optional bounded target-Channel pre-admission queue, never GameSession/lease/value authority;
+5. no first-generation destination queue/reservation while Character remains authoritative in source Channel;
+6. privacy-bounded party/friend co-location hints with independent admissions and no party-owned Channel;
+7. same-Channel reconnect distinct from completed fresh-session Channel switch;
+8. existing combat/trade/DUR/event/instance/authority switch locks;
+9. durable GAME-CHANNEL/world-policy anti-hopping guard scoped to Character+World, surviving GameSession/relog/reconnect/restart;
+10. durable remembered previous successful ChannelRef (or equivalent unambiguous representation) so logout/relog cannot make same-vs-different Channel classification ambiguous;
+11. first admission establishes prior Channel without counting as switch; same prior Channel fresh login is not switch; different Channel fresh login is switch even after old GameSession ended;
+12. time-based voluntary cooldown + hard locks, numeric duration deliberately deferred;
+13. destination admission + remembered Channel/guard advancement as one recovery-safe authoritative semantic outcome;
+14. no mandatory new ChannelSwitchId; consume existing FND/ANL identities unless later lifecycle evidence requires one;
+15. trusted non-voluntary exception only typed/audited/unforgeable and consequence-preserving;
+16. fail-closed explicit multiplicity classification for every channel-sensitive value-producing source; runtime locality is not a durable-output fallback;
+17. classes `CHANNEL_LOCAL_REPEATABLE`, `CHANNEL_LOCAL_SHARED_ELIGIBILITY`, `WORLD_SCOPED_UNIQUE`, `EXPLICIT_EVENT_POLICY_REQUIRED`;
+18. distinct event simulation scope and durable eligibility scope;
+19. no hidden inverse rate tuning; GAME-CHANNEL product envelope / PERF numbers / OPS orchestration;
+20. local PvP execution with world/Character consequences surviving switching; exact formulas downstream;
+21. one World guild/economy/rankings/accepted cross-channel communication with local speech/combat/position;
+22. product states `SELECTABLE`, `CAPACITY_LIMITED`, `DRAINING`, `RECOVERING`, `UNAVAILABLE`;
+23. same-Channel recovery first; alternate Channel only after proven safe actor state + fresh admission;
+24. existing `world_policy_revision` for channel-policy compatibility;
+25. WorldId change is separate world lifecycle/transfer, not Channel switch.
 
 ## Acceptance criteria
 
-- [x] WorldId/ChannelId/display/current-placement semantics separated; presentation cannot become durable authority.
-- [x] Recommendation + explicit eligible selection separated from FND-04 final admission.
-- [x] Explicit target failure fails closed with fresh offer/grant and no silent retarget.
-- [x] Queue is bounded pre-admission/control-plane intent, not GameSession/lease/value authority.
-- [x] First generation defers live-session destination queue/reservation.
-- [x] Party/friend co-location is privacy-bounded hint with independent admissions and no party-owned Channel.
-- [x] ADR-0001 fresh switch flow preserved; reconnect is not switch.
-- [x] Hard switch blockers preserved.
-- [x] Durable anti-hopping guard survives GameSession/reconnect/restart; numeric cooldown deferred.
-- [x] Destination switch admission + guard advancement is one recovery-safe authoritative semantic outcome.
-- [x] No mandatory new ChannelSwitchId without separate lifecycle evidence.
-- [x] Trusted forced exceptions cannot be client forged or clear PvP/reward/value consequence.
-- [x] Channel-sensitive value source multiplicity classification is explicit/fail-closed; runtime locality is not a fallback.
-- [x] Simulation scope and durable eligibility scope remain separate.
-- [x] Dynamic Channel multiplicity is explicit product/economy behavior; OPS/PERF own algorithms/numbers.
-- [x] PvP consequence/hopping and same-Channel recovery constraints frozen without inventing PvP formulas.
-- [x] One-World social/economy community semantics preserved.
-- [x] Product-facing Channel lifecycle classes and drain/recovery behavior defined without redefining runtime state.
-- [x] Existing `world_policy_revision` owns channel-policy compatibility; cross-world changes remain separate.
-- [x] Downstream social/economy/event/reward/PvP/house/instance/entitlement ownership preserved.
-- [x] Architecture decision timing/supersession/deferred scope documented.
-- [ ] Freeze exact final head after current task/PR metadata is complete.
+- [x] Identity/display/current placement separated.
+- [x] Recommendation/explicit target separated from final FND-04 admission.
+- [x] Target failure/queue semantics fail closed.
+- [x] Live-session destination queue deferred.
+- [x] Party/friend co-location hint semantics preserve independent authority/privacy.
+- [x] ADR-0001 switch flow and hard blockers preserved.
+- [x] Durable anti-hopping guard survives session/relog/reconnect/restart.
+- [x] Prior successful Channel retained sufficiently to classify fresh logins as same/different after logout.
+- [x] Destination admission + guard/prior-placement advance is one recovery-safe semantic outcome.
+- [x] No unnecessary new ChannelSwitchId.
+- [x] Trusted forced exception constrained.
+- [x] Value-source multiplicity explicit/fail-closed with no runtime fallback.
+- [x] Simulation scope and eligibility scope separated.
+- [x] Scaling product/OPS/PERF ownership separated.
+- [x] PvP/community/drain/recovery/world-policy/cross-world boundaries frozen without downstream formula capture.
+- [x] Decision timing/supersession/deferred scope documented.
+- [ ] Freeze exact final head after this metadata commit.
 - [ ] Terminal exact-head full-diff self-review PASS.
-- [ ] Required genuinely independent exact-head review PASS with zero material findings.
+- [ ] Required independent exact-head review PASS.
 - [ ] Exact-head Agent Governance / Dependency Review / CodeQL PASS.
-- [ ] Zero unresolved material review threads and clean ownership before squash merge.
-- [ ] After accepted delivery merge, separate lifecycle closeout promotes status and releases ownership.
+- [ ] Zero unresolved material review threads and clean ownership before merge.
+- [ ] Separate post-merge lifecycle closeout promotes status/releases ownership.
 
 ## Excluded scope
 
-- runtime/client/Rust implementation and protocol gameplay message implementation;
-- PostgreSQL DDL/migrations or physical queue/guard schema;
-- Platform/Game Gateway writes;
-- production deployment/configuration;
-- numeric cooldown/queue/capacity/autoscaling values;
-- exact PvP/boss/reward/spawn/loot/economy formulas;
-- party/social/economy business state machines;
-- entitlement activation or paid queue/switch priority.
+Runtime/client/Rust, protocol gameplay payloads, PostgreSQL DDL/migrations, Platform writes, production deployment/configuration, numeric cooldown/queue/channel-count/capacity/autoscaling values, exact PvP/boss/reward/spawn/loot/economy formulas, downstream business state machines and entitlement/paid-priority activation.
 
 ## Repair history
 
-### Repair cycle 1 — adversarial pre-freeze authority/economy audit
+### Cycle 1 — source multiplicity and switch-commit crash gap
 
-The first complete draft exposed two material failure windows and was repaired before final-head freeze:
+Pre-freeze adversarial review found:
 
-1. **runtime-locality -> reward multiplicity ambiguity:** wording could have made ordinary ChannelRuntime placement an implicit `CHANNEL_LOCAL_REPEATABLE` value policy. The repaired contract requires explicit compiled/validated multiplicity classification for every channel-sensitive value-producing source; missing classification fails closed. A profile may author a bounded category default, but runtime has no implicit value fallback.
-2. **switch cooldown crash gap:** wording recorded cooldown at successful destination entry without proving atomic relation to destination GameSession/placement authority. The repaired contract requires destination admission and durable switch-guard advance to be one authoritative/recovery-safe semantic outcome; no playable destination authority may exist while guard advancement is absent/unknown.
+- ChannelRuntime locality could be misread as implicit `CHANNEL_LOCAL_REPEATABLE`; repaired to require explicit compiled/validated multiplicity classification for every channel-sensitive value-producing source, with missing classification fail-closed;
+- cooldown wording allowed a crash gap between destination playable authority and guard advance; repaired so destination admission + guard advance is one authoritative/recovery-safe semantic outcome;
+- clarified GAME-CHANNEL owns the Character+World guard rather than automatically GAME-CHAR, no ChannelSwitchId is mandatory, and WorldId changes are separate.
 
-The same repair clarifies that the switch guard is GAME-CHANNEL/world channel-policy state scoped to Character+World rather than automatically GAME-CHAR progression state, that no new ChannelSwitchId is mandatory by default, and that WorldId changes are not Channel switches.
+### Cycle 2 — logout/relog prior-Channel ambiguity
+
+A second pre-freeze review found that a durable cooldown without durable prior-placement semantics could not reliably distinguish a fresh same-Channel login from a different-Channel switch after the old GameSession ended.
+
+Repaired contract requires enough durable guard state to retain the previous successful ChannelRef (or equivalent unambiguous representation). First admission establishes baseline without a switch; same prior Channel login is not a switch; different Channel login is a switch even after logout; failed attempts do not move prior placement; successful different-Channel admission advances prior placement + guard atomically/recovery-safely.
 
 ## Validation
 
-### Focused
-
-- source/option/ownership audit: complete for candidate drafting
-- final net diff scope: pending after this task update
-- governance/document/link validation: pending frozen exact head
-
-### Component/integration
-
-- `NOT_APPLICABLE` — paper-only architecture candidate
-
-### E2E
-
-- `NOT_APPLICABLE` — no executable runtime/client/production behavior
-
-### Exact-head CI
-
-- final head: pending freeze
-- trigger source: PR #209
-- workflow/run/job: pending
-- result: pending
-
-## Self-review
-
-- exact head: pending freeze
-- implementing/coordinating agent
-- material findings: repair cycle 1 fixed before freeze; terminal review pending
+- source/option/ownership audit: complete
+- net changed scope before final metadata commit: exactly task + analysis + contract; shared overlays untouched
+- component/integration/runtime E2E: `NOT_APPLICABLE` — paper-only architecture
+- final exact-head CI/reviews: pending freeze
 
 ## Independent review
 
-- required: `YES` — multichannel/world-shared/value/reward/PvP/failure policy is high-risk for authority/fairness/anti-duplication
-- exact head: pending
-- auditor: independent mechanism on frozen head
+Required: `YES` because multichannel/world-shared/value/reward/PvP/failure behavior can create authority, fairness and anti-duplication defects.
 
 ## PR and closeout
 
-- PR: #209 draft
-- changed-file target: exactly task + analysis + candidate contract
-- shared canonical status overlays: intentionally untouched until post-merge closeout
-- ownership release: only after lifecycle closeout
+- PR #209 is ready for review;
+- target diff: exactly 3 owned paths;
+- no shared canonical overlay in delivery candidate;
+- ownership releases only after separate lifecycle closeout.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Candidate analysis/contract completed and adversarial repair cycle 1 closed runtime-locality reward-multiplicity fallback and destination-admission/switch-guard crash gap; task is ready for final diff/metadata freeze and terminal review/CI.
+last_progress: Repair cycle 2 closed logout/relog same-vs-different Channel classification by retaining durable prior successful Channel semantics; candidate/task/PR metadata are now ready for exact-head freeze.
 status: validating
 branch: agent/otv2-20260812-game-channel-01-architecture
 head_sha: null
@@ -200,10 +169,10 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 1
+repair_cycles_for_current_gate: 2
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: false
 blocker: null
-next_action: Verify net diff is exactly the three owned paths and live main has not advanced; then freeze PR #209 head, perform terminal self-review, required independent review and exact-head CI.
+next_action: Verify exact branch diff/live-main ownership, freeze final head in PR evidence, then perform terminal self-review, independent review and exact-head CI without moving the head unless a material finding requires repair.
 ```
