@@ -83,6 +83,7 @@ Maintained current-status/register/horizon/index/handoff files remain outside th
 - [x] GAME-CHANNEL multiplicity/eligibility classification required for relevant value-producing content.
 - [x] Hot reload defined as immutable revision staging/activation, never in-place mutation.
 - [x] Mandatory future implementation evidence and physical-format spike gate.
+- [x] Mandatory architecture decision test completed for the Component Model/WIT technology boundary: timing, concrete blocked work, later migration cost, superseding evidence and deliberate deferrals are explicit.
 
 ## Repair history
 
@@ -107,7 +108,19 @@ The repair therefore:
 - adds activation/replay/evidence requirements for WIT/execution-profile compatibility and mutable-global-RNG avoidance;
 - clarifies that artifact hashes are integrity evidence, not publisher-authenticity evidence.
 
-Repair budget used: `2/3`.
+### Repair cycle 3 — architecture decision test
+
+An existing review P1 (`PRRT_kwDOTuGrds6YvbDz`) correctly identified that freezing Component Model/WIT as a normative target boundary required the full repository decision test rather than a list of selected/deferred topics.
+
+The analysis now records:
+
+- `Must decide now? = YES` for the target authoritative scripting capability boundary and `NO` for benchmark-sensitive serializer/container/runtime-version/numeric choices;
+- concrete blocked work: the first authoritative WIT/script-host package, broad durable scripted-content migration and legacy quest/NPC/action/event adaptation;
+- future migration cost: guest rewrites/dual-running, compatibility adapters, manifest/capability migration, replay fixture rebuild, persistent extension-state revalidation and renewed capability security review;
+- superseding evidence: failed deterministic/resource-isolation prototype, representative budget failure, insufficient tooling/language support, material unmitigated security finding, unacceptable Component Model/WIT compatibility burden, or changed product requirements/a demonstrably safer capability model;
+- deliberate deferrals including exact WIT function inventory, exact Wasmtime version, physical encoding, numeric limits and optional legacy adapter.
+
+Repair budget used: **`3/3`**. Any new material finding on the final head must block/rotate instead of triggering a fourth repair without new owner authorization.
 
 ## Validation
 
@@ -116,8 +129,10 @@ Repair budget used: `2/3`.
 - source/ownership audit: `PASS`
 - exact changed-file scope: expected three owned paths only
 - architecture analysis/contract drafting: `PASS`
-- first adversarial self-review: `PASS AFTER REPAIR 1`
-- owner-directed terminal self-review: `REPAIR 2 APPLIED`; final exact-head review pending after freeze
+- repair cycle 1: deterministic ordering/FP determinism
+- repair cycle 2: proposal-state/authority-scope/execution-profile hardening
+- repair cycle 3: complete Component Model/WIT architecture decision test
+- final exact-head owner-directed self-review: pending after freeze
 - runtime/component/integration/E2E: `NOT_APPLICABLE` — paper-only architecture candidate
 
 ### Owner-funded AI policy and review mechanism
@@ -132,7 +147,7 @@ Repair budget used: `2/3`.
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner-directed self-review of DUR-04 found and repaired proposal-state side effects, cross-authority ActionPlan atomicity and execution-profile determinism gaps in one coherent repair cycle 2. No owner-funded AI service was invoked.
+last_progress: DUR-04 consumed repair budget 3/3 after completing the Component Model/WIT decision test in response to existing P1 review evidence. Earlier repair 2 already closed proposal-state, cross-authority ActionPlan and execution-profile determinism gaps. No owner-funded AI service was invoked.
 status: validating
 branch: agent/otv2-20260812-dur-04-content-world-scripting
 head_sha: null
@@ -140,7 +155,7 @@ pr: 212
 final_head_sha: null
 final_head_frozen_at: null
 ci_trigger_source: pull_request
-ci_check_generation: pending_after_repair_2
+ci_check_generation: pending_after_repair_3
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -149,10 +164,10 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 2
+repair_cycles_for_current_gate: 3
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: false
 blocker: null
-next_action: Freeze the repaired exact head, perform one full exact-head owner-directed self-review, rerun exact-head Agent Governance / Dependency Review / CodeQL, and merge only if the unchanged head remains clean with zero unresolved material threads.
+next_action: Freeze the repair-3 head, resolve only findings actually fixed, perform one final full exact-head owner-directed self-review and exact-head Agent Governance / Dependency Review / CodeQL; merge only if the unchanged head is clean because no further material repair is allowed within the current budget.
 ```
