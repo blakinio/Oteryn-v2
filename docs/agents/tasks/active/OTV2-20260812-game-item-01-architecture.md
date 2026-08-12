@@ -4,20 +4,21 @@
 task_id: OTV2-20260812-game-item-01-architecture
 title: GAME-ITEM-01 item model and equipment architecture
 mode: CONTRACT
-status: blocked
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: agent/otv2-20260812-game-item-01-architecture
 pr: 205
 base_sha: 93a49731ad91620748b87cdaba9525c9df70bc12
-head_sha: f0d62331d71deedcb2b9a3b1fe0a1a32578200ed
+head_sha: 746f2a3e61632a1ff86da350c460a24887acc183
 final_head_sha: null
 final_head_frozen_at: null
 owner: architecture-coordinator/current-session
 created_at: 2026-08-12T11:37:00+02:00
-updated_at: 2026-08-12T12:36:00+02:00
+updated_at: 2026-08-12T13:15:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
+repair_budget_extension: USER_SOURCE-2026-08-12-one-additional-cycle
 owned_paths:
   - docs/agents/tasks/active/OTV2-20260812-game-item-01-architecture.md
   - docs/architecture/GAME-ITEM-01_ITEM_MODEL_AND_EQUIPMENT_ANALYSIS.md
@@ -38,169 +39,137 @@ external_repositories: []
 
 ## Outcome
 
-Produce one bounded, paper-only `GAME-ITEM-01` architecture candidate that closes the native item-model and equipment semantic boundary needed by `DUR-03` once accepted and lifecycle-closed, while preserving the accepted first Reference target, stable content identity, durable ItemInstanceId semantics, common persistence/audit boundaries and fail-closed parity discipline.
+Deliver one bounded, paper-only `GAME-ITEM-01` architecture candidate defining native item semantics, equipment/container legality and item-definition compatibility. The candidate remains nonbinding while PR #205 is open.
 
-The delivery PR itself remains a candidate. Canonical programme overlays are not promoted before the delivery is accepted and merged; a separate lifecycle-closeout delivery must promote them together afterwards. `DUR-03` must remain blocked until that lifecycle closeout is complete.
+`DUR-03` remains blocked until **both** the accepted GAME-ITEM delivery merge and the separate GAME-ITEM lifecycle-closeout merge complete. No runtime, PostgreSQL DDL/migration, entitlement activation or production authority is granted.
 
-## Architecture and source of truth
+## Owner repair-budget extension
 
-- `PROVEN`: `GAME-VISION-01_FIRST_REFERENCE_BASELINE_OWNER_BASELINE.md` fixes the first Reference target to Global Tibia production-observable behavior after the 2026-07-28 server-save/maintenance change boundary and requires `UNKNOWN`/`CONFLICT` behavior to remain fail-closed.
-- `PROVEN`: ADR-0005 makes stable namespaced Content Registry keys canonical and compact numeric item/content IDs revision-scoped runtime mappings only.
-- `PROVEN`: `DUR-01_DURABLE_IDENTIFIER_REPRESENTATION_CONTRACT.md` defines `ItemInstanceId` as a strongly typed UUIDv7 and leaves create/destroy/split/merge/transform identity-transition rules to `DUR-03`.
-- `PROVEN`: `DUR-02_PERSISTENCE_V1_OWNER_BASELINE.md` keeps common transaction/audit substrate in DUR-02 while moving inventory/equipment/ground-item transfer semantics to GAME-ITEM-01 + DUR-03.
-- `PROVEN`: `ANL-01_GAME_EVENT_AND_AUDIT_FOUNDATION_CONTRACT.md` owns event/audit identity and durable evidence semantics; analytics never becomes gameplay authority.
-- `PROVEN`: `AGENTS.override.md` permits task status only from `investigating`, `implementing`, `validating`, `ready`, `waiting`, `blocked`, `completed`.
-- `PROVEN`: `docs/agents/ANTI_STALL_AND_EXECUTION_BUDGET.md` sets `max_repair_cycles_per_gate: 3` and requires `BLOCKED` or `ROTATE` after three repair cycles.
-- `UNKNOWN`: exact Reference item limits, formula ordering and edge-case behavior not established by accepted evidence remain parity-pending and may not be invented in this task.
+The repository default is `max_repair_cycles_per_gate: 3`. Four material repair cycles had already occurred and the task correctly stopped `blocked` at commit `8b2fa27003202351e93e86dc20ff9c10418f4378`.
+
+On 2026-08-12 the owner explicitly replied `wykonaj` to the requested authorization for **one additional GAME-ITEM-01 repair cycle**. This is `USER_SOURCE` authority for exactly one further material cycle. It does not waive any other governance, review, CI, merge, production or cross-repository rule.
+
+The authorized additional cycle is used only to repair independent-review P1 `3765563501` and resume validation. No further material repair cycle is authorized by this instruction.
+
+## Binding sources and boundaries
+
+- `GAME-VISION-01_FIRST_REFERENCE_BASELINE_OWNER_BASELINE.md`: first Reference target is production-observable Global Tibia after the 2026-07-28 server-save/maintenance boundary; unresolved exact behavior stays fail-closed.
+- ADR-0005: stable namespaced content identity is canonical; compact numeric IDs are revision-scoped mappings.
+- DUR-01: `ItemInstanceId` is strongly typed UUIDv7; DUR-03 owns split/merge/transform/create/destroy identity transitions.
+- DUR-02: common persistence/transaction substrate only; item/currency/value conservation remains downstream.
+- ANL-01: event/audit identity and durable evidence; analytics is never gameplay authority.
+- `PROD-ENTITLEMENTS-01` remains `PROPOSED / PLANNED / NOT_STARTED`; GAME-ITEM may consume Platform-owned entitlement facts only through a separately accepted Oteryn-v2 consumer/enforcement contract.
+
+## Accepted candidate design
+
+The candidate selects typed capability composition over stable ItemType definitions and separates:
+
+```text
+ItemType          -> immutable/versioned authored semantic definition
+ItemInstance      -> concrete mutable lifecycle with DUR-01 ItemInstanceId
+StaticItemPlacement -> authored world placement, not automatically a durable instance
+```
+
+It defines typed stack, charge, durability, temporal/decay, equipment, container, binding/restriction and upgrade/modifier capability state; rejects authoritative JSON/EAV/free-form script escape hatches; defines server-authoritative atomic equipment occupancy; requires bounded acyclic containment; and requires explicit definition compatibility/migration rather than silent reinterpretation.
+
+DUR-03 retains atomic location, idempotency, retry/crash handling, stale-writer rejection, item/currency/value conservation and identity-transition rules.
 
 ## Acceptance criteria
 
-- [x] Freeze the candidate semantic boundary between immutable/versioned item definitions and concrete durable item instances without redefining `ItemInstanceId`.
-- [x] Define typed bounded state capabilities for stack quantity, charges, durability, decay/expiration, binding/restrictions, upgrades/modifiers and container capability; prohibit a generic authoritative JSON/EAV escape hatch.
-- [x] Define equipment legality using server-authoritative slot/occupancy claims, requirements and mutually-exclusive constraints without hard-coding client authority.
-- [x] Define deterministic modifier/derived-stat ordering responsibility and its boundary with ruleset/SIM formula ownership.
-- [x] Define bounded container graph legality, nesting/capacity/weight limits and cycle prevention while leaving atomic transfer/single-location conservation to DUR-03.
-- [x] Define content-definition revision compatibility, explicit migration requirements and no-silent-reinterpretation rules.
-- [x] Define world/account/character binding/restriction semantics and separate item-instance semantics from non-item currency/value ledgers.
-- [x] Define boundaries with loot, trade, market, bank, depot, mail, rewards, houses, content/scripting, persistence and audit without capturing their transaction policy.
-- [x] Preserve Reference evidence classes and mark exact unevidenced behavior `PARITY_PENDING_EVIDENCE` rather than guessing.
-- [x] Keep maintained canonical overlays at live-main pre-acceptance state during delivery review; defer all `GAME-ITEM-01 -> ACCEPTED` and `DUR-03 -> unblocked/next` promotion to one post-merge lifecycle closeout.
-- [ ] Correct the remaining independent-review lifecycle clause so `DUR-03` is unblocked only after both accepted merge **and** lifecycle closeout.
-- [x] Use a repository-supported task status; current stop state is `blocked`.
-- [ ] Obtain explicit owner authorization to extend this gate's repair budget beyond the repository default before making another material repair.
-- [ ] After such authorization, run terminal exact-head self-review, independent review, exact-head CI, merge and lifecycle closeout.
-
-## Excluded scope
-
-- Rust/runtime/client implementation, SQL DDL, migrations, production deployment or live data changes.
-- `DUR-03` conservation, single-authoritative-location, idempotent transfer, split/merge survivor/new-ID rules, transaction isolation proof or anti-duplication implementation.
-- Exact Reference numeric values/formulas/limits without accepted evidence.
-- Broad item/content import, serializer/container format selection or scripting runtime selection (`DUR-04`).
-- Combat/ability formula semantics, market pricing/order-book policy, house/social/reward lifecycle policy, or automatic economy tuning.
-- Reintroducing `protocol-canary`, proprietary protocol/code/assets or OTS implementation as production authority.
-
-## Implementation / findings
-
-Task opened from live `main@93a49731ad91620748b87cdaba9525c9df70bc12` after verifying no active GAME-ITEM task/branch/PR ownership overlap. `main` was repeatedly rechecked and remained at that commit through the last mergeability check.
-
-The candidate selects typed capability composition over stable namespaced ItemType definitions, distinguishes authored static placements from durable ItemInstances, defines server-authoritative equipment occupancy and bounded container legality, and requires explicit item-definition compatibility/migration. It intentionally preserves all create/destroy/split/merge/transform identity transitions, atomic item location, idempotency, retry/crash recovery and item/currency/value conservation for `DUR-03`.
-
-All exact Reference item behavior not established by accepted evidence remains parity-pending/fail-closed. Platform-owned entitlement facts are not activated or consumed merely by GAME-ITEM; the candidate now requires a separately accepted Oteryn-v2 entitlement consumer/enforcement contract. Architecture-only scope; runtime/DDL/production authority remains none.
-
-## Validation
-
-### Focused
-
-- PR #205 changed-file inspection confirms only three delivery paths before this blocker checkpoint: active task, GAME-ITEM analysis and candidate contract; maintained programme/status/register/horizon/index files are exact live-main and outside the delivery diff.
-- `aae66a2b215acd3720b4e8de3a032809c2438ca0` exact-head self-review `4915469709`: PASS before subsequent independent findings.
-- independent Codex review on `aae66a2b215acd3720b4e8de3a032809c2438ca0`: review `4915504377`; findings P1 `3765563501` and P2 `3765563506` opened.
-- `f0d62331d71deedcb2b9a3b1fe0a1a32578200ed` exact-head self-review `4915520214`: PASS for entitlement/candidate wording and all prior repaired boundaries, but the two earlier `aae66a2b...` findings remain applicable until repaired.
-
-### Component/integration
-
-- command/run: `NOT_APPLICABLE` — paper-only architecture package; no runtime component changed.
-- result: `NOT_APPLICABLE`.
-
-### E2E
-
-- scenario: `NOT_APPLICABLE` — no executable user/runtime outcome is introduced.
-- result: `NOT_APPLICABLE`.
-
-### Exact-head CI
-
-Last material content head before budget-stop checkpoint: `f0d62331d71deedcb2b9a3b1fe0a1a32578200ed`.
-
-- Agent Governance `31587838775`: PASS.
-- Dependency Review `31587838756`: PASS.
-- CodeQL `31587838750`: PASS.
-- CI success does **not** override unresolved independent-review findings or repair-budget exhaustion.
-- This blocker checkpoint is not a merge candidate and its newly resulting branch SHA is not claimed as terminal validated evidence.
-
-## Self-review
-
-- last material content head: `f0d62331d71deedcb2b9a3b1fe0a1a32578200ed`.
-- implementing-agent review: `4915520214`, PASS for the content then known to the coordinator.
-- subsequent applicable independent findings prevent terminal PASS/merge.
-- current task state: `blocked`.
-
-## Independent review
-
-- required: YES.
-- `d38ec4efc5c504d4615269fd2346aef55970a112` review `4915420795` found valid premature acceptance/unblocking and CI-only churn findings; both were addressed/recorded.
-- `aae66a2b215acd3720b4e8de3a032809c2438ca0` review `4915504377` found two additional material/process findings that remain applicable to `f0d62331...`:
-  - P1 `3765563501`: contract section 19 says accepted merge alone unblocks `DUR-03`, but lifecycle policy requires **accepted merge + separate lifecycle closeout** before exposing the next gate. **UNRESOLVED; material contract repair required.**
-  - P2 `3765563506`: task status `reviewing` is outside the mandatory task-status vocabulary. **STOP-STATE FIXED by this blocker checkpoint using valid status `blocked`; no claim that terminal review is complete.**
-- fresh Codex review request `5265542928` was issued for `f0d62331...`; it is non-terminal for completion because the gate is now stopped on the already-applicable unresolved P1 and repair-budget exhaustion.
-
-## PR and closeout
-
-- PR #205 remains open, non-draft and mergeable at the last live check, but **must not be merged** with unresolved P1 or without repair-budget authorization.
-- maintained programme/status/register/horizon/index files remain unmodified in the delivery PR.
-- old review threads for premature overlay acceptance and CI-only head churn were resolved after their repairs; the newer lifecycle-unblock thread remains unresolved until a permitted material repair is made.
-- no protected merge/auto-merge is configured or claimed.
-- merge commit/result: none.
-- ownership release: not allowed while blocked task remains active.
+- [x] Candidate definition/instance/static-placement boundary.
+- [x] Typed bounded capability model with no generic authoritative data escape hatch.
+- [x] Server-authoritative equipment occupancy and typed requirements.
+- [x] Deterministic item-modifier contribution ordering requirement without capturing SIM formulas.
+- [x] Bounded acyclic container legality while leaving atomic moves to DUR-03.
+- [x] Explicit item-definition compatibility and migration classes.
+- [x] World/binding/location/authorization concepts remain distinct.
+- [x] Item versus non-item currency/value distinction.
+- [x] Reference-sensitive exact behavior remains `PARITY_PENDING_EVIDENCE` unless separately proven.
+- [x] Maintained programme/status/register/horizon/index overlays remain exact live-main while candidate PR is open.
+- [x] `PROD-ENTITLEMENTS-01` consumer/enforcement remains separately gated.
+- [x] Independent-review P1 `3765563501` repaired: DUR-03 becomes eligible only after GAME-ITEM accepted merge **and** lifecycle closeout.
+- [x] Task uses repository-supported status `validating`.
+- [x] Owner explicitly authorized one additional repair cycle beyond the default budget.
+- [ ] Terminal exact-head self-review PASS on the resulting head.
+- [ ] Independent exact-head review PASS with zero material findings.
+- [ ] Required exact-head CI PASS.
+- [ ] Zero unresolved material review threads.
+- [ ] PR #205 squash-merged unchanged after all gates.
+- [ ] Separate lifecycle closeout promotes canonical overlays, archives this task and releases ownership.
 
 ## Repair history
 
-### Repair cycle 1 — transient status-overlay evidence typo
+### Cycle 1 — status-overlay evidence typo
 
-A historical DUR-01 closeout SHA was mistyped while editing `FOUNDATION_PROGRAMME_CURRENT_STATUS.md`. Self-review found and corrected it before terminal review. The status file was later restored to the exact live-main blob, so the delivery diff contains no status-overlay mutation.
+A transient historical DUR-01 SHA typo was detected and corrected; the status overlay was later restored bit-for-bit to live `main`, so it is not in the delivery diff.
 
-### Repair cycle 2 — PR metadata governance and incorrect CI recovery action
+### Cycle 2 — PR metadata governance / invalid CI recovery
 
-Agent Governance run `31586112278` failed PR metadata preflight because the initial title exceeded 72 characters and the body lacked mandatory `## Summary` / `## Validation` headings. Metadata was corrected. A subsequent task-only commit was incorrectly created solely to trigger a fresh `synchronize` event; Codex correctly identified this as contrary to anti-stall/check-regeneration policy. The process error is retained in evidence and will not be repeated.
+Agent Governance `31586112278` correctly failed the original PR title/body metadata. Metadata was repaired. A task-only commit was then incorrectly used solely to retrigger CI; Codex P2 `3765519022` correctly identified the process violation. It is recorded and has not been repeated.
 
-### Repair cycle 3 — premature architecture acceptance/unblocking overlays
+### Cycle 3 — premature acceptance/unblocking overlays
 
-Codex correctly identified that the delivery branch had promoted GAME-ITEM to `ACCEPTED` and DUR-03 to unblocked before PR #205 passed terminal review/CI and merged. All maintained overlays/index files were restored exactly to live-main, narrowing PR #205 to candidate task/analysis/contract only.
+Codex P1 `3765519016` correctly identified pre-merge `ACCEPTED`/DUR-03-unblocked status in maintained overlays. All four maintained overlay/index files were restored to exact live-main blobs. PR #205 was narrowed to task + analysis + candidate contract.
 
-### Repair cycle 4 — entitlement consumer boundary self-audit
+### Cycle 4 — entitlement consumer boundary self-audit
 
-After cycle 3, a source audit found candidate wording that could imply an already accepted Oteryn-v2 entitlement consumer boundary although `PROD-ENTITLEMENTS-01` remains unaccepted for game consumption. Commit `f0d62331d71deedcb2b9a3b1fe0a1a32578200ed` corrected this and changed candidate wording from `accepts` to `defines` representation capability.
+Commit `f0d62331d71deedcb2b9a3b1fe0a1a32578200ed` removed wording that could imply an accepted Oteryn-v2 entitlement consumer and replaced pre-acceptance `accepts representation capability` wording with `defines representation capability`.
 
-This fourth material repair exceeded the repository default `max_repair_cycles_per_gate: 3`. The coordinator therefore may not make the next material contract repair without explicit owner authorization. This overrun is recorded transparently rather than normalized away.
+### Owner-authorized additional cycle — lifecycle-unblock repair
 
-## Budget stop
+Independent Codex P1 `3765563501` remained applicable: the contract said accepted merge alone unblocked DUR-03 although lifecycle policy required accepted merge + closeout. Owner explicitly authorized one additional repair cycle. Commit `746f2a3e61632a1ff86da350c460a24887acc183` repairs the contract so DUR-03 remains blocked through the post-merge/pre-closeout interval.
 
-`docs/agents/ANTI_STALL_AND_EXECUTION_BUDGET.md` is binding:
+P2 `3765563506` (unsupported `reviewing` task status) had already been fixed by the blocker checkpoint. This resumed record uses valid status `validating`.
 
-```text
-max_repair_cycles_per_gate = 3
-After three repair cycles for one gate
--> persist evidence
--> return BLOCKED or ROTATE
-```
+## Validation history
 
-Observed count: `4` material repair cycles, one beyond the default before the stop condition was re-applied. No fifth repair is authorized.
+Last pre-authorization material head `f0d62331d71deedcb2b9a3b1fe0a1a32578200ed` had:
+
+- implementing-agent self-review `4915520214`: PASS for then-known content;
+- Agent Governance `31587838775`: PASS;
+- Dependency Review `31587838756`: PASS;
+- CodeQL `31587838750`: PASS.
+
+Those results are superseded for terminal evidence by the authorized lifecycle repair and this validation-state update. The resulting exact head must receive a new self-review, independent review and CI generation.
+
+Component/integration/runtime E2E remains `NOT_APPLICABLE` because this is documentation-only architecture delivery with no executable behavior.
+
+## PR and closeout discipline
+
+PR #205 must remain candidate/nonbinding until merged. No maintained canonical overlay may promote GAME-ITEM or expose DUR-03 from this delivery PR.
+
+After a clean accepted merge, exactly one bounded lifecycle-closeout task/PR may:
+
+1. move this task active -> archive and record immutable delivery evidence;
+2. promote GAME-ITEM-01 to `ACCEPTED / LIFECYCLE_CLOSED / NOT_STARTED` in maintained status/register/horizon/index sources;
+3. expose DUR-03 as the next eligible **paper-only** architecture gate;
+4. preserve runtime/DDL/production authority as `NONE`/unauthorized;
+5. release GAME-ITEM ownership.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Verified repair-budget exhaustion after discovering two still-applicable Codex findings from exact head aae66a2b; preserved last material content head f0d62331 with green governance/dependency/CodeQL, left PR #205 unmerged and switched the task to a valid blocked stop state.
-status: blocked
+last_progress: Owner authorized one additional repair cycle; lifecycle-unblock P1 3765563501 was repaired so DUR-03 remains blocked until accepted GAME-ITEM merge plus lifecycle closeout, and task validation resumed with supported status.
+status: validating
 branch: agent/otv2-20260812-game-item-01-architecture
-head_sha: f0d62331d71deedcb2b9a3b1fe0a1a32578200ed
+head_sha: 746f2a3e61632a1ff86da350c460a24887acc183
 pr: 205
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: PR #205
-ci_check_generation: 31587838775 / 31587838756 / 31587838750 for last material head f0d62331
-ci_checks_for_current_head: 3
-ci_run_ids:
-  - 31587838775
-  - 31587838756
-  - 31587838750
+ci_trigger_source: PR #205 synchronize after authorized material repair
+ci_check_generation: pending resulting exact head
+ci_checks_for_current_head: 0
+ci_run_ids: []
 ci_job_ids: []
-runner_assignment_state: terminal PASS on last material content head; blocker is review/budget, not CI
+runner_assignment_state: pending
 terminal_ci_wait_started_at: null
-terminal_ci_checks_for_current_generation: 3
+terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 4
+repair_cycles_for_current_gate: 5
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 1
-owner_action_required: Explicitly authorize extending the GAME-ITEM-01 repair budget beyond max_repair_cycles_per_gate=3, sufficient for one additional material repair cycle that fixes the remaining lifecycle-unblock contract finding and then repeats exact-head self-review, independent review and CI.
-blocker: Repository anti-stall policy repair budget exhausted; unresolved Codex P1 3765563501 requires a material contract change, and no fifth repair cycle is authorized.
-next_action: After explicit owner repair-budget extension, change the contract so DUR-03 becomes unblocked only after accepted GAME-ITEM merge plus lifecycle closeout; re-freeze, exact-head self-review, independent Codex review, exact-head CI, merge #205 only if clean, then perform lifecycle closeout and continue to DUR-03.
+owner_action_required: false
+blocker: null
+next_action: Treat the resulting branch head after this task-record commit as the frozen delivery head; run full exact-head self-review, independent Codex review and required CI, merge #205 only if all are clean, then perform the one allowed lifecycle-closeout task and continue to DUR-03 only after closeout merge.
 ```
