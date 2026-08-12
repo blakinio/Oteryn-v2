@@ -12,7 +12,7 @@ delivery_pr: 201
 base_sha: 4f4ac4f0891b9d37dcefd413d1baf724c20d301c
 final_head_sha: 900be9f499981e638a6f8089fb46331b43ba321c
 delivery_merge_sha: ec4b840b0742967370a4235d87094b29a802fe28
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 202
 owner: released_after_closeout
 created_at: 2026-08-12T09:41:00+02:00
 completed_at: 2026-08-12T10:05:00+02:00
@@ -174,7 +174,7 @@ Parallel paper-only architecture may continue under separate ownership for GAME-
 ## Lifecycle closeout
 
 - closeout branch: `docs/OTV2-20260812-dur-02-owner-acceptance-closeout`;
-- closeout PR: pending;
+- closeout PR: 202;
 - closeout scope: complete active -> archive move plus current-status `DUR-02 DeliveryStatus OPEN -> LIFECYCLE_CLOSED` and immutable #201 evidence only;
 - owner release: effective after closeout merge;
 - semantic changes permitted in closeout: none.
@@ -187,7 +187,7 @@ status: completed
 delivery_pr: 201
 final_head_sha: 900be9f499981e638a6f8089fb46331b43ba321c
 delivery_merge_sha: ec4b840b0742967370a4235d87094b29a802fe28
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 202
 repair_cycles_for_delivery: 1
 self_review: 4914253621
 independent_review: 5264011166
