@@ -12,7 +12,7 @@ delivery_pr: 199
 base_sha: 710c4b5e00de9f14224a6949c3bc7364f4c724a4
 final_head_sha: 2311211a5c5ada1a782aee59dfe62587b6c5be99
 delivery_merge_sha: b37a4071787fb0a3af13608670c44fc07adcc78d
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 200
 owner: released_after_closeout
 created_at: 2026-08-12T09:12:00+02:00
 completed_at: 2026-08-12T09:32:00+02:00
@@ -210,7 +210,7 @@ runtime / DDL authority = NONE
 ## Lifecycle closeout
 
 - closeout branch: `docs/OTV2-20260812-dur-02-whole-gate-reconciliation-closeout`;
-- closeout PR: pending;
+- closeout PR: 200;
 - owner release: effective after closeout merge;
 - semantic/status changes in closeout: none.
 
@@ -222,7 +222,7 @@ status: completed
 delivery_pr: 199
 final_head_sha: 2311211a5c5ada1a782aee59dfe62587b6c5be99
 delivery_merge_sha: b37a4071787fb0a3af13608670c44fc07adcc78d
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 200
 repair_cycles_for_delivery: 2
 self_review: 4914018453
 ci_run_ids:
