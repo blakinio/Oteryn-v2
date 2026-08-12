@@ -39,9 +39,12 @@ The architecture MUST keep these concepts distinct:
 - `ruleset_revision`;
 - `world_policy_revision`;
 - compiler identity/canonicalization profile;
+- `script_execution_profile_revision` for authoritative script-engine semantics and deterministic execution configuration;
 - exact bundle artifact digest.
 
 A release/deployment record MAY bind them together, but one opaque revision number MUST NOT replace their semantic distinction.
+
+`script_execution_profile_revision` MUST identify the authoritative execution semantics that can affect script outcome, including the selected engine/runtime version or compatibility identity, enabled Wasm features relevant to determinism, fuel operator-cost policy, floating/NaN policy, relaxed-SIMD policy where enabled, memory/table growth policy and other determinism-sensitive runtime configuration. It MUST NOT become the public WIT ABI identity and MUST NOT expose Wasmtime-specific types to scripts.
 
 ## 5. Source-model boundary
 
@@ -102,7 +105,7 @@ Client and server artifacts MUST carry compatible revision/capability metadata s
 
 A published World Bundle or equivalent runtime artifact MUST be immutable and content-addressed by integrity digest.
 
-It MUST identify at least format/schema version, content/map/ruleset/world-policy compatibility where applicable, compiler identity, Content Lock digest, artifact/manifest digest, required runtime/protocol capabilities, section/chunk integrity metadata, provenance summary and projection class.
+It MUST identify at least format/schema version, content/map/ruleset/world-policy compatibility where applicable, compiler identity, Content Lock digest, artifact/manifest digest, required runtime/protocol capabilities, required WIT world/interface compatibility, `script_execution_profile_revision` where authoritative scripts are present, section/chunk integrity metadata, provenance summary and projection class.
 
 Runtime MUST NOT deserialize unstable Rust memory layout as a public format contract.
 
@@ -172,12 +175,14 @@ Wasmtime is the initial implementation candidate, but Wasmtime APIs/types MUST N
 
 A process-global Lua/game-object model is NOT accepted as the target authoritative architecture. A bounded compatibility adapter MAY be considered only in a separate migration contract.
 
+The exact WIT package/world/interface revision required by a script component MUST be explicit and resolved before activation. WIT compatibility MUST NOT be inferred from mutable source paths or a host accepting “whatever imports happen to link.”
+
 ## 15. Script authority model
 
 A script MUST be treated as a bounded decision/proposal component, not as an authoritative mutation owner:
 
 ```text
-InvocationContext + bounded read snapshot + explicit capabilities
+InvocationContext + bounded immutable read snapshot + explicit capabilities
  -> script component
  -> ProposedActionPlan / typed result
  -> host/domain validation
@@ -185,6 +190,8 @@ InvocationContext + bounded read snapshot + explicit capabilities
 ```
 
 A script MUST NOT directly commit PostgreSQL transactions, mutate arbitrary server/domain objects, bypass DUR-03 conservation/idempotency/fencing, bypass GAME-ITEM legality, bypass GAME-CHANNEL multiplicity/eligibility or mint trusted audit/economy truth outside the authoritative mutation boundary.
+
+All authoritative reads exposed during one invocation MUST be bound to the invocation's declared snapshot/revision context. A script MUST NOT observe a mixture of pre- and post-mutation live state because a host query happened later in the same invocation.
 
 ## 16. Capability security
 
@@ -194,19 +201,21 @@ The default authoritative script environment MUST provide no ambient filesystem,
 
 Capability absence is the default denial mechanism.
 
-Candidate capability families MAY include bounded typed reads, scoped spatial queries, deterministic simulation time/tick, deterministic RNG, proposal of domain actions, bounded diagnostics and typed extension-state access.
+Candidate capability families MAY include bounded snapshot reads, scoped snapshot-bound spatial queries, deterministic simulation time/tick, deterministic invocation-local RNG, proposal of domain actions, bounded diagnostics and typed extension-state **read** access.
+
+Authoritative extension-state writes MUST NOT be direct capability side effects. They MUST be represented as typed proposed mutations in the returned action/result plan and committed only after host/domain validation under the owning durable transaction/workflow.
 
 Every capability call MUST remain subject to host/domain authorization and resource bounds.
 
 ## 17. Deterministic script execution
 
-Authoritative script execution MUST use deterministic inputs/imports.
+Authoritative script execution MUST use deterministic inputs/imports and an exact `script_execution_profile_revision`.
 
 Deterministic semantic execution MUST use:
 
 - simulation logical time instead of wall clock;
-- host-supplied deterministic RNG bound to accepted simulation/replay identity;
-- deterministic fuel accounting;
+- host-supplied deterministic invocation-local RNG bound to accepted simulation/replay and invocation identity rather than a mutable global RNG stream;
+- deterministic fuel accounting under the selected execution profile;
 - bounded memory/table/instance resources;
 - bounded host-call count;
 - bounded query/result collection sizes;
@@ -215,26 +224,31 @@ Deterministic semantic execution MUST use:
 
 Host APIs returning collections or candidate sets MUST define stable ordering or canonicalize the result before exposing it to a script. A script MUST NOT observe hash-map iteration order, database default row order, scheduler order or another unspecified ordering source as gameplay input.
 
-Authoritative WIT/domain interfaces SHOULD prefer integer, enum and project-owned fixed-point/decimal semantics where practical. If floating-point values are permitted in authoritative script logic, the implementation MUST define and prove deterministic floating behavior, including NaN canonicalization where observable; platform-dependent NaN payloads or unspecified floating serialization MUST NOT influence authoritative outcome.
+Authoritative WIT/domain interfaces SHOULD prefer integer, enum and project-owned fixed-point/decimal semantics where practical. If floating-point values are permitted in authoritative script logic, the selected execution profile MUST define and the implementation MUST prove deterministic floating behavior, including NaN canonicalization where observable; platform-dependent NaN payloads or unspecified floating serialization MUST NOT influence authoritative outcome.
 
 Fuel exhaustion MUST terminate an invocation without committing its proposed action.
+
+A fuel number is meaningful only together with the exact `script_execution_profile_revision`; engine/runtime upgrades or operator-cost-policy changes MUST NOT silently reinterpret an existing content revision's authoritative fuel budget. An incompatible execution profile requires explicit compatibility/migration/revision handling before activation.
 
 Epoch/wall-clock interruption MAY exist as a secondary operational kill switch but MUST NOT define authoritative gameplay outcome or deterministic replay semantics.
 
 Unconstrained memory/table growth is forbidden. Authoritative components MUST declare/enforce deterministic memory/table constraints, and implementation acceptance MUST prove that allocation/growth outcomes do not become host-resource-dependent gameplay nondeterminism.
 
-## 18. Script failure isolation
+## 18. Script failure isolation and transaction scope
 
 Required script validation/instantiation failure MUST block activation of affected required content. Missing required capability MUST fail activation or invocation closed.
 
 On invocation trap, fuel exhaustion or invalid result:
 
 - no proposed action from that invocation is committed;
+- no proposed extension-state write becomes authoritative;
 - diagnostics remain bounded;
 - the host returns a deterministic domain-level failure category;
 - server-only content/secrets MUST NOT leak to clients.
 
 An action plan containing any unauthorized/invalid authoritative action MUST be rejected atomically by default. Partial-plan semantics require a separate domain-specific accepted contract.
+
+`ProposedActionPlan` MUST NOT become a generic cross-authority transaction escape hatch. Every plan type MUST declare the authoritative domain/transaction scope in which its all-or-nothing validation/commit semantics are valid. If a requested plan would require atomicity broader than an accepted owner/transaction boundary, the host MUST reject it or route it through a separately accepted multi-transaction workflow/orchestrator using the owning domain's OperationId/idempotency/compensation semantics. A script MUST NOT create distributed atomicity by returning a larger plan.
 
 Repeated failures MAY feed a circuit-breaker/disable mechanism, but failover MUST NOT silently substitute different reward/quest/economy semantics.
 
@@ -242,7 +256,9 @@ Repeated failures MAY feed a circuit-breaker/disable mechanism, but failover MUS
 
 VM linear memory/table state MUST NOT be treated as durable gameplay persistence.
 
-Persistent script-owned extension state MUST be typed, namespaced, schema-versioned, size-bounded, accessed through project-owned host/domain APIs and persisted/fenced/migrated through accepted DUR-02/DUR-03 ownership.
+Persistent script-owned extension state MUST be typed, namespaced, schema-versioned, size-bounded, read through the invocation's bounded snapshot and persisted/fenced/migrated through accepted DUR-02/DUR-03 ownership.
+
+A script MAY propose a typed extension-state mutation, but that proposal MUST remain non-authoritative until host/domain validation and commit. It MUST participate in the owning accepted transaction/workflow semantics, including idempotency and audit where applicable. A trap, fuel exhaustion, invalid plan or rejected transaction MUST leave authoritative extension state unchanged.
 
 Opaque arbitrary binary blobs are forbidden for authoritative durable state unless a later accepted contract defines their schema/version/limit/migration/audit semantics.
 
@@ -260,13 +276,13 @@ compile new revision
  -> drain/restart/migrate older scopes under accepted rollout policy
 ```
 
-Every authoritative scope MUST be able to report which exact content/script artifact revision governed it for replay, diagnostics and audit.
+Every authoritative scope MUST be able to report which exact content/script artifact revision, WIT ABI requirement and `script_execution_profile_revision` governed it for replay, diagnostics and audit.
 
 ## 21. Package/runtime supply-chain rules
 
-Production runtime MUST NOT fetch unresolved content packages from the network. Activation MUST use a reviewed immutable lock and verified artifact digests. Script component digests MUST be bound into the content revision/manifest. Unknown script imports/capabilities MUST fail closed.
+Production runtime MUST NOT fetch unresolved content packages from the network. Activation MUST use a reviewed immutable lock and verified artifact digests. Script component digests, exact WIT package/world/interface requirements and the required `script_execution_profile_revision` MUST be bound into the content revision/manifest. Unknown script imports/capabilities MUST fail closed.
 
-Release signing/trust-root/CDN policy is deferred, but integrity hashes are mandatory now.
+Release signing/trust-root/CDN policy is deferred, but integrity hashes are mandatory now. Integrity digests alone MUST NOT be treated as proof of publisher authenticity; production trust/authenticity remains gated by the later release/signing contract.
 
 ## 22. Resource limits
 
@@ -285,19 +301,24 @@ A future implementation MUST prove at minimum:
 3. duplicate key/ambiguous alias/unresolved dependency fails compilation;
 4. client projection contains no server-only fixture;
 5. corrupt or oversized/decompression-bomb fixture fails before activation/unbounded allocation;
-6. unsupported required capability/schema fails closed;
+6. unsupported required capability/schema/WIT requirement fails closed;
 7. mandatory resource-limit registry is complete;
 8. infinite-loop script terminates by deterministic fuel with zero committed mutation;
 9. forbidden filesystem/network/wall-clock capability is inaccessible;
-10. deterministic RNG/replay yields identical proposed action plan;
+10. deterministic RNG/replay yields identical proposed action plan without consuming mutable global RNG state;
 11. host-query result order is deterministic under intentionally shuffled underlying storage/enumeration;
-12. authoritative floating-point fixture either uses accepted deterministic canonicalization or is rejected by policy, with identical replay outcome across supported targets;
-13. invalid action plan is rejected before mutation;
-14. migration-required content cannot activate before migration proof;
-15. incompatible rollback is rejected;
-16. relevant channel-sensitive reward/encounter source lacking multiplicity/eligibility metadata fails compile;
-17. incompatible content revisions cannot silently coexist under one claimed homogeneous world/channel revision set;
-18. legacy conversion output/report is reproducible from exact source/importer revisions.
+12. one invocation cannot observe state changes outside its declared snapshot/revision context through later host queries;
+13. authoritative floating-point fixture either uses accepted deterministic canonicalization or is rejected by policy, with identical replay outcome across supported targets;
+14. the same script/input/fuel under the same `script_execution_profile_revision` yields the same exhaustion/completion outcome across supported targets;
+15. incompatible script execution profile or WIT ABI requirement is rejected before activation rather than silently reinterpreting the content revision;
+16. a script that proposes an extension-state write and then traps leaves authoritative extension state unchanged;
+17. invalid action plan is rejected before mutation;
+18. a plan requesting atomicity wider than its accepted owner/transaction boundary is rejected or routed through an explicitly accepted workflow rather than committed as one implicit transaction;
+19. migration-required content cannot activate before migration proof;
+20. incompatible rollback is rejected;
+21. relevant channel-sensitive reward/encounter source lacking multiplicity/eligibility metadata fails compile;
+22. incompatible content revisions cannot silently coexist under one claimed homogeneous world/channel revision set;
+23. legacy conversion output/report is reproducible from exact source/importer revisions.
 
 ## 24. Physical-format spike gate
 
