@@ -13,7 +13,7 @@ base_sha: 2521882253b04287e1243c54692440120e0b6c8e
 final_head_sha: a1d949362e219373a5d314c0e9ddf8de110362dd
 delivery_merge_sha: 63380bcba469027e90677aaf4db571fa941be2f4
 lifecycle_closeout_branch: docs/OTV2-20260812-dur-03-architecture-closeout
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 208
 owner: released_after_closeout
 created_at: 2026-08-12T14:23:00+02:00
 completed_at: 2026-08-12T15:16:00+02:00
@@ -43,7 +43,7 @@ external_repositories: []
 
 ## Outcome
 
-Delivered the bounded paper-only `DUR-03` architecture contract defining authoritative item/currency/value transaction, conservation and anti-duplication semantics. Delivery PR #207 is merged as `63380bcba469027e90677aaf4db571fa941be2f4`; a separate lifecycle closeout must reconcile canonical programme status/handoff and release DUR-03 path ownership.
+Delivered the bounded paper-only `DUR-03` architecture contract defining authoritative item/currency/value transaction, conservation and anti-duplication semantics. Delivery PR #207 is merged as `63380bcba469027e90677aaf4db571fa941be2f4`; lifecycle closeout PR #208 reconciles canonical programme status/handoff and releases DUR-03 path ownership only when it merges.
 
 The delivery implements nothing. Rust/runtime/client implementation, PostgreSQL DDL/migration execution, production deployment/traffic and entitlement activation remain unauthorized.
 
@@ -197,7 +197,7 @@ DUR-03 owns conservation/transaction mechanics but does not absorb loot generati
 - [x] exact-head Agent Governance, Dependency Review and CodeQL passed;
 - [x] unresolved material review threads before delivery merge: zero;
 - [x] PR #207 squash-merged unchanged from frozen exact head;
-- [ ] lifecycle closeout promotes canonical programme status/handoff and releases ownership; true only after the separate closeout PR merges.
+- [ ] lifecycle closeout promotes canonical programme status/handoff and releases ownership; true only after PR #208 merges.
 
 ## Repair history
 
@@ -231,7 +231,7 @@ PR #207 was squash-merged unchanged from frozen exact head as `63380bcba469027e9
 
 ## Lifecycle closeout discipline
 
-The separate closeout must not change DUR-03 semantic content. It may only:
+PR #208 must not change DUR-03 semantic content. It may only:
 
 1. complete active -> archive movement and retain this full delivery/repair/validation history;
 2. promote `DUR-03` to `ACCEPTED / LIFECYCLE_CLOSED / NOT_STARTED` in maintained programme/register/horizon/index sources;
@@ -245,12 +245,12 @@ No closeout merge SHA or self-referential final head is invented before it exist
 ## Context checkpoint
 
 ```yaml
-last_progress: DUR-03 delivery PR #207 passed exact-head implementing-agent self-review, genuinely independent no-suggestion Codex review and all required exact-head CI, then squash-merged unchanged as 63380bcba469027e90677aaf4db571fa941be2f4; lifecycle closeout is now required.
+last_progress: DUR-03 delivery PR #207 passed exact-head implementing-agent self-review, genuinely independent no-suggestion Codex review and all required exact-head CI, then squash-merged unchanged as 63380bcba469027e90677aaf4db571fa941be2f4; lifecycle closeout PR #208 is in progress.
 status: completed
 delivery_pr: 207
 final_head_sha: a1d949362e219373a5d314c0e9ddf8de110362dd
 delivery_merge_sha: 63380bcba469027e90677aaf4db571fa941be2f4
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 208
 self_review: 4916797999
 independent_review_request: 5267211845
 independent_review_pr_reaction: 450358534
@@ -261,5 +261,5 @@ ci_run_ids:
 repair_cycles_for_delivery_gate: 1
 owner_action_required: false
 blocker: null
-next_action: Complete one bounded DUR-03 lifecycle closeout; only after its merge is DUR-03 canonically ACCEPTED/LIFECYCLE_CLOSED and its ownership released.
+next_action: Complete PR #208 lifecycle closeout; only after its merge is DUR-03 canonically ACCEPTED/LIFECYCLE_CLOSED and its ownership released.
 ```
