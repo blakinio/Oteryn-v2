@@ -15,7 +15,7 @@ final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-12T09:12:00+02:00
-updated_at: 2026-08-12T09:24:00+02:00
+updated_at: 2026-08-12T09:29:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -92,7 +92,7 @@ The nonbinding recommendation reduces the remaining whole gate to six rules:
 
 1. one game-owned migration ledger/history for the current `oteryn_game` boundary with immutable explicit migration artifacts, dedicated least-privilege migrator and no production runtime auto-schema-sync;
 2. READ COMMITTED only with explicit anomaly-closing locks/constraints, otherwise bounded SERIALIZABLE or stricter accepted domain mechanism, preserving semantic operation identity across retry;
-3. one ANL-compatible durable journal + mutable publication-state substrate pattern for authoritative game domains, atomically committed when evidence is mandatory;
+3. one ANL-compatible durable journal + mutable crash-safe publication-state/checkpoint pattern for authoritative game domains, atomically committed when evidence is mandatory;
 4. explicit separation between acknowledged durable commits, FND-03 runtime checkpoint/replay and disaster-recovery RPO;
 5. PITR-capable, restore-tested, fail-closed recovery with non-rollback authority fencing while numeric objectives remain OPS/PERF-owned;
 6. game-wide expand -> migrate/backfill -> validate -> cut over -> contract schema-evolution discipline with writer fencing and evidence-based recovery/rollback.
@@ -109,7 +109,19 @@ Repair:
 - restored overall status to `PROPOSED / PLANNED / NOT_STARTED` during this nonbinding analysis;
 - bounded one migration ledger/history to the current game database and required a later ADR for any genuinely separate persistence authority.
 
-Repair budget used: `1/3`.
+### Repair cycle 2 — exact domain ownership and crash-safe publication checkpoint
+
+Terminal review found two additional issues:
+
+1. the historical market/guild/house/reward consistency bucket was mapped only generically to "domain owners", which was too weak for an exhaustive ownership reconciliation;
+2. the outbox recommendation stated at-least-once delivery but did not explicitly freeze crash-safe publication claim/checkpoint behavior after ambiguous submission or publisher failure.
+
+Repair:
+
+- mapped market/economy to `EXP-ECONOMY-01`, guild/social to `EXP-SOCIAL-01`, houses to `EXP-HOUSES-01`, recurring/meta rewards to `GAME-META-01`, encounter/event rewards to `EXP-EVENTS-01`, with `DUR-03` retaining item/currency conservation for all of them;
+- required restart-safe publication claim/checkpoint state where claim is not proof of delivery, publisher crash leaves work retriable/reconcilable, ambiguous broker outcomes retain the same EventId/content, and immutable event evidence cannot be deleted merely because submission was attempted.
+
+Repair budget used: `2/3`.
 
 ## Excluded scope
 
@@ -127,9 +139,11 @@ Repair budget used: `1/3`.
 
 ### Focused
 
-- exact backlog-to-owner reconciliation: **PASS after repair cycle 1**;
+- exact backlog-to-owner reconciliation: **PASS after repair cycle 2**;
 - ADR-0004 ownership compatibility: **PASS**;
 - accepted Character/FND-04/ANL/FND-03 boundaries preserved: **PASS**;
+- explicit destination ownership for historical domain consistency bucket: **PASS**;
+- crash-safe publication checkpoint/reconciliation semantics: **PASS**;
 - no later gameplay gate pre-accepted: **PASS**.
 
 ### Component/integration/runtime E2E
@@ -160,15 +174,15 @@ Pending final immutable PR head.
 ## Context checkpoint
 
 ```yaml
-last_progress: Exhaustive 14-subject DUR-02 reconciliation and six-rule minimum closure package are on draft PR #199; repair cycle 1 corrected status semantics and bounded migration-ledger scope.
+last_progress: Repair cycle 2 completed: exact owners assigned for the historical market/guild/house/reward bucket and the common outbox substrate now has explicit crash-safe publication checkpoint/reconciliation semantics.
 status: validating
 branch: docs/OTV2-20260812-dur-02-whole-gate-reconciliation
 pr: 199
 final_head_sha: null
 final_head_frozen_at: null
 ci_checks_for_current_head: 0
-repair_cycles_for_current_gate: 1
+repair_cycles_for_current_gate: 2
 owner_action_required: null
 blocker: null
-next_action: Perform terminal full-diff self-review, freeze exact head, run documentation CI, merge/archive only if all gates pass, then present the six-rule whole-DUR-02 owner decision.
+next_action: Perform terminal full-diff self-review on the unchanged candidate; if clean, freeze exact head and run documentation CI before merge/archive and owner decision.
 ```
