@@ -70,11 +70,11 @@ The resource-limit registry requires every externally controlled size/count/dept
 
 ### FACT
 
-Current Wasmtime documentation provides deterministic fuel-based interruption and distinguishes it from nondeterministic epoch interruption. Current Wasmtime deterministic-execution guidance also warns that nondeterministic imports, unconstrained memories/tables and memory/table growth can break deterministic behavior.
+Current Wasmtime documentation provides deterministic fuel-based interruption and distinguishes it from nondeterministic epoch interruption. Current deterministic-execution guidance also calls out nondeterministic imports, observable NaN behavior and memory/table growth as determinism hazards; current Wasmtime configuration additionally exposes an operator-cost policy for fuel accounting.
 
 ### FACT
 
-The WebAssembly Component Model/WIT provides typed import/export interface contracts, which is suitable as a project-owned capability boundary independent of the concrete Wasmtime host API.
+The WebAssembly Component Model/WIT provides typed import/export interface contracts; a component can interact with its environment only through fulfilled imports/exports, making WIT suitable as a project-owned capability boundary independent of the concrete Wasmtime host API.
 
 ### INFERENCE
 
@@ -130,7 +130,10 @@ The following are distinct and must not be collapsed into one opaque build numbe
 - `ruleset_revision` — gameplay rules/profile revision;
 - `world_policy_revision` — world-level policy configuration revision;
 - `compiler_identity` — compiler version/build identity and canonicalization profile;
+- `script_execution_profile_revision` — authoritative script engine/execution semantics that can affect replay or budget outcome without becoming the public WIT ABI;
 - `bundle_artifact_id` — content-addressed digest of exact compiled artifact bytes.
+
+The script execution profile must cover determinism-sensitive runtime facts such as engine/runtime compatibility identity, enabled Wasm features, fuel operator-cost policy, floating/NaN behavior, relaxed-SIMD policy where enabled and memory/table growth behavior. This prevents an engine upgrade from silently reinterpreting the same fuel number or script artifact.
 
 A deployment/replay record can bind several of these together, but one value does not semantically replace the others.
 
@@ -224,6 +227,8 @@ At least:
 - artifact/manifest digest;
 - section/chunk integrity metadata;
 - required runtime/protocol capabilities;
+- exact WIT world/interface compatibility where scripts are present;
+- `script_execution_profile_revision` where authoritative scripts are present;
 - provenance summary;
 - server/client view classification.
 
@@ -320,7 +325,7 @@ Benefits:
 - deterministic compute budget support through Wasmtime fuel;
 - straightforward denial-by-absence of filesystem/network/process/environment capabilities.
 
-Wasmtime is the first implementation candidate, not the semantic owner of the ABI.
+Wasmtime is the first implementation candidate, not the semantic owner of the ABI. Exact WIT package/world/interface requirements are content compatibility inputs; runtime linking may not infer compatibility from mutable source paths or from “whatever imports happen to resolve.”
 
 ## 12. Script execution model
 
@@ -329,7 +334,7 @@ A content script is a pure/bounded decision component over typed inputs as far a
 Conceptual interface:
 
 ```text
-InvocationContext + ReadSnapshot + ExplicitCapabilities
+InvocationContext + immutable ReadSnapshot + ExplicitCapabilities
               |
               v
          Script Component
@@ -357,18 +362,23 @@ The script does **not** receive:
 - a global `Game` object;
 - direct transaction commit APIs.
 
+All authoritative reads during one invocation are bound to its declared snapshot/revision context. Host reads or spatial queries must not expose a moving mixture of live state as the invocation progresses.
+
 ## 13. Capabilities
 
 Capabilities are explicit imports, versioned in the project-owned WIT contract. Example capability families may include:
 
-- bounded read of actor/target state;
-- bounded spatial query within declared scope;
-- deterministic RNG stream supplied by simulation context;
+- bounded snapshot read of actor/target state;
+- bounded snapshot-bound spatial query within declared scope;
+- deterministic invocation-local RNG supplied by simulation context;
 - deterministic simulation time/tick read;
 - propose combat/effect/action intent;
 - propose item/domain transaction intent;
 - emit non-authoritative diagnostic data;
-- read/write typed script extension state only through approved domain APIs.
+- read typed script extension state from the invocation snapshot;
+- propose typed script extension-state mutation as part of the returned plan.
+
+A script must not perform an authoritative extension-state write as an immediate host-call side effect. Proposed writes remain non-authoritative until the host/domain validates and commits the owning transaction/workflow.
 
 Possessing a capability to **propose** an action never bypasses domain validation, ownership, cooldown, GAME-CHANNEL eligibility, DUR-03 conservation or fencing.
 
@@ -377,35 +387,43 @@ Possessing a capability to **propose** an action never bypasses domain validatio
 For authoritative scripts:
 
 - deterministic imports only;
-- host-supplied deterministic RNG keyed by accepted simulation/replay seed and invocation identity;
+- host-supplied deterministic invocation-local RNG keyed by accepted simulation/replay seed and invocation identity rather than a mutable global stream;
 - simulation tick/logical time instead of wall clock;
-- deterministic fuel budget;
+- deterministic fuel budget bound to an exact `script_execution_profile_revision`;
 - bounded memory/table/instance counts;
 - no unconstrained memory/table growth;
 - bounded host-call count and returned collection sizes;
+- stable/canonical host query ordering;
 - bounded action-plan size;
-- deterministic trap/error mapping.
+- deterministic trap/error mapping;
+- explicit deterministic floating/NaN policy where floating point is permitted.
+
+A fuel number alone is not an immutable gameplay contract across arbitrary runtime upgrades. The execution profile therefore captures the engine/runtime compatibility identity and determinism-sensitive settings, including fuel operator costs, enabled features, floating/NaN/relaxed-SIMD policy and memory/table growth behavior. An incompatible profile change must be treated as an explicit compatibility/revision event.
 
 Wall-clock watchdogs/epoch interruption may exist as a secondary operational kill switch, but their firing point cannot define gameplay semantics or replay results. The deterministic semantic budget is fuel/host-call/resource based.
 
 Numeric maxima must be entered in `RESOURCE_LIMITS_REGISTRY.json` before runtime implementation acceptance. This paper-only gate deliberately does not invent numbers.
 
-## 15. Script failure policy
+## 15. Script failure and authority-scope policy
 
 Default fail-closed behavior:
 
 - validation/instantiation failure: content revision cannot activate when the script is required;
 - missing required capability: activation failure;
-- fuel exhaustion/trap/invalid result during invocation: no proposed action is committed;
+- fuel exhaustion/trap/invalid result during invocation: no proposed action or extension-state write is committed;
 - invalid/unauthorized action in a returned plan: reject the entire plan unless a future domain-specific contract explicitly proves partial-plan semantics safe;
 - repeated runtime script failure may trip a bounded circuit breaker/disable policy, but disabling authoritative quest/reward logic cannot silently substitute a different gameplay result;
 - failure diagnostics are bounded and must not leak secrets/server-only content to clients.
+
+`ProposedActionPlan` is not a generic transaction language. Every plan type must name the authoritative domain/transaction scope in which its all-or-nothing semantics are valid. A request for atomicity across a wider set of owners/transactions must fail closed or be handed to a separately accepted orchestrated workflow using the owning domains' existing OperationId/idempotency/compensation rules. Returning a larger script plan cannot manufacture distributed atomicity.
 
 ## 16. Script persistent state
 
 VM memory is not durable state.
 
-A script may own only typed, versioned extension state declared through a registered schema/key namespace and accessed through host/domain APIs. Durable state is stored/fenced/migrated by accepted persistence mechanisms.
+A script may own only typed, versioned extension state declared through a registered schema/key namespace. Reads are snapshot-bound. Writes are typed proposals committed only through the owning host/domain transaction or separately accepted multi-transaction workflow. Durable state is stored/fenced/migrated by accepted persistence mechanisms.
+
+A trap, fuel exhaustion, invalid plan or rejected transaction leaves authoritative extension state unchanged.
 
 Opaque arbitrary binary blobs are disallowed for authoritative durable gameplay state unless a later contract defines schema/version/size/migration/audit semantics.
 
@@ -421,7 +439,7 @@ Allowed conceptual operations:
 - drain/restart or migrate old scopes under an accepted rollout contract;
 - rollback to a previously verified compatible artifact.
 
-This preserves deterministic replay and incident forensics because a running scope can always name the exact content/script artifact revision that governed it.
+This preserves deterministic replay and incident forensics because a running scope can always name the exact content/script artifact revision, WIT ABI requirement and script execution profile that governed it.
 
 ## 18. Security and supply-chain model
 
@@ -430,13 +448,15 @@ Before activation:
 - package dependencies are locked;
 - source/import provenance is recorded;
 - script component digest is bound to the content revision;
+- exact WIT package/world/interface requirements are bound to the content revision;
+- `script_execution_profile_revision` is bound when authoritative scripts are present;
 - unknown imports/capabilities are rejected;
 - bundle/section integrity is verified;
 - physical parser/decompressor limits exist in the resource registry;
 - server-only content remains outside client projection;
 - no unreviewed remote package resolution occurs in production runtime.
 
-Release signing/trust roots are deliberately deferred to a dedicated distribution/release contract; hashes/integrity metadata are required now even if signing is added later.
+Release signing/trust roots are deliberately deferred to a dedicated distribution/release contract. Hashes/integrity metadata remain mandatory now, but a digest alone is not publisher-authenticity evidence.
 
 ## 19. Acceptance scenarios
 
@@ -448,17 +468,24 @@ A future implementation must prove at least:
 4. client projection contains no marked server-only fixture;
 5. corrupted manifest/section/checksum fails before activation;
 6. oversized/decompression-bomb fixture fails before unbounded allocation;
-7. unsupported required capability/schema fails closed;
+7. unsupported required capability/schema/WIT requirement fails closed;
 8. missing mandatory resource-limit entry blocks implementation acceptance;
 9. infinite-loop script terminates by deterministic fuel exhaustion with zero committed action;
 10. script requesting unavailable filesystem/network/clock capability cannot instantiate or call it;
-11. deterministic RNG/script replay produces identical proposed action plan;
-12. unauthorized/invalid action plan is rejected before mutation;
-13. content change requiring durable migration cannot activate before migration proof;
-14. rollback incompatible with migrated durable state is rejected;
-15. relevant reward/spawn/encounter definition without GAME-CHANNEL multiplicity/eligibility classification fails compilation;
-16. two channels of one world cannot silently run incompatible active content revisions under one claimed homogeneous revision set;
-17. legacy import report is reproducible from exact source revision and importer identity.
+11. deterministic RNG/script replay produces identical proposed action plan without mutable global RNG side effects;
+12. host query result order remains deterministic under shuffled underlying storage/enumeration;
+13. later host queries in one invocation cannot observe state outside the declared read snapshot/revision;
+14. authoritative floating-point fixture either uses accepted deterministic canonicalization or is rejected by policy;
+15. same script/input/fuel under the same script execution profile yields identical exhaustion/completion outcome across supported targets;
+16. incompatible script execution profile or WIT ABI requirement fails before activation;
+17. a proposed extension-state write followed by trap leaves authoritative extension state unchanged;
+18. unauthorized/invalid action plan is rejected before mutation;
+19. an action plan requesting cross-owner atomicity is rejected or routed through an explicitly accepted orchestrated workflow;
+20. content change requiring durable migration cannot activate before migration proof;
+21. rollback incompatible with migrated durable state is rejected;
+22. relevant reward/spawn/encounter definition without GAME-CHANNEL multiplicity/eligibility classification fails compilation;
+23. two channels of one world cannot silently run incompatible active content revisions under one claimed homogeneous revision set;
+24. legacy import report is reproducible from exact source revision and importer identity.
 
 ## 20. Must decide now vs defer
 
@@ -471,6 +498,8 @@ A future implementation must prove at least:
 - migration class semantics;
 - server/client projection boundary;
 - capability-oriented deterministic script boundary;
+- proposal-only script mutation semantics and authority-scope limits;
+- versioned deterministic script execution profile;
 - no direct authoritative mutation from scripts;
 - fail-closed resource-limit policy.
 
@@ -488,6 +517,6 @@ A future implementation must prove at least:
 
 ## 21. Recommendation
 
-Accept DUR-04 with the semantic architecture above, then require a separate bounded non-canonical format/compiler/loader spike before freezing physical source/bundle encoding. Scripting implementation should start only after project-owned WIT interfaces and resource limits are separately reviewed as implementation artifacts.
+Accept DUR-04 with the semantic architecture above, then require a separate bounded non-canonical format/compiler/loader spike before freezing physical source/bundle encoding. Scripting implementation should start only after project-owned WIT interfaces, script execution profile and resource limits are separately reviewed as implementation artifacts.
 
-This structure preserves the greenfield Oteryn design, supports complex quests/mechanics without making content opaque, is reviewable by humans and AI tooling at the semantic-model level, enables deterministic migration/build/replay, and prevents scripts from becoming a second unsafe server runtime.
+This structure preserves the greenfield Oteryn design, supports complex quests/mechanics without making content opaque, is reviewable at the semantic-model level, enables deterministic migration/build/replay, and prevents scripts from becoming a second unsafe server runtime or a hidden cross-authority transaction mechanism.
