@@ -52,9 +52,9 @@ A `MOVED` subject is not accepted merely by this document. It remains blocked by
 | 6 | Isolation levels, locking and retry policy | `RETAIN_DUR02` | Character partial baseline closes Character-specific behavior; whole game persistence still needs a common minimum policy | accept explicit anomaly proof and bounded retry discipline without overriding stricter domain contracts |
 | 7 | Transactional outbox boundaries, publication checkpoints, deduplication and recovery | `RETAIN_DUR02` | ANL-01 fixes semantic event/audit behavior; Character partial baseline fixes Character atomicity | freeze one common game-DB substrate boundary; domains still decide which events are mandatory |
 | 8 | Critical append-only audit/journal scope and separation from best-effort telemetry | `SATISFIED` | ANL-01 + Character persistence partial baseline | durability/privacy/event-family semantics remain ANL-owned; physical implementation later consumes them |
-| 9 | Atomic production of item/currency/security evidence with owning authoritative transaction | `MOVED` | item/currency: `GAME-ITEM-01` + `DUR-03` + ANL-01; other security-sensitive mutations: their owning domain + ANL-01 | generic DUR-02 supplies shared atomic substrate only; it does not define value mutation semantics |
+| 9 | Atomic production of item/currency/security evidence with owning authoritative transaction | `MOVED` | item/currency: `GAME-ITEM-01` + `DUR-03` + ANL-01; other security-sensitive mutations: their owning authoritative domain + ANL-01 | generic DUR-02 supplies shared atomic substrate only; it does not define value/security mutation semantics |
 | 10 | Checkpoint interval and maximum accepted progress loss | `RETAIN_DUR02` | FND-03 owns runtime checkpoint/replay; Character persistence accepts commit-before-success; production DR objectives are OPS/PERF-owned | freeze the durable-ack vs runtime-checkpoint/disaster-RPO distinction; do not guess numeric intervals |
-| 11 | Market, guild, house and reward consistency classes | `MOVED` | economy/social/house/reward gameplay gates plus DUR-03 where item/currency conservation is involved | persistence consumes those contracts later; it does not choose their semantics now |
+| 11 | Market, guild, house and reward consistency classes | `MOVED` | market/economy -> `EXP-ECONOMY-01`; guild/social -> `EXP-SOCIAL-01`; houses -> `EXP-HOUSES-01`; recurring/meta rewards -> `GAME-META-01`; encounter/event rewards -> `EXP-EVENTS-01`; item/currency conservation for any of them -> `DUR-03` | persistence consumes those contracts later; it does not choose their semantics now |
 | 12 | Partitioning where justified | `IMPLEMENTATION_DEFERRED` | PERF/implementation evidence | no speculative partitioning/sharding; introduce only from measured load/maintenance evidence with migration plan |
 | 13 | Backup, PITR, restore tests, RPO and RTO | `RETAIN_DUR02` | Character partial baseline fixes no-authority-resurrection; numeric targets remain OPS/PERF/product-owned | freeze capability/safety envelope and delegate numbers/topology |
 | 14 | Compatible migration rollout and rollback | `RETAIN_DUR02` | Character partial baseline has staged migration discipline but only for its accepted sub-scope | elevate compatible schema-evolution discipline to Persistence-v1 common architecture |
@@ -145,12 +145,14 @@ Rules:
 - when durable evidence is mandatory, authoritative mutation + required domain revision/receipt + immutable retained event record + publication enqueue/state commit in the same PostgreSQL transaction or none becomes authoritative;
 - publication state is mutable delivery bookkeeping; retained event semantic content is immutable for its accepted retention lifetime;
 - publication is at-least-once and EventId-stable; consumers remain idempotent;
+- publication claim/checkpoint state is restart-safe: claiming work is not proof of delivery, a publisher crash before confirmed disposition leaves the event retriable after claim expiry/reconciliation, and a delivery attempt cannot delete the immutable event simply because transport submission occurred;
+- publication-state transitions must make ambiguous broker/transport outcomes reconcilable without creating a second event identity or reconstructing content;
 - publisher retry never reconstructs old event payload from later mutable gameplay state;
 - replay rebuilds evidence/projections and never replays authoritative gameplay mutation;
 - best-effort telemetry is outside the transaction and may have distinct overload/drop semantics;
 - item/currency/economy domains do not become accepted by consuming this substrate — DUR-03 still owns conservation and mandatory value-evidence semantics.
 
-Exact table/index/partition/broker design remains implementation-owned subject to these invariants and ANL limits.
+Exact table/index/partition/broker and claim-lease implementation remain implementation-owned subject to these invariants and ANL limits.
 
 ## 8. Decision 4 — durable acknowledgement, runtime checkpoint and progress loss are different concepts
 
@@ -256,7 +258,16 @@ Exact zero-downtime guarantees are not implied. Maintenance versus online migrat
 
 ### Market / guild / houses / rewards
 
-Their consistency models belong to their gameplay/domain owners. Persistence consumes their contracts once accepted. A generic database gate must not choose whether an auction, guild roster, house or reward is world-global, channel-local, escrowed, compensating or strongly serialized.
+The persistence layer consumes the contract of the originating gameplay domain:
+
+- market/economy semantics: `EXP-ECONOMY-01`;
+- guild/social semantics: `EXP-SOCIAL-01`;
+- house semantics: `EXP-HOUSES-01`;
+- recurring/meta reward semantics: `GAME-META-01`;
+- encounter/event reward semantics: `EXP-EVENTS-01`;
+- whenever any of those mutate item/currency value, `DUR-03` remains the conservation/anti-duplication authority.
+
+A generic database gate must not choose whether an auction, guild roster, house or reward is world-global, channel-local, escrowed, compensating or strongly serialized.
 
 ### Partitioning / sharding
 
@@ -274,7 +285,7 @@ Accept these six rules as the remaining whole-Persistence-v1 architecture:
 
 1. **Migration authority:** one game-owned ordered migration history for the current native game database boundary; immutable project-owned explicit migration artifacts; dedicated least-privilege migrator; no production runtime auto-schema-sync; exact Rust migration library deferred.
 2. **Transaction correctness:** no blanket isolation as proof; READ COMMITTED only with explicit anomaly-closing locks/constraints, otherwise bounded SERIALIZABLE/stricter accepted mechanism; same semantic identity across retry.
-3. **Common audit/outbox substrate:** one ANL-compatible durable journal + mutable publication-state pattern shared by authoritative game domains; mandatory evidence commits atomically with its owning mutation; telemetry stays separate.
+3. **Common audit/outbox substrate:** one ANL-compatible durable journal + mutable crash-safe publication-state/checkpoint pattern shared by authoritative game domains; mandatory evidence commits atomically with its owning mutation; telemetry stays separate.
 4. **Progress-loss separation:** acknowledged durable mutation means committed and reconstructible across ordinary process/node restart; FND-03 runtime checkpoint/replay is separate; disaster restore RPO is a separately measured operational/product policy.
 5. **PITR/restore envelope:** production Persistence v1 is PITR-capable and restore-tested, starts restored authority fail-closed, and uses a newer non-rollback recovery fence/equivalent before admission resumes; numeric RPO/RTO/cadence stay OPS/PERF-owned.
 6. **Schema evolution:** game-wide expand -> migrate/backfill -> validate -> cut over -> contract discipline with writer fencing, resumable data work, explicit semantic migrations and evidence-based rollback/recovery rather than mandatory simplistic down-migrations.
@@ -283,7 +294,7 @@ Accept the reconciliation dispositions in section 3 at the same time:
 
 - Character/lease persistence questions are already satisfied by accepted Character/FND-04 architecture;
 - item/currency/value conservation moves to GAME-ITEM/DUR-03;
-- market/guild/house/reward consistency moves to its owning gameplay domains;
+- market/guild/house/reward consistency moves to the exact domain gates named above;
 - event/audit semantic scope remains ANL-01;
 - partitioning and exact library choices are implementation/performance decisions unless evidence later proves an architecture constraint.
 
