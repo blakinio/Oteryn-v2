@@ -4,7 +4,7 @@
 task_id: OTV2-20260813-game-ability-reference-catalogue-parity-fixture-contract
 title: Define representative Reference Mechanic Catalogue and parity-fixture entry contract
 mode: CONTRACT
-status: ready_for_continuation
+status: ready
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: null
@@ -22,9 +22,9 @@ production_authority: NONE
 
 ## Durable handover
 
-Verified canonical `main` before handoff delivery: `199bb6a7559d610be9e01508dd1e5d192b5db820` (PR #247 closeout). PR #248 exists only to deliver this checkpoint; the next architecture task intentionally has no claimed branch/head/PR and must be claimed fresh after live drift verification.
+Verified `main` before handoff delivery: `199bb6a7559d610be9e01508dd1e5d192b5db820` (PR #247). PR #248 only delivers this checkpoint; the next task is intentionally unclaimed and must use a fresh branch after drift verification.
 
-Accepted and lifecycle-closed `GAME-ABILITY-01` baselines on `main`:
+Accepted and lifecycle-closed `GAME-ABILITY-01` baselines:
 - `GAME-ABILITY-01_TYPED_EFFECT_PIPELINE_OWNER_BASELINE.md`
 - `GAME-ABILITY-01_TARGETING_AND_LEGALITY_BOUNDARY_OWNER_BASELINE.md`
 - `GAME-ABILITY-01_CAST_CHANNEL_COMMIT_OWNER_BASELINE.md`
@@ -32,20 +32,18 @@ Accepted and lifecycle-closed `GAME-ABILITY-01` baselines on `main`:
 - `GAME-ABILITY-01_EFFECT_COMPOSITION_DAMAGE_HEAL_OWNER_BASELINE.md`
 - `GAME-ABILITY-01_EFFECT_FAMILIES_REFERENCE_CATALOGUE_OWNER_BASELINE.md`
 
-Overall `GAME-ABILITY-01` remains `REQUIRED_FOR_ALPHA / OPEN`; runtime is unauthorized.
+`GAME-ABILITY-01` remains `REQUIRED_FOR_ALPHA / OPEN`; runtime is unauthorized. Preserve typed-effect/domain ownership boundaries, `GAME-ITEM`/`DUR-03` value conservation, no generic state patch/event bus, no giant per-mechanic core enum, no hidden global transaction model, catalogue-local identity only, and no parity promotion from catalogue presence. `UNKNOWN`/`CONFLICT` remains fail-closed.
 
-Preserve: typed effects only; authoritative mutation stays with owner domains; item/value conservation remains under `GAME-ITEM`/`DUR-03`; movement/world/entity/AI ownership is not transferred to abilities; no generic state patch/event bus, giant per-mechanic core enum, hidden global transaction model or alternate mutation engine; catalogue identity is local provenance only; catalogue presence never proves Reference parity; `UNKNOWN`/`CONFLICT` remains fail-closed.
+Before work, read live governance plus all six baselines, `REFERENCE_EVIDENCE_PARITY_MANIFEST_CONTRACT.md`, `ANL-01_GAME_EVENT_AND_AUDIT_FOUNDATION_CONTRACT.md`, and applicable `GAME-ITEM`, `DUR-03`, `DUR-04`, `SIM-DETERMINISM-01`. PR #191 was separate stale-base GAME-CHAR provenance work at last verification and must not be silently absorbed.
 
-Before continuing, read live `main` governance (`AGENTS.md`, `docs/agents/AGENTS.md`, `PROMPTING_STANDARD.md`, `PROMPTING_HANDOVER.md`, `ARCHITECTURE_DECISION_DISCIPLINE.md`, `CONTEXT_HANDOFF.md`), all six baselines above, `REFERENCE_EVIDENCE_PARITY_MANIFEST_CONTRACT.md`, `ANL-01_GAME_EVENT_AND_AUDIT_FOUNDATION_CONTRACT.md`, and applicable `GAME-ITEM`, `DUR-03`, `DUR-04`, `SIM-DETERMINISM-01` contracts. Verify live PR/task drift first. PR #191 was separate stale-base GAME-CHAR provenance work at the last check and must not be silently absorbed.
+After drift verification, the bounded programme is one representative Reference Mechanic Catalogue entry + parity-fixture binding contract: catalogue-local key, evidence references, behavior-affecting revision bindings, parity/unknown state without promotion-by-presence, target/cast/cost/cooldown/formula/effect/condition/RNG revision references, explicit missing/conflicting evidence, one non-factual example shape, preserved domain ownership, paper-only scope.
 
-Next bounded decision: define one representative Reference Mechanic Catalogue entry + parity-fixture binding contract. Bind a catalogue-local mechanic key to evidence references and behavior-affecting revision bindings; represent parity/unknown state without promotion-by-presence; reference target/cast/cost/cooldown/formula/effect/condition/RNG revisions; keep missing/conflicting evidence explicit and fail-closed; include one representative example shape without inventing Tibia facts; preserve domain ownership; remain paper-only with no runtime/protocol/DDL/serializer lock-in/Platform/production changes.
-
-Governance: exact-head `Merge gate / validate` is required; CI from an older head cannot be reused; all review threads must be resolved; do not invoke owner-funded Codex/OpenAI usage without explicit authorization.
+Governance: exact-head `Merge gate / validate`; no reuse of old-head CI; resolve all review threads; no owner-funded Codex/OpenAI invocation without explicit authorization.
 
 ## Context checkpoint
 
 ```yaml
-status: ready_for_continuation
+status: ready
 branch: null
 head_sha: null
 pr: null
@@ -57,12 +55,12 @@ public_contracts:
   - six accepted GAME-ABILITY-01 owner baselines
   - docs/architecture/REFERENCE_EVIDENCE_PARITY_MANIFEST_CONTRACT.md
 last_progress: Sixth partial baseline delivered by PR #245 and lifecycle-closed by PR #247; handoff delivery is PR #248.
-validation_state: Previous delivery and closeout exact-head aggregate gates PASS; PR #248 must pass its own exact-head aggregate gate before merge.
-audit_state: Handoff full-diff self-review found and repaired stale claimed-branch metadata; no architecture semantics changed.
+validation_state: PR #248 requires fresh exact-head validation after review repair.
+audit_state: Repaired stale claimed-branch metadata, unsupported status vocabulary, and multi-action next_action; no architecture semantic change.
 e2e_state: NOT_APPLICABLE
-ci_generation: PR #248 exact-head generation pending after this metadata repair
+ci_generation: fresh PR #248 exact-head generation required
 run_ids: []
 counters: {}
 blocker: null
-next_action: Verify live main/open-PR/task drift, claim a fresh bounded branch, then draft the representative Reference Mechanic Catalogue plus parity-fixture entry contract against the six accepted GAME-ABILITY baselines and evidence-manifest contract.
+next_action: Verify live main, open PRs and active tasks for drift against this checkpoint.
 ```
