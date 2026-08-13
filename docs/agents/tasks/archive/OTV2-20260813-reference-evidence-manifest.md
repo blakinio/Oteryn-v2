@@ -13,7 +13,7 @@ base_sha: 63dea4679dc0c0e3e7a34d8534791eec3e21c769
 final_head_sha: 33152bbfee6bb2be29fe5c37058c3f298e855327
 delivery_merge_sha: 872b629e027b46abb4b558d61ee6104389d97ea7
 lifecycle_closeout_branch: docs/OTV2-20260813-reference-evidence-manifest-closeout
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 221
 owner: released_after_closeout
 created_at: 2026-08-13T14:33:55Z
 completed_at: 2026-08-13T14:59:38Z
@@ -138,7 +138,7 @@ status: completed
 delivery_pr: 220
 final_head_sha: 33152bbfee6bb2be29fe5c37058c3f298e855327
 delivery_merge_sha: 872b629e027b46abb4b558d61ee6104389d97ea7
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 221
 codex_review: 4928336133
 resolved_review_threads:
   - PRRT_kwDOTuGrds6Y-PQe
