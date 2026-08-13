@@ -13,17 +13,17 @@ Cooldowns, rechargeable ability charges and gameplay conditions are authoritativ
 The accepted semantic separation is:
 
 ```text
-Ability / Ruleset policy
--> typed Cooldown / Charge policy
--> authoritative owner-local runtime state
-
-ConditionDefinition (immutable/versioned content semantics)
--> condition admission / conflict policy
--> ConditionInstance (authoritative runtime occurrence)
--> typed modifiers and/or bounded scheduled occurrences
--> existing Target / Legality / Effect Plan / PRIMARY COMMIT pipeline
--> explicit refresh / stack / replace / suppress / dispel / expire transitions
+Ability / mechanic occurrence
+-> typed cooldown / charge / condition transition proposal
+-> applicable Target / Legality / condition admission-conflict evaluation
+-> typed Effect Plan validation
+-> PRIMARY COMMIT
+-> authoritative cooldown / charge / ConditionInstance transition
+-> typed modifiers and/or bounded future occurrences
+-> future mutating occurrences re-enter the same Effect Plan / commit pipeline
 ```
+
+`ConditionDefinition` remains immutable/versioned content semantics; `ConditionInstance` is authoritative runtime state created or changed only through the authoritative lifecycle described below.
 
 ## Cooldown state and scope
 
@@ -33,9 +33,9 @@ A versioned policy identifies the semantic cooldown key/domain and the authorita
 
 Cooldown state must have a named authoritative owner consistent with FND-03. Process-global mutable cooldown maps are forbidden. Cross-Channel or cross-Instance cooldown effects are not implicitly authorized by sharing a textual key.
 
-The previously accepted commit-anchor model applies: starting/extending/consuming a cooldown occurs only at an explicit versioned anchor. Exact durations, grouping and anchor choices remain Reference/ruleset policy.
+The previously accepted commit-anchor model applies: an ability/mechanic-driven cooldown start, extension or consumption is a named committed side effect at an explicit versioned anchor; it cannot be written directly by content or script code. Exact durations, grouping and anchor choices remain Reference/ruleset policy.
 
-A cooldown becoming ready is a deterministic consequence of authoritative simulation/time semantics. Wall-clock observation, client timers or thread wake-up order may not decide readiness.
+A cooldown becoming ready is a deterministic owner-local lifecycle consequence of authoritative simulation/time semantics. Wall-clock observation, client timers or thread wake-up order may not decide readiness.
 
 ## Charge pools
 
@@ -43,7 +43,7 @@ Rechargeable ability charges are a separate semantic concept from cooldowns and 
 
 A `ChargePool`-like semantic policy may define bounded capacity, current authoritative count, consumption anchor and deterministic recharge policy. The exact physical type/name is not frozen.
 
-Charge consumption and recharge are explicit authoritative transitions. Recharge may be represented as bounded scheduled occurrences or an equivalent deterministic derivation, but must preserve replayable ordering and exact behavior-affecting revision/provenance.
+Ability/mechanic-driven charge consumption is a named committed side effect at an explicit anchor. Recharge is an authoritative owner-local lifecycle transition that may be represented as bounded scheduled occurrences or an equivalent deterministic derivation. Both must preserve replayable ordering and exact behavior-affecting revision/provenance.
 
 Sharing a charge pool across abilities must be explicit through a typed shared semantic key/policy. Accidental sharing through string equality or implementation-global state is forbidden.
 
@@ -54,6 +54,8 @@ Item charges, consumable stacks and durable-value ownership remain governed by `
 `ConditionDefinition` is the immutable/versioned semantic definition of a condition family or concrete content mechanic. It may describe typed behavior such as duration policy, conflict/stack policy, typed modifier contributions, bounded scheduled occurrences, tags/categories and dispel/immunity/resistance/suppression participation.
 
 `ConditionInstance` is an authoritative runtime occurrence bound to the exact behavior-affecting definition revision. It carries only runtime state needed to continue deterministic behavior, such as the affected subject, provenance/source, start/expiry state, stack or potency state where applicable, and bounded tick/occurrence schedule state.
+
+An ability, item, creature mechanic, script proposal or other external gameplay occurrence may not create, refresh, stack, replace, transform or remove a `ConditionInstance` directly. It produces a typed condition transition effect/action that is admitted, conflict-resolved, included in the validated Effect Plan where applicable and changed only at the authoritative commit boundary.
 
 The exact Rust type graph, ID widths and serializer are not frozen. A runtime condition occurrence must nevertheless be distinguishable enough for deterministic ordering, audit evidence and explicit removal/transition decisions; container position or pointer identity cannot be semantic identity.
 
@@ -77,7 +79,7 @@ A versioned condition policy may choose bounded semantics equivalent to such fam
 
 These names are semantic examples, not a frozen enum. Every accepted policy must define the matching/conflict domain, source partitioning when relevant, deterministic tie-breaking, maximum cardinality/stack bounds and which revision controls the resulting future behavior.
 
-Refresh/replace/merge is an authoritative transition with explicit events. It must not silently erase already committed effects produced by the previous state.
+Admission/conflict evaluation produces a deterministic typed transition decision before authoritative mutation. Refresh/replace/merge becomes authoritative only at the relevant commit/lifecycle boundary and must emit explicit evidence. It must not silently erase already committed effects produced by the previous state.
 
 ## Condition effects and ticks
 
@@ -85,13 +87,15 @@ Conditions do not receive a second mutation engine.
 
 A condition may contribute typed, bounded modifiers to authoritative rule evaluation and/or schedule future typed occurrences. Any condition tick, DoT, HoT, pulse, proc or repeated application that mutates gameplay state must pass through the same applicable target/legality, typed Effect Plan validation and authoritative `PRIMARY COMMIT` boundaries already accepted for abilities.
 
-Condition code or Wasm/WIT may not directly mutate Character, Item or World state, create private unbounded timers, select hidden targets during effect application or bypass commit anchors.
+Condition code or Wasm/WIT may not directly mutate Character, Item, World, cooldown, charge or condition-instance state; create private unbounded timers; select hidden targets during effect application; or bypass commit anchors.
 
 Scheduled condition occurrences must be bounded, deterministically ordered and independent of unsynchronised wall-clock/thread scheduling. Exact cadence and simulation scheduler implementation remain later decisions.
 
 ## Expiry and removal
 
-Expiry is an explicit authoritative lifecycle transition. Removal may also occur through typed mechanics such as dispel, replacement, cleansing, death/world-transition policy or other accepted ruleset causes.
+Time/policy-driven expiry is an explicit deterministic owner-local lifecycle transition, not a client timer callback or arbitrary script mutation. It is ordered with other authoritative state transitions and emits typed evidence.
+
+Ability-/mechanic-driven removal, dispel, cleanse, replacement or transformation must arrive as a typed authoritative effect/action and cannot mutate the condition collection out of band. Death/world-transition policy or other internal lifecycle causes must likewise use the same named owner and deterministic ordering boundary.
 
 Removing, expiring, replacing or dispelling a condition is forward-only. It can prevent future uncommitted contributions/occurrences but does not retroactively erase already committed ticks, effects or audit history.
 
@@ -104,7 +108,7 @@ These concepts remain distinct typed policy layers rather than spell-specific ar
 - **Immunity** determines whether a relevant condition/effect family is admissible at the applicable legality/admission boundary.
 - **Resistance** deterministically modifies an otherwise admissible mechanic according to explicit policy, for example magnitude, duration, chance or another typed parameter; it is not implicit immunity.
 - **Suppression** keeps an authoritative condition instance or typed contribution present while policy temporarily prevents selected effects/contributions from applying. Whether duration/tick clocks continue, pause or transform while suppressed must be explicit policy.
-- **Dispel/Cleanse** is an authoritative typed action that selects eligible existing condition instances/contributions and removes or transforms them according to deterministic policy.
+- **Dispel/Cleanse** is a typed authoritative action/effect that deterministically selects eligible existing condition instances/contributions and removes or transforms them only through the authoritative condition transition boundary.
 
 This baseline freezes the separation, not exact evaluation precedence, categories, formulas or Reference behavior. Those remain evidence-driven later decisions and fail closed where Reference parity is unresolved.
 
@@ -142,7 +146,7 @@ ANL-01 remains observational/read-only. Typed evidence should be able to disting
 
 - cooldown started/extended/became ready;
 - charge consumed/recharged/capped;
-- condition admitted/rejected;
+- condition transition proposed/admitted/rejected;
 - condition refreshed/replaced/stacked/merged;
 - suppressed/unsuppressed;
 - dispelled/cleansed/expired/removed;
@@ -183,6 +187,7 @@ accepted partial baselines
 -> versioned cost/cooldown/charge anchors
 -> typed cooldown and distinct ChargePool state
 -> ConditionDefinition != ConditionInstance
+-> ability-driven condition transitions commit as typed effects/actions
 -> explicit bounded conflict/stack/refresh/replace policies
 -> condition ticks use the same Effect Plan / commit pipeline
 -> distinct immunity / resistance / suppression / dispel layers
