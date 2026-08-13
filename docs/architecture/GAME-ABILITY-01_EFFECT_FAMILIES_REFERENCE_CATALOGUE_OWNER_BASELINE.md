@@ -36,6 +36,8 @@ A generic resource transition, if retained later, must name its resource semanti
 
 Effect-family identity is semantic and versioned where behavior changes. Exact Rust names, numeric discriminants, ID widths, wire representation and serializer are deliberately not frozen.
 
+Adding, removing or materially changing a **core** Effect Family is a public architecture-contract change and requires explicit architecture review/owner acceptance. By contrast, adding a new concrete Reference catalogue entry that composes already accepted families/domain integrations is content/evidence work and must not require a new core architecture primitive merely because another mechanic is catalogued.
+
 ## Criteria for adding a core family
 
 A new core effect family is justified only when the mechanic represents a recurring semantic consequence or invariant boundary, has a clear validation/ownership model, can be bounded and replayed deterministically, improves static validation/testing/Studio/Game Intelligence value, and cannot be represented safely and legibly by composition of existing families or a bounded extension.
@@ -57,6 +59,8 @@ Ability / mechanic occurrence
 -> Effect Plan / ordered domain action as applicable
 -> owning-domain authoritative commit
 ```
+
+A typed domain-transition proposal is **not automatically a new core Effect Family**. Domain-specific operations may remain typed integration surfaces owned by that domain when promoting them into the core vocabulary would blur invariants or create primitive proliferation.
 
 Examples of domain-routed consequences include:
 
@@ -99,6 +103,8 @@ stable mechanic identity
 + evidence, implementation and parity classification
 + declared Reference/Evolved differences where relevant
 ```
+
+The catalogue's stable mechanic identity is a catalogue-local semantic/provenance key. This baseline does **not** create a new global foundation identity, protocol discriminator, runtime entity ID, `WorldId`/`ChannelId`-like identity or cross-domain ownership token. Exact physical type/width is deferred.
 
 The exact physical catalogue schema and exact field names are not frozen. The binding set above is semantic: an entry must preserve enough exact behavior-affecting provenance to explain what was evidenced, what Oteryn implements and what parity claim—if any—is justified.
 
