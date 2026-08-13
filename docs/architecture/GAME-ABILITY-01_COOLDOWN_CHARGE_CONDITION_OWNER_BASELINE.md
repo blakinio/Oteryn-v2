@@ -29,7 +29,7 @@ Ability / mechanic occurrence
 
 A cooldown is keyed typed gameplay state, not a free-form timestamp attached to an ability implementation.
 
-A versioned policy identifies the semantic cooldown key/domain and the authoritative subject whose availability is restricted. Supported policies may express ability-specific, explicitly shared cooldown-group, and broader action/global-style restrictions when required by verified Reference behavior or an accepted ruleset. This baseline does **not** require such broader scopes to exist.
+A versioned policy identifies the semantic cooldown key/domain and the authoritative subject whose availability is restricted. Supported policies may express ability-specific, explicitly shared cooldown-group, and broader action/global-style restrictions when required by verified Reference behavior or an accepted ruleset. This baseline does **not** require such broader scopes to exist. Here `global-style` means broad within an explicitly named gameplay subject/domain (for example that actor's action set); it does not authorize process-global, node-global, world-global or cross-Channel mutable state.
 
 Cooldown state must have a named authoritative owner consistent with FND-03. Process-global mutable cooldown maps are forbidden. Cross-Channel or cross-Instance cooldown effects are not implicitly authorized by sharing a textual key.
 
@@ -55,7 +55,7 @@ Item charges, consumable stacks and durable-value ownership remain governed by `
 
 `ConditionInstance` is an authoritative runtime occurrence bound to the exact behavior-affecting definition revision. It carries only runtime state needed to continue deterministic behavior, such as the affected subject, provenance/source, start/expiry state, stack or potency state where applicable, and bounded tick/occurrence schedule state.
 
-An ability, item, creature mechanic, script proposal or other external gameplay occurrence may not create, refresh, stack, replace, transform or remove a `ConditionInstance` directly. It produces a typed condition transition effect/action that is admitted, conflict-resolved, included in the validated Effect Plan where applicable and changed only at the authoritative commit boundary.
+An ability, item, creature mechanic, script proposal or other external gameplay occurrence may not create, refresh, stack, replace, transform, suppress, unsuppress or remove a `ConditionInstance` directly. It produces a typed condition transition effect/action that is admitted, conflict-resolved, included in the validated Effect Plan where applicable and changed only at the authoritative commit boundary.
 
 The exact Rust type graph, ID widths and serializer are not frozen. A runtime condition occurrence must nevertheless be distinguishable enough for deterministic ordering, audit evidence and explicit removal/transition decisions; container position or pointer identity cannot be semantic identity.
 
@@ -95,7 +95,7 @@ Scheduled condition occurrences must be bounded, deterministically ordered and i
 
 Time/policy-driven expiry is an explicit deterministic owner-local lifecycle transition, not a client timer callback or arbitrary script mutation. It is ordered with other authoritative state transitions and emits typed evidence.
 
-Ability-/mechanic-driven removal, dispel, cleanse, replacement or transformation must arrive as a typed authoritative effect/action and cannot mutate the condition collection out of band. Death/world-transition policy or other internal lifecycle causes must likewise use the same named owner and deterministic ordering boundary.
+Ability-/mechanic-driven removal, dispel, cleanse, replacement, transformation, suppression or unsuppression must arrive as a typed authoritative effect/action and cannot mutate the condition collection out of band. Death/world-transition policy or other internal lifecycle causes must likewise use the same named owner and deterministic ordering boundary.
 
 Removing, expiring, replacing or dispelling a condition is forward-only. It can prevent future uncommitted contributions/occurrences but does not retroactively erase already committed ticks, effects or audit history.
 
@@ -107,7 +107,7 @@ These concepts remain distinct typed policy layers rather than spell-specific ar
 
 - **Immunity** determines whether a relevant condition/effect family is admissible at the applicable legality/admission boundary.
 - **Resistance** deterministically modifies an otherwise admissible mechanic according to explicit policy, for example magnitude, duration, chance or another typed parameter; it is not implicit immunity.
-- **Suppression** keeps an authoritative condition instance or typed contribution present while policy temporarily prevents selected effects/contributions from applying. Whether duration/tick clocks continue, pause or transform while suppressed must be explicit policy.
+- **Suppression** keeps an authoritative condition instance or typed contribution present while policy temporarily prevents selected effects/contributions from applying. Whether duration/tick clocks continue, pause or transform while suppressed must be explicit policy. Ability-/mechanic-driven suppression changes use the same typed transition/commit boundary rather than direct collection mutation.
 - **Dispel/Cleanse** is a typed authoritative action/effect that deterministically selects eligible existing condition instances/contributions and removes or transforms them only through the authoritative condition transition boundary.
 
 This baseline freezes the separation, not exact evaluation precedence, categories, formulas or Reference behavior. Those remain evidence-driven later decisions and fail closed where Reference parity is unresolved.
