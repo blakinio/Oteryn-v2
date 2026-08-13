@@ -13,7 +13,7 @@ base_sha: 2b813f713a70c2be91c4ef7b6f052836a4658d16
 final_head_sha: 84b808fc3c2a6bbd1f19ad25040c25e984f4852b
 delivery_merge_sha: 55a2d474d1d74d95287667467f4c11981573ea9f
 lifecycle_closeout_branch: docs/game-ability-effect-composition-closeout
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 236
 owner: released_after_closeout
 created_at: 2026-08-13T19:07:00+02:00
 completed_at: 2026-08-13T19:19:00+02:00
@@ -52,7 +52,6 @@ Exact delivery head: `84b808fc3c2a6bbd1f19ad25040c25e984f4852b`.
 Pre-final self-review repaired three material boundary ambiguities: legality-owned immunity/admissibility was kept outside magnitude calculation; typed contributions were constrained to stage-local versioned transforms rather than a generic modifier bag; and any item/currency/durable consequence was explicitly left subordinate to GAME-ITEM/DUR-03 with no new durable-value ownership/conservation/recovery semantics.
 
 Final delivery evidence:
-
 - exact-head full-diff self-review: **PASS**, new material findings `0`;
 - independent review: **NOT_REQUIRED** under AGENTS.md; bounded paper-only architecture, no mandatory trigger and no unresolved material uncertainty;
 - Agent Governance `31724889154`: **PASS**;
@@ -77,7 +76,7 @@ status: completed
 delivery_pr: 235
 final_head_sha: 84b808fc3c2a6bbd1f19ad25040c25e984f4852b
 delivery_merge_sha: 55a2d474d1d74d95287667467f4c11981573ea9f
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 236
 owner_action_required: false
 blocker: null
 next_action: Continue GAME-ABILITY-01 with exhaustive typed effect families and Reference combat/formula catalogue boundaries; do not implement runtime.
