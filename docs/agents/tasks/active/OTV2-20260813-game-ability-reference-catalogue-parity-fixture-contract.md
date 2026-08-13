@@ -7,7 +7,11 @@ mode: CONTRACT
 status: ready_for_continuation
 repository: blakinio/Oteryn-v2
 base_branch: main
-branch: docs/game-ability-reference-catalogue-handoff
+branch: null
+head_sha: null
+pr: null
+claim_state: UNCLAIMED
+handoff_delivery_pr: 248
 owner: unassigned architecture continuation agent
 implementation_status: NOT_STARTED
 runtime_client_authority: NONE
@@ -18,7 +22,7 @@ production_authority: NONE
 
 ## Durable handover
 
-Verified canonical `main` at handoff: `199bb6a7559d610be9e01508dd1e5d192b5db820` (PR #247 closeout).
+Verified canonical `main` before handoff delivery: `199bb6a7559d610be9e01508dd1e5d192b5db820` (PR #247 closeout). PR #248 exists only to deliver this checkpoint; the next architecture task intentionally has no claimed branch/head/PR and must be claimed fresh after live drift verification.
 
 Accepted and lifecycle-closed `GAME-ABILITY-01` baselines on `main`:
 - `GAME-ABILITY-01_TYPED_EFFECT_PIPELINE_OWNER_BASELINE.md`
@@ -42,19 +46,21 @@ Governance: exact-head `Merge gate / validate` is required; CI from an older hea
 
 ```yaml
 status: ready_for_continuation
-branch: docs/game-ability-reference-catalogue-handoff
-head_sha: pending_delivery
-pr: pending
+branch: null
+head_sha: null
+pr: null
+claim_state: UNCLAIMED
+handoff_delivery_pr: 248
 owned_paths:
   - docs/agents/tasks/active/OTV2-20260813-game-ability-reference-catalogue-parity-fixture-contract.md
 public_contracts:
   - six accepted GAME-ABILITY-01 owner baselines
   - docs/architecture/REFERENCE_EVIDENCE_PARITY_MANIFEST_CONTRACT.md
-last_progress: Sixth partial baseline delivered by PR #245 and lifecycle-closed by PR #247; main = 199bb6a7559d610be9e01508dd1e5d192b5db820.
-validation_state: Previous delivery and closeout exact-head aggregate gates PASS; this checkpoint requires normal PR governance before becoming canonical.
-audit_state: Previous self-review complete; no unresolved review threads after #247.
+last_progress: Sixth partial baseline delivered by PR #245 and lifecycle-closed by PR #247; handoff delivery is PR #248.
+validation_state: Previous delivery and closeout exact-head aggregate gates PASS; PR #248 must pass its own exact-head aggregate gate before merge.
+audit_state: Handoff full-diff self-review found and repaired stale claimed-branch metadata; no architecture semantics changed.
 e2e_state: NOT_APPLICABLE
-ci_generation: none
+ci_generation: PR #248 exact-head generation pending after this metadata repair
 run_ids: []
 counters: {}
 blocker: null
