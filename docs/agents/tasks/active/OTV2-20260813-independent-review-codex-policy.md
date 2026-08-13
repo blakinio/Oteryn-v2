@@ -4,7 +4,7 @@
 task_id: OTV2-20260813-independent-review-codex-policy
 title: Prefer fresh independent agents and gate Codex recommendations
 mode: GOVERNANCE
-status: validating
+status: blocked
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260813-independent-review-codex-policy
@@ -12,7 +12,7 @@ pr: 216
 base_sha: c2c692b3b522bcee3c081aba9c8114e4c67fe818
 owner: architecture-coordinator/current-session
 created_at: 2026-08-13T11:48:00+02:00
-updated_at: 2026-08-13T11:52:00+02:00
+updated_at: 2026-08-13T11:56:00+02:00
 owned_paths:
   - AGENTS.md
   - docs/agents/OWNER_FUNDED_AI_POLICY.md
@@ -43,19 +43,29 @@ Record the owner's review-cost preference without weakening independent-review r
 - live main preflight `c2c692b3b522bcee3c081aba9c8114e4c67fe818`: PASS;
 - open PR #162 path-overlap check: PASS, no overlap with this task's three owned paths;
 - root/nested governance read: PASS;
-- full-diff self-review: pending on frozen head;
-- repository governance validation / Agent Governance: pending;
-- standard exact-head PR checks applicable to documentation/governance: pending;
-- independent review: not required unless final diff reduces a safety gate, expands authority or weakens evidence; intended change does none of those.
+- full-diff exact-head self-review `4925676852` on pre-blocker-record head `523a8247e3b764ebee927d03a1c58d887619278a`: PASS, material findings 0;
+- Agent Governance `31688558791`: PASS on `523a8247...`;
+- Dependency Review `31688558789`: PASS on `523a8247...`;
+- CodeQL `31688558701`: PASS on `523a8247...`;
+- changed-file scope: exactly the three owned paths; `behind_by=0`; unresolved review threads: 0;
+- independent review: not required because the policy preserves all existing safety/evidence gates and expands no authority.
+
+## Merge blocker
+
+PR #216 is intentionally still a draft. GitHub rejected a direct squash merge with HTTP 405 because draft PRs cannot be merged.
+
+The repository's enabled Codex Code Review integration is known to automatically review PRs when they move from draft to ready. OpenAI's current Codex documentation confirms that behavior. Marking #216 ready would therefore trigger owner-funded Codex review, and the owner has not authorized Codex for this exact use.
+
+Do not mark #216 ready merely to make it mergeable unless the owner explicitly authorizes the resulting Codex invocation, or the repository's Codex auto-review configuration is separately changed by an authorized owner action.
 
 ## Context checkpoint
 
 ```yaml
-status: validating
+status: blocked
 branch: docs/OTV2-20260813-independent-review-codex-policy
 pr: 216
-head_sha: null
-blocker: null
-owner_action_required: false
-next_action: Freeze the exact three-path diff, perform full-diff self-review, run exact-head governance/standard CI, then squash-merge and archive/release this governance task if all gates pass.
+head_sha: pending_after_blocker_record
+blocker: PR must leave draft state to merge, but draft-to-ready automatically triggers Codex review and no exact-use owner permission exists
+owner_action_required: true
+next_action: Obtain explicit owner authorization for the Codex review triggered by marking PR #216 ready, or an authorized change that disables that automatic trigger; then re-run exact-head validation if the head changed, mark ready, squash-merge and archive/release the governance task.
 ```
