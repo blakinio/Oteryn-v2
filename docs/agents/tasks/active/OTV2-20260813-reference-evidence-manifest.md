@@ -10,12 +10,12 @@ base_branch: main
 branch: docs/OTV2-20260813-reference-evidence-manifest
 pr: 220
 base_sha: 63dea4679dc0c0e3e7a34d8534791eec3e21c769
-head_sha: 144def2cea8b938c9adaac4d3cf9b832d64b978d
+head_sha: db44a8d4e36932001a85af73b871fb92f5b13201
 final_head_sha: null
 final_head_frozen_at: null
 owner: current coordinating agent/session
 created_at: 2026-08-13T14:33:55Z
-updated_at: 2026-08-13T14:52:00Z
+updated_at: 2026-08-13T14:55:00Z
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -151,10 +151,10 @@ claim executable digest validation.
 ## Context checkpoint
 
 ```yaml
-last_progress: Codex Review P2 feedback addressed: v1 case schema added and Economy inventory made explicit
+last_progress: Codex Review P2 feedback verified: v1 case schema and Economy fail-closed inventory are present
 status: validating
 branch: docs/OTV2-20260813-reference-evidence-manifest
-head_sha: 144def2cea8b938c9adaac4d3cf9b832d64b978d
+head_sha: db44a8d4e36932001a85af73b871fb92f5b13201
 pr: 220
 final_head_sha: null
 final_head_frozen_at: null
@@ -173,5 +173,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: validate schema and manifest, then request fresh exact-head CI and resolve review feedback
+next_action: reply to resolved Codex Review P2 feedback and await fresh exact-head CI
 ```
