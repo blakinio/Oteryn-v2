@@ -273,6 +273,10 @@ A deterministic replay interval MUST identify at least:
 
 - semantic runtime scope;
 - relevant ownership-generation boundary;
+- original NodeId/process-incarnation evidence where retained for forensic attribution;
+- exact authoritative server/build executable revision or artifact identity needed to attribute the implementation that produced the interval;
+- applicable `protocol-oteryn` application/protocol revision and compatibility/profile identity;
+- exact World Bundle artifact identity/digest plus its behavior-affecting content/map/ruleset/world-policy compatibility revisions as applicable;
 - initial canonical deterministic state/checkpoint reference + composite hash;
 - ordered normalized inputs and RuntimeExecutionOrdinal evidence;
 - applicable CommandRef/OperationId/TransactionId/timer/event/work identities;
@@ -286,7 +290,9 @@ A deterministic replay interval MUST identify at least:
 - relevant state-domain revisions;
 - expected canonical deterministic state/result hashes at selected cuts.
 
-Replay MUST NOT require original thread IDs, CPU count, NodeId placement or wall-clock scheduling jitter.
+Original NodeId/process-incarnation evidence is attribution evidence, not simulation identity. Replay MUST NOT require recreating the original NodeId placement, thread IDs, CPU count, worker placement or wall-clock scheduling jitter.
+
+The replay envelope MUST retain executable/protocol/World Bundle provenance even when two conforming supported targets are expected to normalize to the same result; otherwise a historical divergence after a build, protocol or bundle change cannot be attributed to the implementation/artifact context that produced it.
 
 ## 21. Replay is not authority
 
@@ -344,6 +350,7 @@ A deterministic comparison MUST be able to identify at least:
 - first mismatching RuntimeExecutionOrdinal/checkpoint cut;
 - normalized input identity/type;
 - active semantic revision/profile set;
+- exact server/build, protocol and World Bundle provenance for the compared interval;
 - first mismatching deterministic-state domain/support/component hash path;
 - relevant RNG decision/stream evidence;
 - pending timer/operation state when relevant;
@@ -437,7 +444,8 @@ A future implementation MUST prove at least:
 18. incompatible SIM/formula/script execution profile activation fails closed;
 19. script proposal replay with the same bound semantic revision set produces the same normalized accepted/rejected result;
 20. replay tooling cannot mutate live authority;
-21. required replay/hash/RNG/formula/pending-state limits have explicit boundary tests.
+21. required replay/hash/RNG/formula/pending-state limits have explicit boundary tests;
+22. replay evidence retains exact server/build, protocol and World Bundle provenance across implementation/artifact changes while replay correctness remains independent of recreating original process placement.
 
 ## 31. Non-authority statements
 
