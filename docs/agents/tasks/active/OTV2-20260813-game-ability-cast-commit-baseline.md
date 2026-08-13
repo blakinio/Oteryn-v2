@@ -15,7 +15,7 @@ final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-13T18:22:00+02:00
-updated_at: 2026-08-13T18:28:00+02:00
+updated_at: 2026-08-13T18:29:00+02:00
 execution_budget_minutes: 60
 owned_paths:
   - docs/agents/tasks/active/OTV2-20260813-game-ability-cast-commit-baseline.md
@@ -64,75 +64,35 @@ Record the owner-accepted third bounded `GAME-ABILITY-01` subdecision: explicit 
 
 No Rust gameplay runtime, scheduler, protocol schema, database migration, numeric cast/GCD/cooldown/cost/refund rules, Reference spell timing claims, client animation/UI, Platform write, production behavior or external-repository mutation.
 
-## Implementation / findings
+## Findings
 
 PR #231 contains exactly this task record and `docs/architecture/GAME-ABILITY-01_CAST_CHANNEL_COMMIT_OWNER_BASELINE.md`.
 
-Pre-final self-review found and repaired two material ambiguities:
+Pre-final self-review repaired two semantic ambiguities: primary commit identity and over-broad reservation wording.
 
-1. the initial lifecycle could be read as creating a second `COMMIT` after the already accepted typed Effect Plan; the repaired baseline defines `PRIMARY COMMIT` as that same authoritative effect-commit concept and makes post-commit resolution application/publication only;
-2. the initial reservation wording could be read as guaranteeing the whole cast; the repaired baseline limits reservation to the named resource while later target/source/world legality may still fail.
+The first exact-head Agent Governance generation (`31720735496`) failed before checkout only because the shortened PR body lacked required `## Summary`, `## Scope`, and `## Validation` headings. PR metadata was repaired before this new head; no architecture semantics changed.
 
-Open PRs #162 and #191 are non-overlapping and remain untouched. #162 has separate exhausted repair authority and is not authorized for repair by this task.
+Open PRs #162 and #191 are non-overlapping and remain untouched. #162 has separate exhausted repair authority.
 
 ## Validation
 
-### Focused
+Focused full diff: semantic findings repaired; final-head inspection pending.
 
-- command/run: inspect complete PR #231 diff against prior GAME-ABILITY, FND-03, SIM, DUR-03 and ANL-01 boundaries
-- result: pre-final findings repaired; final-head inspection pending
+Component/integration/E2E: `NOT_APPLICABLE` — architecture-only documentation.
 
-### Component/integration
+Exact-head CI: fresh generation pending after PR metadata repair.
 
-- command/run: `NOT_APPLICABLE` — architecture-only documentation
-- result: `NOT_APPLICABLE`
+Self-review: final-head pending.
 
-### E2E
-
-- scenario: `NOT_APPLICABLE` — no executable/player-visible behavior
-- result: `NOT_APPLICABLE`
-
-### Exact-head CI
-
-- final head: pending
-- trigger source: pull request
-- workflow/run/job: pending
-- runner assignment: pending
-- classification: documentation/governance
-- result: pending
-
-## Self-review
-
-- exact head: pending
-- method/reviewer: implementing/coordinating agent
-- material findings: two pre-final ambiguities repaired; final-head findings pending
-- verdict: pending
-
-## Independent review
-
-- required: `NO` unless final-head review discovers material uncertainty; bounded paper-only partial baseline with no protocol/durable-schema/security/production authority change
-- exact head: `NOT_APPLICABLE`
-- method/auditor: `NOT_APPLICABLE`
-- material findings: `NOT_APPLICABLE`
-- verdict: `NOT_APPLICABLE`
-
-## PR and closeout
-
-- changed-file review: pending final head
-- unresolved review threads: pending
-- related/superseded PRs: #162 and #191 are non-overlapping
-- protected auto-merge: pending
-- merge commit/result: pending
-- ownership release: pending
+Independent review: `NO` unless final-head review discovers material uncertainty.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Two pre-final semantic ambiguities repaired; task metadata records the repair without moving accepted scope.
 status: validating
 branch: docs/game-ability-cast-commit-baseline
 pr: 231
 owner_action_required: false
 blocker: null
-next_action: Inspect the repaired exact full diff, freeze that head as final candidate and require exact-head documentation/governance CI.
+next_action: Inspect the new exact full diff and require a fresh complete exact-head CI generation.
 ```
