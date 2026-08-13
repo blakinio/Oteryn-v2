@@ -4,15 +4,18 @@
 task_id: OTV2-20260813-game-ability-effect-families-reference-catalogue-baseline
 title: Record GAME-ABILITY-01 effect-family and Reference mechanic catalogue boundary
 mode: CONTRACT
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/game-ability-effect-families-reference-catalogue-baseline
-pr: null
+pr: 245
 base_sha: 463ee694edb5edc156e801e456a9c6298482b485
+head_sha: null
+final_head_sha: null
+final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-13T20:28:00+02:00
-updated_at: 2026-08-13T20:28:00+02:00
+updated_at: 2026-08-13T20:31:00+02:00
 execution_budget_minutes: 60
 owned_paths:
   - docs/agents/tasks/active/OTV2-20260813-game-ability-effect-families-reference-catalogue-baseline.md
@@ -44,37 +47,43 @@ Overall `GAME-ABILITY-01` remains open / `REQUIRED_FOR_ALPHA`.
 
 ## Acceptance criteria
 
-- [ ] Add one canonical owner baseline separating effect families, domain-owned transitions and concrete Reference mechanic catalogue entries.
-- [ ] Freeze the separation/selection criteria without freezing an exhaustive effect enum, Rust type graph or physical serializer.
-- [ ] Keep item/currency/loot/durable-value effects subordinate to `GAME-ITEM` / `DUR-03`.
-- [ ] Keep movement/spatial, entity lifecycle, AI/threat and world/tile interactions under their respective domain owners; ability may propose/initiate but not take mutation ownership.
-- [ ] Prevent generic state-patch/event-bus or per-mechanic hardcoded effect families from becoming alternate mutation engines.
-- [ ] Require new core effect families to satisfy explicit reuse/invariant/boundedness/ownership/testability criteria; prefer composition or bounded Wasm for exceptional mechanics.
-- [ ] Define the Reference Mechanic Catalogue as stable mechanic identity + evidence references + behavior-affecting revision bindings + parity/unknown state, not executable truth.
-- [ ] Make evidence-manifest `UNKNOWN`/`CONFLICT`/empty cases fail closed; catalogue presence must never imply Reference parity.
-- [ ] Record realistic options, trade-offs, risks, player/producer/operations impact and the mandatory architecture decision test.
-- [ ] Keep exact formulas, exact catalogue population, exact effect taxonomy, AI/world/item domain internals, runtime, protocol, DDL, Platform and production out of scope.
-- [ ] Complete exact-head full-diff self-review, review classification, zero unresolved threads and the aggregate `Merge gate / validate` before merge.
+- [x] Add one canonical owner baseline separating effect families, domain-owned transitions and concrete Reference mechanic catalogue entries.
+- [x] Freeze the separation/selection criteria without freezing an exhaustive effect enum, Rust type graph or physical serializer.
+- [x] Keep item/currency/loot/durable-value effects subordinate to `GAME-ITEM` / `DUR-03`.
+- [x] Keep movement/spatial, entity lifecycle, AI/threat and world/tile interactions under their respective domain owners; ability may propose/initiate but not take mutation ownership.
+- [x] Prevent generic state-patch/event-bus or per-mechanic hardcoded effect families from becoming alternate mutation engines.
+- [x] Require new core effect families to satisfy explicit reuse/invariant/boundedness/ownership/testability criteria; prefer composition or bounded Wasm for exceptional mechanics.
+- [x] Define the Reference Mechanic Catalogue as stable mechanic identity + evidence references + behavior-affecting revision bindings + parity/unknown state, not executable truth.
+- [x] Make evidence-manifest `UNKNOWN`/`CONFLICT`/empty cases fail closed; catalogue presence never implies Reference parity.
+- [x] Record realistic options, trade-offs, risks, player/producer/operations impact and the mandatory architecture decision test.
+- [x] Keep exact formulas, exact catalogue population, exact effect taxonomy, AI/world/item domain internals, runtime, protocol, DDL, Platform and production out of scope.
+- [ ] Complete exact-head full-diff self-review, review classification, zero unresolved threads and aggregate `Merge gate / validate` before merge.
 
-## Excluded scope
+## Findings
 
-No Rust runtime implementation, exhaustive effect enum, Reference spell/mechanic population, physical catalogue schema/serializer, formula values, movement/world/AI/item implementation, protocol/client UX, database migration, Platform write, production behavior or external-repository mutation.
+PR #245 contains exactly this task record and `docs/architecture/GAME-ABILITY-01_EFFECT_FAMILIES_REFERENCE_CATALOGUE_OWNER_BASELINE.md`.
 
-## Open PR classification
+The owner baseline explicitly treats effect-family vocabulary as semantic routing/validation, not domain ownership. Cross-domain atomicity is not invented: mechanics needing stronger guarantees remain fail-closed until participating owner contracts define them. Reference Catalogue presence cannot upgrade the existing Reference evidence/parity manifest axes.
 
-PR #191 remains a non-overlapping stale-base GAME-CHAR provenance correction and is classified `REBASE/FIX`; it is not merged, closed or absorbed by this task.
+PR #191 remains a non-overlapping stale-base GAME-CHAR provenance correction classified `REBASE/FIX`; it is not merged, closed or absorbed.
 
-## Review classification
+## Validation
 
-Independent review defaults to `NOT_REQUIRED` only if final scope remains bounded paper-only and no AGENTS.md mandatory trigger, unusual unresolved complexity or material uncertainty appears. Cross-domain references explicitly do not transfer durable/security/multichannel ownership into GAME-ABILITY. Owner-funded Codex/OpenAI use is not authorized.
+Focused full diff against all five accepted GAME-ABILITY partial baselines, `GAME-ITEM`/DUR-03, DUR-04, SIM, ANL-01, the Reference evidence/parity manifest and architecture decision discipline: pending exact-head self-review.
+
+Component/integration/runtime E2E: `NOT_APPLICABLE` — architecture-only documentation.
+
+Exact-head aggregate CI: pending.
+
+Independent review classification: `NOT_REQUIRED` only if final self-review confirms no durable/protocol/security/recovery/multichannel/governance ownership change and no unresolved material uncertainty. Owner-funded Codex/OpenAI use is not authorized.
 
 ## Context checkpoint
 
 ```yaml
-status: implementing
+status: validating
 branch: docs/game-ability-effect-families-reference-catalogue-baseline
-pr: null
+pr: 245
 owner_action_required: false
 blocker: null
-next_action: Open a draft PR, add the canonical owner baseline, inspect the exact full diff and repair any boundary ambiguity before final-head freeze.
+next_action: Inspect the exact full diff, repair material boundary findings, freeze the final head and require aggregate exact-head validation.
 ```
