@@ -15,7 +15,7 @@ final_head_sha: null
 final_head_frozen_at: null
 owner: architecture-coordinator/current-session
 created_at: 2026-08-13T00:55:00+02:00
-updated_at: 2026-08-13T01:12:00+02:00
+updated_at: 2026-08-13T08:57:00+02:00
 execution_budget_minutes: 90
 large_budget_reason: Cross-cutting paper-only determinism gate spans authoritative arithmetic, RNG ownership, logical time/order, replay inputs and cross-target evidence without authorizing runtime implementation.
 owned_paths:
@@ -55,12 +55,15 @@ Maintained programme/register/horizon/index/handoff files remain outside this de
 - `PROVEN`: post-DUR-04-closeout `main@27c313a0c6032f0433ad9598c3cf53e4f0179813` selects `SIM-DETERMINISM-01 = PROPOSED / PLANNED / NOT_STARTED` as the next bounded paper-only architecture action.
 - `PROVEN`: no active SIM task and no competing open SIM delivery PR existed at task start.
 - `PROVEN`: FND-03 already owns one logical authoritative writer per Channel/Instance, owner-scoped `RuntimeExecutionOrdinal`, wall/monotonic/execution-order separation, no universal fixed tick, deterministic gameplay RNG/replay evidence and stale-result rejection. SIM cannot invent a competing scheduler or global order.
+- `PROVEN`: FND-03 replay evidence retains applicable NodeId/process-incarnation attribution and protocol/ruleset/content/World Bundle/build revisions; replay correctness does not require recreating original process placement.
 - `PROVEN`: GAME-CHAR keeps authoritative progression facts formula-neutral and delegates exact arithmetic/rounding to ruleset/SIM parity work where identity/ownership/migration is unaffected.
 - `PROVEN`: GAME-ITEM requires deterministic modifier contribution ordering while SIM/ruleset own arithmetic/rounding.
 - `PROVEN`: DUR-03 exact conservation/value arithmetic cannot be weakened by SIM formula choices.
 - `PROVEN`: DUR-04 owns guest/script execution determinism through immutable invocation snapshots, invocation-local deterministic RNG, stable query order, proposal-only mutation and `script_execution_profile_revision`; SIM owns composition with core simulation/replay, not guest engine internals.
 - `PROVEN`: GAME-VISION Reference claims remain evidence-gated; deterministic implementation convenience cannot fill `UNKNOWN/CONFLICT` Global behavior.
 - `PROVEN`: current governance forbids Codex/OpenAI API/owner-funded AI use without exact current-task permission. The PR #212 owner review override is not standing permission and has not been used for #214.
+- `PROVEN`: independent exact-head review `4924203877` on frozen head `5dc628f32ca4573725bcb4a42c3a7702536d7f35` confirmed one material P1: SIM replay evidence omitted server/build, protocol and exact World Bundle provenance required by FND-03.
+- `PROVEN`: on 2026-08-13 the owner explicitly instructed `wykonaj to wszystko` in direct response to the P1 audit, authorizing one additional bounded repair cycle for this finding; this does not authorize Codex/OpenAI API/owner-funded AI use or waive the independent-review gate.
 
 ## Candidate semantic closure
 
@@ -77,7 +80,7 @@ Maintained programme/register/horizon/index/handoff files remain outside this de
 - [x] Wall clock, monotonic elapsed time and authoritative execution order remain distinct; no universal fixed tick is introduced.
 - [x] Simultaneous/conflicting inputs use commutative semantics, stable tie-break or retained FND-03 RuntimeExecutionOrdinal; no pointer/hash-map/thread ordering authority.
 - [x] External nondeterminism must become typed normalized authority input/fact with canonicalized or retained meaningful collection order.
-- [x] Replay envelope binds initial deterministic state, accepted input order/identities, semantic revisions/profiles, formula/script identities, RNG evidence and normalized external/time facts.
+- [x] Replay envelope binds initial deterministic state, accepted input order/identities, exact server/build + protocol + World Bundle provenance, semantic revisions/profiles, formula/script identities, RNG evidence and normalized external/time facts; original NodeId/process evidence is forensic attribution, not a replay-placement prerequisite.
 - [x] Canonical deterministic state includes all future-determining authority state: active revision/profile set, gameplay state, RNG cursors/state, pending timers/operations/continuations, occurrence identities and semantically relevant fence/revision metadata.
 - [x] Hierarchical deterministic-state hashing/localization is evidence only and cannot repair live state.
 - [x] Supported authoritative server targets must produce identical normalized outcomes; authoritative floating requires cross-target proof.
@@ -99,7 +102,11 @@ Adversarial self-review found that visible gameplay state alone is insufficient 
 
 Final pre-freeze review found the analysis still described the pre-repair retry/hash model while the normative contract already required semantic revision binding, anti-prediction RNG and future-determining deterministic-state hashing. The analysis was rewritten/reconciled to the reviewed contract so the two candidate architecture sources no longer provide different interpretations.
 
-Repair budget used: **`3/3`**. Any new material finding on the frozen candidate must block/rotate instead of triggering a fourth repair without new owner authorization.
+### Repair cycle 4 — executable/protocol/World Bundle replay provenance
+
+Independent exact-head review `4924203877` confirmed that the frozen replay envelope had dropped FND-03-required executable provenance. The owner explicitly authorized one additional bounded repair cycle. The analysis and normative contract now retain exact authoritative server/build identity, applicable `protocol-oteryn` revision/profile identity and exact World Bundle artifact identity/digest with behavior-affecting compatibility revisions. Original NodeId/process-incarnation evidence may remain for forensic attribution, while replay correctness remains independent of recreating original process placement.
+
+Repair budget used: **`4/4`**, where cycle 4 is the one owner-authorized exception granted on 2026-08-13 for the confirmed P1. Any further material finding must block/rotate unless the owner explicitly authorizes another repair cycle.
 
 ## Validation
 
@@ -108,9 +115,10 @@ Repair budget used: **`3/3`**. Any new material finding on the frozen candidate 
 - live main/ownership preflight: `PASS`
 - accepted-source audit: `PASS`
 - analysis/contract drafting: `PASS`
-- material repair cycles: `3/3`
+- material repair cycles: `4/4`
 - exact changed-file scope: expected task + analysis + contract only
-- terminal full-diff exact-head self-review: pending after freeze
+- previous independent exact-head review `4924203877`: `BLOCK/P1` on superseded head `5dc628f32ca4573725bcb4a42c3a7702536d7f35`; finding repaired in cycle 4
+- terminal full-diff exact-head self-review: pending after repair-4 freeze
 
 ### Component/integration/runtime E2E
 
@@ -118,15 +126,16 @@ Repair budget used: **`3/3`**. Any new material finding on the frozen candidate 
 
 ### Review and owner-funded AI
 
-- current task has unusual cross-cutting deterministic correctness/replay/RNG complexity; a genuinely independent second review is expected to be mandatory under root risk policy.
-- Codex/OpenAI API/paid AI reviewer: **NOT AUTHORIZED / NOT INVOKED**.
+- current task has unusual cross-cutting deterministic correctness/replay/RNG complexity; a genuinely independent second review remains mandatory under root risk policy on the new exact final head.
+- Codex/OpenAI API/paid AI reviewer: **NOT AUTHORIZED / NOT INVOKED BY THIS REPAIR**.
 - prior owner override for PR #212: **NOT INHERITED**.
-- implementing-agent self-review remains self-review and will not be relabeled independent.
+- owner authorization for repair cycle 4 does **not** waive independent review.
+- implementing/reparing-agent self-review remains self-review and will not be relabeled independent.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: SIM candidate consumed repair budget 3/3: retry/revision + RNG anti-prediction, future-determining deterministic-state hashing, then analysis/contract reconciliation. No owner-funded AI was invoked.
+last_progress: Owner-authorized repair cycle 4 restored FND-03-required server/build, protocol and exact World Bundle replay provenance and separated process-incarnation forensic attribution from replay placement semantics. No owner-funded AI was invoked by this repair.
 status: validating
 branch: agent/otv2-20260813-sim-determinism-01-architecture
 head_sha: null
@@ -134,7 +143,7 @@ pr: 214
 final_head_sha: null
 final_head_frozen_at: null
 ci_trigger_source: pull_request
-ci_check_generation: pending_after_repair_3
+ci_check_generation: pending_after_repair_4
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -143,10 +152,10 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 3
+repair_cycles_for_current_gate: 4
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: false
 blocker: null
-next_action: Freeze the current exact three-path head, perform one full exact-head self-review and Agent Governance / Dependency Review / CodeQL; if clean, enforce the mandatory independent-review gate without invoking owner-funded AI, and block/rotate if no permitted independent reviewer is available.
+next_action: Freeze the repair-4 exact three-path head, perform terminal full-diff self-review and exact-head Agent Governance / Dependency Review / CodeQL, resolve the repaired P1 thread with exact-head evidence, then obtain a genuinely independent clean review of the unchanged repaired head before merge.
 ```
