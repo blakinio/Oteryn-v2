@@ -15,7 +15,7 @@ final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-13T18:22:00+02:00
-updated_at: 2026-08-13T18:25:00+02:00
+updated_at: 2026-08-13T18:28:00+02:00
 execution_budget_minutes: 60
 owned_paths:
   - docs/agents/tasks/active/OTV2-20260813-game-ability-cast-commit-baseline.md
@@ -36,7 +36,7 @@ external_repositories: []
 
 ## Outcome
 
-Record the owner-accepted third bounded `GAME-ABILITY-01` subdecision: explicit authoritative ability lifecycle, explicit logical commit point, and versioned anchor policies for costs/cooldowns/charges. Overall `GAME-ABILITY-01` remains open / `REQUIRED_FOR_ALPHA`.
+Record the owner-accepted third bounded `GAME-ABILITY-01` subdecision: explicit authoritative ability lifecycle, explicit logical primary commit point, and versioned anchor policies for costs/cooldowns/charges. Overall `GAME-ABILITY-01` remains open / `REQUIRED_FOR_ALPHA`.
 
 ## Source of truth
 
@@ -50,15 +50,15 @@ Record the owner-accepted third bounded `GAME-ABILITY-01` subdecision: explicit 
 
 - [x] Add the canonical lifecycle/commit owner baseline.
 - [x] Define optional casting/channel phases and explicit terminal states without freezing scheduler implementation.
-- [x] Define `COMMIT` as a logical authoritative boundary, not a physical database or CPU transaction.
+- [x] Define primary `COMMIT` as the existing typed-effect authoritative commit boundary, not a second engine or physical DB/CPU transaction.
 - [x] Require costs/cooldowns/charges to use explicit versioned anchor policies; no single global anchor is frozen.
-- [x] Allow only explicit resource reservation; pre-commit interruption releases only explicit reservations.
+- [x] Allow only explicit resource reservation; reservation protects only that resource and never guarantees whole-ability legality.
 - [x] Require post-commit reversal to be a new explicit compensation, never history erasure.
 - [x] Model channel ticks/pulses as bounded deterministic authoritative occurrences, not an unbounded script loop.
 - [x] Resolve interrupt/commit races by authoritative ordering with replay evidence.
 - [x] Preserve targeting, ownership, conservation and audit/event boundaries.
 - [x] Keep exact values/formulas, protocol/client UX, DDL/runtime/production implementation out of scope.
-- [ ] Complete full-diff self-review and exact-head documentation/governance CI before merge.
+- [ ] Complete final-head full-diff self-review and exact-head documentation/governance CI before merge.
 
 ## Excluded scope
 
@@ -68,6 +68,11 @@ No Rust gameplay runtime, scheduler, protocol schema, database migration, numeri
 
 PR #231 contains exactly this task record and `docs/architecture/GAME-ABILITY-01_CAST_CHANNEL_COMMIT_OWNER_BASELINE.md`.
 
+Pre-final self-review found and repaired two material ambiguities:
+
+1. the initial lifecycle could be read as creating a second `COMMIT` after the already accepted typed Effect Plan; the repaired baseline defines `PRIMARY COMMIT` as that same authoritative effect-commit concept and makes post-commit resolution application/publication only;
+2. the initial reservation wording could be read as guaranteeing the whole cast; the repaired baseline limits reservation to the named resource while later target/source/world legality may still fail.
+
 Open PRs #162 and #191 are non-overlapping and remain untouched. #162 has separate exhausted repair authority and is not authorized for repair by this task.
 
 ## Validation
@@ -75,7 +80,7 @@ Open PRs #162 and #191 are non-overlapping and remain untouched. #162 has separa
 ### Focused
 
 - command/run: inspect complete PR #231 diff against prior GAME-ABILITY, FND-03, SIM, DUR-03 and ANL-01 boundaries
-- result: pending final-head self-review
+- result: pre-final findings repaired; final-head inspection pending
 
 ### Component/integration
 
@@ -100,12 +105,12 @@ Open PRs #162 and #191 are non-overlapping and remain untouched. #162 has separa
 
 - exact head: pending
 - method/reviewer: implementing/coordinating agent
-- material findings: pending
+- material findings: two pre-final ambiguities repaired; final-head findings pending
 - verdict: pending
 
 ## Independent review
 
-- required: `NO` unless self-review discovers material uncertainty; bounded paper-only partial baseline with no protocol/durable-schema/security/production authority change
+- required: `NO` unless final-head review discovers material uncertainty; bounded paper-only partial baseline with no protocol/durable-schema/security/production authority change
 - exact head: `NOT_APPLICABLE`
 - method/auditor: `NOT_APPLICABLE`
 - material findings: `NOT_APPLICABLE`
@@ -113,7 +118,7 @@ Open PRs #162 and #191 are non-overlapping and remain untouched. #162 has separa
 
 ## PR and closeout
 
-- changed-file review: pending
+- changed-file review: pending final head
 - unresolved review threads: pending
 - related/superseded PRs: #162 and #191 are non-overlapping
 - protected auto-merge: pending
@@ -123,11 +128,11 @@ Open PRs #162 and #191 are non-overlapping and remain untouched. #162 has separa
 ## Context checkpoint
 
 ```yaml
-last_progress: Canonical cast/channel/commit baseline added and draft PR #231 opened; task metadata reconciled before final-head self-review.
+last_progress: Two pre-final semantic ambiguities repaired; task metadata records the repair without moving accepted scope.
 status: validating
 branch: docs/game-ability-cast-commit-baseline
 pr: 231
 owner_action_required: false
 blocker: null
-next_action: Inspect the exact full diff, repair any material finding, freeze the final head and require exact-head documentation/governance CI.
+next_action: Inspect the repaired exact full diff, freeze that head as final candidate and require exact-head documentation/governance CI.
 ```
