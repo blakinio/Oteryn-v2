@@ -6,8 +6,8 @@
   "reference_target": {
     "id": "global-tibia-observable-2026-07-28-post-server-save",
     "title": "Global Tibia production-observable behavior after the 2026-07-28 server-save/maintenance change boundary",
-    "effective_boundary": "2026-07-28T00:00:00Z",
-    "boundary_time_precision": "DATE_BOUNDARY_ONLY",
+    "effective_boundary_date": "2026-07-28",
+    "boundary_time_precision": "DATE_ONLY_SERVER_SAVE_TIME_NOT_FROZEN",
     "immutable": true,
     "accepted_by": "GAME-VISION-01_FIRST_REFERENCE_BASELINE_OWNER_BASELINE.md",
     "later_upstream_changes_policy": "CANDIDATE_FOR_LATER_REFERENCE_REVISION_ONLY"
