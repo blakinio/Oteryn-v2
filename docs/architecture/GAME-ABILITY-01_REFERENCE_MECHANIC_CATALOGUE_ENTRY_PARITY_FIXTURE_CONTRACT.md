@@ -79,7 +79,13 @@ Physical JSON/RON/YAML choice, serializer, indexes, digest tooling and fixture r
 
 **Selected:** thin catalogue index + exact revision/fixture bindings + explicit parity-coverage matrix. Duplicate evidence, executable-content-as-parity-record and unstructured fixture-only registries are rejected because they create duplicate truth, implementation/evidence conflation or weak auditability.
 
+**Trade-off / risk:** explicit coverage and revision bookkeeping adds authoring/tooling cost and can become stale. The mitigation is one canonical manifest authority, exact revision pinning and future schema validation that rejects incomplete aggregate claims rather than allowing optimistic defaults.
+
 **Must decide now: YES.** First reviewed `ABILITY_COMBAT` cases, representative fixtures, Studio linking and later AI/interaction integration need this boundary.
+
+**Blocked without it:** mechanic-level `ABILITY_COMBAT` evidence population, bounded parity fixtures and evidence-driven GAME-ABILITY closure cannot make trustworthy parity claims without duplicating or conflating evidence.
+
+**Harder later:** allowing catalogue/content/test growth first would create duplicated status fields and broad mechanic-level claims whose later correction requires data migration plus a manual audit of which scenarios were actually evidenced and tested.
 
 **Supersession evidence:** representative packages show the graph/coverage model is insufficient or excessive; tooling evidence shows unacceptable authoring cost; replay/provenance failures; repeated cross-domain cases prove another boundary is needed.
 
