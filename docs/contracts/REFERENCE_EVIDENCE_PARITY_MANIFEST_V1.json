@@ -79,6 +79,10 @@
     {
       "domain": "WORLD_INTERACTION",
       "coverage_status": "NO_MECHANIC_CASES_REGISTERED"
+    },
+    {
+      "domain": "ECONOMY",
+      "coverage_status": "NO_MECHANIC_CASES_REGISTERED"
     }
   ],
   "cases": [],
@@ -105,7 +109,8 @@
     "docs/architecture/GAME-CHAR-01_STAGE_B_OWNER_BASELINE.md",
     "docs/architecture/GAME-ITEM-01_ITEM_MODEL_AND_EQUIPMENT_CONTRACT.md",
     "docs/architecture/SIM-DETERMINISM-01_AUTHORITATIVE_SIMULATION_CONTRACT.md",
-    "docs/architecture/REFERENCE_EVIDENCE_PARITY_MANIFEST_CONTRACT.md"
+    "docs/architecture/REFERENCE_EVIDENCE_PARITY_MANIFEST_CONTRACT.md",
+    "docs/contracts/REFERENCE_EVIDENCE_PARITY_MANIFEST_V1.schema.json"
   ],
   "change_history": [
     {
