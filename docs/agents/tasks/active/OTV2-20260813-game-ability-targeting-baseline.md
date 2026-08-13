@@ -4,18 +4,18 @@
 task_id: OTV2-20260813-game-ability-targeting-baseline
 title: Record GAME-ABILITY-01 deterministic targeting and legality boundary
 mode: CONTRACT
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/game-ability-targeting-baseline
-pr: null
+pr: 228
 base_sha: be80a3c6a8a5d3fd71c5a23786d3e34c7572aef3
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-13T17:58:00+02:00
-updated_at: 2026-08-13T17:58:00+02:00
+updated_at: 2026-08-13T18:03:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -52,14 +52,14 @@ Overall `GAME-ABILITY-01` remains open / `REQUIRED_FOR_ALPHA`.
 
 ## Acceptance criteria
 
-- [ ] Add one canonical owner baseline recording only the accepted targeting/legality boundary.
-- [ ] Preserve one ability pipeline for player, AI, NPC and system origins.
-- [ ] Separate Target Intent, bounded typed Target Query, authoritative Target Resolution, legality evaluation and Effect Plan generation.
-- [ ] Make resolver output deterministic, ordered and bounded; never depend on hash/container iteration order.
-- [ ] Prevent client/content/Wasm from supplying an authoritative final target set.
-- [ ] Require chain/jump/dynamic retargeting to be explicit bounded deterministic resolution steps rather than hidden world re-queries during effect generation.
-- [ ] Preserve FND-03 scope/ownership, DUR-04 capability limits, SIM determinism and ANL observability boundaries.
-- [ ] Keep exact gameplay values/algorithms and all runtime/protocol/DDL/production implementation unauthorized.
+- [x] Add one canonical owner baseline recording only the accepted targeting/legality boundary.
+- [x] Preserve one ability pipeline for player, AI, NPC and system origins.
+- [x] Separate Target Intent, bounded typed Target Query, authoritative Target Resolution, legality evaluation and Effect Plan generation.
+- [x] Make resolver output deterministic, ordered and bounded; never depend on hash/container iteration order.
+- [x] Prevent client/content/Wasm from supplying an authoritative final target set.
+- [x] Require chain/jump/dynamic retargeting to be explicit bounded deterministic resolution steps rather than hidden world re-queries during effect generation.
+- [x] Preserve FND-03 scope/ownership, DUR-04 capability limits, SIM determinism and ANL observability boundaries.
+- [x] Keep exact gameplay values/algorithms and all runtime/protocol/DDL/production implementation unauthorized.
 - [ ] Complete exact-head full-diff self-review and required documentation/governance CI before merge.
 
 ## Excluded scope
@@ -68,14 +68,16 @@ No Rust runtime, target-query implementation, combat formula, exact range/LoS/fl
 
 ## Implementation / findings
 
-This is a semantic boundary only. It prevents ability definitions, scripts and effect primitives from becoming competing arbitrary world-search engines while preserving explicit extension points for beams, cones, areas, chains, jumps, nearest-N and mechanics that require staged retargeting.
+PR #228 contains exactly this task record and `docs/architecture/GAME-ABILITY-01_TARGETING_AND_LEGALITY_BOUNDARY_OWNER_BASELINE.md`. The baseline is semantic only and preserves explicit extension points for areas, beams, cones, chains, jumps, nearest-N and staged retargeting.
+
+Issue creation was unavailable through the connector for this bounded task; the task record and PR are the durable execution sources.
 
 ## Validation
 
 ### Focused
 
-- command/run: inspect complete PR diff against typed-effect, FND-03, DUR-04, SIM-DETERMINISM and ANL-01 boundaries
-- result: pending
+- command/run: inspect complete PR #228 diff against typed-effect, FND-03, DUR-04, SIM-DETERMINISM and ANL-01 boundaries
+- result: pending final-head self-review
 
 ### Component/integration
 
@@ -113,7 +115,7 @@ This is a semantic boundary only. It prevents ability definitions, scripts and e
 
 ## PR and closeout
 
-- changed-file review: pending
+- changed-file review: pending final head
 - unresolved review threads: pending
 - related/superseded PRs: #227 is non-semantic closeout of the preceding typed-effects task; #162 and #191 are non-overlapping
 - protected auto-merge: pending
@@ -123,14 +125,14 @@ This is a semantic boundary only. It prevents ability definitions, scripts and e
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner accepted deterministic target-discovery boundary; dedicated branch created from main@be80a3c6.
-status: implementing
+last_progress: Owner baseline added and draft PR #228 opened; task metadata reconciled before final-head freeze.
+status: validating
 branch: docs/game-ability-targeting-baseline
 head_sha: null
-pr: null
+pr: 228
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
+ci_trigger_source: pull_request
 ci_check_generation: null
 ci_checks_for_current_head: 0
 ci_run_ids: []
@@ -145,5 +147,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: false
 blocker: null
-next_action: Add the canonical targeting/legality owner baseline, open a draft PR and inspect the full diff.
+next_action: Inspect the exact full diff, perform self-review, resolve findings and require exact-head documentation/governance CI.
 ```
