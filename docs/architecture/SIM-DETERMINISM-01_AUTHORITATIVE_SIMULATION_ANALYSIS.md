@@ -32,7 +32,8 @@ SIM must preserve:
 - separation of wall clock, process-local monotonic time and authoritative execution order;
 - no mandatory project-global fixed tick;
 - stale-generation/revision rejection;
-- workers/services as proposal producers whose completions re-enter through normalized authoritative input.
+- workers/services as proposal producers whose completions re-enter through normalized authoritative input;
+- replay evidence retaining applicable NodeId/process-incarnation attribution plus protocol/ruleset/content/World Bundle/build revisions, while replay correctness itself does not require recreating the original process placement.
 
 ### GAME-CHAR-01 and GAME-ITEM-01
 
@@ -299,6 +300,10 @@ A deterministic replay interval requires enough evidence to reconstruct one sema
 
 - semantic runtime scope identity;
 - relevant ownership-generation boundary for interpreting RuntimeExecutionOrdinal;
+- original NodeId/process-incarnation evidence where retained for forensic attribution;
+- exact authoritative server/build executable revision or artifact identity needed to attribute the implementation that produced the interval;
+- applicable `protocol-oteryn` application/protocol revision and compatibility/profile identity;
+- exact World Bundle artifact identity/digest plus its behavior-affecting content/map/ruleset/world-policy compatibility revisions as applicable;
 - initial canonical deterministic checkpoint/state reference and composite hash;
 - ordered normalized inputs and RuntimeExecutionOrdinal evidence;
 - applicable CommandRef/OperationId/TransactionId/timer/event/work identities;
@@ -310,7 +315,9 @@ A deterministic replay interval requires enough evidence to reconstruct one sema
 - relevant state/domain revisions;
 - expected canonical deterministic-state/result hashes at selected cuts.
 
-Replay does not require original NodeId placement, thread IDs, CPU count or OS scheduling jitter.
+Original NodeId/process-incarnation evidence is attribution evidence, not simulation identity. Replay does not require recreating original NodeId placement, thread IDs, CPU count, worker placement or OS scheduling jitter.
+
+Executable/protocol/World Bundle provenance remains part of replay evidence even when conforming supported targets are expected to normalize to the same result, because investigators must be able to attribute a historical divergence to the exact implementation/artifact context that produced it.
 
 ## 20. Replay authority
 
@@ -376,11 +383,12 @@ A deterministic comparison reports at least:
 1. first mismatching RuntimeExecutionOrdinal/checkpoint cut;
 2. normalized input identity/type;
 3. active revision/profile set;
-4. first mismatching deterministic-state domain/support/component path;
-5. RNG decision/stream evidence;
-6. pending timer/operation state where relevant;
-7. formula descriptor/rounding boundary;
-8. script artifact/execution profile where applicable.
+4. exact server/build, protocol and World Bundle provenance for the compared interval;
+5. first mismatching deterministic-state domain/support/component path;
+6. RNG decision/stream evidence;
+7. pending timer/operation state where relevant;
+8. formula descriptor/rounding boundary;
+9. script artifact/execution profile where applicable.
 
 Cadence, retention/storage and detailed evidence budget remain bounded QA/ANL/PERF choices. Evidence never repairs state automatically.
 
@@ -477,12 +485,13 @@ A library preference or benchmark alone cannot weaken exact conservation, author
 
 ## 30. Review reconciliation and recommendation
 
-The candidate analysis and contract are aligned after three review stages:
+The candidate analysis and contract are aligned after the initial draft and four material repair/reconciliation cycles:
 
 1. initial draft established profiled arithmetic/RNG/time/order/replay semantics;
 2. review repair 1 bound retryable logical occurrences to exact semantic revisions and separated deterministic replayability from public RNG predictability;
 3. review repair 2 expanded canonical deterministic state/hash scope to active semantic revisions, RNG state and pending future-determining authority state;
-4. final reconciliation repair updates this analysis so it no longer describes the pre-repair retry/hash model.
+4. review repair 3 reconciled the analysis with the normative retry/hash model so the candidate sources no longer described different semantics;
+5. owner-authorized repair 4 restored the FND-03 executable/protocol/World Bundle replay provenance omitted from the frozen candidate and explicitly separated original NodeId/process-incarnation forensic attribution from any requirement to recreate original placement.
 
 Recommended architecture:
 
@@ -493,6 +502,7 @@ FND-03 owner/order remains authority
 + random decisions are purpose-isolated, retry-stable and not necessarily public
 + external nondeterminism becomes normalized input
 + replay reproduces accepted semantic order, not OS scheduling
++ replay retains exact server/build, protocol and World Bundle provenance without recreating original process placement
 + canonical deterministic state includes future-determining RNG/revision/pending state
 + hierarchical hashes localize the first divergence
 + supported authoritative targets agree on normalized outcome
