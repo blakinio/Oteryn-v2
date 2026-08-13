@@ -4,15 +4,18 @@
 task_id: OTV2-20260813-game-ability-effect-composition-baseline
 title: Record GAME-ABILITY-01 effect composition and damage/heal calculation baseline
 mode: CONTRACT
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/game-ability-effect-composition-baseline
-pr: null
+pr: 235
 base_sha: 2b813f713a70c2be91c4ef7b6f052836a4658d16
+head_sha: null
+final_head_sha: null
+final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-13T19:07:00+02:00
-updated_at: 2026-08-13T19:07:00+02:00
+updated_at: 2026-08-13T19:16:00+02:00
 execution_budget_minutes: 60
 owned_paths:
   - docs/agents/tasks/active/OTV2-20260813-game-ability-effect-composition-baseline.md
@@ -34,50 +37,50 @@ external_repositories: []
 
 ## Outcome
 
-Record the owner-accepted fifth bounded `GAME-ABILITY-01` subdecision: damage/heal use one typed staged deterministic composition framework; damage and healing remain distinct semantics; RNG is explicit/replayable; mutation happens only through the existing Effect Plan/PRIMARY COMMIT; reactive mechanics are bounded descendant occurrences, not recursive mutation.
+Record the owner-accepted fifth bounded `GAME-ABILITY-01` subdecision: damage/heal share typed staged deterministic composition while remaining distinct semantics; RNG is explicit/replayable; calculation is non-mutating; reactions are bounded descendant occurrences.
 
 Overall `GAME-ABILITY-01` remains open / `REQUIRED_FOR_ALPHA`.
 
-## Source of truth
-
-- Prior GAME-ABILITY baselines establish one Effect Plan/commit engine, deterministic targeting/legality, lifecycle/commit anchors and typed condition transitions.
-- Current SIM-DETERMINISM defines versioned numeric semantics, explicit rounding/clamp/invalid handling and purpose-isolated retry-stable gameplay RNG.
-- DUR-04 keeps content/Wasm proposal-only and bounded.
-- Owner accepted this effect-composition direction on 2026-08-13.
-- Exact Reference formulas, damage taxonomy, per-mechanic stage order and reaction ordering remain later evidence-driven policy.
-
 ## Acceptance criteria
 
-- [ ] Add canonical effect-composition/damage-heal owner baseline.
-- [ ] Damage and healing remain distinct typed semantics using shared deterministic composition infrastructure.
-- [ ] No arbitrary per-ability/script authoritative formula callback or direct mutation during calculation.
-- [ ] Versioned typed contributions with deterministic ordering and explicit numeric/RNG semantics.
-- [ ] Mitigation/resistance/absorb stay typed and non-mutating during calculation; state-consuming absorbs emit companion typed plan consequences.
-- [ ] Multi-hit/multi-target ordering and snapshot/sequential semantics are explicit and bounded.
-- [ ] Reflect/thorns/lifesteal/procs are explicit bounded reactive descendant occurrences with lineage/depth/work budgets.
-- [ ] Record realistic alternatives, trade-offs, risks, player/producer impact and mandatory decision test.
-- [ ] Exact formulas/values, runtime, protocol, DDL, Platform and production remain out of scope.
-- [ ] Complete exact-head self-review, review classification, zero unresolved material threads and Agent Governance/Dependency Review/CodeQL before merge.
+- [x] Canonical typed effect-composition/damage-heal baseline added.
+- [x] Damage/heal distinct semantics with shared deterministic infrastructure.
+- [x] No arbitrary authoritative formula callback/direct mutation during calculation.
+- [x] Typed stage-local contributions with deterministic order and SIM numeric/RNG semantics.
+- [x] State-consuming absorbs emit typed companion consequences; durable value remains under GAME-ITEM/DUR-03.
+- [x] Multi-hit/multi-target snapshot/sequential semantics explicit and bounded.
+- [x] Reactive descendants use lineage/depth/cardinality/work budgets; no recursive hidden mutation.
+- [x] Alternatives, trade-offs, risks, player/producer/operations impact and full mandatory decision test recorded.
+- [x] Exact formulas/values/runtime/protocol/DDL/Platform/production remain deferred/out of scope.
+- [ ] Complete final exact-head review classification, zero unresolved material threads and Agent Governance/Dependency Review/CodeQL before merge.
 
-## Excluded scope
+## Findings and repairs
 
-No Rust combat runtime, physical formula DSL/serializer, exact damage types or Reference formulas, scheduler, protocol/client combat UI, database migration, Platform write, production behavior or external-repository mutation.
+Pre-final full-diff review found three material boundary ambiguities and repaired them before freeze:
 
-## Open PR classification
+1. magnitude-side mitigation wording could have been read as moving immunity/admissibility from the accepted Target/Legality boundary into the calculator; the final text preserves legality ownership and limits this stage to post-admission magnitude transforms;
+2. typed contributions could have degraded into a generic unordered modifier bag; the final text requires stage-local typed operations, bounds and versioned composition order;
+3. state-consuming shields could have implied new item/durable-value semantics in GAME-ABILITY; the final text keeps every item/currency/durable consequence subordinate to GAME-ITEM/DUR-03 and defines no new ownership/conservation/recovery rule.
 
-PR #162 is non-overlapping governance work and its own body states its repair budget is exhausted. PR #191 is non-overlapping stale-base GAME-CHAR provenance work. Neither is modified by this task.
+Open PR #162 remains non-overlapping and its own body states its repair budget is exhausted. PR #191 remains non-overlapping stale-base GAME-CHAR provenance work. Neither is modified.
 
-## Review classification
+## Validation
 
-Independent review defaults to `NOT_REQUIRED` only if final scope remains bounded paper-only and self-review finds no mandatory trigger or unusual unresolved complexity. If a trigger appears, merge must stop for genuinely independent exact-head review. Owner-funded Codex/OpenAI review is not authorized.
+Focused full diff against prior GAME-ABILITY boundaries, current SIM numeric/RNG semantics, DUR-04, ANL-01, GAME-ITEM/DUR-03 and architecture decision discipline: final-head review pending after this bookkeeping commit.
+
+Component/integration/runtime E2E: `NOT_APPLICABLE` — architecture-only documentation.
+
+Exact-head CI: pending.
+
+Independent review classification: default `NOT_REQUIRED` only if final-head self-review shows no mandatory AGENTS.md trigger, material uncertainty or unusual unresolved complexity. Owner-funded Codex/OpenAI usage is not authorized.
 
 ## Context checkpoint
 
 ```yaml
-status: implementing
+status: validating
 branch: docs/game-ability-effect-composition-baseline
-pr: null
+pr: 235
 owner_action_required: false
 blocker: null
-next_action: Add canonical baseline, open draft PR, inspect full diff and repair findings before final-head freeze.
+next_action: Inspect the new exact full diff; if clean, freeze head and require exact-head Agent Governance, Dependency Review and CodeQL.
 ```
