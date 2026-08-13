@@ -2,24 +2,74 @@
 
 ```yaml
 task_id: OTV2-20260813-game-ability-cast-commit-baseline
+title: Record GAME-ABILITY-01 cast/channel/interruption and commit-point baseline
+mode: CONTRACT
 status: completed
+repository: blakinio/Oteryn-v2
+base_branch: main
+delivery_branch: docs/game-ability-cast-commit-baseline
 delivery_pr: 231
+base_sha: b4ea6d26ee8e783c4ce26a03655904e5f7786bb6
 final_head_sha: e84592a76d78640db9fba1b96768f6abf868dccc
 delivery_merge_sha: d75e9a7378096b8354a70fc536e8ea6054ed614f
 lifecycle_closeout_branch: docs/game-ability-cast-commit-closeout
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 232
+owner: released_after_closeout
 implementation_status: NOT_STARTED
-owner_action_required: false
+runtime_client_authority: NONE
+postgresql_ddl_migration_authority: NONE
+platform_write_authority: NONE
+production_authority: NONE
+owned_paths:
+  - docs/agents/tasks/archive/OTV2-20260813-game-ability-cast-commit-baseline.md
+  - docs/architecture/GAME-ABILITY-01_CAST_CHANNEL_COMMIT_OWNER_BASELINE.md
+public_contracts:
+  - docs/architecture/GAME-ABILITY-01_CAST_CHANNEL_COMMIT_OWNER_BASELINE.md
+blocks_released:
+  - safe continuation of GAME-ABILITY-01 cooldown/charge, condition lifecycle and effect-composition decisions
+external_repositories: []
 ```
 
 ## Outcome
 
-Delivered the owner-accepted cast/channel/commit partial baseline. `GAME-ABILITY-01` remains open.
+PR #231 delivered the owner-accepted third partial `GAME-ABILITY-01` baseline: explicit cast/channel lifecycle, the existing typed-effect `PRIMARY COMMIT`, versioned cost/cooldown/charge anchors, explicit reservations/compensations, and bounded deterministic repeated occurrences. Overall `GAME-ABILITY-01` remains open / `REQUIRED_FOR_ALPHA`.
 
-## Evidence
+## Review and validation
 
-Final-head self-review PASS with zero new material findings. Agent Governance `31720894826`, Dependency Review `31720894840`, and CodeQL `31720894811` passed. PR #231 squash-merged as `d75e9a7378096b8354a70fc536e8ea6054ed614f`.
+Exact delivery head: `e84592a76d78640db9fba1b96768f6abf868dccc`.
 
-Two pre-final semantic ambiguities were repaired: primary commit identity and reservation scope. Earlier governance run `31720735496` failed only on PR-body headings and was superseded by corrected metadata plus a new head.
+Two pre-final semantic findings were repaired: primary commit identity was unified with the existing typed-effect commit, and reservation scope was narrowed to the named resource rather than whole-ability legality.
 
-Runtime, protocol, DDL, Platform, and production implementation remain out of scope.
+Superseded Agent Governance run `31720735496` failed before checkout only because the initially shortened PR body lacked mandatory headings. Corrected PR metadata plus a new head produced the terminal generation.
+
+Final evidence:
+
+- exact-head self-review: **PASS**, new material findings `0`;
+- Agent Governance `31720894826`: **PASS**;
+- Dependency Review `31720894840`: **PASS**;
+- CodeQL `31720894811`: **PASS**;
+- unresolved review threads: `0`;
+- independent review: **NOT_REQUIRED** for this bounded paper-only partial baseline;
+- component/integration/runtime E2E: **NOT_APPLICABLE**;
+- squash merge: `d75e9a7378096b8354a70fc536e8ea6054ed614f`.
+
+## Deliberately unresolved
+
+Global cooldown model, exact cast/channel/cost/cooldown/refund values, interruption precedence, target revalidation timing, channel cadence/count, logout/reconnect/crash continuation, client UX, scheduler implementation, persistence layout, Reference formulas/catalogue, protocol layout and physical content authoring format remain later decisions.
+
+## Excluded scope preserved
+
+No Rust gameplay runtime, protocol change, DDL/migration, Platform write, production behavior or external-repository mutation was introduced.
+
+## Context checkpoint
+
+```yaml
+status: completed
+delivery_pr: 231
+final_head_sha: e84592a76d78640db9fba1b96768f6abf868dccc
+delivery_merge_sha: d75e9a7378096b8354a70fc536e8ea6054ed614f
+lifecycle_closeout_pr: 232
+owner_action_required: false
+blocker: null
+next_action: Continue GAME-ABILITY-01 with cooldown/charge scopes and condition lifecycle semantics; do not implement runtime.
+```
