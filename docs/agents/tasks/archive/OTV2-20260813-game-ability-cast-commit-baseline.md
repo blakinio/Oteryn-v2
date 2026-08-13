@@ -15,6 +15,9 @@ delivery_merge_sha: d75e9a7378096b8354a70fc536e8ea6054ed614f
 lifecycle_closeout_branch: docs/game-ability-cast-commit-closeout
 lifecycle_closeout_pr: 232
 owner: released_after_closeout
+created_at: 2026-08-13T18:22:00+02:00
+completed_at: 2026-08-13T18:30:00+02:00
+execution_budget_minutes: 60
 implementation_status: NOT_STARTED
 runtime_client_authority: NONE
 postgresql_ddl_migration_authority: NONE
@@ -25,6 +28,13 @@ owned_paths:
   - docs/architecture/GAME-ABILITY-01_CAST_CHANNEL_COMMIT_OWNER_BASELINE.md
 public_contracts:
   - docs/architecture/GAME-ABILITY-01_CAST_CHANNEL_COMMIT_OWNER_BASELINE.md
+depends_on:
+  - docs/architecture/GAME-ABILITY-01_TYPED_EFFECT_PIPELINE_OWNER_BASELINE.md
+  - docs/architecture/GAME-ABILITY-01_TARGETING_AND_LEGALITY_BOUNDARY_OWNER_BASELINE.md
+  - docs/architecture/FND-03_RUNTIME_EXECUTION_CONTRACT.md
+  - docs/architecture/SIM-DETERMINISM-01_AUTHORITATIVE_SIMULATION_CONTRACT.md
+  - docs/architecture/DUR-03_ITEM_TRANSACTION_AND_ANTI_DUPLICATION_CONTRACT.md
+  - docs/architecture/ANL-01_GAME_EVENT_AND_AUDIT_FOUNDATION_CONTRACT.md
 blocks_released:
   - safe continuation of GAME-ABILITY-01 cooldown/charge, condition lifecycle and effect-composition decisions
 external_repositories: []
@@ -42,24 +52,11 @@ Two pre-final semantic findings were repaired: primary commit identity was unifi
 
 Superseded Agent Governance run `31720735496` failed before checkout only because the initially shortened PR body lacked mandatory headings. Corrected PR metadata plus a new head produced the terminal generation.
 
-Final evidence:
-
-- exact-head self-review: **PASS**, new material findings `0`;
-- Agent Governance `31720894826`: **PASS**;
-- Dependency Review `31720894840`: **PASS**;
-- CodeQL `31720894811`: **PASS**;
-- unresolved review threads: `0`;
-- independent review: **NOT_REQUIRED** for this bounded paper-only partial baseline;
-- component/integration/runtime E2E: **NOT_APPLICABLE**;
-- squash merge: `d75e9a7378096b8354a70fc536e8ea6054ed614f`.
+Final evidence: exact-head self-review **PASS**, new material findings `0`; Agent Governance `31720894826` **PASS**; Dependency Review `31720894840` **PASS**; CodeQL `31720894811` **PASS**; unresolved review threads `0`; independent review **NOT_REQUIRED**; runtime/component/E2E **NOT_APPLICABLE**; squash merge `d75e9a7378096b8354a70fc536e8ea6054ed614f`.
 
 ## Deliberately unresolved
 
 Global cooldown model, exact cast/channel/cost/cooldown/refund values, interruption precedence, target revalidation timing, channel cadence/count, logout/reconnect/crash continuation, client UX, scheduler implementation, persistence layout, Reference formulas/catalogue, protocol layout and physical content authoring format remain later decisions.
-
-## Excluded scope preserved
-
-No Rust gameplay runtime, protocol change, DDL/migration, Platform write, production behavior or external-repository mutation was introduced.
 
 ## Context checkpoint
 
