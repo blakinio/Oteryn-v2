@@ -95,10 +95,12 @@ This delivery does not:
 
 Closeout PR #217 is lifecycle bookkeeping only: it removes the completed active task record, retains this archive, and releases task/path ownership. It must not change `AGENTS.md`, `docs/agents/OWNER_FUNDED_AI_POLICY.md` or any architecture/runtime semantics.
 
+The owner explicitly authorized the automatic Codex Review triggered by moving PR #217 at exact head `6bf828406763a2b13345b14cac96eb53c60fd56e` from draft to ready. That review found one P2 limited to this archive checkpoint: its `next_action` still instructed a future coordinator to validate and merge #217 after the closeout would already be complete. Closeout repair cycle 1 clears that stale task-local action and points future work back to the canonical programme handoff. No policy semantics changed and no additional Codex invocation is authorized by this repair.
+
 ## Context checkpoint
 
 ```yaml
-last_progress: PR #216 merged final repaired head 64fa828f2bf56ba1a69bdd6a97b6bda33843066c as 41dffacb4aa706aeae5affbc4a3a0ea1643fde33 after one owner-authorized automatic Codex review found and the delivery repaired a task-record-only P1; closeout PR #217 now owns only active→archive lifecycle bookkeeping.
+last_progress: PR #216 merged final repaired head 64fa828f2bf56ba1a69bdd6a97b6bda33843066c as 41dffacb4aa706aeae5affbc4a3a0ea1643fde33; closeout PR #217 moved the completed task to archive, and its owner-authorized Codex review found one archive-only stale-next-action P2 that was repaired without changing policy semantics.
 status: completed
 delivery_pr: 216
 final_head_sha: 64fa828f2bf56ba1a69bdd6a97b6bda33843066c
@@ -106,12 +108,14 @@ delivery_merge_sha: 41dffacb4aa706aeae5affbc4a3a0ea1643fde33
 lifecycle_closeout_pr: 217
 terminal_self_review: 4926617834
 supplemental_codex_review_superseded_head: 4926598862
+closeout_codex_review_superseded_head: 6bf828406763a2b13345b14cac96eb53c60fd56e
 ci_run_ids:
   - 31697002920
   - 31697002987
   - 31697002896
 repair_cycles_for_delivery_gate: 1
+repair_cycles_for_closeout_gate: 1
 owner_action_required: false
 blocker: null
-next_action: Validate and merge lifecycle closeout PR #217 without changing policy semantics or invoking additional Codex absent a new exact-use owner authorization.
+next_action: none; task lifecycle is closed after PR #217 merges; follow the canonical programme checkpoint and successor handoff for further work.
 ```
