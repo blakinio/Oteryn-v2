@@ -13,7 +13,7 @@ base_sha: c2c692b3b522bcee3c081aba9c8114e4c67fe818
 final_head_sha: 64fa828f2bf56ba1a69bdd6a97b6bda33843066c
 delivery_merge_sha: 41dffacb4aa706aeae5affbc4a3a0ea1643fde33
 lifecycle_closeout_branch: docs/OTV2-20260813-independent-review-codex-policy-closeout
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 217
 owner: released_after_closeout
 created_at: 2026-08-13T11:48:00+02:00
 completed_at: 2026-08-13T13:40:00+02:00
@@ -93,17 +93,17 @@ This delivery does not:
 
 ## Lifecycle closeout
 
-The lifecycle closeout may only archive this completed task and release its path ownership. It must not change `AGENTS.md`, `docs/agents/OWNER_FUNDED_AI_POLICY.md` or any architecture/runtime semantics.
+Closeout PR #217 is lifecycle bookkeeping only: it removes the completed active task record, retains this archive, and releases task/path ownership. It must not change `AGENTS.md`, `docs/agents/OWNER_FUNDED_AI_POLICY.md` or any architecture/runtime semantics.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: PR #216 merged final repaired head 64fa828f2bf56ba1a69bdd6a97b6bda33843066c as 41dffacb4aa706aeae5affbc4a3a0ea1643fde33 after one owner-authorized automatic Codex review found and the delivery repaired a task-record-only P1.
+last_progress: PR #216 merged final repaired head 64fa828f2bf56ba1a69bdd6a97b6bda33843066c as 41dffacb4aa706aeae5affbc4a3a0ea1643fde33 after one owner-authorized automatic Codex review found and the delivery repaired a task-record-only P1; closeout PR #217 now owns only active→archive lifecycle bookkeeping.
 status: completed
 delivery_pr: 216
 final_head_sha: 64fa828f2bf56ba1a69bdd6a97b6bda33843066c
 delivery_merge_sha: 41dffacb4aa706aeae5affbc4a3a0ea1643fde33
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 217
 terminal_self_review: 4926617834
 supplemental_codex_review_superseded_head: 4926598862
 ci_run_ids:
@@ -113,5 +113,5 @@ ci_run_ids:
 repair_cycles_for_delivery_gate: 1
 owner_action_required: false
 blocker: null
-next_action: Complete the bounded lifecycle closeout by removing the active task record and retaining this archive; do not invoke additional Codex or modify policy semantics.
+next_action: Validate and merge lifecycle closeout PR #217 without changing policy semantics or invoking additional Codex absent a new exact-use owner authorization.
 ```
