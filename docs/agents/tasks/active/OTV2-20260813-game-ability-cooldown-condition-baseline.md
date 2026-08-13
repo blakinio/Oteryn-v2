@@ -15,7 +15,7 @@ final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-13T18:49:00+02:00
-updated_at: 2026-08-13T18:52:00+02:00
+updated_at: 2026-08-13T18:55:00+02:00
 execution_budget_minutes: 60
 owned_paths:
   - docs/agents/tasks/active/OTV2-20260813-game-ability-cooldown-condition-baseline.md
@@ -59,7 +59,7 @@ Record the owner-accepted fourth bounded `GAME-ABILITY-01` subdecision: typed co
 - [x] Make removal/expiry/dispels forward-only; past committed ticks/effects are never silently rolled back.
 - [x] Preserve proposal-only Wasm, deterministic ordering/resource bounds and typed audit evidence.
 - [x] Keep exact Reference values/precedence, physical persistence, protocol/client UX and runtime implementation out of scope.
-- [ ] Complete full-diff self-review and exact-head Agent Governance, Dependency Review and CodeQL before merge.
+- [ ] Complete final-head full-diff self-review and exact-head Agent Governance, Dependency Review and CodeQL before merge.
 
 ## Excluded scope
 
@@ -69,6 +69,13 @@ No Rust gameplay implementation, scheduler/timer implementation, protocol schema
 
 PR #233 contains exactly this task record and `docs/architecture/GAME-ABILITY-01_COOLDOWN_CHARGE_CONDITION_OWNER_BASELINE.md`.
 
+Pre-final self-review found and repaired two material boundary ambiguities:
+
+1. initial condition admission/refresh/stack/replace/dispel wording could have allowed an out-of-band condition-collection mutation path; the repaired baseline requires ability-/mechanic-driven condition transitions to arrive as typed effects/actions and become authoritative only through the existing validation/commit boundary, while owner-local lifecycle expiry remains deterministic and auditable;
+2. `global-style` cooldown scope and suppression wording could be misread as process/world-global mutable state or direct suppress/unsuppress mutation; the repaired baseline limits broad cooldowns to an explicitly named gameplay subject/domain and routes ability-/mechanic-driven suppression transitions through the same typed commit boundary.
+
+Final semantic review after those repairs found no new material issue.
+
 Open PRs #162 and #191 are non-overlapping and remain untouched. #162 has exhausted separate repair authority and is not authorized for repair by this task.
 
 ## Validation
@@ -76,7 +83,7 @@ Open PRs #162 and #191 are non-overlapping and remain untouched. #162 has exhaus
 ### Focused
 
 - command/run: inspect complete PR #233 diff against prior GAME-ABILITY, FND-03, SIM, DUR-03 and ANL-01 boundaries
-- result: pending final-head self-review
+- result: pre-final findings repaired; final-head inspection pending after this bookkeeping commit
 
 ### Component/integration
 
@@ -100,12 +107,12 @@ Open PRs #162 and #191 are non-overlapping and remain untouched. #162 has exhaus
 
 - exact head: pending
 - method/reviewer: implementing/coordinating agent
-- material findings: pending
+- material findings: two pre-final boundary ambiguities repaired; final-head findings pending
 - verdict: pending
 
 ## Independent review
 
-- required: `NO` unless self-review discovers material uncertainty; bounded paper-only partial baseline with no runtime/protocol/durable-schema/security/production authority change
+- required: `NO` unless final-head review discovers material uncertainty; bounded paper-only partial baseline with no runtime/protocol/durable-schema/security/production authority change
 - exact head: `NOT_APPLICABLE`
 - method/auditor: `NOT_APPLICABLE`
 - material findings: `NOT_APPLICABLE`
@@ -114,11 +121,11 @@ Open PRs #162 and #191 are non-overlapping and remain untouched. #162 has exhaus
 ## Context checkpoint
 
 ```yaml
-last_progress: Canonical cooldown/charge/condition baseline added and draft PR #233 opened; task metadata reconciled before final-head self-review.
+last_progress: Two pre-final architecture ambiguities repaired and recorded; semantic scope remains the owner-accepted cooldown/charge/condition baseline.
 status: validating
 branch: docs/game-ability-cooldown-condition-baseline
 pr: 233
 owner_action_required: false
 blocker: null
-next_action: Inspect the exact full diff, repair any material finding, freeze the final head and require exact-head documentation/governance CI.
+next_action: Inspect this new exact head, freeze it if clean and require exact-head Agent Governance, Dependency Review and CodeQL.
 ```
