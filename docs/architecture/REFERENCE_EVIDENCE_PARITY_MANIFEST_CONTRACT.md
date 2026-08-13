@@ -17,7 +17,7 @@ known about the immutable first Reference target separately from what Oteryn has
 implemented and tested.
 
 The registry is `docs/contracts/REFERENCE_EVIDENCE_PARITY_MANIFEST_V1.json`.
-
+Its normative machine-readable case schema is\n`docs/contracts/REFERENCE_EVIDENCE_PARITY_MANIFEST_V1.schema.json`. Every\nmanifest revision MUST validate against that exact schema version before acceptance.\n
 ## 2. Normative distinctions
 
 The following dimensions are independent:
@@ -38,8 +38,7 @@ The manifest has:
 - `manifest_revision`: monotonically increasing positive integer within this target;
 - `reference_target.id`: stable project identifier for the immutable target cut;
 - `reference_target.effective_boundary_date`: accepted external behavior boundary date;
-- `cases`: uniquely keyed parity cases.
-
+- `cases`: uniquely keyed parity cases conforming to the v1 case schema.\n
 A change to the accepted target requires a separately owner-approved Reference
 revision. It must not edit the meaning of the v1 target identifier in place.
 
@@ -54,8 +53,7 @@ claimed.
 
 ## 4. Case contract
 
-Each case contains:
-
+Each case MUST validate against\n`docs/contracts/REFERENCE_EVIDENCE_PARITY_MANIFEST_V1.schema.json`. The schema\nis normative for field names, types, required fields, nullability, allowed enums\nand fail-closed conditional rules. In particular, it requires explicit scope,\npreconditions, target evidence, Oteryn state, provenance and classification\nhistory; `PARITY_CONFIRMED` requires cleared provenance, evidence, exact revision\nand a passing fixture/test.\n\nEach case contains:\n
 - stable `case_id`, `domain`, `title`;
 - `scope` and explicit `preconditions`;
 - `target.expected_observable_behavior`;
@@ -112,7 +110,7 @@ All timestamps are RFC 3339 UTC. Date-only historical statements use
 
 Revision 1 registers the immutable target, enums, provenance policy and a
 fail-closed domain inventory for Character, Item, Channel, Content, Simulation,
-Ability/Combat, AI/Spawn and World Interaction. Initial inventory cases make no
+Ability/Combat, AI/Spawn, World Interaction and Economy. Initial inventory cases make no
 mechanic-level parity claim. Mechanic cases are added only from reviewed evidence
 packages.
 
@@ -124,9 +122,7 @@ PR #191 must not be imported as accepted provenance.
 
 Before acceptance:
 
-- parse JSON successfully;
-- verify unique case IDs and enum values;
-- verify every `PARITY_CONFIRMED` case has adequate target sources plus exact
+- parse JSON successfully and validate it against the exact v1 JSON Schema;\n- verify unique case IDs, domain inventory identifiers and enum values;\n- verify every `PARITY_CONFIRMED` case has adequate target sources plus exact
   Oteryn revision and passing fixture/test evidence;
 - verify every declared difference links an accepted decision;
 - verify conflicts and uncleared provenance cannot be confirmed;
