@@ -8,43 +8,50 @@
 
 ## Decision
 
-An authoritative ability occurrence has an explicit semantic lifecycle and an explicit logical commit boundary.
+An authoritative ability occurrence has an explicit semantic lifecycle and an explicit logical primary commit boundary.
 
 ```text
 Invocation
 -> Prepare / Admission
 -> Casting [optional]
--> COMMIT
--> Resolution
+-> target / legality / Effect Plan work required for this occurrence
+-> PRIMARY COMMIT
+-> apply / publish committed resolution
 -> Channel / Repeated Occurrences [optional]
 -> Completed
 ```
 
-Before and after `COMMIT`, the occurrence may end through explicit state transitions such as structured failure, cancellation or interruption where the active ruleset permits them. These are semantic states, not a required Rust enum or scheduler implementation.
+The diagram is semantic, not a required Rust enum, scheduler or thread layout. A policy may perform bounded target/legality checks at more than one explicit lifecycle anchor, but the final target/effect consequences committed for an occurrence are validated before that occurrence's primary commit.
 
-`COMMIT` is the point after which the engine treats the policy-selected committed consequences as authoritative history. It is a logical simulation/domain boundary; this baseline does **not** claim that commit is one database transaction, one thread operation or one machine instruction.
+`PRIMARY COMMIT` is the same authoritative effect-commit concept already accepted by the typed-effect pipeline. It is **not a second mutation engine**. The post-commit `apply / publish committed resolution` step means materializing and reporting the already validated committed plan; it does not permit new hidden target selection, formula interpretation or arbitrary world re-query after commit.
+
+`PRIMARY COMMIT` is a logical simulation/domain boundary; this baseline does **not** claim that it is one database transaction, one thread operation or one machine instruction.
 
 ## Prepare and pre-commit validation
 
 Prepare/Admission may normalize the invocation, check capabilities/prerequisites, perform target resolution/legality work required at that stage and establish explicitly modelled reservations when a later policy needs them.
 
-A pre-check is not automatically a permanent guarantee. Long-running casts may require authoritative revalidation at a later anchor. Exact target snapshot/re-resolution and prerequisite revalidation timing remain versioned Reference/ruleset policy and are not frozen here.
+A pre-check is not automatically a permanent guarantee. Long-running casts may require authoritative revalidation at a later explicit anchor. Exact target snapshot/re-resolution and prerequisite revalidation timing remain versioned Reference/ruleset policy and are not frozen here.
 
 Client prediction, cast bars and cancellation requests remain intent/presentation only. The client does not decide that a cast committed, completed or was successfully interrupted.
 
 ## Explicit commitment anchors
 
-Every behavior-affecting cost, cooldown, charge or similar consumptive side effect uses an explicit versioned anchor policy. Examples of possible semantic anchors include invocation/admission, cast start, `COMMIT`, completion or an explicit channel occurrence. This list is illustrative, not an exhaustive physical representation.
+The primary effect commit is not necessarily the only commit anchor in an ability lifecycle. Every behavior-affecting cost, cooldown, charge or similar consumptive side effect uses its own explicit versioned anchor policy.
 
-There is no implicit global rule that all mana, consumables, cooldowns or charges commit at the same phase.
+Possible semantic anchors include invocation/admission, cast start, `PRIMARY COMMIT`, completion or an explicit channel occurrence. This list is illustrative, not an exhaustive physical representation.
 
-A Reference mechanic may therefore reproduce its observed timing without forking the protocol or creating a second execution engine, while Evolved rulesets may select different versioned policies where explicitly allowed.
+There is no implicit global rule that all mana, consumables, cooldowns or charges commit at the same phase, and an ancillary side effect may commit earlier or later than the primary effect plan when the accepted Reference/ruleset policy requires that behavior.
+
+Once any anchor commits its named side effect, that side effect is authoritative history even if the overall ability later fails, is interrupted or is cancelled. A Reference mechanic may therefore reproduce observed timing without forking the protocol or creating a second execution engine, while Evolved rulesets may select different versioned policies where explicitly allowed.
 
 Anchor selection is part of behavior-affecting semantic revision/provenance and must be available to deterministic replay/evidence.
 
 ## Reservation is explicit, not hidden rollback
 
-A future rule may reserve a resource before `COMMIT` when necessary to prevent races or guarantee later eligibility. Reservation must be an explicit bounded state with a named owner and release/consume policy; it is not speculative mutation hidden behind an eventual refund.
+A future rule may reserve a resource before `PRIMARY COMMIT` when necessary to prevent races or reserve availability of that specific resource for a later anchor. Such a reservation does **not** guarantee that the ability will remain legal: targets, world state, source state and other prerequisites may still invalidate the occurrence under later policy.
+
+Reservation must be an explicit bounded state with a named owner and release/consume policy; it is not speculative mutation hidden behind an eventual refund.
 
 If an occurrence ends before the relevant commit anchor, only explicitly modelled reservations may be released according to policy. The engine must not silently undo arbitrary authoritative mutations to simulate a pre-commit cancellation.
 
@@ -56,7 +63,9 @@ Item, currency or durable-value reservations/consumption/compensation remain sub
 
 Interruption and cancellation are authoritative state transitions evaluated by server policy against ordered simulation state.
 
-When an interrupt, movement, damage event, death, explicit cancellation or other relevant cause competes with `COMMIT`, the result is determined by the authoritative event/order contract from FND-03/SIM. Network arrival races, thread scheduling, wall-clock timing or client presentation timing may not decide the outcome.
+When an interrupt, movement, damage event, death, explicit cancellation or other relevant cause competes with a commit anchor, the result is determined by the authoritative event/order contract from FND-03/SIM. Network arrival races, thread scheduling, unsynchronised wall-clock observation or client presentation timing may not decide the outcome.
+
+Cancellation/interruption after the primary effect commit may prevent later **uncommitted** channel occurrences or other future work when policy permits, but it cannot erase already committed primary or ancillary consequences.
 
 The exact causes that can interrupt a particular ability, interruption precedence, failure messages, penalties and Reference behavior remain later versioned policy.
 
@@ -64,7 +73,7 @@ The exact causes that can interrupt a particular ability, interruption precedenc
 
 Channeling is not an unbounded script loop with direct mutation authority.
 
-Each authoritative channel pulse/tick/repeated application is an explicit bounded deterministic occurrence or sub-occurrence under the same GAME-ABILITY pipeline. As applicable it performs its policy-selected target resolution/revalidation, legality, cost/charge anchor and typed effect-plan/commit steps.
+Each authoritative channel pulse/tick/repeated application is an explicit bounded deterministic occurrence or sub-occurrence under the same GAME-ABILITY pipeline. As applicable it performs its policy-selected target resolution/revalidation, legality, cost/charge anchor, typed Effect Plan validation and primary commit steps.
 
 A channel definition must eventually have explicit bounds and termination rules. Exact tick cadence, maximum count/duration, whether targets are sticky or re-resolved, per-tick versus upfront costs and interruption behavior remain later decisions.
 
@@ -80,11 +89,11 @@ This baseline does not decide whether an in-progress cast/channel survives logou
 
 The previously accepted targeting boundary remains authoritative. This lifecycle does not let casting or channel logic secretly choose a different target set inside effect application.
 
-Target resolution/legality may occur at explicit lifecycle anchors according to later policy, but any re-resolution must use the accepted bounded deterministic resolver. Effect Plan generation still consumes only authoritative validated targets for the relevant occurrence.
+Target resolution/legality may occur at explicit lifecycle anchors according to later policy, but any re-resolution must use the accepted bounded deterministic resolver. For each occurrence, Effect Plan generation/validation consumes only authoritative validated targets before the plan's primary commit.
 
 ## Failure semantics
 
-Structured failure before the relevant commitment anchor does not imply a refund because no hidden consumption is assumed. It may release an explicit reservation if one exists.
+Structured failure before a named commitment anchor does not imply a refund because no hidden consumption is assumed. It may release an explicit reservation if one exists.
 
 Failure after one or more committed consequences does not retroactively erase those consequences. Any compensation must be explicit. This property is required for deterministic replay, anti-duplication, auditability and recovery correctness.
 
@@ -113,7 +122,7 @@ GAME-ABILITY-01 overall
 accepted partial baselines
 -> data-first typed Effect Plan + bounded Wasm proposals
 -> deterministic Target Resolver + separate Legality
--> explicit ability lifecycle + logical COMMIT
+-> explicit ability lifecycle + logical primary commit
 -> versioned cost/cooldown/charge anchors
 -> explicit reservation / explicit compensation
 -> bounded deterministic channel occurrences
