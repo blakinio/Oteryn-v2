@@ -13,7 +13,7 @@ base_sha: be80a3c6a8a5d3fd71c5a23786d3e34c7572aef3
 final_head_sha: 9813e250da4ba08f36a794e464f0b1c6588ba864
 delivery_merge_sha: 84da9a923ee504788444074eb71097e77a6463af
 lifecycle_closeout_branch: docs/targeting-lifecycle-closeout
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 230
 owner: released_after_closeout
 created_at: 2026-08-13T17:58:00+02:00
 completed_at: 2026-08-13T18:04:30+02:00
@@ -102,7 +102,7 @@ status: completed
 delivery_pr: 228
 final_head_sha: 9813e250da4ba08f36a794e464f0b1c6588ba864
 delivery_merge_sha: 84da9a923ee504788444074eb71097e77a6463af
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 230
 owner_action_required: false
 blocker: null
 next_action: Continue GAME-ABILITY-01 with cast/channel/interruption timing and cost-commit semantics; do not implement runtime.
