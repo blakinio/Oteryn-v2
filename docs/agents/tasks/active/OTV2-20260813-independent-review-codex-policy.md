@@ -4,13 +4,15 @@
 task_id: OTV2-20260813-independent-review-codex-policy
 title: Prefer fresh independent agents and gate Codex recommendations
 mode: GOVERNANCE
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260813-independent-review-codex-policy
+pr: 216
 base_sha: c2c692b3b522bcee3c081aba9c8114e4c67fe818
 owner: architecture-coordinator/current-session
 created_at: 2026-08-13T11:48:00+02:00
+updated_at: 2026-08-13T11:52:00+02:00
 owned_paths:
   - AGENTS.md
   - docs/agents/OWNER_FUNDED_AI_POLICY.md
@@ -38,19 +40,22 @@ Record the owner's review-cost preference without weakening independent-review r
 
 ## Validation
 
-- full-diff self-review;
-- repository governance validation / Agent Governance;
-- standard exact-head PR checks applicable to documentation/governance;
-- independent review: not required unless final diff reduces a safety gate or expands authority.
+- live main preflight `c2c692b3b522bcee3c081aba9c8114e4c67fe818`: PASS;
+- open PR #162 path-overlap check: PASS, no overlap with this task's three owned paths;
+- root/nested governance read: PASS;
+- full-diff self-review: pending on frozen head;
+- repository governance validation / Agent Governance: pending;
+- standard exact-head PR checks applicable to documentation/governance: pending;
+- independent review: not required unless final diff reduces a safety gate, expands authority or weakens evidence; intended change does none of those.
 
 ## Context checkpoint
 
 ```yaml
-status: implementing
+status: validating
 branch: docs/OTV2-20260813-independent-review-codex-policy
-pr: null
+pr: 216
 head_sha: null
 blocker: null
 owner_action_required: false
-next_action: Apply the narrow root AGENTS.md and OWNER_FUNDED_AI_POLICY.md changes, then validate the exact three-path diff and merge only after exact-head checks pass.
+next_action: Freeze the exact three-path diff, perform full-diff self-review, run exact-head governance/standard CI, then squash-merge and archive/release this governance task if all gates pass.
 ```
