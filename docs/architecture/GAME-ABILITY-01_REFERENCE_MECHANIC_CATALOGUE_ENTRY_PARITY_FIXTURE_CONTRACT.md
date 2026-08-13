@@ -6,108 +6,63 @@
 
 ## Decision
 
-A Reference Mechanic Catalogue entry is a catalogue-local evidence/provenance record. It binds one concrete mechanic to accepted GAME-ABILITY semantic surfaces, canonical Reference evidence-manifest cases, exact behavior-affecting revisions and bounded parity fixtures.
+A Reference Mechanic Catalogue entry is a catalogue-local provenance record that binds one concrete mechanic to accepted GAME-ABILITY semantics, the applicable versioned Reference evidence manifest, exact behavior-affecting revisions and bounded parity fixtures.
 
-It is not executable content, a runtime entity, protocol discriminator, effect-family definition or independent parity authority. Catalogue presence never proves Reference behavior and never promotes parity.
+It is not executable content, a runtime identity, protocol discriminator, effect-family definition or independent parity authority. Catalogue presence never proves Reference behavior and never promotes parity.
+
+The current `REFERENCE_EVIDENCE_PARITY_MANIFEST_CONTRACT.md` is still `CANDIDATE / NOT ACCEPTED`. This contract aligns with its current axes but does **not** promote that manifest contract or schema. A future physical catalogue must pin an accepted manifest/schema revision before parity confirmation is possible.
+
+## Required binding
+
+Each entry must be capable of carrying:
 
 ```text
 catalogue-local mechanic key
 + immutable Reference target context
-+ evidence-manifest case references
-+ exact semantic revision bindings
++ manifest case references
++ exact behavior-affecting revision references
 + effect-family composition
 + owning-domain integration references
-+ parity-fixture bindings
-+ implementation linkage
-+ projection of evidence / implementation / parity state
++ parity-fixture references
++ exact implementation linkage
 ```
 
-## Identity boundary
+The mechanic key is local to catalogue/provenance. It must not become a foundation ID, runtime occurrence ID, protocol opcode, persistence ownership token or cross-domain fence.
 
-The mechanic key is stable only inside the catalogue/provenance layer. It must not become a new foundation ID, runtime occurrence ID, protocol opcode, database ownership token or cross-domain fence.
+## Evidence and parity
 
-Exact physical representation is deferred. A later format must guarantee uniqueness within a catalogue revision and stability across non-semantic editorial changes.
+The catalogue references or projects classification from the applicable manifest revision; it does not duplicate or override it.
 
-## Evidence binding
-
-Every in-scope Reference entry binds the accepted immutable Reference target and one or more canonical manifest case IDs when such cases exist.
-
-The catalogue references or projects the manifest classification; it does not duplicate or override it.
-
-- no mechanic case => explicit evidence gap;
+- no mechanic-level manifest case => explicit evidence gap;
 - `UNKNOWN` => fail closed / parity pending evidence;
 - `CONFLICT` => fail closed / parity conflict;
 - uncleared provenance blocks promotion;
 - OTS implementations remain hypothesis input only;
-- later upstream behavior cannot silently rewrite the accepted Reference target.
+- later upstream behavior cannot silently rewrite the accepted immutable Reference target.
 
-If one mechanic depends on several claims, all relevant manifest cases remain visible; conflicting cases may not be collapsed into an optimistic summary.
+`PARITY_CONFIRMED` is allowed only after an accepted manifest/schema revision exists and the relevant manifest case permits it with sufficient target evidence, cleared provenance, exact Oteryn implementation revision and passing fixture/test evidence.
 
-## Behavior-affecting revision graph
+## Revision graph
 
-As applicable, an entry must bind exact revisions for:
+As applicable, the entry binds exact revisions for Ability/Mechanic Definition, targeting, legality, cast/channel/interruption, cost/reservation/commit anchors, cooldown/charges, conditions, effect composition, damage/heal formula composition, SIM numeric/RNG semantics and named RNG purposes, DUR-04 script profile/artifact, ruleset/profile and owning-domain integrations.
 
-- Ability/Mechanic Definition;
-- targeting and legality policy;
-- cast/channel/interruption policy;
-- cost/reservation/commit-anchor policy;
-- cooldown and charge policy;
-- condition policy;
-- effect-family composition;
-- damage/heal formula composition;
-- SIM numeric/RNG semantics and named RNG purposes;
-- DUR-04 script profile/artifact when used;
-- ruleset/profile;
-- owning-domain integrations.
+A fixture that exercises behavior with a missing required revision binding is invalid. Retry/replay may not silently substitute a newer incompatible revision.
 
-A parity fixture that exercises behavior with a missing required revision binding is invalid. Retry/replay may not silently substitute a newer incompatible revision.
+## Ownership
 
-## Effect and domain ownership
+Catalogue metadata creates no mutation authority. Effect Families remain governed by GAME-ABILITY. Cross-domain consequences remain with their owning domains. Conserved item/currency/loot value remains under `GAME-ITEM` / `DUR-03`.
 
-Catalogue metadata creates no mutation authority. Core Effect Families remain governed by accepted GAME-ABILITY contracts. Cross-domain consequences remain with their owning domains.
+Generic state patches, direct script mutation, hidden event-bus mutation and invented global transaction ownership are forbidden. If stronger cross-domain atomicity is required but not yet accepted, the requirement stays explicit and dependent parity remains fail closed.
 
-In particular, item/currency/loot/conserved value stays under `GAME-ITEM` / `DUR-03`; movement stays under world/movement ownership; entity lifecycle stays with its authoritative owner; AI state stays under `GAME-AI-01` when accepted; world interaction stays under its owning interaction/world contracts.
+## Parity fixture
 
-Generic authoritative state patches, hidden event-bus mutation, direct script mutation and invented global transaction ownership are forbidden.
+One fixture binds one bounded observable scenario. It must be able to name the fixture key, catalogue mechanic key, manifest cases, Reference target, preconditions, normalized invocation/origin context, exact semantic revisions, expected observable outcomes, exact Oteryn implementation revision, fixture/test locator and result.
 
-If a mechanic needs stronger cross-domain atomicity than accepted owner contracts provide, that integration requirement remains explicit and parity stays fail closed for outcomes that depend on it.
+Passing one scenario proves only that declared scenario on that exact implementation revision. It does not imply parity for unrelated targeting, interruption, cost timing, cooldown, condition, RNG, cross-domain or edge-case behavior.
 
-## Parity-fixture binding
+## Non-factual example
 
-One parity fixture binds one bounded observable scenario and must be able to identify:
-
-```text
-fixture key
-+ catalogue mechanic key
-+ manifest case refs
-+ Reference target context
-+ explicit preconditions
-+ normalized invocation/origin context
-+ exact behavior-affecting revisions
-+ expected observable outcomes
-+ allowed non-semantic presentation differences
-+ exact Oteryn implementation revision
-+ fixture/test locator
-+ result
-```
-
-A fixture proves only its declared observable scenario on its exact implementation revision. A passing scenario does not imply parity for unrelated targeting, interruption, cost timing, cooldown, stacking, RNG, cross-domain or edge-case behavior.
-
-`PARITY_CONFIRMED` may be exposed only when the canonical manifest permits it and all required target evidence, cleared provenance, exact implementation revision, exact semantic revision bindings, passing fixture evidence and absence of unresolved required conflicts are present.
-
-## Unknown/conflict rule
-
-Missing evidence or missing required revisions are never interpreted as zero, false, default order, latest revision or implementation-defined behavior. Unresolved range/LoS/order/timing/formula/RNG/domain-integration semantics remain fail closed.
-
-## Reference and Evolved
-
-Reference entries preserve the immutable accepted target. Evolved rulesets may reuse the mechanic key as provenance and declare a versioned difference, but must not rewrite Reference evidence in place.
-
-Shared infrastructure does not imply shared exact targeting, timing, formula, condition, RNG or domain-integration semantics.
-
-## Non-factual example shape
-
-The following is deliberately illustrative only. It is not a real Reference mechanic, evidence case or parity claim.
+This shape is illustrative only and is not a real Reference mechanic, evidence case or parity claim:
 
 ```yaml
 catalogue_mechanic_key: example.non_reference.training_pulse
@@ -122,40 +77,29 @@ owning_domain_integrations: []
 parity_fixtures: []
 ```
 
-## Future physical-schema validation
+## Future schema validation
 
-A later physical schema must reject at least duplicate local keys, unknown manifest references, parity-confirmed projections inconsistent with the canonical manifest, parity claims without exact implementation revision and passing fixture evidence, missing behavior-affecting revision bindings, generic state patches, unowned cross-domain mutation, catalogue keys used as runtime/protocol/global identity and silent defaults for `UNKNOWN`/`CONFLICT`.
+A later physical schema must reject duplicate local keys, unknown manifest references, parity projections inconsistent with the pinned accepted manifest revision, parity claims without exact implementation revision and passing fixture evidence, missing required semantic revision bindings, generic state patches, unowned cross-domain mutations, catalogue keys reused as runtime/protocol/global identity and silent defaults for `UNKNOWN` or `CONFLICT`.
 
-Physical format, serializer, generated indexes and digest tooling remain deferred.
+Physical JSON/RON/YAML choice, serializer, generated indexes, digest tooling and fixture runner remain deferred.
 
 ## Required analysis
 
-**Problem:** mechanic-level evidence and parity fixtures need one binding contract before catalogue population, otherwise executable content and passing tests can be mistaken for Reference truth.
+**Problem:** mechanic-level evidence and fixtures need one binding contract before catalogue population so executable content and passing tests cannot be mistaken for Reference truth.
 
-**Constraints:** immutable Reference target; independent evidence/implementation/parity axes; typed Effect Plan; accepted targeting/legality, lifecycle, cooldown/condition, damage/heal and effect-family boundaries; domain conservation/ownership; fail-closed unknowns; no runtime authority.
+**Constraints:** immutable Reference target; separate evidence/implementation/parity axes; accepted typed Effect Plan, targeting/legality, lifecycle, cooldown/condition, damage/heal and effect-family boundaries; domain ownership/conservation; fail-closed unknowns; candidate manifest status; no runtime authority.
 
-**Options:**
-
-- **A — thin catalogue index + exact revision/fixture bindings — SELECTED.** One evidence authority, explicit provenance and no duplicate truth.
-- **B — duplicate evidence inside catalogue — REJECTED.** Creates classification drift.
-- **C — executable content doubles as catalogue/parity record — REJECTED.** Conflates implementation with truth.
-- **D — fixture-only registry — REJECTED.** Weak mechanic identity, migration and auditability.
-
-The selected model costs explicit revision bookkeeping but prevents false parity, stale-revision replay and hidden ownership violations.
-
-## Decision timing
+**Options:** thin catalogue index + exact revision/fixture bindings is selected. Duplicating evidence in the catalogue, combining executable content with parity metadata, or using only an unstructured fixture registry are rejected because they create duplicate truth, implementation/evidence conflation or weak auditability.
 
 **Must decide now: YES.** First reviewed `ABILITY_COMBAT` mechanic cases, representative parity fixtures, Studio linking and later AI/interaction integration need this boundary.
 
-**Blocked without it:** mechanic-level manifest population, bounded parity fixtures and evidence-driven GAME-ABILITY closure.
+**Blocked without it:** mechanic-level evidence population, bounded parity fixtures and evidence-driven GAME-ABILITY closure.
 
-**Harder later:** evidence classes, implementation revisions and parity claims become duplicated across content and tests.
-
-**Supersession evidence:** representative packages show the graph is insufficient or excessively complex; tooling/Studio evidence shows unacceptable authoring burden; replay/provenance failures; repeated cross-domain cases prove another integration boundary is needed.
+**Supersession evidence:** representative mechanic packages show the graph is insufficient or excessive; Studio/tooling evidence shows unacceptable authoring cost; replay/provenance failures; repeated cross-domain cases prove a different integration boundary is needed.
 
 ## Deliberately not decided
 
-No actual Reference mechanic entries, exact spells/values/formulas/RNG probabilities, manifest case population, catalogue JSON/RON/YAML schema, physical IDs, fixture file format/runner, runtime loader, protocol/client UI, persistence/DDL, cross-domain transaction protocol or production rollout are decided here.
+No actual Reference mechanic entries, exact spell values/formulas/RNG probabilities, manifest case population, physical catalogue schema, IDs, fixture format/runner, runtime loader, protocol/client UI, persistence/DDL, cross-domain transaction protocol or production rollout are decided here.
 
 Unresolved Reference-sensitive behavior remains fail closed.
 
@@ -163,8 +107,7 @@ Unresolved Reference-sensitive behavior remains fail closed.
 
 ```text
 GAME-ABILITY-01 -> REQUIRED_FOR_ALPHA / OPEN
-candidate -> catalogue entry = local key + canonical evidence refs + exact revision graph + bounded fixture bindings
-candidate -> catalogue presence never upgrades evidence or parity
-candidate -> missing evidence/revisions/domain atomicity fail closed
-next after acceptance -> add reviewed representative ABILITY_COMBAT evidence cases and parity fixtures without runtime authority
+candidate -> local catalogue key + versioned manifest refs + exact revision graph + bounded fixture bindings
+candidate -> catalogue presence never upgrades evidence, manifest acceptance or parity
+next -> accept/pin the evidence-manifest revision, then add reviewed representative ABILITY_COMBAT cases and fixtures without runtime authority
 ```
