@@ -60,7 +60,9 @@ Exact-head delivery CI: Agent Governance `31731258984` **PASS**; Merge Authority
 
 ## Closeout recovery
 
-Draft closeout #246 passed exact-head validation on the same active-to-archive content but was closed unmerged because the connector repeatedly blocked the required draft-to-ready transition. Non-draft successor #247 owns final closeout and receives fresh exact-head validation after this metadata commit.
+Draft closeout #246 passed exact-head validation on the same active-to-archive content but was closed unmerged because the connector repeatedly blocked the required draft-to-ready transition. Non-draft successor #247 owns final closeout.
+
+A repository-configured automatic Codex Review was triggered by opening #247; it was not requested or invoked by this agent. On prior head `1c7185a4d1876317aaa989ddf2f02ca15a43b703` it produced two P2 bookkeeping findings: replacement closeout metadata still pointed to #246, and the completed archive's `next_action` still told a continuation agent to repeat closeout. The first was repaired by binding #247 and recording #246 as superseded; the second is repaired on the final closeout head by leaving only the post-closeout successor action. Both review threads must be resolved before merge. No owner-funded Codex command/API call was initiated by this agent.
 
 ## Deliberately unresolved
 
@@ -75,5 +77,5 @@ lifecycle_closeout_pr: 247
 superseded_closeout_pr: 246
 owner_action_required: false
 blocker: null
-next_action: Merge #247 after fresh exact-head validation, then define the representative Reference catalogue/parity-fixture entry contract without unsupported parity promotion.
+next_action: Define the representative Reference catalogue/parity-fixture entry contract without unsupported parity promotion.
 ```
