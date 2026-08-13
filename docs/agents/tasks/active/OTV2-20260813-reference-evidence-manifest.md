@@ -8,9 +8,9 @@ status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260813-reference-evidence-manifest
-pr: null
+pr: 220
 base_sha: 63dea4679dc0c0e3e7a34d8534791eec3e21c769
-head_sha: 13dd265ddae7b5f2b98c17c8671714fe1aa2abb8
+head_sha: d84df9da048944bb134a8fd5afd297e168feb71d
 final_head_sha: null
 final_head_frozen_at: null
 owner: current coordinating agent/session
@@ -150,7 +150,7 @@ last_progress: candidate contract and initial JSON manifest created
 status: validating
 branch: docs/OTV2-20260813-reference-evidence-manifest
 head_sha: 13dd265ddae7b5f2b98c17c8671714fe1aa2abb8
-pr: null
+pr: 220
 final_head_sha: null
 final_head_frozen_at: null
 ci_trigger_source: null
@@ -163,10 +163,10 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 0
+repair_cycles_for_current_gate: 1
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: open a draft pull request for exact-scope diff and CI validation
+next_action: validate the repaired exact-head diff and classify self-review/CI evidence
 ```
