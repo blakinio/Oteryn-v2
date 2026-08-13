@@ -13,7 +13,7 @@ base_sha: 2632594b0617dd922ad32c4260fa09383c15ba45
 final_head_sha: 22d64a9e8e17de0a78c0df9cdaade1cd7b1da89f
 delivery_merge_sha: fe8029f52ac5664733599203c7bc668c47e74aed
 lifecycle_closeout_branch: docs/game-ability-cooldown-condition-closeout
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 234
 owner: released_after_closeout
 created_at: 2026-08-13T18:49:00+02:00
 completed_at: 2026-08-13T18:58:00+02:00
@@ -91,7 +91,7 @@ status: completed
 delivery_pr: 233
 final_head_sha: 22d64a9e8e17de0a78c0df9cdaade1cd7b1da89f
 delivery_merge_sha: fe8029f52ac5664733599203c7bc668c47e74aed
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 234
 owner_action_required: false
 blocker: null
 next_action: Continue GAME-ABILITY-01 with effect composition and damage/heal calculation pipeline; do not implement runtime.
