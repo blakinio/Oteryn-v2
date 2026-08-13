@@ -37,13 +37,13 @@ The manifest has:
 - `schema_version`: schema compatibility, initially `1`;
 - `manifest_revision`: monotonically increasing positive integer within this target;
 - `reference_target.id`: stable project identifier for the immutable target cut;
-- `reference_target.effective_boundary`: accepted external behavior boundary;
+- `reference_target.effective_boundary_date`: accepted external behavior boundary date;
 - `cases`: uniquely keyed parity cases.
 
 A change to the accepted target requires a separately owner-approved Reference
 revision. It must not edit the meaning of the v1 target identifier in place.
 
-A future deterministic digest MUST be computed from UTF-8 RFC 8785 JSON
+Because the exact server-save time is not frozen, revision 1 records only the accepted date and must not synthesize a UTC time.\n\nA future deterministic digest MUST be computed from UTF-8 RFC 8785 JSON
 Canonicalization Scheme bytes of the complete manifest after removing only the
 top-level `canonical_digest` member. The digest form is
 `sha256:<64 lowercase hex>`. Until repository tooling computes and verifies
