@@ -4,11 +4,11 @@
 task_id: OTV2-20260813-game-ability-typed-effects-baseline
 title: Record GAME-ABILITY-01 typed effect pipeline owner baseline
 mode: CONTRACT
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/game-ability-typed-effects-222
-pr: null
+pr: 226
 issue: 222
 base_sha: 5518a562bfea55f4f75e3aae03775b33fb55581e
 head_sha: null
@@ -16,7 +16,7 @@ final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-13T17:41:00+02:00
-updated_at: 2026-08-13T17:41:00+02:00
+updated_at: 2026-08-13T17:47:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -39,53 +39,53 @@ external_repositories: []
 
 ## Outcome
 
-Record the owner-accepted first bounded `GAME-ABILITY-01` subdecision: Oteryn abilities are data-first semantic definitions resolved through a typed, deterministic, server-authoritative effect pipeline; DUR-04 Wasm/WIT may extend mechanics only through bounded proposal interfaces and cannot directly mutate authoritative gameplay state.
+Record the owner-accepted first bounded `GAME-ABILITY-01` subdecision: data-first semantic Ability Definitions, typed bounded Effect Plans, authoritative server validation/commit, and bounded DUR-04 Wasm/WIT proposal extensions with no direct mutation authority.
 
-This task does **not** accept or close the whole `GAME-ABILITY-01` gate.
+Overall `GAME-ABILITY-01` remains open and `REQUIRED_FOR_ALPHA`.
 
 ## Architecture and source of truth
 
-- **PROVEN:** `GAME-ABILITY-01` is already registered as `REQUIRED_FOR_ALPHA` in `GAMEPLAY_AND_PRODUCT_ARCHITECTURE_HORIZON.md`; the foundation vertical slice may use a bounded minimal combat contract first.
-- **PROVEN:** DUR-04 accepts deterministic, capability-bounded Component Model/WIT scripting with proposal-only mutations and no unbounded direct authority.
-- **PROVEN:** SIM-DETERMINISM-01 requires exact semantic revision binding, deterministic arithmetic/RNG/order and reproducible authoritative results.
-- **PROVEN:** server authority, item/value conservation and typed event/audit boundaries are already accepted under FND/DUR/ANL contracts.
-- **PROVEN:** on 2026-08-13 the repository owner explicitly accepted the proposed `data-first + typed effects + bounded Wasm extension` foundation for `GAME-ABILITY-01`.
-- **UNKNOWN:** targeting semantics, legality partitioning, cast timing, interruption, costs, cooldowns, charges, condition lifecycle, exhaustive effect families, exact Reference formulas and physical authoring format remain undecided.
+- **PROVEN:** `GAME-ABILITY-01` is registered as `REQUIRED_FOR_ALPHA` in the gameplay/product horizon.
+- **PROVEN:** DUR-04 accepts capability-bounded deterministic Component Model/WIT scripting with proposal-only mutations.
+- **PROVEN:** SIM-DETERMINISM-01 requires exact semantic revision binding and deterministic arithmetic/RNG/order.
+- **PROVEN:** GAME-ITEM/DUR-03 and ANL-01 preserve conservation/idempotency and typed audit/event boundaries.
+- **PROVEN:** the owner explicitly accepted `data-first + typed effects + bounded Wasm extension` for this subdecision on 2026-08-13.
+- **UNKNOWN:** targeting, legality layering, cast/interruption, costs, cooldowns/charges, conditions, exhaustive effects, exact Reference formulas and physical authoring format remain undecided.
 
 ## Acceptance criteria
 
-- [ ] Add one canonical owner baseline under `docs/architecture/` recording only the accepted typed-effect pipeline subdecision.
-- [ ] Preserve `GAME-ABILITY-01` overall status as still open/`REQUIRED_FOR_ALPHA`; do not claim full gate acceptance.
-- [ ] Define the semantic stages and authority boundary without selecting a physical serializer, Rust implementation type graph or runtime library.
-- [ ] Make Wasm/WIT extension proposal-only and incapable of bypassing authoritative validation, conservation, fencing, determinism or resource limits.
-- [ ] Preserve exact revision/provenance requirements from DUR-04 and SIM-DETERMINISM-01.
-- [ ] State the mandatory architecture decision test and explicit supersession evidence.
-- [ ] Keep runtime/client/protocol/DDL/Platform/production implementation unauthorized.
-- [ ] Inspect the complete changed-file diff and obtain exact-head documentation/governance validation before merge.
+- [x] Add one canonical owner baseline recording only the accepted subdecision.
+- [x] Preserve overall `GAME-ABILITY-01` as open / `REQUIRED_FOR_ALPHA`.
+- [x] Define semantic stages and authority without selecting serializer, Rust type graph or runtime library.
+- [x] Make Wasm/WIT proposal-only and subordinate to authority, conservation, fencing, determinism and limits.
+- [x] Preserve DUR-04/SIM revision and provenance requirements.
+- [x] State decision timing, deferred scope and supersession evidence.
+- [x] Keep executable/runtime/DDL/Platform/production authority at NONE.
+- [ ] Complete exact-head full-diff self-review and documentation/governance CI before merge.
 
 ## Excluded scope
 
-No Rust gameplay implementation, protocol messages, database schema/migration, content serializer, editor UI, spell catalogue, Reference formula claims, target-selection rules, cooldown/cast-time values, Wasmtime version/function inventory, broad content import, Platform write, production behavior or external-repository mutation.
+No Rust gameplay implementation, protocol change, physical persistence schema/migration, content serializer, Studio UI, spell catalogue, Reference formula, target/cooldown/cast values, exact WIT/Wasmtime implementation, broad content import, Platform write, production behavior or external-repository mutation.
 
 ## Implementation / findings
 
-The accepted subdecision is intentionally semantic and data-model-neutral. It establishes where authority lives and how extensibility is bounded so later targeting/timing/condition decisions cannot accidentally create a second mutation engine inside content scripts.
+PR #226 contains exactly this task record and `docs/architecture/GAME-ABILITY-01_TYPED_EFFECT_PIPELINE_OWNER_BASELINE.md`. No existing architecture file is rewritten and no stable gate ID is invented.
 
 ## Validation
 
 ### Focused
 
-- command/run: inspect exact changed-file diff for owner-accepted scope, cross-contract consistency and unsupported claims
-- result: pending
+- command/run: full PR #226 patch inspection against accepted DUR-04, SIM-DETERMINISM, GAME-ITEM/DUR-03 and ANL-01 boundaries
+- result: pending final-head self-review
 
 ### Component/integration
 
-- command/run: `NOT_APPLICABLE` — architecture-only documentation; no executable component changes
+- command/run: `NOT_APPLICABLE` — architecture-only documentation
 - result: `NOT_APPLICABLE`
 
 ### E2E
 
-- scenario: `NOT_APPLICABLE` — no runtime or player-visible executable behavior changes
+- scenario: `NOT_APPLICABLE` — no executable/player-visible behavior
 - result: `NOT_APPLICABLE`
 
 ### Exact-head CI
@@ -106,7 +106,7 @@ The accepted subdecision is intentionally semantic and data-model-neutral. It es
 
 ## Independent review
 
-- required: `NO` unless self-review discovers material uncertainty; bounded paper-only subdecision with no security/protocol/persistence/production authority change
+- required: `NO` — bounded paper-only architecture subdecision; no security/protocol/durable-schema/production authority change and no unusual unresolved complexity
 - exact head: `NOT_APPLICABLE`
 - method/auditor: `NOT_APPLICABLE`
 - material findings: `NOT_APPLICABLE`
@@ -114,9 +114,9 @@ The accepted subdecision is intentionally semantic and data-model-neutral. It es
 
 ## PR and closeout
 
-- changed-file review: pending
+- changed-file review: pending final head
 - unresolved review threads: pending
-- related/superseded PRs: #162 governance-only and #191 GAME-CHAR provenance are non-overlapping
+- related/superseded PRs: #162 governance and #191 GAME-CHAR provenance are non-overlapping
 - protected auto-merge: pending
 - merge commit/result: pending
 - ownership release: pending
@@ -124,14 +124,14 @@ The accepted subdecision is intentionally semantic and data-model-neutral. It es
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner accepted data-first typed-effect pipeline with bounded Wasm extension as the first GAME-ABILITY-01 subdecision; bounded architecture task and issue #222 created from main@5518a562.
-status: implementing
+last_progress: Owner baseline added and PR #226 opened; task metadata reconciled before final-head freeze.
+status: validating
 branch: docs/game-ability-typed-effects-222
 head_sha: null
-pr: null
+pr: 226
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
+ci_trigger_source: pull_request
 ci_check_generation: null
 ci_checks_for_current_head: 0
 ci_run_ids: []
@@ -141,10 +141,10 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 0
+repair_cycles_for_current_gate: 1
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: false
 blocker: null
-next_action: Add the canonical GAME-ABILITY-01 typed-effect pipeline owner baseline and open the bounded documentation PR.
+next_action: Inspect the repaired full diff, freeze the exact head in PR evidence, perform self-review and require exact-head documentation/governance CI.
 ```
