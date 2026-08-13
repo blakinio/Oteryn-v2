@@ -10,12 +10,12 @@ base_branch: main
 branch: arch/game-ability-reference-catalogue-entry-contract
 pr: 249
 base_sha: 93f2ada35ef55ff53cf9e10f67fbc718ca773f67
-head_sha: 794779edd663ee54ac6384593d7b08f523f2017b
+head_sha: c6adb8d117749f21a97ac5536ba1eb9beb42584b
 final_head_sha: null
 final_head_frozen_at: null
 owner: architecture continuation agent
 created_at: 2026-08-13T22:48:00+02:00
-updated_at: 2026-08-13T23:57:00+02:00
+updated_at: 2026-08-13T23:50:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -53,21 +53,23 @@ Define the paper-only catalogue-entry and parity-fixture binding boundary withou
 1. Self-review: the initial draft treated the candidate evidence-manifest design too strongly. Repaired by preserving candidate status and requiring a future accepted pinned manifest/schema before parity confirmation.
 2. PR review: one passing fixture could over-promote a whole mechanic. Repaired with case/scenario coverage and complete-coverage requirements for any aggregate confirmation.
 3. PR review: the PR #248 handoff remained a second `UNCLAIMED` active source. Repaired by consuming and archiving it; PR #249 is the sole active execution source.
-4. Final self-review: the decision analysis did not state the downstream blocker and deferment cost explicitly enough. Repaired by adding `Blocked without it`, `Harder later` and explicit trade-off/risk language.
+4. Self-review: decision analysis did not state downstream blocker/deferment cost explicitly enough. Repaired with `Blocked without it`, `Harder later` and trade-off/risk language.
+5. Checkpoint review: `updated_at` was accidentally later than verified local time. Repaired to a verified non-future timestamp; no architecture semantics changed.
 
 ## Validation
 
-- Focused/full-diff semantic review at content head `794779edd663ee54ac6384593d7b08f523f2017b`: PASS, no open material finding after four repairs.
+- Focused/full-diff semantic review at pre-checkpoint content head `794779edd663ee54ac6384593d7b08f523f2017b`: PASS after findings 1-4.
+- Checkpoint-only diff review at `c6adb8d117749f21a97ac5536ba1eb9beb42584b`: one timestamp-evidence finding repaired by this commit.
 - Component/integration: NOT_APPLICABLE — paper-only architecture.
 - E2E: NOT_APPLICABLE — no executable behavior.
-- Prior exact-head CI is invalidated by repairs; the checkpoint commit created by this file update requires a fresh exact-head generation.
+- Exact-head CI: every earlier generation is invalidated by head movement; fresh resulting-head generation required.
 
 ## Self-review
 
-- reviewed content head: `794779edd663ee54ac6384593d7b08f523f2017b`
+- reviewed pre-repair head: `c6adb8d117749f21a97ac5536ba1eb9beb42584b`
 - method/reviewer: implementing/coordinating architecture continuation agent
-- material findings: 4 total across self-review and PR review; all repaired
-- verdict: PASS for semantic/content diff; final checkpoint-only diff recheck required on resulting head
+- material findings: 5 total; all repaired by the resulting head
+- final exact-head verdict: pending one checkpoint-only recheck after this commit
 
 ## Independent review
 
@@ -77,24 +79,23 @@ Define the paper-only catalogue-entry and parity-fixture binding boundary withou
 ## PR and closeout
 
 - PR: #249
-- changed-file review at content head: PASS
 - unresolved review threads: 0
 - current main ancestry: PASS at `main@93f2ada35ef55ff53cf9e10f67fbc718ca773f67`
-- exact-head merge gate: fresh generation required after this checkpoint commit
+- exact-head merge gate: fresh generation required after this timestamp-evidence repair
 - merge/ownership release: pending
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Full semantic diff rechecked PASS after four repairs; both material PR review threads resolved and consumed handoff archived.
+last_progress: Corrected non-future checkpoint timestamp after full semantic diff and review-thread repairs were already complete.
 status: validating
 branch: arch/game-ability-reference-catalogue-entry-contract
-head_sha: 794779edd663ee54ac6384593d7b08f523f2017b
+head_sha: c6adb8d117749f21a97ac5536ba1eb9beb42584b
 pr: 249
 final_head_sha: null
 final_head_frozen_at: null
 ci_trigger_source: pull_request
-ci_check_generation: fresh checkpoint head required
+ci_check_generation: fresh resulting head required
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -108,5 +109,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: false
 blocker: null
-next_action: Inspect fresh exact-head CI for the checkpoint head and merge PR #249 only if every required gate passes unchanged.
+next_action: Recheck the timestamp-only resulting head, then inspect its fresh exact-head CI and merge only if every required gate passes unchanged.
 ```
