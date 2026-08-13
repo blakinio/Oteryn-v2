@@ -13,7 +13,7 @@ base_sha: 27c313a0c6032f0433ad9598c3cf53e4f0179813
 final_head_sha: 4c6684328123aebd657696808372a5855980d34e
 delivery_merge_sha: 1e16b32069868f14aa1761a512b6cd8b1024e277
 lifecycle_closeout_branch: docs/OTV2-20260813-sim-determinism-01-closeout
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 215
 owner: released_after_closeout
 created_at: 2026-08-13T00:55:00+02:00
 completed_at: 2026-08-13T09:24:00+02:00
@@ -300,12 +300,12 @@ The separate closeout may only:
 ## Context checkpoint
 
 ```yaml
-last_progress: SIM-DETERMINISM-01 delivery PR #214 merged unchanged from final repaired exact head 4c6684328123aebd657696808372a5855980d34e as 1e16b32069868f14aa1761a512b6cd8b1024e277 after the owner explicitly overrode the fresh-independent-review-after-repair gate for this exact PR/head. Lifecycle closeout is in progress.
+last_progress: SIM-DETERMINISM-01 delivery PR #214 merged unchanged from final repaired exact head 4c6684328123aebd657696808372a5855980d34e as 1e16b32069868f14aa1761a512b6cd8b1024e277 after the owner explicitly overrode the fresh-independent-review-after-repair gate for this exact PR/head; lifecycle closeout PR #215 reconciles canonical status and releases SIM ownership.
 status: completed
 delivery_pr: 214
 final_head_sha: 4c6684328123aebd657696808372a5855980d34e
 delivery_merge_sha: 1e16b32069868f14aa1761a512b6cd8b1024e277
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 215
 independent_review_superseded_head: 4924203877
 terminal_self_review: 4924321455
 repeat_self_review: 4924423397
@@ -317,5 +317,5 @@ repair_cycles_for_delivery_gate: 4
 owner_review_gate_override: true
 owner_action_required: false
 blocker: null
-next_action: Complete the bounded SIM-DETERMINISM-01 lifecycle closeout; after closeout merge follow the canonical programme checkpoint and successor handoff. The remaining named paper-only successor in current programme ordering is the versioned Reference evidence/parity manifest.
+next_action: From live main after lifecycle closeout PR #215 merges, follow the canonical programme checkpoint and successor handoff: create one bounded paper-only task to build the versioned Reference evidence/parity manifest under its owning contract; do not invent a new stable gate ID or implement runtime/DDL/production behavior.
 ```
