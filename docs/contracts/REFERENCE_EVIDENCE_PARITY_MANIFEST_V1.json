@@ -111,7 +111,7 @@
     {
       "manifest_revision": 1,
       "date": "2026-08-13",
-      "summary": "Register immutable first Reference target, evidence/parity vocabulary, fail-closed policy and empty domain coverage inventory.",
+      "summary": "Register immutable first Reference target, evidence/parity vocabulary, fail-closed policy and empty domain coverage inventory including Economy.",
       "issue": "#219"
     }
   ]
