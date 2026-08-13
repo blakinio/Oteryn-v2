@@ -43,7 +43,9 @@ The manifest has:
 A change to the accepted target requires a separately owner-approved Reference
 revision. It must not edit the meaning of the v1 target identifier in place.
 
-Because the exact server-save time is not frozen, revision 1 records only the accepted date and must not synthesize a UTC time.\n\nA future deterministic digest MUST be computed from UTF-8 RFC 8785 JSON
+Because the exact server-save time is not frozen, revision 1 records only the accepted date and must not synthesize a UTC time.
+
+A future deterministic digest MUST be computed from UTF-8 RFC 8785 JSON
 Canonicalization Scheme bytes of the complete manifest after removing only the
 top-level `canonical_digest` member. The digest form is
 `sha256:<64 lowercase hex>`. Until repository tooling computes and verifies
