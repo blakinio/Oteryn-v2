@@ -42,7 +42,11 @@ This baseline does **not** select a physical file format, serializer or Rust rep
 
 ### Ability Invocation
 
-The client requests intent. The authoritative server resolves legality, current targets, costs and results. This document creates no competing foundation identity; invocation/CommandRef identity remains with existing FND/SIM contracts and later GAME-ABILITY work.
+All gameplay origins use the same authoritative ability pipeline. An invocation may begin from untrusted player/client intent or from an already-authoritative server-side source such as creature AI, NPC logic, encounter/world mechanics or another explicitly permitted domain action.
+
+Origin does not create a second execution engine. Each invocation carries/derives the authority and capability context appropriate to its source, and the authoritative server still resolves current legality, targets, costs and results before commit. Client input therefore remains intent only, while AI/NPC/system origin remains subject to the same typed effects, determinism, revision and domain-invariant boundaries.
+
+This document creates no competing foundation identity; invocation/CommandRef identity remains with existing FND/SIM contracts and later GAME-ABILITY work.
 
 ### Effect Plan
 
@@ -92,6 +96,7 @@ GAME-ABILITY-01 overall
 
 accepted subdecision
 -> data-first Ability Definition
+-> one pipeline for player, AI, NPC and system origins
 -> typed bounded Effect Plan
 -> authoritative validation + commit
 -> bounded DUR-04 Wasm/WIT proposal extension
