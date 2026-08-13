@@ -10,7 +10,7 @@ base_branch: main
 branch: docs/OTV2-20260813-reference-evidence-manifest
 pr: 220
 base_sha: 63dea4679dc0c0e3e7a34d8534791eec3e21c769
-head_sha: 81f88e6daa9bb6e0971a783a7815d50972f50556
+head_sha: 4f27951eee9eef94e702aaca606dfe55e0b8635a
 final_head_sha: null
 final_head_frozen_at: null
 owner: current coordinating agent/session
@@ -146,10 +146,10 @@ claim executable digest validation.
 ## Context checkpoint
 
 ```yaml
-last_progress: full diff inspected; checkpoint and false boundary precision repaired
+last_progress: three bounded repair cycles completed; candidate metadata frozen
 status: validating
 branch: docs/OTV2-20260813-reference-evidence-manifest
-head_sha: 81f88e6daa9bb6e0971a783a7815d50972f50556
+head_sha: 4f27951eee9eef94e702aaca606dfe55e0b8635a
 pr: 220
 final_head_sha: null
 final_head_frozen_at: null
@@ -163,10 +163,10 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 2
+repair_cycles_for_current_gate: 3
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: run exact-head validation and terminal self-review on the frozen PR candidate
+next_action: inspect exact final diff and wait for required exact-head checks
 ```
