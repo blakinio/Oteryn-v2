@@ -10,21 +10,23 @@ base_branch: main
 branch: docs/OTV2-20260813-reference-evidence-manifest
 pr: 220
 base_sha: 63dea4679dc0c0e3e7a34d8534791eec3e21c769
-head_sha: 4f27951eee9eef94e702aaca606dfe55e0b8635a
+head_sha: 144def2cea8b938c9adaac4d3cf9b832d64b978d
 final_head_sha: null
 final_head_frozen_at: null
 owner: current coordinating agent/session
 created_at: 2026-08-13T14:33:55Z
-updated_at: 2026-08-13T14:38:00Z
+updated_at: 2026-08-13T14:52:00Z
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
   - docs/agents/tasks/active/OTV2-20260813-reference-evidence-manifest.md
   - docs/architecture/REFERENCE_EVIDENCE_PARITY_MANIFEST_CONTRACT.md
   - docs/contracts/REFERENCE_EVIDENCE_PARITY_MANIFEST_V1.json
+  - docs/contracts/REFERENCE_EVIDENCE_PARITY_MANIFEST_V1.schema.json
 public_contracts:
   - docs/architecture/REFERENCE_EVIDENCE_PARITY_MANIFEST_CONTRACT.md
   - docs/contracts/REFERENCE_EVIDENCE_PARITY_MANIFEST_V1.json
+  - docs/contracts/REFERENCE_EVIDENCE_PARITY_MANIFEST_V1.schema.json
 depends_on:
   - GAME-VISION-01_FIRST_REFERENCE_BASELINE_OWNER_BASELINE.md
   - GAME-VISION-01_MINIMUM_OWNER_BASELINE.md
@@ -63,6 +65,9 @@ unsupported mechanics or authorizing runtime work.
 - [x] Define source hierarchy, provenance, historical continuity and conflicts.
 - [x] Add a parseable machine-readable initial manifest with no unsupported
       `PARITY_CONFIRMED` cases.
+- [x] Define and add a normative machine-readable v1 schema for every future
+      mechanic case, including fail-closed promotion conditions.
+- [x] Include Economy in the explicit empty/fail-closed domain coverage inventory.
 - [x] Define deterministic future identity via RFC 8785 JCS + SHA-256 without
       hand-claiming a digest before tooling exists.
 - [x] Preserve security/integrity/legal overrides and OTS non-authority.
@@ -146,10 +151,10 @@ claim executable digest validation.
 ## Context checkpoint
 
 ```yaml
-last_progress: three bounded repair cycles completed; candidate metadata frozen
+last_progress: Codex Review P2 feedback addressed: v1 case schema added and Economy inventory made explicit
 status: validating
 branch: docs/OTV2-20260813-reference-evidence-manifest
-head_sha: 4f27951eee9eef94e702aaca606dfe55e0b8635a
+head_sha: 144def2cea8b938c9adaac4d3cf9b832d64b978d
 pr: 220
 final_head_sha: null
 final_head_frozen_at: null
@@ -163,10 +168,10 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 3
+repair_cycles_for_current_gate: 4
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: inspect exact final diff and wait for required exact-head checks
+next_action: validate schema and manifest, then request fresh exact-head CI and resolve review feedback
 ```
