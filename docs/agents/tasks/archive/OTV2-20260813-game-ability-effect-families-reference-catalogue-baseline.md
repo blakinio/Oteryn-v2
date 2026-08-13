@@ -13,7 +13,7 @@ base_sha: 463ee694edb5edc156e801e456a9c6298482b485
 final_head_sha: 8dfc30839295edf551b16b0fe9e11739c037be97
 delivery_merge_sha: 85a88a6cfbd5d23bdbaa2e91f75aa0a25583af5a
 lifecycle_closeout_branch: docs/game-ability-effect-families-reference-catalogue-closeout
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 246
 owner: released_after_closeout
 created_at: 2026-08-13T20:28:00+02:00
 completed_at: 2026-08-13T20:40:00+02:00
@@ -84,7 +84,7 @@ status: completed
 delivery_pr: 245
 final_head_sha: 8dfc30839295edf551b16b0fe9e11739c037be97
 delivery_merge_sha: 85a88a6cfbd5d23bdbaa2e91f75aa0a25583af5a
-lifecycle_closeout_pr: pending
+lifecycle_closeout_pr: 246
 owner_action_required: false
 blocker: null
 next_action: Complete bookkeeping-only closeout, then define representative Reference catalogue/parity-fixture entry shape without unsupported parity promotion.
