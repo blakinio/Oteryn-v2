@@ -7,6 +7,7 @@ mode: CONTRACT
 status: ready_for_continuation
 repository: blakinio/Oteryn-v2
 base_branch: main
+branch: docs/game-ability-reference-catalogue-handoff
 owner: unassigned architecture continuation agent
 implementation_status: NOT_STARTED
 runtime_client_authority: NONE
@@ -20,7 +21,6 @@ production_authority: NONE
 Verified canonical `main` at handoff: `199bb6a7559d610be9e01508dd1e5d192b5db820` (PR #247 closeout).
 
 Accepted and lifecycle-closed `GAME-ABILITY-01` baselines on `main`:
-
 - `GAME-ABILITY-01_TYPED_EFFECT_PIPELINE_OWNER_BASELINE.md`
 - `GAME-ABILITY-01_TARGETING_AND_LEGALITY_BOUNDARY_OWNER_BASELINE.md`
 - `GAME-ABILITY-01_CAST_CHANNEL_COMMIT_OWNER_BASELINE.md`
@@ -30,28 +30,28 @@ Accepted and lifecycle-closed `GAME-ABILITY-01` baselines on `main`:
 
 Overall `GAME-ABILITY-01` remains `REQUIRED_FOR_ALPHA / OPEN`; runtime is unauthorized.
 
-Preserve these boundaries: typed effects only; authoritative mutation stays with owner domains; item/value conservation stays under `GAME-ITEM`/`DUR-03`; movement/world/entity/AI ownership is not transferred to abilities; no generic state patch/event bus, giant per-mechanic core enum, hidden global transaction model or alternate mutation engine; catalogue identity is local provenance only; catalogue presence never proves Reference parity; `UNKNOWN`/`CONFLICT` stays fail-closed.
+Preserve: typed effects only; authoritative mutation stays with owner domains; item/value conservation remains under `GAME-ITEM`/`DUR-03`; movement/world/entity/AI ownership is not transferred to abilities; no generic state patch/event bus, giant per-mechanic core enum, hidden global transaction model or alternate mutation engine; catalogue identity is local provenance only; catalogue presence never proves Reference parity; `UNKNOWN`/`CONFLICT` remains fail-closed.
 
-Before continuing, read live `main` governance (`AGENTS.md`, `docs/agents/AGENTS.md`, `PROMPTING_STANDARD.md`, `PROMPTING_HANDOVER.md`, `ARCHITECTURE_DECISION_DISCIPLINE.md`, `CONTEXT_HANDOFF.md`), all six baselines above, `REFERENCE_EVIDENCE_PARITY_MANIFEST_CONTRACT.md`, `ANL-01_GAME_EVENT_AND_AUDIT_FOUNDATION_CONTRACT.md`, and applicable `GAME-ITEM`, `DUR-03`, `DUR-04`, `SIM-DETERMINISM-01` contracts. Verify live PR/task drift first. PR #191 was separate stale-base GAME-CHAR provenance work at the last check and must not be absorbed silently.
+Before continuing, read live `main` governance (`AGENTS.md`, `docs/agents/AGENTS.md`, `PROMPTING_STANDARD.md`, `PROMPTING_HANDOVER.md`, `ARCHITECTURE_DECISION_DISCIPLINE.md`, `CONTEXT_HANDOFF.md`), all six baselines above, `REFERENCE_EVIDENCE_PARITY_MANIFEST_CONTRACT.md`, `ANL-01_GAME_EVENT_AND_AUDIT_FOUNDATION_CONTRACT.md`, and applicable `GAME-ITEM`, `DUR-03`, `DUR-04`, `SIM-DETERMINISM-01` contracts. Verify live PR/task drift first. PR #191 was separate stale-base GAME-CHAR provenance work at the last check and must not be silently absorbed.
 
-Next decision scope: define one representative Reference Mechanic Catalogue entry + parity-fixture binding contract. It must bind a catalogue-local mechanic key to evidence references and behavior-affecting revision bindings; represent parity/unknown state without promotion-by-presence; reference target/cast/cost/cooldown/formula/effect/condition/RNG revisions; keep missing/conflicting evidence explicit and fail-closed; include one representative example shape without inventing Tibia facts; preserve all domain ownership; remain paper-only with no runtime/protocol/DDL/serializer lock-in/Platform/production changes.
+Next bounded decision: define one representative Reference Mechanic Catalogue entry + parity-fixture binding contract. Bind a catalogue-local mechanic key to evidence references and behavior-affecting revision bindings; represent parity/unknown state without promotion-by-presence; reference target/cast/cost/cooldown/formula/effect/condition/RNG revisions; keep missing/conflicting evidence explicit and fail-closed; include one representative example shape without inventing Tibia facts; preserve domain ownership; remain paper-only with no runtime/protocol/DDL/serializer lock-in/Platform/production changes.
 
-Governance lessons: exact-head `Merge gate / validate` is required; CI from an older head cannot be reused; all review threads must be resolved before merge; do not invoke owner-funded Codex/OpenAI usage without explicit authorization.
+Governance: exact-head `Merge gate / validate` is required; CI from an older head cannot be reused; all review threads must be resolved; do not invoke owner-funded Codex/OpenAI usage without explicit authorization.
 
 ## Context checkpoint
 
 ```yaml
 status: ready_for_continuation
-branch: null
-head_sha: null
-pr: null
+branch: docs/game-ability-reference-catalogue-handoff
+head_sha: pending_delivery
+pr: pending
 owned_paths:
   - docs/agents/tasks/active/OTV2-20260813-game-ability-reference-catalogue-parity-fixture-contract.md
 public_contracts:
   - six accepted GAME-ABILITY-01 owner baselines
   - docs/architecture/REFERENCE_EVIDENCE_PARITY_MANIFEST_CONTRACT.md
 last_progress: Sixth partial baseline delivered by PR #245 and lifecycle-closed by PR #247; main = 199bb6a7559d610be9e01508dd1e5d192b5db820.
-validation_state: Previous delivery and closeout exact-head aggregate gates PASS; this checkpoint still requires normal PR governance before becoming canonical.
+validation_state: Previous delivery and closeout exact-head aggregate gates PASS; this checkpoint requires normal PR governance before becoming canonical.
 audit_state: Previous self-review complete; no unresolved review threads after #247.
 e2e_state: NOT_APPLICABLE
 ci_generation: none
