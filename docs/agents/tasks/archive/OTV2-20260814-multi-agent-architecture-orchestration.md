@@ -15,7 +15,7 @@ delivery_final_head_sha: a37018da472f1ada0904df5bab509ae8a7a02991
 delivery_merge_sha: 088b46638ac014cd7928d6b0b75cee44902fe22c
 closeout_issue: 266
 closeout_branch: docs/multi-agent-orchestration-closeout
-closeout_pr: null
+closeout_pr: 267
 owner: architecture-coordinator
 owner_state: released_after_closeout
 owned_paths: []
@@ -90,7 +90,7 @@ Each issue has a durable activation comment naming the exact branch and base SHA
 
 ## Lifecycle closeout
 
-Closeout issue #266 is bookkeeping only:
+Closeout issue #266 / draft PR #267 is bookkeeping only:
 
 - active setup task -> archive;
 - setup-task ownership release;
@@ -101,11 +101,11 @@ Closeout issue #266 is bookkeeping only:
 ## Context checkpoint
 
 ```yaml
-last_progress: Reviewed multi-agent orchestration policy merged as 088b46638ac014cd7928d6b0b75cee44902fe22c; issues #259-#264 now each have a branch created from that exact post-policy main and an activation comment.
+last_progress: Reviewed multi-agent orchestration policy merged as 088b46638ac014cd7928d6b0b75cee44902fe22c; issues #259-#264 now each have a branch created from that exact post-policy main and an activation comment; closeout is tracked by draft PR #267.
 status: completed
 branch: docs/multi-agent-orchestration-closeout
-pr: null
+pr: 267
 owner_action_required: false
-blocker: null
-next_action: none_for_setup_task__workers_A_through_F_may_begin_from_their_allocated_branches_and_coordinator_integrates_only_their_draft_PRs
+blocker: closeout_PR_267_must_remain_draft_until_any_Codex_trigger_is_separately_authorized
+next_action: coordinator_self_review_and_exact_head_CI_for_PR_267_then_hold_draft_if_ready_transition_would_trigger_unapproved_Codex
 ```
