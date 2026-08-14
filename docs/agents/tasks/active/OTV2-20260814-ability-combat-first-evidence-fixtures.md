@@ -10,12 +10,12 @@ base_branch: main
 branch: docs/ability-combat-first-evidence-fixtures
 pr: 255
 base_sha: 996da4270beadc548781fb81e95ea342e84b6376
-head_sha: cb6751eaf3edfad4892caf76a54c2c719ab77353
+head_sha: 77d30e341d490b8670560373ebc52a87aed6bebe
 final_head_sha: null
 final_head_frozen_at: null
 owner: architecture continuation agent
 created_at: 2026-08-14T12:47:53+02:00
-updated_at: 2026-08-14T12:58:00+02:00
+updated_at: 2026-08-14T13:04:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -39,50 +39,53 @@ external_repositories: []
 
 ## Outcome
 
-Register the first bounded representative `ABILITY_COMBAT` target-case shapes for Light Healing and Ice Strike, plus non-executable pending fixture blueprints, while proving that current post-boundary official state cannot be promoted into the immutable 2026-07-28 target without continuity evidence.
+Register the first bounded representative `ABILITY_COMBAT` target-case shapes for Light Healing and Ice Strike, plus non-executable pending fixture blueprints, while proving that indexed post-boundary official content cannot be promoted into the immutable 2026-07-28 target without continuity evidence.
 
 ## Architecture and source of truth
 
 - **PROVEN:** `main@996da4270beadc548781fb81e95ea342e84b6376` has accepted/pinned/lifecycle-closed Reference manifest v1 revision 2 with `cases=[]` and `ABILITY_COMBAT=NO_MECHANIC_CASES_REGISTERED`.
 - **PROVEN:** `REFERENCE_EVIDENCE_PARITY_MANIFEST_CONTRACT.md` requires post-target observations to remain `UNKNOWN` for the immutable target unless admissible continuity evidence bridges the target cut; patch-note/search absence is not continuity evidence.
 - **PROVEN:** GAME-ABILITY partial baselines require typed targeting/legality, explicit commit/cost/cooldown anchors, distinct healing/damage semantics and catalogue-local evidence/fixture bindings.
-- **CURRENT OFFICIAL OBSERVATION / DISCOVERY ONLY:** Tibia's current Library pages expose Light Healing and Ice Strike metadata/qualitative descriptions, but were retrieved after the 2026-07-28 boundary.
-- **UNKNOWN FOR TARGET:** continuity of every current observed field/description to the 2026-07-28 cut, plus exact heal magnitude, damage formula, exact range, complete legality, mitigation/resistance and RNG semantics.
+- **INDEXED OFFICIAL DISCOVERY EVIDENCE:** exact official Tibia Library locators for Light Healing and Ice Strike were surfaced through search on 2026-08-14. The search index reported an approximately two-week-old crawl; direct page opens from the research environment returned HTTP 403 and exact crawl time is unavailable.
+- **UNKNOWN FOR TARGET:** continuity of every surfaced field/description to the 2026-07-28 cut, equality with the live page at retrieval time, plus exact heal magnitude, damage formula, exact range, complete legality, mitigation/resistance and RNG semantics.
 - **PROVEN:** Oteryn GAME-ABILITY runtime implementation remains `NOT_STARTED`; no passing parity fixture is available.
 
 ## Acceptance criteria
 
-- [x] Evidence capture contains only bounded paraphrased official-public current-state observations, locators and explicit continuity uncertainty; no proprietary assets/code.
+- [x] Evidence capture contains only bounded paraphrased official-public indexed content, exact official locators, retrieval limitations and explicit continuity uncertainty; no proprietary assets/code.
 - [x] Manifest increments to revision 3, changes only `ABILITY_COMBAT` inventory plus bounded cases/history, and preserves the immutable target/policy/normative-contract envelope.
 - [x] Every new target case is `UNKNOWN`, Oteryn `NOT_STARTED`, parity `PARITY_PENDING_EVIDENCE`, with legal review `PENDING`, no exact Oteryn revision and no fixture/test link.
-- [x] Manifest source timestamps use RFC3339 UTC and current-state confidence is not presented as historical target confidence.
-- [x] No case claims target-cut heal/damage metadata, magnitude, exact range, complete legality, resistance or RNG behavior.
-- [x] Human-readable package separates current official observation from target truth and defines pending fixture blueprints without calling them passing/executable parity fixtures.
+- [x] Manifest source retrieval timestamps use RFC3339 UTC; exact crawl/live observation time remains null/unknown rather than invented.
+- [x] No case claims target-cut or verified-live heal/damage metadata, magnitude, exact range, complete legality, resistance or RNG behavior.
+- [x] Human-readable package separates indexed official content from live-page truth and immutable-target truth, and defines pending fixture blueprints without calling them passing/executable parity fixtures.
 - [x] `FOUNDATION_PROGRAMME_CURRENT_STATUS.md` remains untouched in delivery because its currently selected action is this active package; lifecycle closeout will advance the canonical next action to target-continuity evidence.
-- [ ] Complete final exact-head full-diff self-review, schema-shape audit, repository validation and lifecycle closeout.
+- [ ] Complete final exact-head full-diff self-review, repository validation and lifecycle closeout.
 
 ## Excluded scope
 
-No target classification above `UNKNOWN`; no runtime/client/protocol implementation; no physical catalogue schema/serializer/runner; no exact combat formulas or RNG; no DDL/Platform/production/external-repository writes; no new stable gate ID; no Codex/OpenAI/owner-funded AI use without separate exact authorization.
+No target classification above `UNKNOWN`; no verified-live-page claim; no runtime/client/protocol implementation; no physical catalogue schema/serializer/runner; no exact combat formulas or RNG; no DDL/Platform/production/external-repository writes; no new stable gate ID; no Codex/OpenAI/owner-funded AI use without separate exact authorization.
 
 ## Implementation / findings
 
-Issue #254 / draft PR #255 own this bounded evidence package. Light Healing exercises the healing/self catalogue shape and Ice Strike the targeted attack/damage shape, but no immutable-target behavior is asserted from the current web pages alone.
+Issue #254 / draft PR #255 own this bounded evidence package. Light Healing exercises the healing/self catalogue shape and Ice Strike the targeted attack/damage shape, but no immutable-target behavior is asserted from indexed current-state-near content alone.
 
-**Material self-review finding 1 — repaired:** the initial package incorrectly classified post-boundary current official observations as target `OBSERVED`. Owning manifest continuity policy requires `UNKNOWN` without continuity evidence. The evidence capture, manifest revision 3, catalogue package and issue/PR metadata were repaired to separate current-state observation from immutable-target truth. `retrieved_at` values were also normalized to UTC `Z` timestamps.
+**Material self-review finding 1 — repaired:** the initial package incorrectly classified post-boundary official content as target `OBSERVED`. Owning manifest continuity policy requires `UNKNOWN` without continuity evidence. Evidence, manifest, catalogue and issue/PR metadata were repaired accordingly.
 
-The repair changes the recommended next evidence action: prove the target-continuity path for these four representative cases before broadening mechanic inventory or freezing physical catalogue tooling.
+**Material self-review finding 2 — repaired:** the evidence artifact initially described the source too strongly as a retrieved current/live page. Re-verification showed the research tool surfaces indexed content for the exact official locators, reports an approximately two-week-old crawl, and receives HTTP 403 on direct page open. Evidence, manifest, catalogue and metadata now record that retrieval mode explicitly; exact crawl/live observation time is not invented.
+
+The repairs make the recommended next evidence action precise: prove the target-continuity path for these four representative cases before broadening mechanic inventory or freezing physical catalogue tooling.
 
 ## Validation
 
 ### Focused
 
 - manifest JSON construction/parse: **PASS**.
-- fail-closed invariant audit: **PASS** — 4 unique cases; all target `UNKNOWN`; all Oteryn `NOT_STARTED`; all parity `PARITY_PENDING_EVIDENCE`; all exact revisions null; all fixture/test links empty; all legal-review states `PENDING`; no `PARITY_CONFIRMED`.
+- accepted schema v1 manual shape audit: **PASS** — revision/status/domain/case/source/provenance/history shapes conform; `UNKNOWN` correctly implies `PARITY_PENDING_EVIDENCE`; null exact revisions and empty fixture links are permitted; `PENDING` legal review is permitted; source retrieval timestamp is RFC3339 date-time.
+- fail-closed invariant audit: **PASS** — 4 unique cases; all target `UNKNOWN`; all Oteryn `NOT_STARTED`; all parity `PARITY_PENDING_EVIDENCE`; all exact revisions null; all fixture/test links empty; all legal-review states `PENDING`; no case-level `OBSERVED` and no `PARITY_CONFIRMED`.
 - inventory audit: **PASS** — only `ABILITY_COMBAT` changes to `MECHANIC_CASES_REGISTERED`; other domain coverage remains unchanged.
-- continuity policy audit: **PASS after repair** — post-boundary current observations are discovery/current-state evidence only and cannot promote target evidence.
-- source timestamp audit: **PASS after repair** — manifest retrieval timestamps are UTC RFC3339.
-- accepted schema-shape compatibility: pending final manual audit against unchanged schema v1.
+- continuity policy audit: **PASS after repair 1** — indexed post-boundary content is discovery evidence only and cannot promote target evidence.
+- source provenance audit: **PASS after repair 2** — exact official locators retained; search-index crawl freshness/direct-fetch 403 recorded; exact crawl/live time left unknown; retrieval timestamp is the verified research retrieval time `2026-08-14T11:01:22Z`.
+- official indexed field readback: **PASS** for the bounded surfaced Light Healing and Ice Strike metadata/qualitative descriptions; no broader behavior inferred.
 
 ### Component/integration
 
@@ -105,9 +108,9 @@ The repair changes the recommended next evidence action: prove the target-contin
 
 ## Self-review
 
-- superseded content head: `cb6751eaf3edfad4892caf76a54c2c719ab77353`.
+- superseded semantic content head: `77d30e341d490b8670560373ebc52a87aed6bebe`.
 - method/reviewer: implementing/coordinating architecture continuation agent.
-- material findings: 1 evidence-classification/continuity finding; repaired across evidence/manifest/catalogue/metadata.
+- material findings: 2 evidence classification/provenance findings; both repaired across the affected evidence/manifest/catalogue/metadata layers.
 - verdict: pending final resulting-head full-diff recheck.
 
 ## Independent review
@@ -132,10 +135,10 @@ The repair changes the recommended next evidence action: prove the target-contin
 ## Context checkpoint
 
 ```yaml
-last_progress: Repaired the first representative ABILITY_COMBAT package to keep all immutable-target cases UNKNOWN until continuity evidence bridges the 2026-07-28 cut; current official Library data is discovery/current-state evidence only.
+last_progress: Repaired both historical-continuity classification and indexed-vs-live retrieval provenance; manifest revision 3 remains fully fail-closed with four UNKNOWN target cases and no Oteryn implementation/parity claim.
 status: validating
 branch: docs/ability-combat-first-evidence-fixtures
-head_sha: cb6751eaf3edfad4892caf76a54c2c719ab77353
+head_sha: 77d30e341d490b8670560373ebc52a87aed6bebe
 pr: 255
 final_head_sha: null
 final_head_frozen_at: null
@@ -149,10 +152,10 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 1
+repair_cycles_for_current_gate: 2
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: false
 blocker: null
-next_action: Perform final four-path diff/schema/review-thread audit on the resulting PR #255 head and inspect fresh exact-head repository gates without marking the PR ready.
+next_action: Perform one final four-path diff/review-thread/main-drift audit on the resulting PR #255 head, record immutable self-review evidence, and inspect exact-head repository gates without marking the PR ready.
 ```
