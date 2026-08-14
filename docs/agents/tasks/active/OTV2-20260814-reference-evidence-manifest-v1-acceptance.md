@@ -10,12 +10,12 @@ base_branch: main
 branch: docs/reference-evidence-manifest-v1-acceptance
 pr: 252
 base_sha: 76d65d8bbd2a8eaca46b671fcd5d71a9d6382fa3
-head_sha: d1e2c6802bc7b729cfe1238b86c43f7d8980cd4e
+head_sha: 5f5c9e89b5daf0947a3e4e32edfe8b4056cdf660
 final_head_sha: null
 final_head_frozen_at: null
 owner: architecture continuation agent
 created_at: 2026-08-14T10:15:00+02:00
-updated_at: 2026-08-14T10:18:00+02:00
+updated_at: 2026-08-14T10:21:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -71,7 +71,9 @@ No mechanic cases or factual parity promotions; no evidence acquisition/official
 
 Issue #251 owns this acceptance promotion. Schema v1 is intentionally untouched. Manifest revision 2 binds the same immutable target, sets `status=ACCEPTED`, keeps every domain inventory entry fail-closed and appends acceptance history without adding cases.
 
-Historical current-status/handoff documents still contain earlier instructions to build the manifest. This is a known coordination-text drift, not a semantic conflict: repository source hierarchy makes the later accepted contract authoritative for this exact scope. The acceptance baseline explicitly forbids building a duplicate registry. Broad shared-overlay reconciliation is deliberately not pulled into this bounded three-path delivery.
+Historical current-status/handoff documents still contain earlier instructions to build the manifest. This is known coordination-text drift, not a semantic conflict: repository source hierarchy makes the later accepted contract authoritative for this exact scope. The acceptance baseline explicitly forbids building a duplicate registry. Broad shared-overlay reconciliation is deliberately outside this bounded three-path delivery.
+
+Self-review found one layering issue on superseded head `f2836941e76cf2cfe43e53edb916653fc1ccc6f1`: the machine manifest listed the downstream GAME-ABILITY catalogue contract as its own normative dependency. Commit `5f5c9e89b5daf0947a3e4e32edfe8b4056cdf660` removed that reverse dependency. GAME-ABILITY remains a consumer described by the acceptance baseline; the evidence manifest remains owned by GAME-VISION/evidence semantics.
 
 Until canonical digest tooling is separately accepted, executable consumers remain unauthorized. Paper evidence may bind target ID + schema version + manifest revision + exact repository delivery evidence; mutable `latest` lookup is not authorized.
 
@@ -83,6 +85,7 @@ Until canonical digest tooling is separately accepted, executable consumers rema
 - changed-field/schema review: **PASS** — unchanged schema v1 permits `manifest_revision >= 1`, `status=ACCEPTED`, `canonical_digest=null`, nonempty normative-contract strings and the appended `manifest_revision/date/summary/issue` history entry.
 - acceptance pin invariants: **PASS** — immutable target unchanged; revision 2; status accepted; `cases=[]`; nine unique fail-closed domains; all fail-closed policy flags preserved; digest remains null.
 - schema identity: **PASS** — schema path is absent from PR diff and remains blob `208506f461231eb3ed8966ae16dade0764eb39b8` on trusted base.
+- layering review: **PASS after one repair** — no downstream GAME-ABILITY dependency remains in machine manifest `normative_contracts`.
 
 ### Component/integration
 
@@ -96,7 +99,7 @@ Until canonical digest tooling is separately accepted, executable consumers rema
 
 ### Exact-head CI
 
-- final head: pending after this task/checkpoint commit.
+- final head: pending after this task-record commit.
 - trigger source: pull_request.
 - workflow/run/job: pending.
 - runner assignment: pending.
@@ -105,10 +108,10 @@ Until canonical digest tooling is separately accepted, executable consumers rema
 
 ## Self-review
 
-- content head reviewed: `d1e2c6802bc7b729cfe1238b86c43f7d8980cd4e`.
+- semantic content head reviewed: `5f5c9e89b5daf0947a3e4e32edfe8b4056cdf660`.
 - method/reviewer: implementing/coordinating architecture continuation agent.
-- material findings: no open semantic finding; final checkpoint-only resulting-head recheck pending.
-- verdict: pending final exact-head recheck.
+- material findings: 1 layering finding; repaired.
+- verdict: semantic content PASS; final task-checkpoint-only resulting-head recheck pending.
 
 ## Independent review
 
@@ -122,7 +125,7 @@ Until canonical digest tooling is separately accepted, executable consumers rema
 ## PR and closeout
 
 - PR: #252 (draft).
-- changed-file review: three intended paths only at content head.
+- changed-file review: three intended paths only.
 - unresolved review threads: pending final readback.
 - related/superseded PRs: #220/#221 historical candidate delivery; #249/#250 downstream catalogue contract; #191 separate and untouched.
 - protected auto-merge: pending.
@@ -132,10 +135,10 @@ Until canonical digest tooling is separately accepted, executable consumers rema
 ## Context checkpoint
 
 ```yaml
-last_progress: Draft PR #252 now contains the three-path owner-acceptance promotion; JSON/schema-delta/pin invariants passed focused validation without changing schema v1.
+last_progress: Repaired the only self-review finding by removing a reverse GAME-ABILITY normative dependency from the machine manifest; semantic three-path content now passes focused review.
 status: validating
 branch: docs/reference-evidence-manifest-v1-acceptance
-head_sha: d1e2c6802bc7b729cfe1238b86c43f7d8980cd4e
+head_sha: 5f5c9e89b5daf0947a3e4e32edfe8b4056cdf660
 pr: 252
 final_head_sha: null
 final_head_frozen_at: null
@@ -149,10 +152,10 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 0
+repair_cycles_for_current_gate: 1
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: false
 blocker: null
-next_action: Perform the final full-diff/review-thread recheck on the resulting PR #252 head and inspect its exact-head Merge gate generation.
+next_action: Recheck the resulting PR #252 exact diff/review threads and inspect the fresh exact-head Merge gate generation without moving the head unless a material finding appears.
 ```
