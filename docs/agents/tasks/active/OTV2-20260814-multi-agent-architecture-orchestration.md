@@ -11,12 +11,12 @@ branch: docs/multi-agent-architecture-orchestration
 issue: 258
 pr: 265
 base_sha: 85acd19e976943ee42b5c004ebd0ae1c40cc5fff
-head_sha: 9b20fb150bc764489fd83d4b74d23ef633b35aaf
+head_sha: 587ff69205ddc53c006b274d15cf95c14cf7a3d7
 final_head_sha: null
 final_head_frozen_at: null
 owner: architecture-coordinator
 created_at: 2026-08-14T16:01:00+02:00
-updated_at: 2026-08-14T16:10:00+02:00
+updated_at: 2026-08-14T16:13:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -68,7 +68,7 @@ No gameplay/runtime/client/server/protocol implementation; no DDL/migrations; no
 - Agent E / ALPHA-CLIENT-01: #263 / `docs/arch-e-alpha-client`;
 - Agent F / ANL-02+ANL-03: #264 / `docs/arch-f-analytics-integrity`.
 
-Issue comments now bind every A–F issue to its exact future branch, merged worker prompt/policy prerequisite and coordinator-only merge authority.
+Issue comments bind every A–F issue to its exact future branch, merged worker prompt/policy prerequisite and coordinator-only merge authority. Search of `docs/arch-*` branches before final freeze returned none, as intended.
 
 ## Governance effect
 
@@ -85,11 +85,13 @@ The delivery is intentionally restrictive:
 ### Focused
 
 - referenced issue set #258–#264 exists: **PASS**;
-- first-wave branch names are unique: **PASS**;
+- first-wave future branch names are unique: **PASS**;
+- no first-wave worker branch exists before policy merge: **PASS**;
 - worker public-contract/path ownership is disjoint by default; Agent A manifest/evidence ownership is conditional and Agent B is explicitly forbidden from those files: **PASS**;
-- coordinator-only overlay list is consistent across policy, worker prompt and allocation: pending final diff audit;
-- canonical `ARCHITECTURE_STATUS_MODEL` vocabulary is referenced rather than extended: pending final diff audit;
-- owner-funded AI rule is narrowed/preserved, not weakened: pending final governance audit.
+- coordinator-only overlay list is consistent across policy, worker prompt and allocation: **PASS**;
+- canonical `ARCHITECTURE_STATUS_MODEL` vocabulary is referenced rather than extended: **PASS**;
+- owner-funded AI rule is narrowed/preserved, not weakened: **PASS**;
+- draft PR #265 has no Codex reaction/invocation: **PASS**.
 
 ### Component / E2E
 
@@ -97,27 +99,32 @@ The delivery is intentionally restrictive:
 
 ### Exact-head CI
 
-Pending final resulting head.
+- CI started on superseded head `587ff69205ddc53c006b274d15cf95c14cf7a3d7`; it is stale after this checkpoint commit.
+- fresh resulting-head Agent governance / Merge authority audit / Merge gate required.
 
 ## Self-review
 
-Pending final full-diff review of PR #265.
+Material findings: **1, repaired**.
+
+- Finding 1: replacing the old single-agent coordinator prompt initially removed its explicit `ANALYZE_ONLY` no-mutation behavior. That would have been an unintended authority regression for future review/discussion-only invocations. The coordinator prompt now explicitly preserves `ANALYZE_ONLY` and allows mutation only under an owner/foreground-programme execution instruction. The same repair corrected the role typo `OTERYV-V2` -> `OTERYN-V2`.
+
+No open material finding remains before final resulting-head recheck.
 
 ## Independent review
 
-This governance change narrows worker authority and does not expand safety/repository/production authority. Root policy does not automatically require independent review for a governance narrowing. If self-review finds unusual complexity/common-mode uncertainty or CI/repository policy requires an independent mechanism, record it honestly. Owner-funded Codex is **NOT AUTHORIZED** for PR #265 by earlier permissions.
+This governance change narrows worker authority and does not expand safety/repository/production authority. Root policy does not automatically require independent review for a governance narrowing. The repaired `ANALYZE_ONLY` finding removes the identified common-mode safety regression. Owner-funded Codex is **NOT AUTHORIZED** for PR #265 by earlier permissions; the PR must remain draft unless exact authorization is later provided.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Policy, worker prompt, coordinator prompt, exact A-F work allocation and governance narrowing are implemented on draft PR #265; issues #259-#264 are bound to future branches but worker branches are intentionally deferred until this policy is merged.
+last_progress: Multi-agent policy, worker/coordinator prompts, exact A-F allocation and governance narrowing are implemented on draft PR #265; self-review found and repaired loss of coordinator ANALYZE_ONLY semantics; worker issues are bound to future branches but branches remain intentionally absent until policy merge.
 status: validating
 branch: docs/multi-agent-architecture-orchestration
-head_sha: 9b20fb150bc764489fd83d4b74d23ef633b35aaf
+head_sha: 587ff69205ddc53c006b274d15cf95c14cf7a3d7
 pr: 265
 final_head_sha: null
 final_head_frozen_at: null
 owner_action_required: false
 blocker: null
-next_action: Perform final full-diff governance/ownership/status/self-review on PR #265, run exact-head repository gates and keep the PR draft without Codex unless separately authorized.
+next_action: Freeze the resulting head, perform final seven-path diff/readback and fresh exact-head repository CI, keep PR #265 draft, and do not trigger Codex without separate authorization.
 ```
