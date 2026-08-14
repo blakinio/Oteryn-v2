@@ -9,13 +9,13 @@ repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/arch-a-reference-continuity
 pr: null
-base_sha: 088b466c689f55b308cbdfafa545394baeacf0c5
-head_sha: 088b466c689f55b308cbdfafa545394baeacf0c5
+base_sha: 088b46638ac014cd7928d6b0b75cee44902fe22c
+head_sha: 21eddf2033857cfdc8149802d7f5870278e39b7f
 final_head_sha: null
 final_head_frozen_at: null
 owner: DOMAIN ARCHITECTURE DESIGN AGENT / Agent A worker
 created_at: 2026-08-15T00:20:22+02:00
-updated_at: 2026-08-15T00:20:22+02:00
+updated_at: 2026-08-15T00:22:19+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -29,7 +29,7 @@ public_contracts:
   - docs/architecture/GAME-ABILITY-01_FIRST_REFERENCE_EVIDENCE_FIXTURE_PACKAGE.md
   - docs/architecture/REFERENCE_EVIDENCE_PARITY_MANIFEST_CONTRACT.md
 depends_on:
-  - issue #259
+  - issue #259 and coordinator activation comments
   - docs/agents/prompts/OTV2_DOMAIN_ARCHITECTURE_DESIGN_AGENT.md
   - docs/agents/programs/OTERYN_V2_ARCHITECTURE_PARALLEL_WORK_ALLOCATION.md
   - docs/architecture/GAME-VISION-01_FIRST_REFERENCE_BASELINE_OWNER_BASELINE.md
@@ -46,34 +46,39 @@ external_repositories: []
 
 ## Outcome
 
-Produce a bounded, provenance-aware evidence package for exactly the four registered `ABILITY_COMBAT` Reference cases in issue #259. Promote a case only if admissible evidence directly captures or bridges the immutable `global-tibia-observable-2026-07-28-post-server-save` boundary and provenance/legal requirements are satisfied; otherwise retain `UNKNOWN / PENDING` fail closed.
+Produce a bounded evidence package for exactly the four registered `ABILITY_COMBAT` Reference cases in issue #259. Promotion requires admissible evidence that captures or bridges `global-tibia-observable-2026-07-28-post-server-save` and satisfies provenance/legal requirements; otherwise the cases remain fail-closed `UNKNOWN / PENDING`.
 
 ## Architecture and source of truth
 
-- **PROVEN:** live `main@cb98fd379a61c7cf395d30261cef0ee202e34bcf` contains the published #257/#258 programme prerequisites and selects this exact Agent A package as current paper-only work.
-- **PROVEN:** the dedicated worker branch was provisioned at `088b466c689f55b308cbdfafa545394baeacf0c5`; live `main` is one later lifecycle-orchestration commit ahead. Connector fast-forward attempts returned GitHub ref-update 422 for the slash-bearing branch, so no force update was performed. The missing main commit only archives the programme-orchestration task; accepted architecture/evidence dependencies consumed by this task are already present on the worker base.
-- **PROVEN:** `REFERENCE_EVIDENCE_PARITY_MANIFEST_CONTRACT.md` requires evidenced continuity from the 2026-07-28 target boundary for any post-target observation and blocks evidence promotion whenever provenance is not `CLEARED`.
-- **PROVEN:** manifest revision 3 registers exactly four scoped `ABILITY_COMBAT` cases from PR #255; all are `UNKNOWN`, Oteryn `NOT_STARTED`, parity `PARITY_PENDING_EVIDENCE`, with provenance/legal review `PENDING`.
-- **UNKNOWN:** whether admissible time-appropriate evidence exists that can clear continuity and provenance for any of the four cases. This task researches that question without broadening mechanic inventory.
+- **PROVEN:** coordinator comment on issue #259 activated this worker lane from reviewed orchestration base `088b46638ac014cd7928d6b0b75cee44902fe22c` and requires work to start from this branch/trusted base.
+- **PROVEN:** live `main@cb98fd32a2bb71fce83234ebf8bf69bdd1a1970e` has exactly that worker base as its parent; the later #267 commit is orchestration lifecycle closeout and explicitly preserves the activated A-F lanes unchanged.
+- **PROVEN:** the accepted continuity contract requires evidence from the 2026-07-28 boundary for post-target observations and says patch-note/search absence is not continuity proof; provenance other than `CLEARED` blocks promotion.
+- **PROVEN:** manifest revision 3 contains exactly the four scoped cases from PR #255. Each is target `UNKNOWN`, Oteryn `NOT_STARTED`, parity `PARITY_PENDING_EVIDENCE`, with source/case provenance and legal review `PENDING`.
+- **PROVEN RESEARCH:** official Tibia search-index surfaces still show the expected Light Healing and Ice Strike metadata/descriptions, but direct opens of both exact Library locators still return HTTP 403 in the research environment.
+- **PROVEN RESEARCH:** an indexed official Tibia spell-list surface reports both spells and basic metadata with an approximate three-week crawl age, but no exact crawl timestamp is exposed; this does not time-lock the evidence to the 2026-07-28 boundary.
+- **PROVEN RESEARCH:** official July 27/28 news establishes the maintenance/change boundary and lists July 28 changes, but absence of these two spells from that change list is forbidden as continuity proof.
+- **UNKNOWN:** no admissible provenance-cleared, exact-time capture or chain that directly crosses the target boundary has yet been found.
 
 ## Acceptance criteria
 
 - [ ] Preflight evidence table records exact target cases, current classes and unresolved blockers before research.
-- [ ] Research is bounded to the four issue #259 cases and records exact source, locator, retrieval/capture timing, target-time relation, provenance and uncertainty/conflict.
-- [ ] Each case receives an explicit promote/reject decision under accepted continuity/provenance rules; insufficient evidence stays `UNKNOWN`.
-- [ ] No patch-note/search absence, OTS/community source or unverified later behavior is treated as independent target-continuity proof.
+- [ ] Research remains bounded to the four issue #259 cases and records source, locator, timing relation, provenance, uncertainty and conflicts.
+- [ ] Every case receives explicit promote/reject reasoning; insufficient evidence remains `UNKNOWN`.
+- [ ] No patch-note/search silence, OTS/community evidence or unverified later behavior is treated as independent target-continuity proof.
 - [ ] Manifest/fixture/contract changes occur only if evidence materially changes classification/provenance or reveals a necessary contract clarification.
-- [ ] No proprietary code/assets, runtime/client/protocol/DDL/Platform/production changes, external-repository writes or unapproved Codex/OpenAI invocation.
-- [ ] Repository governance validation and applicable JSON/schema checks are recorded for the exact final PR head.
-- [ ] Full-diff self-review has zero unresolved material findings and the draft PR is ready for coordinator audit without merge or lifecycle closeout.
+- [x] No runtime/client/protocol/DDL/Platform/production or external-repository write has been performed; no proprietary code/assets have been used.
+- [ ] Governance validation and applicable JSON/schema checks are recorded for the exact final PR head.
+- [ ] Full-diff self-review is clean and draft PR is ready for coordinator audit without merge/lifecycle closeout.
 
 ## Excluded scope
 
-No mechanic-inventory expansion; no exact heal/damage formula discovery beyond what is necessary to classify the four registered cases; no runtime/client/server/protocol/persistence/content implementation; no DDL, Platform or production authority; no external-repository writes; no proprietary/restricted evidence; no issue close, task archive, merge, auto-merge or lifecycle publication.
+No mechanic-inventory expansion; no formulas/range/legality discovery beyond the four registered case boundaries; no runtime/client/server/protocol/persistence/content implementation; no DDL, Platform or production authority; no external-repository writes; no proprietary/restricted evidence; no issue close, task archive, merge, auto-merge or lifecycle publication.
 
 ## Implementation / findings
 
-Initial ownership acquired on the dedicated Agent A branch. The branch is intentionally not force-moved after the connector rejected a non-force fast-forward; research consumes live `main` as the canonical source of truth and will verify the complete PR diff against current `main` before handover.
+The initial task checkpoint contained two incorrect full SHAs copied from a truncated preflight summary. Direct GitHub branch inspection and the coordinator activation comment established the authoritative worker base and live-main SHA above; this checkpoint repairs that bookkeeping error. No branch force-move was performed.
+
+Current research supports a fail-closed direction: indexed official content is useful corroboration, but direct official-page fetch remains blocked and no exact-time capture bridges the immutable cut. Final decision awaits completion of the bounded source matrix and self-review.
 
 ## Validation
 
@@ -84,7 +89,7 @@ Initial ownership acquired on the dedicated Agent A branch. The branch is intent
 
 ### Component/integration
 
-- command/run: `NOT_APPLICABLE` — paper-only architecture/evidence package unless machine manifest content changes
+- command/run: `NOT_APPLICABLE` unless machine manifest content changes; paper-only evidence package
 - result: pending
 
 ### E2E
@@ -105,7 +110,7 @@ Initial ownership acquired on the dedicated Agent A branch. The branch is intent
 
 - exact head: pending
 - method/reviewer: DOMAIN ARCHITECTURE DESIGN AGENT / Agent A worker
-- material findings: pending
+- material findings: initial SHA bookkeeping error repaired; final review pending
 - verdict: pending
 
 ## Independent review
@@ -120,7 +125,7 @@ Initial ownership acquired on the dedicated Agent A branch. The branch is intent
 
 - changed-file review: pending
 - unresolved review threads: pending
-- related/superseded PRs: PR #255 is accepted predecessor evidence package; no Agent A PR existed at task start
+- related/superseded PRs: PR #255 is accepted predecessor evidence package
 - protected auto-merge: FORBIDDEN BY ISSUE #259 / user instruction
 - merge commit/result: NOT PERFORMED
 - ownership release: NOT PERFORMED; lifecycle closeout explicitly excluded
@@ -128,10 +133,10 @@ Initial ownership acquired on the dedicated Agent A branch. The branch is intent
 ## Context checkpoint
 
 ```yaml
-last_progress: ownership acquired; canonical continuity/provenance rules and predecessor package verified
+last_progress: worker-base bookkeeping repaired; bounded public-source research shows no admissible exact-time continuity chain yet
 status: investigating
 branch: docs/arch-a-reference-continuity
-head_sha: 088b466c689f55b308cbdfafa545394baeacf0c5
+head_sha: 21eddf2033857cfdc8149802d7f5870278e39b7f
 pr: null
 final_head_sha: null
 final_head_frozen_at: null
@@ -150,5 +155,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: research provenance-cleared time-appropriate evidence for exactly the four registered ABILITY_COMBAT cases
+next_action: finish four-case source/classification matrix and persist bounded evidence artifact
 ```
