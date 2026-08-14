@@ -11,12 +11,12 @@ branch: docs/arch-b-game-ability-gap
 issue: 260
 pr: 268
 base_sha: 088b46638ac014cd7928d6b0b75cee44902fe22c
-head_sha: 13552cbba54b32a1da67ee26038680bae0cf42d2
+head_sha: 1f3536a96f9b10c100f9acc051fa7feef9c5d7c7
 final_head_sha: null
 final_head_frozen_at: null
 owner: domain-architecture-agent-b
 created_at: 2026-08-15T00:17:00+02:00
-updated_at: 2026-08-15T00:27:00+02:00
+updated_at: 2026-08-15T00:29:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: whole-gate architecture reconciliation across six accepted partial baselines and multiple read-only dependency contracts
 owned_paths:
@@ -56,8 +56,8 @@ The worker stops at a draft-PR handoff to the Architecture Coordinator/Auditor. 
 - [x] Preserve Reference `UNKNOWN`/`PENDING` fail-closed classifications and Agent A ownership of the four-case evidence lane.
 - [x] Change only the three allocated paths.
 - [x] Open and keep draft PR #268 containing `MERGE_AUTHORITY: ARCHITECTURE_COORDINATOR_ONLY`.
-- [ ] Complete exact-head ordinary repository CI/status inspection on the resulting checkpoint head and record it in PR evidence without moving the head.
-- [x] Complete full-content/full-diff worker self-review with zero open material content findings before the validation checkpoint.
+- [ ] Complete exact-head ordinary repository CI/status inspection on the resulting metadata-repair checkpoint and record immutable PR evidence without moving the head.
+- [x] Complete full-content/full-diff worker self-review with zero open material content findings.
 - [x] End with Architecture Coordinator audit as the only lifecycle next action; do not merge, accept the architecture, archive the task or update global overlays.
 
 ## Excluded scope
@@ -110,16 +110,25 @@ Verified compare `088b466... -> main` changed only the orchestration task locati
 - accepted GAME-ABILITY partials reconciled as read-only dependencies: **PASS**;
 - current manifest revision 3 / four fail-closed ABILITY_COMBAT cases read without modification: **PASS**;
 - `RESOURCE_LIMITS_REGISTRY.json` inspected to verify the repository hard-limit mechanism rather than inventing numeric limits: **PASS**;
-- PR #268 draft state created with coordinator-only merge authority: **PASS**;
-- changed-path allowlist before this checkpoint: exactly the three Agent B-owned paths: **PASS**;
+- PR #268 draft state and coordinator-only merge authority: **PASS**;
+- exact changed-path allowlist on pre-repair checkpoint `1f3536a96f9b10c100f9acc051fa7feef9c5d7c7`: exactly the three Agent B-owned paths: **PASS**;
 - candidate/gap-analysis full-content inspection: **PASS**;
+- Merge authority audit run `31846708618` on `1f3536a96f9b10c100f9acc051fa7feef9c5d7c7`: **PASS**;
 - runtime/component/integration/E2E execution: **NOT_APPLICABLE** — paper-only architecture; no executable/runtime/client/protocol/DDL change and no authority to fabricate runtime evidence.
+
+### Repaired validation finding
+
+Agent governance run `31846708570` on pre-repair checkpoint `1f3536a96f9b10c100f9acc051fa7feef9c5d7c7` failed in **PR metadata pre-check only**. The exact job log reported one error: `PR body is missing ## Scope`. The body used `## Owned scope`; checkout and repository-governance steps were skipped.
+
+Repair: PR #268 metadata now uses the required literal `## Scope` heading and contains the completed validation/self-review/handoff state. This task checkpoint records that repair and intentionally creates a new `pull_request/synchronize` event so exact-head Agent governance can validate the corrected event metadata. This is an operational metadata repair, not a GAME-ABILITY content finding.
 
 ### Self-review
 
 Material content findings: **0 open**.
 
-The self-review specifically checked:
+Operational validation findings: **1 repaired** — PR heading `## Owned scope` -> required `## Scope` as described above.
+
+The content self-review specifically checked:
 
 - no whole-gate `ACCEPTED` claim by the worker;
 - no runtime/client/protocol/content/DDL/Platform/production authority claim;
@@ -133,24 +142,24 @@ The self-review specifically checked:
 - post-commit reaction failure/budget exhaustion cannot erase committed history;
 - explicit `CROSS_DOMAIN_FINDINGS`, dependency matrix and `DECISIONS_NOT_TAKEN` are present.
 
-No content repair was required after the final read-through. Self-review is not independent Architecture Coordinator acceptance.
+Self-review is not independent Architecture Coordinator acceptance.
 
 ### Exact-head checkpoint rule
 
-This task update creates the validation checkpoint commit itself, so embedding that resulting commit SHA back into this same file would necessarily move the head again. The exact unchanged checkpoint SHA, changed-path verification and GitHub Actions/status results are therefore to be recorded in PR #268 conversation/body after this commit. Any material finding or repair invalidates that evidence and requires a new head/check cycle.
+This task update creates the post-metadata-repair checkpoint commit itself, so embedding that resulting commit SHA back into this same file would necessarily move the head again. The exact unchanged checkpoint SHA, changed-path verification and GitHub Actions/status results are therefore recorded in PR #268 conversation/body after this commit. Any material finding or repair invalidates that evidence and requires a new head/check cycle.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: whole-gate analysis and candidate are complete; full-content self-review found zero open material content findings; exactly three owned paths are changed; Agent A draft remains noncanonical and reports no case promotion; live-main drift is coordinator task archival only
+last_progress: whole-gate analysis/candidate complete with zero open material content findings; exact scope is three owned paths; pre-repair Merge authority audit passed; Agent governance exposed one metadata-heading defect which is now repaired in PR body; this checkpoint triggers corrected exact-head validation
 status: validating
 branch: docs/arch-b-game-ability-gap
-head_sha: 13552cbba54b32a1da67ee26038680bae0cf42d2
+head_sha: 1f3536a96f9b10c100f9acc051fa7feef9c5d7c7
 pr: 268
 final_head_sha: null
 final_head_frozen_at: null
 owner_action_required: false
-blocker: exact resulting checkpoint head still needs ordinary repository CI/status inspection and immutable PR evidence before coordinator handoff
+blocker: resulting post-repair head requires exact changed-path and ordinary CI/status verification before coordinator handoff
 next_action: freeze the resulting checkpoint head externally in PR #268 evidence, verify exact changed paths and ordinary CI/status, then Architecture Coordinator audit only
 ```
 
