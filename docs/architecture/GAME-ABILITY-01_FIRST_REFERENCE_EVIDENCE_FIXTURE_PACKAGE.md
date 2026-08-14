@@ -17,11 +17,13 @@ This package is catalogue/evidence metadata. It is not executable content and do
 
 ## Evidence boundary
 
-The official Tibia Library pages were retrieved on 2026-08-14, after the immutable 2026-07-28 Reference boundary. They are official-public observations, but they are not a capture made exactly on the boundary date. Therefore all target classifications below remain `OBSERVED`, not `PROVEN`, and exact boundary continuity remains explicitly uncertain.
+The official Tibia Library pages were retrieved on 2026-08-14, after the immutable 2026-07-28 Reference boundary. They are official-public current-state observations, but they are not a time-locked capture made exactly on the boundary date and no accepted evidence chain currently proves continuity back to that cut.
+
+`REFERENCE_EVIDENCE_PARITY_MANIFEST_CONTRACT.md` therefore requires the immutable-target classifications below to remain `UNKNOWN`, not `OBSERVED`. The current Library observations are retained as bounded discovery/current-state evidence that defines what continuity evidence should later confirm or reject.
 
 The bounded evidence capture is `docs/agents/evidence/OTV2-20260814-ability-combat-official-spell-library.md`.
 
-Patch-note absence is not continuity proof. OTS code is not used as Reference proof.
+Patch-note/search absence is not continuity proof. OTS code is not used as Reference proof.
 
 ## Catalogue package — Light Healing
 
@@ -32,23 +34,23 @@ manifest_case_refs:
   - ability_combat.light_healing.cast_metadata.v1
   - ability_combat.light_healing.self_heal_semantics.v1
 classification_projection:
-  target_evidence: OBSERVED
+  target_evidence: UNKNOWN
   implementation_state: NOT_STARTED
   aggregate_parity_status: PARITY_PENDING_EVIDENCE
 parity_coverage:
   - case: ability_combat.light_healing.cast_metadata.v1
     aspects: [formula, vocation_eligibility, spell_group, cast_type, magic_type, cooldown, group_cooldown, level, mana, premium]
-    state: TARGET_OBSERVED_IMPLEMENTATION_NOT_STARTED
+    state: TARGET_UNKNOWN_CONTINUITY_NOT_PROVEN
   - case: ability_combat.light_healing.self_heal_semantics.v1
     aspects: [qualitative_self_heal]
-    state: TARGET_OBSERVED_IMPLEMENTATION_NOT_STARTED
+    state: TARGET_UNKNOWN_CONTINUITY_NOT_PROVEN
 revision_bindings:
   reference_manifest: schema_v1_manifest_revision_3
   ability_definition: NOT_STARTED
-  target_policy: NOT_STARTED
-  legality_policy: NOT_STARTED
-  cast_cost_commit_policy: NOT_STARTED
-  cooldown_policy: NOT_STARTED
+  target_policy: UNKNOWN_NOT_EVIDENCED_FOR_TARGET_CUT
+  legality_policy: UNKNOWN_NOT_EVIDENCED_FOR_TARGET_CUT
+  cast_cost_commit_policy: UNKNOWN_NOT_EVIDENCED_FOR_TARGET_CUT
+  cooldown_policy: UNKNOWN_CONTINUITY_NOT_PROVEN
   heal_formula: UNKNOWN_NOT_EVIDENCED
   simulation_numeric_profile: NOT_STARTED
 effect_families:
@@ -56,9 +58,15 @@ effect_families:
 owning_domain_integrations: []
 ```
 
+`healing` above is a descriptive semantic family label from the accepted effect-family boundary, not a frozen physical ID, enum discriminant or serializer token.
+
+### Current official observation — not target truth
+
+The current official page reports `exura`, Druid/Monk/Paladin/Sorcerer, Healing/Instant/Healing, 1 second spell/group cooldown, level 8, mana 20, non-Premium, and qualitatively describes healing the caster's own wounds. These fields remain continuity hypotheses for the immutable target until admissible continuity evidence is registered.
+
 ### Deliberately uncovered Light Healing aspects
 
-No claim is made for exact heal magnitude/scaling/rounding, exact mana or cooldown commit anchors on failure, complete self-target legality, death/PZ/PvP edge behavior, client failure messages or any Oteryn implementation behavior.
+No target-cut claim is made for the current metadata itself, exact heal magnitude/scaling/rounding, exact mana or cooldown commit anchors on failure, complete self-target legality, death/PZ/PvP edge behavior, client failure messages or any Oteryn implementation behavior.
 
 ## Catalogue package — Ice Strike
 
@@ -69,23 +77,23 @@ manifest_case_refs:
   - ability_combat.ice_strike.cast_metadata.v1
   - ability_combat.ice_strike.targeted_ice_damage_semantics.v1
 classification_projection:
-  target_evidence: OBSERVED
+  target_evidence: UNKNOWN
   implementation_state: NOT_STARTED
   aggregate_parity_status: PARITY_PENDING_EVIDENCE
 parity_coverage:
   - case: ability_combat.ice_strike.cast_metadata.v1
     aspects: [formula, vocation_eligibility, spell_group, cast_type, magic_type, cooldown, group_cooldown, level, mana, premium]
-    state: TARGET_OBSERVED_IMPLEMENTATION_NOT_STARTED
+    state: TARGET_UNKNOWN_CONTINUITY_NOT_PROVEN
   - case: ability_combat.ice_strike.targeted_ice_damage_semantics.v1
     aspects: [qualitative_aimed_opponent, qualitative_close_range, ice_damage_family, qualitative_magic_ability_scaling]
-    state: TARGET_OBSERVED_IMPLEMENTATION_NOT_STARTED
+    state: TARGET_UNKNOWN_CONTINUITY_NOT_PROVEN
 revision_bindings:
   reference_manifest: schema_v1_manifest_revision_3
   ability_definition: NOT_STARTED
-  target_policy: UNKNOWN_NOT_FULLY_EVIDENCED
-  legality_policy: UNKNOWN_NOT_FULLY_EVIDENCED
-  cast_cost_commit_policy: NOT_STARTED
-  cooldown_policy: NOT_STARTED
+  target_policy: UNKNOWN_NOT_EVIDENCED_FOR_TARGET_CUT
+  legality_policy: UNKNOWN_NOT_EVIDENCED_FOR_TARGET_CUT
+  cast_cost_commit_policy: UNKNOWN_NOT_EVIDENCED_FOR_TARGET_CUT
+  cooldown_policy: UNKNOWN_CONTINUITY_NOT_PROVEN
   damage_formula: UNKNOWN_NOT_EVIDENCED
   simulation_numeric_rng_profile: NOT_STARTED
 effect_families:
@@ -93,64 +101,72 @@ effect_families:
 owning_domain_integrations: []
 ```
 
+`damage` above is a descriptive semantic family label from the accepted effect-family boundary, not a frozen physical ID, enum discriminant or serializer token.
+
+### Current official observation — not target truth
+
+The current official page reports `exori frigo`, Druid/Sorcerer, Attack/Instant/Ice, 2 second spell/group cooldown, level 8, mana 20, non-Premium, and qualitatively describes an aimed opponent in close range with ice whose damage depends on caster magical ability. These fields remain continuity hypotheses for the immutable target until admissible continuity evidence is registered.
+
 ### Deliberately uncovered Ice Strike aspects
 
-No claim is made for exact tile/range metric, line-of-sight/floor/PvP/PZ legality, complete target cardinality/ordering, exact damage formula/scaling/rounding, resistance/mitigation, crit/block/dodge/RNG, exact cost/cooldown failure anchors or any Oteryn implementation behavior.
+No target-cut claim is made for the current metadata itself, exact tile/range metric, line-of-sight/floor/PvP/PZ legality, complete target cardinality/ordering, exact damage formula/scaling/rounding, resistance/mitigation, crit/block/dodge/RNG, exact cost/cooldown failure anchors or any Oteryn implementation behavior.
 
 ## Pending bounded fixture blueprints
 
-The records below are **not parity fixtures yet** under `GAME-ABILITY-01_REFERENCE_MECHANIC_CATALOGUE_ENTRY_PARITY_FIXTURE_CONTRACT.md`. They intentionally lack an exact Oteryn implementation revision and executable test locator. Calling them passing or executable fixtures would be false evidence.
+The records below are **not parity fixtures yet** under `GAME-ABILITY-01_REFERENCE_MECHANIC_CATALOGUE_ENTRY_PARITY_FIXTURE_CONTRACT.md`. They intentionally lack target continuity evidence, an exact Oteryn implementation revision and an executable test locator. Calling them passing or executable fixtures would be false evidence.
 
-They are bounded fixture blueprints that define what a later implementation fixture must prove.
+They are bounded fixture blueprints that define what a later implementation/evidence package must prove after target continuity is established.
 
 ### `blueprint.reference.light_healing.basic_cast.v1`
 
 - mechanic: `reference.ability.light_healing`;
 - manifest cases: both Light Healing cases above;
-- bounded actor precondition: eligible listed vocation, level >= 8, at least 20 mana, injured state;
-- invocation intent: cast formula `exura`;
-- target policy to prove: self-directed healing only to the extent later evidence confirms;
-- expected observed metadata surface: 20 mana, 1 second ability/group cooldown, instant Healing spell, non-Premium;
-- expected effect family: healing;
-- **not asserted:** magnitude, rounding, failure anchor, full legality;
+- candidate actor precondition from current official observation: eligible listed vocation, level >= 8, at least 20 mana, injured state;
+- candidate invocation intent: cast formula `exura`;
+- target policy to prove: self-directed healing only after target-cut evidence confirms it;
+- candidate metadata surface: 20 mana, 1 second ability/group cooldown, instant Healing spell, non-Premium;
+- expected semantic family if continuity is proven: healing;
+- **not asserted for target cut:** metadata continuity, magnitude, rounding, failure anchor, full legality;
 - exact Oteryn implementation revision: `NONE / NOT_STARTED`;
 - executable locator: `NONE / NOT_STARTED`;
-- result: `PENDING_IMPLEMENTATION_AND_STRONGER_EVIDENCE`.
+- result: `PENDING_TARGET_CONTINUITY_IMPLEMENTATION_AND_LEGAL_CLEARANCE`.
 
 ### `blueprint.reference.ice_strike.basic_targeted_cast.v1`
 
 - mechanic: `reference.ability.ice_strike`;
 - manifest cases: both Ice Strike cases above;
-- bounded actor precondition: Druid or Sorcerer, level >= 8, at least 20 mana;
-- bounded target precondition: one candidate opponent in a later-evidenced legal close-range configuration;
-- invocation intent: cast formula `exori frigo` at the candidate opponent;
-- expected observed metadata surface: 20 mana, 2 second ability/group cooldown, instant Attack spell, Ice magic type, non-Premium;
-- expected qualitative effect: targeted ice-damage occurrence whose magnitude is influenced by caster magical ability;
-- **not asserted:** exact range, formula, resistance, RNG, complete legality or target-selection edge behavior;
+- candidate actor precondition from current official observation: Druid or Sorcerer, level >= 8, at least 20 mana;
+- candidate target precondition: one opponent in a configuration later proven legal for the target cut;
+- candidate invocation intent: cast formula `exori frigo` at the candidate opponent;
+- candidate metadata surface: 20 mana, 2 second ability/group cooldown, instant Attack spell, Ice magic type, non-Premium;
+- candidate qualitative effect: targeted ice-damage occurrence influenced by caster magical ability, subject to target-cut continuity proof;
+- **not asserted for target cut:** metadata continuity, exact range, formula, resistance, RNG, complete legality or target-selection edge behavior;
 - exact Oteryn implementation revision: `NONE / NOT_STARTED`;
 - executable locator: `NONE / NOT_STARTED`;
-- result: `PENDING_IMPLEMENTATION_AND_STRONGER_EVIDENCE`.
+- result: `PENDING_TARGET_CONTINUITY_IMPLEMENTATION_AND_LEGAL_CLEARANCE`.
 
 ## Contract-fit finding
 
-These first representative mechanics can be described without adding a new core Effect Family, generic patch, script-owned mutation surface, global transaction or new stable identity. Healing and damage remain separate typed semantics, targeting/legality stays authoritative, cooldown/cost timing remains versioned policy, and all unsupported behavior stays fail closed.
+Even while the target cases remain `UNKNOWN`, the two representative shapes exercise the catalogue contract without requiring a new core Effect Family, generic patch, script-owned mutation surface, global transaction or new stable identity. Healing and damage remain separate typed semantics; targeting/legality stays authoritative; cooldown/cost timing remains versioned policy; unsupported behavior stays fail closed.
+
+The package also exposes an important evidence-pipeline constraint: **current official state alone cannot populate a historical immutable target.** That is an evidence acquisition problem, not a reason to weaken target identity or evidence classification.
 
 Therefore this package does **not** justify freezing a physical catalogue schema or changing the accepted GAME-ABILITY architecture boundaries.
 
 ## Decision timing
 
-**Must decide now: YES for this evidence package.** The accepted programme explicitly selected first representative `ABILITY_COMBAT` cases/fixtures as the next paper-only proof of the catalogue/evidence model.
+**Must decide now: YES for this evidence package.** The accepted programme selected first representative `ABILITY_COMBAT` cases/fixture bindings as the next paper-only proof of the catalogue/evidence model. A real package is needed to test whether fail-closed historical evidence works in practice.
 
-**Blocked without it:** there is no real representative evidence package exercising the accepted manifest/catalogue model, so structural adequacy remains theoretical.
+**Blocked without it:** the catalogue model remains theoretical and the continuity requirement is easy to accidentally bypass when future mechanics are populated.
 
-**Harder later:** expanding many mechanics before testing one healing and one targeted-damage package risks multiplying duplicated evidence fields or optimistic parity claims.
+**Harder later:** expanding many mechanics from current web pages before testing the historical-continuity rule would multiply incorrectly promoted target claims and require a broad reclassification audit.
 
-**Supersession evidence:** a later representative mechanic cannot be described without unsafe ambiguity; executable fixture work proves missing revision/coverage fields; provenance/legal review requires a different source-binding shape; or repeated mechanics expose a missing reusable effect-family/domain boundary.
+**Supersession evidence:** admissible time-appropriate evidence shows the current case split is wrong; executable fixture work proves missing revision/coverage fields; provenance/legal review requires another source-binding shape; or representative mechanics expose a missing reusable effect-family/domain boundary.
 
 ## Deliberately not decided
 
-No runtime implementation, physical catalogue schema/serializer, fixture runner, exact formulas, exact range/LoS, complete legality, combat mitigation/resistance/RNG, client/protocol UI, DDL or production behavior is accepted here.
+No target behavior is promoted above `UNKNOWN`; no runtime implementation, physical catalogue schema/serializer, fixture runner, exact formulas, exact range/LoS, complete legality, combat mitigation/resistance/RNG, client/protocol UI, DDL or production behavior is accepted here.
 
 ## Recommended next paper-only evidence step
 
-After this package is merged and lifecycle-closed, add one representative mechanic that exercises **shared/secondary cooldown-group semantics** using official evidence, while retaining `NOT_STARTED / PARITY_PENDING_EVIDENCE`. This broadens the catalogue-model proof before any physical schema/tooling is frozen.
+After this package is merged and lifecycle-closed, prioritize a **target-continuity evidence package for these four cases**: locate provenance-cleared, time-appropriate evidence that directly bridges or captures the 2026-07-28 boundary and either promotes or rejects the current-state hypotheses. Only after the representative historical-evidence path is proven should the programme broaden to secondary/shared cooldown-group mechanics or freeze physical catalogue tooling.
