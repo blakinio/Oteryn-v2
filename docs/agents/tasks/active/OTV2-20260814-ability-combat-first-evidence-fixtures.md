@@ -10,12 +10,12 @@ base_branch: main
 branch: docs/ability-combat-first-evidence-fixtures
 pr: 255
 base_sha: 996da4270beadc548781fb81e95ea342e84b6376
-head_sha: dfe67fbc5cf92ca9ddbe64f2f228c6bb6649f2ed
+head_sha: b83be016c24e8b670ffa1125495f5616892b80fe
 final_head_sha: null
 final_head_frozen_at: null
 owner: architecture continuation agent
 created_at: 2026-08-14T12:47:53+02:00
-updated_at: 2026-08-14T13:18:00+02:00
+updated_at: 2026-08-14T13:20:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -58,9 +58,9 @@ Register the first bounded representative `ABILITY_COMBAT` target-case shapes fo
 - [x] Every new target case is `UNKNOWN`, Oteryn `NOT_STARTED`, parity `PARITY_PENDING_EVIDENCE`, with source provenance `PENDING`, case provenance `PENDING`, legal review `PENDING`, no exact Oteryn revision and no fixture/test link.
 - [x] Manifest source retrieval timestamps use RFC3339 UTC; exact crawl/live observation time remains null/unknown rather than invented.
 - [x] No case claims target-cut or verified-live heal/damage metadata, magnitude, exact range, complete legality, resistance or RNG behavior.
-- [x] Human-readable package separates indexed official content from live-page truth and immutable-target truth, and defines pending fixture blueprints without calling them passing/executable parity fixtures.
+- [x] Human-readable package separates indexed official content from live-page truth and immutable-target truth, projects source/case provenance `PENDING`, and defines pending fixture blueprints without calling them passing/executable parity fixtures.
 - [x] `FOUNDATION_PROGRAMME_CURRENT_STATUS.md` remains untouched in delivery because its currently selected action is this active package; lifecycle closeout will advance the canonical next action to continuity + provenance-cleared evidence.
-- [ ] Complete new exact-head full-diff self-review, repository validation and lifecycle closeout.
+- [ ] Complete fresh exact-head full-diff self-review, repository validation and lifecycle closeout.
 
 ## Excluded scope
 
@@ -74,7 +74,7 @@ Issue #254 / draft PR #255 own this bounded evidence package. Light Healing exer
 
 **Material self-review finding 2 — repaired:** the evidence artifact initially described the source too strongly as a retrieved current/live page. Re-verification showed search-indexed content for exact official locators, approximate crawl freshness and direct-fetch HTTP 403; exact crawl/live observation time is not invented.
 
-**Material self-review finding 3 — repaired:** source/case `provenance_state=CLEARED` was still too strong for indexed content that could not be directly revalidated against the official page. Owning provenance policy treats non-cleared provenance as a hard promotion blocker. Evidence and manifest now use `PENDING` source/case provenance; exact official locator identity remains known but content provenance is deliberately uncleared.
+**Material self-review finding 3 — repaired and propagated:** source/case `provenance_state=CLEARED` was too strong for indexed content that could not be directly revalidated against the official page. Evidence and manifest now use `PENDING` source/case provenance, and the human catalogue/blueprint package explicitly carries provenance as an independent prerequisite/result blocker.
 
 The repairs make the recommended next evidence action precise: obtain time-appropriate **and provenance-cleared** evidence for these four representative cases before broadening mechanic inventory or freezing physical catalogue tooling.
 
@@ -88,7 +88,7 @@ The repairs make the recommended next evidence action precise: obtain time-appro
 - inventory audit: **PASS** — only `ABILITY_COMBAT` changes to `MECHANIC_CASES_REGISTERED`; other domain coverage remains unchanged.
 - continuity policy audit: **PASS after repair 1** — indexed post-boundary content is discovery evidence only and cannot promote target evidence.
 - retrieval-mode audit: **PASS after repair 2** — exact official locators retained; search-index crawl freshness/direct-fetch 403 recorded; exact crawl/live time left unknown; retrieval timestamp is `2026-08-14T11:01:22Z`.
-- source-provenance audit: **PASS after repair 3** — exact official locator identity is recorded, but indexed content remains provenance `PENDING` until directly revalidated/otherwise provenance-cleared.
+- source-provenance audit: **PASS after repair 3** — exact official locator identity is recorded, indexed content remains provenance `PENDING`, and the same blocker is propagated into catalogue projections/fixture blueprints.
 - official indexed field readback: **PASS** for the bounded surfaced Light Healing and Ice Strike metadata/qualitative descriptions; no broader behavior inferred.
 
 ### Component/integration
@@ -103,16 +103,16 @@ The repairs make the recommended next evidence action precise: obtain time-appro
 
 ### Exact-head CI
 
-- all CI for superseded head `9b36d8cc19f30e58c037741d113600033c332f2d` is stale after provenance repair 3.
+- all CI from superseded heads is stale after provenance repair 3 propagation.
 - trigger source: pull_request.
 - fresh resulting-head generation: required.
 - result: pending.
 
 ## Self-review
 
-- superseded frozen head: `9b36d8cc19f30e58c037741d113600033c332f2d`.
+- superseded head before propagation checkpoint: `b83be016c24e8b670ffa1125495f5616892b80fe`.
 - method/reviewer: implementing/coordinating architecture continuation agent.
-- material findings: 3 evidence classification/retrieval/provenance findings; all repaired across affected evidence/manifest/metadata layers.
+- material findings: 3 evidence classification/retrieval/provenance findings; all repaired and propagated across evidence/manifest/catalogue/metadata layers.
 - verdict: pending final resulting-head full-diff recheck.
 
 ## Independent review
@@ -137,10 +137,10 @@ The repairs make the recommended next evidence action precise: obtain time-appro
 ## Context checkpoint
 
 ```yaml
-last_progress: Repaired source/case provenance to PENDING because indexed official content could not be directly revalidated; target continuity and provenance are now independent promotion blockers.
+last_progress: Propagated source/case provenance PENDING into the human catalogue and pending fixture blueprints; target continuity and provenance remain independent promotion blockers.
 status: validating
 branch: docs/ability-combat-first-evidence-fixtures
-head_sha: dfe67fbc5cf92ca9ddbe64f2f228c6bb6649f2ed
+head_sha: b83be016c24e8b670ffa1125495f5616892b80fe
 pr: 255
 final_head_sha: null
 final_head_frozen_at: null
@@ -159,5 +159,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: false
 blocker: null
-next_action: Perform final four-path diff/schema/review-thread/main-drift audit on the resulting head, record new immutable self-review evidence, and inspect fresh exact-head repository gates without marking PR ready.
+next_action: Perform final four-path diff/schema/review-thread/main-drift audit on the resulting head, record immutable self-review evidence, and inspect fresh exact-head repository gates without marking PR ready.
 ```
