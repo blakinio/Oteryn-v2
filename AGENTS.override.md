@@ -1,7 +1,7 @@
 # Mandatory Agent Bootstrap
 
 ```yaml
-agent_bootstrap_policy_revision: 2.5-oteryn-v2
+agent_bootstrap_policy_revision: 2.6-oteryn-v2
 ```
 
 This bootstrap supplements and never weakens system, developer, owner, repository allowlist, safety, production, credential, data, authentication, protocol, asset, deployment, merge or cross-repository restrictions.
@@ -49,7 +49,7 @@ Lack of Codex/local terminal is not itself a blocker. Use GitHub for repository 
 
 The owner durably authorizes auto-merge when protected or direct squash merge for the task's own PR only after every repository-required exact-head gate passes, audit/E2E are satisfied, review threads are resolved, diff ownership is clean and related PRs are reconciled.
 
-### Multi-agent architecture merge narrowing
+### Multi-agent architecture merge-authority redistribution
 
 For an architecture/research task explicitly allocated to a **DOMAIN ARCHITECTURE DESIGN AGENT** under `docs/agents/MULTI_AGENT_ARCHITECTURE_ORCHESTRATION.md`, the general own-PR merge authorization above does **not** apply to that worker.
 
@@ -63,7 +63,14 @@ Such a worker:
 
 The **Architecture Coordinator/Auditor** is the only programme role authorized to integrate and merge those allocated worker PRs, archive/release their tasks and reconcile coordinator-only programme surfaces, subject to all normal exact-head review/CI/ownership protections.
 
-This is a **narrowing** of worker authority. It does not expand the coordinator's repository allowlist and grants neither worker nor coordinator runtime implementation, PostgreSQL DDL/migration, Platform, production, secrets, protected-environment, live-data/session/account or cross-repository authority.
+This policy has two distinct authority effects:
+
+- it **narrows** each allocated worker's own-PR merge/lifecycle authority; and
+- it **expands/redistributes merge authority** for the Architecture Coordinator, because the coordinator may merge and close out allocated PRs authored/owned by separate domain workers rather than only its own task PR.
+
+The coordinator-side change is a merge-authority expansion relative to the general own-PR baseline. Any governance delivery that introduces or materially widens this cross-worker merge/closeout authority requires explicit owner scope and a genuinely independent review on the exact final head before that governance delivery may merge, as required by root review policy. After such governance is merged, an ordinary coordinator merge of a worker PR within the already-approved allocation is use of existing policy authority, not a fresh governance expansion by itself; all normal exact-head merge/review/ownership gates still apply.
+
+This redistribution does not expand the coordinator's repository allowlist and grants neither worker nor coordinator runtime implementation, PostgreSQL DDL/migration, Platform, production, secrets, protected-environment, live-data/session/account or cross-repository authority.
 
 Merge authority is not production authority. Production deployment, protected environment approval, production secrets, live data, live sessions/accounts and protected configuration remain separately unauthorized.
 
