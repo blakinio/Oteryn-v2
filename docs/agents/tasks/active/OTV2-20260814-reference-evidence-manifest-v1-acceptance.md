@@ -4,18 +4,18 @@
 task_id: OTV2-20260814-reference-evidence-manifest-v1-acceptance
 title: Accept and pin Reference evidence/parity manifest v1
 mode: CONTRACT
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/reference-evidence-manifest-v1-acceptance
-pr: null
+pr: 252
 base_sha: 76d65d8bbd2a8eaca46b671fcd5d71a9d6382fa3
-head_sha: null
+head_sha: d1e2c6802bc7b729cfe1238b86c43f7d8980cd4e
 final_head_sha: null
 final_head_frozen_at: null
 owner: architecture continuation agent
 created_at: 2026-08-14T10:15:00+02:00
-updated_at: 2026-08-14T10:15:00+02:00
+updated_at: 2026-08-14T10:18:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -42,25 +42,26 @@ Promote the already-delivered v1 Reference evidence/parity registry to an owner-
 
 ## Architecture and source of truth
 
-- **PROVEN:** PR #220/#221 delivered and lifecycle-closed the candidate manifest/schema package; current schema blob is `208506f461231eb3ed8966ae16dade0764eb39b8`.
-- **PROVEN:** the current machine manifest is revision 1 with `status=CANDIDATE_NOT_ACCEPTED`, empty `cases`, all nine domains `NO_MECHANIC_CASES_REGISTERED`, and `canonical_digest=null`.
-- **PROVEN:** PR #249/#250 added the catalogue-entry/parity-fixture contract and explicitly blocks trustworthy parity promotion until an accepted manifest/schema revision is pinned.
-- **DERIVED:** preserving the candidate contract as history and adding a later owner-acceptance baseline is safer than editing historical candidate status prose in place.
+- **PROVEN:** PR #220/#221 delivered and lifecycle-closed the candidate manifest/schema package; schema v1 remains blob `208506f461231eb3ed8966ae16dade0764eb39b8`.
+- **PROVEN:** pre-promotion manifest revision 1 was `CANDIDATE_NOT_ACCEPTED`, with empty `cases`, all nine domains `NO_MECHANIC_CASES_REGISTERED`, and `canonical_digest=null`.
+- **PROVEN:** PR #249/#250 defines catalogue/fixture binding and blocks trustworthy parity promotion until an accepted manifest/schema revision is pinned.
+- **PROVEN:** PR #252 changes exactly this task, a later owner-acceptance baseline, and the existing manifest JSON; schema v1 is not changed.
+- **DERIVED:** preserving the candidate contract as history and adding a later acceptance baseline is safer than editing historical candidate status prose in place.
 - **UNKNOWN:** no mechanic-level Reference behavior is promoted by this task.
-- **CONFLICT:** none introduced by this task; PR #191 remains separate GAME-CHAR provenance work.
+- **CONFLICT:** none introduced; PR #191 remains separate GAME-CHAR provenance work.
 
 ## Acceptance criteria
 
-- [ ] Preserve the immutable first Reference target ID and 2026-07-28 boundary.
-- [ ] Keep schema version 1 byte-for-byte unchanged and record its exact repository blob identity.
-- [ ] Promote the machine manifest to revision 2 with `status=ACCEPTED`.
-- [ ] Keep `cases` empty and every domain coverage entry fail-closed.
-- [ ] Preserve independent evidence / implementation / parity axes and all existing fail-closed policy flags.
-- [ ] Keep `canonical_digest=null` truthful until accepted digest tooling exists; do not hand-compute a digest.
-- [ ] Add an explicit acceptance/pin contract that supersedes only candidate-status/pinning clauses, not evidence semantics.
-- [ ] Do not create a new stable architecture gate ID.
-- [ ] Do not authorize runtime/client/protocol/DDL/Platform/production/external-repository work.
-- [ ] Run full-diff self-review, exact-head repository validation and close the linked issue/lifecycle only after merge.
+- [x] Preserve the immutable first Reference target ID and 2026-07-28 boundary.
+- [x] Keep schema version 1 byte-for-byte unchanged and record its exact repository blob identity.
+- [x] Promote the machine manifest to revision 2 with `status=ACCEPTED`.
+- [x] Keep `cases` empty and every domain coverage entry fail-closed.
+- [x] Preserve independent evidence / implementation / parity axes and all existing fail-closed policy flags.
+- [x] Keep `canonical_digest=null` truthful until accepted digest tooling exists; do not hand-compute a digest.
+- [x] Add an explicit acceptance/pin contract that supersedes only candidate-status/pinning clauses, not evidence semantics.
+- [x] Do not create a new stable architecture gate ID.
+- [x] Do not authorize runtime/client/protocol/DDL/Platform/production/external-repository work.
+- [ ] Complete exact-head full-diff self-review, required repository validation, merge and lifecycle closeout.
 
 ## Excluded scope
 
@@ -68,72 +69,78 @@ No mechanic cases or factual parity promotions; no evidence acquisition/official
 
 ## Implementation / findings
 
-Issue #251 owns this acceptance promotion. Schema v1 is intentionally not edited. The acceptance pin will use the immutable target ID, `schema_version=1`, `manifest_revision=2`, `status=ACCEPTED` and the exact unchanged schema blob identity. Until canonical digest tooling is accepted, executable consumers remain unauthorized and paper consumers must additionally bind exact repository revision/evidence.
+Issue #251 owns this acceptance promotion. Schema v1 is intentionally untouched. Manifest revision 2 binds the same immutable target, sets `status=ACCEPTED`, keeps every domain inventory entry fail-closed and appends acceptance history without adding cases.
+
+Historical current-status/handoff documents still contain earlier instructions to build the manifest. This is a known coordination-text drift, not a semantic conflict: repository source hierarchy makes the later accepted contract authoritative for this exact scope. The acceptance baseline explicitly forbids building a duplicate registry. Broad shared-overlay reconciliation is deliberately not pulled into this bounded three-path delivery.
+
+Until canonical digest tooling is separately accepted, executable consumers remain unauthorized. Paper evidence may bind target ID + schema version + manifest revision + exact repository delivery evidence; mutable `latest` lookup is not authorized.
 
 ## Validation
 
 ### Focused
 
-- manifest JSON parse: pending
-- schema-shape compatibility review: pending
-- acceptance pin invariants: pending
+- manifest JSON parse: **PASS**.
+- changed-field/schema review: **PASS** — unchanged schema v1 permits `manifest_revision >= 1`, `status=ACCEPTED`, `canonical_digest=null`, nonempty normative-contract strings and the appended `manifest_revision/date/summary/issue` history entry.
+- acceptance pin invariants: **PASS** — immutable target unchanged; revision 2; status accepted; `cases=[]`; nine unique fail-closed domains; all fail-closed policy flags preserved; digest remains null.
+- schema identity: **PASS** — schema path is absent from PR diff and remains blob `208506f461231eb3ed8966ae16dade0764eb39b8` on trusted base.
 
 ### Component/integration
 
-- command/run: `NOT_APPLICABLE` — paper-only contract/registry promotion
-- result: pending
+- command/run: `NOT_APPLICABLE` — paper-only contract/registry promotion.
+- result: `NOT_APPLICABLE`.
 
 ### E2E
 
-- scenario: `NOT_APPLICABLE` — no executable behavior changes
-- result: pending
+- scenario: `NOT_APPLICABLE` — no executable behavior changes.
+- result: `NOT_APPLICABLE`.
 
 ### Exact-head CI
 
-- final head: pending
-- trigger source: pull_request
-- workflow/run/job: pending
-- runner assignment: pending
-- classification: pending
-- result: pending
+- final head: pending after this task/checkpoint commit.
+- trigger source: pull_request.
+- workflow/run/job: pending.
+- runner assignment: pending.
+- classification: pending.
+- result: pending.
 
 ## Self-review
 
-- exact head: pending
-- method/reviewer: implementing/coordinating architecture continuation agent
-- material findings: pending
-- verdict: pending
+- content head reviewed: `d1e2c6802bc7b729cfe1238b86c43f7d8980cd4e`.
+- method/reviewer: implementing/coordinating architecture continuation agent.
+- material findings: no open semantic finding; final checkpoint-only resulting-head recheck pending.
+- verdict: pending final exact-head recheck.
 
 ## Independent review
 
-- required: NO unless a later material finding or risk expansion changes classification; this is paper-only status/pinning with no security/protocol/durable mutation/production authority expansion
-- exact head: NOT_APPLICABLE
-- method/auditor: NOT_APPLICABLE
-- material findings: NOT_APPLICABLE
-- verdict: NOT_APPLICABLE
-- owner-funded Codex/OpenAI use: NOT AUTHORIZED for this PR/task
+- required: NO unless a later material finding or risk expansion changes classification; this is paper-only acceptance/pinning with no security/protocol/durable mutation/production authority expansion.
+- exact head: NOT_APPLICABLE.
+- method/auditor: NOT_APPLICABLE.
+- material findings: NOT_APPLICABLE.
+- verdict: NOT_APPLICABLE.
+- owner-funded Codex/OpenAI use: NOT AUTHORIZED for PR #252/task; prior PR #250 authorization does not carry forward.
 
 ## PR and closeout
 
-- changed-file review: pending
-- unresolved review threads: pending
-- related/superseded PRs: #220/#221 historical candidate delivery; #249/#250 downstream catalogue contract; #191 separate and untouched
-- protected auto-merge: pending
-- merge commit/result: pending
-- ownership release: pending
+- PR: #252 (draft).
+- changed-file review: three intended paths only at content head.
+- unresolved review threads: pending final readback.
+- related/superseded PRs: #220/#221 historical candidate delivery; #249/#250 downstream catalogue contract; #191 separate and untouched.
+- protected auto-merge: pending.
+- merge commit/result: pending.
+- ownership release: pending.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Claimed bounded acceptance task from main@76d65d8bbd2a8eaca46b671fcd5d71a9d6382fa3 after verifying candidate delivery history and downstream catalogue dependency.
-status: implementing
+last_progress: Draft PR #252 now contains the three-path owner-acceptance promotion; JSON/schema-delta/pin invariants passed focused validation without changing schema v1.
+status: validating
 branch: docs/reference-evidence-manifest-v1-acceptance
-head_sha: null
-pr: null
+head_sha: d1e2c6802bc7b729cfe1238b86c43f7d8980cd4e
+pr: 252
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
-ci_check_generation: null
+ci_trigger_source: pull_request
+ci_check_generation: fresh resulting head required
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -147,5 +154,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: false
 blocker: null
-next_action: Add the owner-acceptance baseline and promote the machine manifest to accepted revision 2 without changing schema v1.
+next_action: Perform the final full-diff/review-thread recheck on the resulting PR #252 head and inspect its exact-head Merge gate generation.
 ```
