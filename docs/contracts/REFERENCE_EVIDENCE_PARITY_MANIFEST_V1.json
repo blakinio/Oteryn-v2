@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "manifest_revision": 2,
+  "manifest_revision": 3,
   "canonical_digest": null,
   "status": "ACCEPTED",
   "reference_target": {
@@ -70,7 +70,7 @@
     },
     {
       "domain": "ABILITY_COMBAT",
-      "coverage_status": "NO_MECHANIC_CASES_REGISTERED"
+      "coverage_status": "MECHANIC_CASES_REGISTERED"
     },
     {
       "domain": "AI_SPAWN",
@@ -85,7 +85,260 @@
       "coverage_status": "NO_MECHANIC_CASES_REGISTERED"
     }
   ],
-  "cases": [],
+  "cases": [
+    {
+      "case_id": "ability_combat.light_healing.cast_metadata.v1",
+      "domain": "ABILITY_COMBAT",
+      "title": "Light Healing cast metadata",
+      "scope": {
+        "summary": "Official-public spell metadata for Light Healing only; no heal magnitude or failure-anchor semantics.",
+        "profiles": [
+          "Reference"
+        ],
+        "world_assumptions": [
+          "No world-specific variance is asserted by this case."
+        ]
+      },
+      "preconditions": [
+        {
+          "id": "precondition-1",
+          "description": "Actor uses a listed eligible vocation when evaluating vocation metadata."
+        },
+        {
+          "id": "precondition-2",
+          "description": "Actor satisfies the listed level and mana metadata when a later fixture exercises a nominal cast."
+        }
+      ],
+      "target": {
+        "expected_observable_behavior": "Light Healing is listed as formula exura; vocations Druid, Monk, Paladin and Sorcerer; Healing group; Instant type; Healing magic type; 1 second spell cooldown and 1 second group cooldown; experience level 8; mana 20; Premium not required.",
+        "evidence_class": "OBSERVED",
+        "sources": [
+          {
+            "source_type": "OFFICIAL_PUBLIC",
+            "locator": "https://www.tibia.com/library/?spell=lighthealing&subtopic=spells",
+            "artifact_id": "docs/agents/evidence/OTV2-20260814-ability-combat-official-spell-library.md#light-healing",
+            "effective_date": null,
+            "observed_at": null,
+            "retrieved_at": "2026-08-14T12:47:53+02:00",
+            "provenance_state": "CLEARED",
+            "uncertainty_notes": "Official current Library observation retrieved after the immutable 2026-07-28 boundary; not a time-locked boundary-date capture, so exact continuity remains unproven."
+          }
+        ],
+        "confidence_notes": "All listed fields are directly exposed together on the official current spell detail page.",
+        "uncertainty_notes": "Exact continuity of every field from the 2026-07-28 boundary to retrieval is not time-locked. Mana/cooldown commit anchors, legality precedence and failure behavior are not evidenced.",
+        "conflicts": []
+      },
+      "oteryn": {
+        "implementation_state": "NOT_STARTED",
+        "exact_revision": null,
+        "fixture_or_test_links": [],
+        "conflicts": []
+      },
+      "parity": {
+        "status": "PARITY_PENDING_EVIDENCE",
+        "accepted_difference_reference": null
+      },
+      "provenance": {
+        "state": "CLEARED",
+        "legal_review_state": "PENDING",
+        "notes": "Official-public source identity/locator and bounded factual transcription are cleared for evidence registration; explicit legal review remains pending and blocks parity promotion."
+      },
+      "history": [
+        {
+          "date": "2026-08-14",
+          "summary": "Registered as part of the first representative ABILITY_COMBAT official-library evidence package.",
+          "reason": "Issue #254; preserve post-boundary observation and fail-closed exact-cut uncertainty."
+        }
+      ]
+    },
+    {
+      "case_id": "ability_combat.light_healing.self_heal_semantics.v1",
+      "domain": "ABILITY_COMBAT",
+      "title": "Light Healing qualitative self-heal semantics",
+      "scope": {
+        "summary": "Qualitative healing direction only; exact magnitude/scaling/rounding are excluded.",
+        "profiles": [
+          "Reference"
+        ],
+        "world_assumptions": [
+          "No world-specific variance is asserted by this case."
+        ]
+      },
+      "preconditions": [
+        {
+          "id": "precondition-1",
+          "description": "Caster has missing health in a later bounded validation scenario."
+        }
+      ],
+      "target": {
+        "expected_observable_behavior": "The official description presents Light Healing as healing the caster's own wounds/injuries; the effect is qualitatively self-healing.",
+        "evidence_class": "OBSERVED",
+        "sources": [
+          {
+            "source_type": "OFFICIAL_PUBLIC",
+            "locator": "https://www.tibia.com/library/?spell=lighthealing&subtopic=spells",
+            "artifact_id": "docs/agents/evidence/OTV2-20260814-ability-combat-official-spell-library.md#light-healing",
+            "effective_date": null,
+            "observed_at": null,
+            "retrieved_at": "2026-08-14T12:47:53+02:00",
+            "provenance_state": "CLEARED",
+            "uncertainty_notes": "Official current Library observation retrieved after the immutable 2026-07-28 boundary; not a time-locked boundary-date capture, so exact continuity remains unproven."
+          }
+        ],
+        "confidence_notes": "The official current description directly characterizes self-healing intent, but not quantitative resolution.",
+        "uncertainty_notes": "Exact heal formula, magnitude range, scaling, rounding, full target legality and exact boundary-date continuity remain unproven.",
+        "conflicts": []
+      },
+      "oteryn": {
+        "implementation_state": "NOT_STARTED",
+        "exact_revision": null,
+        "fixture_or_test_links": [],
+        "conflicts": []
+      },
+      "parity": {
+        "status": "PARITY_PENDING_EVIDENCE",
+        "accepted_difference_reference": null
+      },
+      "provenance": {
+        "state": "CLEARED",
+        "legal_review_state": "PENDING",
+        "notes": "Official-public source identity/locator and bounded factual transcription are cleared for evidence registration; explicit legal review remains pending and blocks parity promotion."
+      },
+      "history": [
+        {
+          "date": "2026-08-14",
+          "summary": "Registered as part of the first representative ABILITY_COMBAT official-library evidence package.",
+          "reason": "Issue #254; preserve post-boundary observation and fail-closed exact-cut uncertainty."
+        }
+      ]
+    },
+    {
+      "case_id": "ability_combat.ice_strike.cast_metadata.v1",
+      "domain": "ABILITY_COMBAT",
+      "title": "Ice Strike cast metadata",
+      "scope": {
+        "summary": "Official-public spell metadata for Ice Strike only; no exact damage/range/legality formula semantics.",
+        "profiles": [
+          "Reference"
+        ],
+        "world_assumptions": [
+          "No world-specific variance is asserted by this case."
+        ]
+      },
+      "preconditions": [
+        {
+          "id": "precondition-1",
+          "description": "Actor uses Druid or Sorcerer when evaluating vocation metadata."
+        },
+        {
+          "id": "precondition-2",
+          "description": "Actor satisfies the listed level and mana metadata when a later fixture exercises a nominal cast."
+        }
+      ],
+      "target": {
+        "expected_observable_behavior": "Ice Strike is listed as formula exori frigo; vocations Druid and Sorcerer; Attack group; Instant type; Ice magic type; 2 second spell cooldown and 2 second group cooldown; experience level 8; mana 20; Premium not required.",
+        "evidence_class": "OBSERVED",
+        "sources": [
+          {
+            "source_type": "OFFICIAL_PUBLIC",
+            "locator": "https://www.tibia.com/library/?spell=icestrike&subtopic=spells",
+            "artifact_id": "docs/agents/evidence/OTV2-20260814-ability-combat-official-spell-library.md#ice-strike",
+            "effective_date": null,
+            "observed_at": null,
+            "retrieved_at": "2026-08-14T12:47:53+02:00",
+            "provenance_state": "CLEARED",
+            "uncertainty_notes": "Official current Library observation retrieved after the immutable 2026-07-28 boundary; not a time-locked boundary-date capture, so exact continuity remains unproven."
+          }
+        ],
+        "confidence_notes": "All listed fields are directly exposed together on the official current spell detail page.",
+        "uncertainty_notes": "Exact continuity of every field from the 2026-07-28 boundary to retrieval is not time-locked. Cost/cooldown commit anchors and failure behavior are not evidenced.",
+        "conflicts": []
+      },
+      "oteryn": {
+        "implementation_state": "NOT_STARTED",
+        "exact_revision": null,
+        "fixture_or_test_links": [],
+        "conflicts": []
+      },
+      "parity": {
+        "status": "PARITY_PENDING_EVIDENCE",
+        "accepted_difference_reference": null
+      },
+      "provenance": {
+        "state": "CLEARED",
+        "legal_review_state": "PENDING",
+        "notes": "Official-public source identity/locator and bounded factual transcription are cleared for evidence registration; explicit legal review remains pending and blocks parity promotion."
+      },
+      "history": [
+        {
+          "date": "2026-08-14",
+          "summary": "Registered as part of the first representative ABILITY_COMBAT official-library evidence package.",
+          "reason": "Issue #254; preserve post-boundary observation and fail-closed exact-cut uncertainty."
+        }
+      ]
+    },
+    {
+      "case_id": "ability_combat.ice_strike.targeted_ice_damage_semantics.v1",
+      "domain": "ABILITY_COMBAT",
+      "title": "Ice Strike qualitative targeted ice-damage semantics",
+      "scope": {
+        "summary": "Qualitative targeted attack/damage semantics only; exact range, formula, legality, mitigation and RNG are excluded.",
+        "profiles": [
+          "Reference"
+        ],
+        "world_assumptions": [
+          "No world-specific variance is asserted by this case."
+        ]
+      },
+      "preconditions": [
+        {
+          "id": "precondition-1",
+          "description": "A later bounded validation scenario provides one candidate opponent in a configuration separately proven legal."
+        }
+      ],
+      "target": {
+        "expected_observable_behavior": "The official description presents Ice Strike as hitting an aimed opponent in close range with ice and states qualitatively that damage is determined by the caster's magical abilities.",
+        "evidence_class": "OBSERVED",
+        "sources": [
+          {
+            "source_type": "OFFICIAL_PUBLIC",
+            "locator": "https://www.tibia.com/library/?spell=icestrike&subtopic=spells",
+            "artifact_id": "docs/agents/evidence/OTV2-20260814-ability-combat-official-spell-library.md#ice-strike",
+            "effective_date": null,
+            "observed_at": null,
+            "retrieved_at": "2026-08-14T12:47:53+02:00",
+            "provenance_state": "CLEARED",
+            "uncertainty_notes": "Official current Library observation retrieved after the immutable 2026-07-28 boundary; not a time-locked boundary-date capture, so exact continuity remains unproven."
+          }
+        ],
+        "confidence_notes": "The official current description supports aimed-opponent, close-range, ice-damage and magic-ability-scaling concepts at a qualitative level.",
+        "uncertainty_notes": "Exact tile/range metric, complete cardinality/ordering, LoS/floor/PvP/PZ legality, damage formula/scaling/rounding, mitigation/resistance, crit/block/dodge/RNG and exact boundary-date continuity remain unproven.",
+        "conflicts": []
+      },
+      "oteryn": {
+        "implementation_state": "NOT_STARTED",
+        "exact_revision": null,
+        "fixture_or_test_links": [],
+        "conflicts": []
+      },
+      "parity": {
+        "status": "PARITY_PENDING_EVIDENCE",
+        "accepted_difference_reference": null
+      },
+      "provenance": {
+        "state": "CLEARED",
+        "legal_review_state": "PENDING",
+        "notes": "Official-public source identity/locator and bounded factual transcription are cleared for evidence registration; explicit legal review remains pending and blocks parity promotion."
+      },
+      "history": [
+        {
+          "date": "2026-08-14",
+          "summary": "Registered as part of the first representative ABILITY_COMBAT official-library evidence package.",
+          "reason": "Issue #254; preserve post-boundary observation and fail-closed exact-cut uncertainty."
+        }
+      ]
+    }
+  ],
   "policy": {
     "ots_can_prove_global_behavior": false,
     "patch_note_absence_proves_no_change": false,
@@ -125,6 +378,12 @@
       "date": "2026-08-14",
       "summary": "Accept and pin schema v1 plus manifest revision 2 for the immutable first Reference target without adding mechanic cases or parity promotion; canonical digest remains null until accepted tooling exists.",
       "issue": "#251"
+    },
+    {
+      "manifest_revision": 3,
+      "date": "2026-08-14",
+      "summary": "Register first representative ABILITY_COMBAT official-library observations for Light Healing and Ice Strike while keeping implementation not started, parity pending and exact-cut continuity explicit.",
+      "issue": "#254"
     }
   ]
 }
