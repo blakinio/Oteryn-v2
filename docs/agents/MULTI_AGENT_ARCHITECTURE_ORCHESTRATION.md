@@ -75,6 +75,22 @@ The coordinator is the single integration and merge authority for work allocated
 
 The coordinator may not use this role to bypass owner-funded AI restrictions, runtime/production authority or repository protections.
 
+## Governance authority classification
+
+This policy is not purely an authority reduction. It intentionally performs a **bounded merge-authority redistribution**:
+
+1. each allocated domain worker loses the repository's general own-PR merge/auto-merge/lifecycle-close authority for that worker task; and
+2. the Architecture Coordinator gains bounded authority to merge and lifecycle-close allocated worker PRs authored/owned by different domain agents.
+
+Point 2 is a **merge-authority expansion** relative to the prior own-PR-only baseline. Under root governance, a policy delivery that introduces or materially widens this coordinator authority requires:
+
+- explicit owner scope for the authority change; and
+- a genuinely independent review tied to the exact final governance head before that governance delivery may merge.
+
+A review on a superseded head does not satisfy that final-head gate after a repair. Once this policy is independently reviewed and merged, coordinator merges performed strictly inside the already-approved worker allocation are ordinary uses of existing programme authority; they are not fresh governance expansions unless this policy/allocation is materially widened again.
+
+This authority expansion is limited to repository integration/closeout of allocated Oteryn-v2 architecture worker PRs. It does **not** expand repository allowlists and grants no runtime/client/server/protocol implementation, PostgreSQL DDL/migration, Platform, production, secret, protected-environment, live-data/session/account or cross-repository authority.
+
 ## Authority matrix
 
 | Action | Domain worker | Coordinator |
@@ -169,10 +185,11 @@ coordinator audit
 - Worker self-review is mandatory and is never independent review.
 - A coordinator audit is independent only if the coordinator did not materially author the worker proposal being audited.
 - If the coordinator substantially rewrites a worker proposal, it becomes a co-author and must not mislabel its own final review as independent.
+- Governance changes that introduce or expand coordinator merge authority require an independent exact-head review under root policy before merge.
 - Codex remains optional and owner-funded. No worker or coordinator may trigger it without exact authorization for that PR/use.
 - Marking a draft ready counts as a Codex-triggering action when repository automation is configured that way.
 - Authorization for one PR never carries to another PR or a second review invocation.
-- If a repair moves the head, all exact-head validation evidence for the superseded head is stale.
+- If a repair moves the head, all exact-head validation/review evidence for the superseded head is stale.
 
 ## Status discipline
 
