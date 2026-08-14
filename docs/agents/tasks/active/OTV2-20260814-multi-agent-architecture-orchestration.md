@@ -11,12 +11,12 @@ branch: docs/multi-agent-architecture-orchestration
 issue: 258
 pr: 265
 base_sha: 85acd19e976943ee42b5c004ebd0ae1c40cc5fff
-head_sha: 74100beac80e11d561c2a7cff3d9c0d5b749c1ea
+head_sha: 45aa09419154db34cb8ebef170c9283782ee19ef
 final_head_sha: null
 final_head_frozen_at: null
 owner: architecture-coordinator
 created_at: 2026-08-14T16:01:00+02:00
-updated_at: 2026-08-14T16:40:00+02:00
+updated_at: 2026-08-14T16:45:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -54,8 +54,9 @@ Create a durable hub-and-spoke architecture workflow in which domain agents work
 - [x] Preserve Agent A (#259) as the canonical Reference-evidence priority lane while allowing B–F to progress as noncanonical proposal lanes.
 - [x] Forbid domain workers from editing coordinator-only overlays or triggering owner-funded Codex/OpenAI without exact authorization.
 - [x] Require `MERGE_AUTHORITY: ARCHITECTURE_COORDINATOR_ONLY` in every worker PR.
-- [ ] Complete final resulting-head full-diff/governance validation.
-- [ ] Obtain a genuinely independent review on the exact repaired final head with no open material finding.
+- [x] Complete repaired-head seven-path full-diff/governance audit with no open material content finding.
+- [ ] Complete fresh exact-head repository validation after this checkpoint commit.
+- [ ] Obtain a genuinely independent review on the exact final repaired head with no open material finding.
 - [ ] Merge and lifecycle-close the orchestration task.
 - [x] Leave worker branch creation until this policy is merged, so workers start from a trusted base containing their governing rules.
 
@@ -99,7 +100,10 @@ The delivery intentionally redistributes repository merge authority inside the b
 - coordinator-only overlay list is consistent across policy, worker prompt and allocation: **PASS**;
 - canonical `ARCHITECTURE_STATUS_MODEL` vocabulary is referenced rather than extended: **PASS**;
 - owner-funded AI exact-use restriction remains intact: **PASS**;
-- governance authority classification repaired after independent-review finding: **PASS pending final resulting-head audit**.
+- governance authority classification after Codex P1 repair: **PASS**;
+- repaired-head compare on `45aa09419154db34cb8ebef170c9283782ee19ef`: exactly seven intended paths and `behind_by=0`: **PASS**;
+- review threads after P1 repair: P1 thread resolved/outdated: **PASS**;
+- automatic second Codex review after repair commits: **NOT TRIGGERED** — review list contains only original Codex review on `19b0b2dbc7d90fde836ff2e316dab7848414112d` plus repair reply/resolve evidence.
 
 ### Component / E2E
 
@@ -107,20 +111,22 @@ The delivery intentionally redistributes repository merge authority inside the b
 
 ### Exact-head CI
 
-- previous PASS generation on `19b0b2dbc7d90fde836ff2e316dab7848414112d` is stale after the independent-review P1 repair.
-- fresh resulting-head Agent governance / Merge authority audit / Merge gate required.
+Superseded/repaired pre-checkpoint head `45aa09419154db34cb8ebef170c9283782ee19ef`:
 
-## Self-review
+- Merge authority audit run `31810701337`: **PASS**.
+- Merge gate run `31810701438`: **PASS** including aggregate required gates.
+- Agent governance run `31810701387`: **FAIL in PR metadata step only** because the `pull_request/synchronize` event captured the previous PR body before the later metadata update added the required `## Validation` heading. The log explicitly reports only `PR body is missing ## Validation`; checkout/governance validation never ran. Current live PR body contains `## Validation`.
 
-Material self-review findings before independent review: **1, repaired**.
+This checkpoint commit is intentionally a substantive task-state update, not a no-op CI retrigger. Its new `pull_request/synchronize` event will carry the already-corrected PR body and must produce the fresh final Agent governance / Merge authority audit / Merge gate generation used for readiness.
+
+### Self-review
+
+Material findings: **2, both repaired**.
 
 1. Initial coordinator-prompt replacement dropped explicit `ANALYZE_ONLY` no-mutation behavior and contained role typo `OTERYV-V2`. The prompt was repaired to restore `ANALYZE_ONLY` and correct `OTERYN-V2`.
+2. Owner-authorized Codex independent review on `19b0b2dbc7d90fde836ff2e316dab7848414112d` found P1: coordinator cross-worker merge/closeout authority was incorrectly classified as narrowing-only. Governance now distinguishes worker-authority narrowing from coordinator merge-authority expansion and requires independent exact-head review before the policy delivery may merge.
 
-Independent review then found a second material governance classification problem:
-
-2. **Codex P1 on reviewed exact head `19b0b2dbc7d90fde836ff2e316dab7848414112d`:** the package was described as narrowing-only even though it newly authorizes the coordinator to merge/close out PRs owned by other domain workers. This is a bounded merge-authority expansion and must satisfy root independent-review policy. The governance files and this task are repaired to state the expansion explicitly and require independent exact-head review before merge.
-
-No second Codex invocation has been made.
+No open material content finding remains after the P1 repair. The governance metadata-race failure above is operational validation state, not a semantic finding.
 
 ## Independent review
 
@@ -128,21 +134,21 @@ No second Codex invocation has been made.
 - first independent review: owner-authorized Codex on `19b0b2dbc7d90fde836ff2e316dab7848414112d`; result **P1 / REWORK REQUIRED**.
 - finding: coordinator cross-worker merge/closeout authority was incorrectly classified as narrowing-only.
 - repair: governance now distinguishes worker-authority narrowing from coordinator merge-authority expansion and makes exact-head independent review mandatory for the policy delivery.
-- first review head is superseded by this repair and therefore cannot satisfy the final exact-head independent-review gate.
-- fresh independent review on the repaired final head: **REQUIRED / PENDING**.
+- first review head is superseded and therefore cannot satisfy the final exact-head independent-review gate.
+- fresh independent review on the final repaired head: **REQUIRED / PENDING**.
 - owner-funded Codex: the authorization for the first PR #265 review has been consumed. A second Codex invocation is **NOT AUTHORIZED** unless the owner explicitly grants it; a different genuinely independent qualified reviewer may satisfy the gate without Codex.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Owner-authorized Codex independently reviewed PR #265 head 19b0b2dbc7d90fde836ff2e316dab7848414112d and found a P1: coordinator cross-worker merge/closeout authority is an authority expansion, not narrowing-only. Governance/task wording has been repaired to classify that authority truthfully and require independent exact-head review.
+last_progress: Codex P1 authority-classification finding is repaired and resolved; repaired head 45aa09419154db34cb8ebef170c9283782ee19ef has clean seven-path diff, Merge authority/Merge gate PASS and only an Agent-governance metadata-snapshot failure caused by the old PR body. This final checkpoint commit records that state and triggers a fresh PR event with the corrected body.
 status: validating
 branch: docs/multi-agent-architecture-orchestration
-head_sha: 74100beac80e11d561c2a7cff3d9c0d5b749c1ea
+head_sha: 45aa09419154db34cb8ebef170c9283782ee19ef
 pr: 265
 final_head_sha: null
 final_head_frozen_at: null
 owner_action_required: true
-blocker: fresh genuinely independent review required on the repaired final head; second Codex use is not authorized by the consumed first-review permission
-next_action: Complete the resulting-head seven-path diff/governance/CI audit, freeze the final repaired SHA, then obtain a genuinely independent exact-head review before merge. If Codex is selected for that second review, request separate exact owner authorization.
+blocker: fresh genuinely independent review required on the final repaired head; second Codex use is not authorized by the consumed first-review permission
+next_action: Verify fresh exact-head Agent governance / Merge authority audit / Merge gate on the resulting checkpoint head, freeze that SHA, then obtain a genuinely independent exact-head review before merge. If Codex is selected for that second review, request separate exact owner authorization.
 ```
