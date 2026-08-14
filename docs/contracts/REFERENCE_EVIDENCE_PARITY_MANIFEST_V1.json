@@ -91,7 +91,7 @@
       "domain": "ABILITY_COMBAT",
       "title": "Light Healing cast metadata",
       "scope": {
-        "summary": "Target-cut Light Healing spell metadata; current official metadata is retained only as a continuity hypothesis and exact quantitative heal semantics are excluded.",
+        "summary": "Target-cut Light Healing spell metadata; indexed official metadata is retained only as a continuity hypothesis and exact quantitative heal semantics are excluded.",
         "profiles": [
           "Reference"
         ],
@@ -102,11 +102,11 @@
       "preconditions": [
         {
           "id": "precondition-1",
-          "description": "A later validation may apply current observed vocation/level/mana conditions only after target continuity evidence establishes them."
+          "description": "A later validation may apply indexed vocation/level/mana conditions only after target continuity evidence establishes them."
         }
       ],
       "target": {
-        "expected_observable_behavior": "UNKNOWN for the immutable 2026-07-28 target cut. A current official Library observation retrieved on 2026-08-14 reports: Light Healing; formula exura; vocations Druid, Monk, Paladin and Sorcerer; Healing group; Instant type; Healing magic type; 1 second spell cooldown and 1 second group cooldown; experience level 8; mana 20; Premium not required.",
+        "expected_observable_behavior": "UNKNOWN for the immutable 2026-07-28 target cut. Official Tibia Library content surfaced through search on 2026-08-14 (search index reported an approximately two-week-old crawl) reports: Light Healing; formula exura; vocations Druid, Monk, Paladin and Sorcerer; Healing group; Instant type; Healing magic type; 1 second spell cooldown and 1 second group cooldown; experience level 8; mana 20; Premium not required.",
         "evidence_class": "UNKNOWN",
         "sources": [
           {
@@ -115,13 +115,13 @@
             "artifact_id": "docs/agents/evidence/OTV2-20260814-ability-combat-official-spell-library.md#light-healing",
             "effective_date": null,
             "observed_at": null,
-            "retrieved_at": "2026-08-14T10:47:53Z",
+            "retrieved_at": "2026-08-14T11:01:22Z",
             "provenance_state": "CLEARED",
-            "uncertainty_notes": "Current official Library observation was retrieved after the immutable 2026-07-28 target boundary. No accepted continuity evidence bridges the target cut, so this source cannot promote target evidence above UNKNOWN."
+            "uncertainty_notes": "Official Library content was surfaced through search on 2026-08-14; the search index reported an approximately two-week-old crawl and direct page open from the research environment returned HTTP 403. Exact crawl time and continuity to the immutable target are unknown, so this source cannot promote target evidence above UNKNOWN."
           }
         ],
-        "confidence_notes": "High confidence that the current official page exposes the stated fields; this is confidence in the 2026-08-14 current-state observation, not in historical target continuity.",
-        "uncertainty_notes": "Continuity from the 2026-07-28 target boundary is not evidenced. Mana/cooldown commit anchors, legality precedence and failure behavior are also not evidenced.",
+        "confidence_notes": "High confidence that the indexed result for the exact official locator surfaced the stated fields. Direct live-page verification was unavailable because the research environment received HTTP 403; this is not historical continuity evidence.",
+        "uncertainty_notes": "Continuity from the 2026-07-28 target boundary is not evidenced. Exact crawl time/live-page equality, mana/cooldown commit anchors, legality precedence and failure behavior are also not evidenced.",
         "conflicts": []
       },
       "oteryn": {
@@ -137,13 +137,13 @@
       "provenance": {
         "state": "CLEARED",
         "legal_review_state": "PENDING",
-        "notes": "Official-public source identity/locator and bounded factual transcription are cleared for evidence registration. Legal review remains pending. Missing target-boundary continuity evidence keeps target evidence UNKNOWN and blocks parity promotion."
+        "notes": "Official-public locator identity and bounded transcription of indexed content are cleared for evidence registration. Legal review remains pending. Missing target-boundary continuity evidence and unavailable live-page verification keep target evidence UNKNOWN and block parity promotion."
       },
       "history": [
         {
           "date": "2026-08-14",
-          "summary": "Registered as a fail-closed UNKNOWN target case from a post-boundary current official Library observation.",
-          "reason": "Issue #254; manifest continuity policy requires direct continuity evidence before a post-target observation may support the immutable 2026-07-28 target."
+          "summary": "Registered as a fail-closed UNKNOWN target case from indexed post-boundary official Library content.",
+          "reason": "Issue #254; manifest continuity policy requires direct continuity evidence before post-target/indexed content may support the immutable 2026-07-28 target."
         }
       ]
     },
@@ -152,7 +152,7 @@
       "domain": "ABILITY_COMBAT",
       "title": "Light Healing qualitative self-heal semantics",
       "scope": {
-        "summary": "Target-cut qualitative healing direction; current official description is retained only as a continuity hypothesis and exact magnitude/scaling/rounding are excluded.",
+        "summary": "Target-cut qualitative healing direction; indexed official description is retained only as a continuity hypothesis and exact magnitude/scaling/rounding are excluded.",
         "profiles": [
           "Reference"
         ],
@@ -167,7 +167,7 @@
         }
       ],
       "target": {
-        "expected_observable_behavior": "UNKNOWN for the immutable 2026-07-28 target cut. A current official Library observation retrieved on 2026-08-14 reports: the description characterizes Light Healing as healing the caster's own wounds/injuries and describes the effect as limited.",
+        "expected_observable_behavior": "UNKNOWN for the immutable 2026-07-28 target cut. Official Tibia Library content surfaced through search on 2026-08-14 (search index reported an approximately two-week-old crawl) characterizes Light Healing as healing the caster's own wounds/injuries and describes the effect as limited.",
         "evidence_class": "UNKNOWN",
         "sources": [
           {
@@ -176,13 +176,13 @@
             "artifact_id": "docs/agents/evidence/OTV2-20260814-ability-combat-official-spell-library.md#light-healing",
             "effective_date": null,
             "observed_at": null,
-            "retrieved_at": "2026-08-14T10:47:53Z",
+            "retrieved_at": "2026-08-14T11:01:22Z",
             "provenance_state": "CLEARED",
-            "uncertainty_notes": "Current official Library observation was retrieved after the immutable 2026-07-28 target boundary. No accepted continuity evidence bridges the target cut, so this source cannot promote target evidence above UNKNOWN."
+            "uncertainty_notes": "Official Library content was surfaced through search on 2026-08-14; the search index reported an approximately two-week-old crawl and direct page open from the research environment returned HTTP 403. Exact crawl time and continuity to the immutable target are unknown, so this source cannot promote target evidence above UNKNOWN."
           }
         ],
-        "confidence_notes": "High confidence that the current official description characterizes self-healing; this is confidence in the 2026-08-14 current-state observation, not in historical target continuity.",
-        "uncertainty_notes": "Continuity from the 2026-07-28 target boundary is not evidenced. Exact heal formula, magnitude range, scaling, rounding and complete target legality are unproven.",
+        "confidence_notes": "High confidence that the indexed result for the exact official locator surfaced the qualitative self-healing description. Direct live-page verification was unavailable because the research environment received HTTP 403; this is not historical continuity evidence.",
+        "uncertainty_notes": "Continuity from the 2026-07-28 target boundary is not evidenced. Exact crawl time/live-page equality, heal formula, magnitude range, scaling, rounding and complete target legality are unproven.",
         "conflicts": []
       },
       "oteryn": {
@@ -198,13 +198,13 @@
       "provenance": {
         "state": "CLEARED",
         "legal_review_state": "PENDING",
-        "notes": "Official-public source identity/locator and bounded factual transcription are cleared for evidence registration. Legal review remains pending. Missing target-boundary continuity evidence keeps target evidence UNKNOWN and blocks parity promotion."
+        "notes": "Official-public locator identity and bounded transcription of indexed content are cleared for evidence registration. Legal review remains pending. Missing target-boundary continuity evidence and unavailable live-page verification keep target evidence UNKNOWN and block parity promotion."
       },
       "history": [
         {
           "date": "2026-08-14",
-          "summary": "Registered as a fail-closed UNKNOWN target case from a post-boundary current official Library observation.",
-          "reason": "Issue #254; manifest continuity policy requires direct continuity evidence before a post-target observation may support the immutable 2026-07-28 target."
+          "summary": "Registered as a fail-closed UNKNOWN target case from indexed post-boundary official Library content.",
+          "reason": "Issue #254; manifest continuity policy requires direct continuity evidence before post-target/indexed content may support the immutable 2026-07-28 target."
         }
       ]
     },
@@ -213,7 +213,7 @@
       "domain": "ABILITY_COMBAT",
       "title": "Ice Strike cast metadata",
       "scope": {
-        "summary": "Target-cut Ice Strike spell metadata; current official metadata is retained only as a continuity hypothesis and exact damage/range/legality semantics are excluded.",
+        "summary": "Target-cut Ice Strike spell metadata; indexed official metadata is retained only as a continuity hypothesis and exact damage/range/legality semantics are excluded.",
         "profiles": [
           "Reference"
         ],
@@ -224,11 +224,11 @@
       "preconditions": [
         {
           "id": "precondition-1",
-          "description": "A later validation may apply current observed vocation/level/mana conditions only after target continuity evidence establishes them."
+          "description": "A later validation may apply indexed vocation/level/mana conditions only after target continuity evidence establishes them."
         }
       ],
       "target": {
-        "expected_observable_behavior": "UNKNOWN for the immutable 2026-07-28 target cut. A current official Library observation retrieved on 2026-08-14 reports: Ice Strike; formula exori frigo; vocations Druid and Sorcerer; Attack group; Instant type; Ice magic type; 2 second spell cooldown and 2 second group cooldown; experience level 8; mana 20; Premium not required.",
+        "expected_observable_behavior": "UNKNOWN for the immutable 2026-07-28 target cut. Official Tibia Library content surfaced through search on 2026-08-14 (search index reported an approximately two-week-old crawl) reports: Ice Strike; formula exori frigo; vocations Druid and Sorcerer; Attack group; Instant type; Ice magic type; 2 second spell cooldown and 2 second group cooldown; experience level 8; mana 20; Premium not required.",
         "evidence_class": "UNKNOWN",
         "sources": [
           {
@@ -237,13 +237,13 @@
             "artifact_id": "docs/agents/evidence/OTV2-20260814-ability-combat-official-spell-library.md#ice-strike",
             "effective_date": null,
             "observed_at": null,
-            "retrieved_at": "2026-08-14T10:47:53Z",
+            "retrieved_at": "2026-08-14T11:01:22Z",
             "provenance_state": "CLEARED",
-            "uncertainty_notes": "Current official Library observation was retrieved after the immutable 2026-07-28 target boundary. No accepted continuity evidence bridges the target cut, so this source cannot promote target evidence above UNKNOWN."
+            "uncertainty_notes": "Official Library content was surfaced through search on 2026-08-14; the search index reported an approximately two-week-old crawl and direct page open from the research environment returned HTTP 403. Exact crawl time and continuity to the immutable target are unknown, so this source cannot promote target evidence above UNKNOWN."
           }
         ],
-        "confidence_notes": "High confidence that the current official page exposes the stated fields; this is confidence in the 2026-08-14 current-state observation, not in historical target continuity.",
-        "uncertainty_notes": "Continuity from the 2026-07-28 target boundary is not evidenced. Cost/cooldown commit anchors and failure behavior are also not evidenced.",
+        "confidence_notes": "High confidence that the indexed result for the exact official locator surfaced the stated fields. Direct live-page verification was unavailable because the research environment received HTTP 403; this is not historical continuity evidence.",
+        "uncertainty_notes": "Continuity from the 2026-07-28 target boundary is not evidenced. Exact crawl time/live-page equality, cost/cooldown commit anchors and failure behavior are also not evidenced.",
         "conflicts": []
       },
       "oteryn": {
@@ -259,13 +259,13 @@
       "provenance": {
         "state": "CLEARED",
         "legal_review_state": "PENDING",
-        "notes": "Official-public source identity/locator and bounded factual transcription are cleared for evidence registration. Legal review remains pending. Missing target-boundary continuity evidence keeps target evidence UNKNOWN and blocks parity promotion."
+        "notes": "Official-public locator identity and bounded transcription of indexed content are cleared for evidence registration. Legal review remains pending. Missing target-boundary continuity evidence and unavailable live-page verification keep target evidence UNKNOWN and block parity promotion."
       },
       "history": [
         {
           "date": "2026-08-14",
-          "summary": "Registered as a fail-closed UNKNOWN target case from a post-boundary current official Library observation.",
-          "reason": "Issue #254; manifest continuity policy requires direct continuity evidence before a post-target observation may support the immutable 2026-07-28 target."
+          "summary": "Registered as a fail-closed UNKNOWN target case from indexed post-boundary official Library content.",
+          "reason": "Issue #254; manifest continuity policy requires direct continuity evidence before post-target/indexed content may support the immutable 2026-07-28 target."
         }
       ]
     },
@@ -274,7 +274,7 @@
       "domain": "ABILITY_COMBAT",
       "title": "Ice Strike qualitative targeted ice-damage semantics",
       "scope": {
-        "summary": "Target-cut qualitative targeted attack/damage semantics; current official description is retained only as a continuity hypothesis and exact range/formula/legality/mitigation/RNG are excluded.",
+        "summary": "Target-cut qualitative targeted attack/damage semantics; indexed official description is retained only as a continuity hypothesis and exact range/formula/legality/mitigation/RNG are excluded.",
         "profiles": [
           "Reference"
         ],
@@ -289,7 +289,7 @@
         }
       ],
       "target": {
-        "expected_observable_behavior": "UNKNOWN for the immutable 2026-07-28 target cut. A current official Library observation retrieved on 2026-08-14 reports: the description characterizes Ice Strike as hitting an aimed opponent in close range with ice and says damage is determined by the caster's magical abilities.",
+        "expected_observable_behavior": "UNKNOWN for the immutable 2026-07-28 target cut. Official Tibia Library content surfaced through search on 2026-08-14 (search index reported an approximately two-week-old crawl) characterizes Ice Strike as hitting an aimed opponent in close range with ice and says damage is determined by the caster's magical abilities.",
         "evidence_class": "UNKNOWN",
         "sources": [
           {
@@ -298,13 +298,13 @@
             "artifact_id": "docs/agents/evidence/OTV2-20260814-ability-combat-official-spell-library.md#ice-strike",
             "effective_date": null,
             "observed_at": null,
-            "retrieved_at": "2026-08-14T10:47:53Z",
+            "retrieved_at": "2026-08-14T11:01:22Z",
             "provenance_state": "CLEARED",
-            "uncertainty_notes": "Current official Library observation was retrieved after the immutable 2026-07-28 target boundary. No accepted continuity evidence bridges the target cut, so this source cannot promote target evidence above UNKNOWN."
+            "uncertainty_notes": "Official Library content was surfaced through search on 2026-08-14; the search index reported an approximately two-week-old crawl and direct page open from the research environment returned HTTP 403. Exact crawl time and continuity to the immutable target are unknown, so this source cannot promote target evidence above UNKNOWN."
           }
         ],
-        "confidence_notes": "High confidence that the current official description supports aimed-opponent, close-range, ice-damage and magic-ability-scaling concepts in current state; this is not historical continuity evidence.",
-        "uncertainty_notes": "Continuity from the 2026-07-28 target boundary is not evidenced. Exact tile/range metric, cardinality/ordering, LoS/floor/PvP/PZ legality, damage formula/scaling/rounding, mitigation/resistance and crit/block/dodge/RNG remain unproven.",
+        "confidence_notes": "High confidence that the indexed result for the exact official locator surfaced aimed-opponent, close-range, ice-damage and magic-ability-scaling concepts. Direct live-page verification was unavailable because the research environment received HTTP 403; this is not historical continuity evidence.",
+        "uncertainty_notes": "Continuity from the 2026-07-28 target boundary is not evidenced. Exact crawl time/live-page equality, tile/range metric, cardinality/ordering, LoS/floor/PvP/PZ legality, damage formula/scaling/rounding, mitigation/resistance and crit/block/dodge/RNG remain unproven.",
         "conflicts": []
       },
       "oteryn": {
@@ -320,13 +320,13 @@
       "provenance": {
         "state": "CLEARED",
         "legal_review_state": "PENDING",
-        "notes": "Official-public source identity/locator and bounded factual transcription are cleared for evidence registration. Legal review remains pending. Missing target-boundary continuity evidence keeps target evidence UNKNOWN and blocks parity promotion."
+        "notes": "Official-public locator identity and bounded transcription of indexed content are cleared for evidence registration. Legal review remains pending. Missing target-boundary continuity evidence and unavailable live-page verification keep target evidence UNKNOWN and block parity promotion."
       },
       "history": [
         {
           "date": "2026-08-14",
-          "summary": "Registered as a fail-closed UNKNOWN target case from a post-boundary current official Library observation.",
-          "reason": "Issue #254; manifest continuity policy requires direct continuity evidence before a post-target observation may support the immutable 2026-07-28 target."
+          "summary": "Registered as a fail-closed UNKNOWN target case from indexed post-boundary official Library content.",
+          "reason": "Issue #254; manifest continuity policy requires direct continuity evidence before post-target/indexed content may support the immutable 2026-07-28 target."
         }
       ]
     }
@@ -374,7 +374,7 @@
     {
       "manifest_revision": 3,
       "date": "2026-08-14",
-      "summary": "Register first representative ABILITY_COMBAT cases for Light Healing and Ice Strike as UNKNOWN for the immutable target because current official post-boundary observations lack accepted continuity evidence; implementation remains not started and parity pending.",
+      "summary": "Register first representative ABILITY_COMBAT cases for Light Healing and Ice Strike as UNKNOWN for the immutable target because indexed official post-boundary content lacks accepted continuity evidence; implementation remains not started and parity pending.",
       "issue": "#254"
     }
   ]
