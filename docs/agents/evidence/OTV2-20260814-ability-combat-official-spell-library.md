@@ -10,9 +10,9 @@
 
 ## Evidence discipline
 
-These are bounded observations from the current official Tibia Library pages retrieved after the accepted 2026-07-28 Reference boundary. They are **not** a time-locked capture made exactly on 2026-07-28 and therefore do not by themselves prove that every observed field was unchanged from the boundary through retrieval.
+These are bounded observations from the current official Tibia Library pages retrieved after the accepted 2026-07-28 Reference boundary. They are **not** a time-locked capture made exactly on 2026-07-28 and therefore do not establish continuity from the immutable target boundary.
 
-Patch-note absence is not used as continuity evidence. The manifest cases based on this capture must remain `OBSERVED`, preserve the continuity uncertainty, and must not become `PARITY_CONFIRMED` without exact Oteryn implementation/test evidence and cleared legal/provenance gates.
+`REFERENCE_EVIDENCE_PARITY_MANIFEST_CONTRACT.md` requires continuity evidence before a post-target observation may support the 2026-07-28 target. Patch-note/search absence is not continuity proof. Therefore manifest cases based only on this capture must remain target-evidence `UNKNOWN`, with the current official observations retained as discovery/current-state evidence. They must not become `PARITY_CONFIRMED` without target continuity evidence, exact Oteryn implementation/test evidence and cleared legal/provenance gates.
 
 ## Light Healing
 
@@ -20,7 +20,7 @@ Official locator:
 
 `https://www.tibia.com/library/?spell=lighthealing&subtopic=spells`
 
-Observed spell information:
+Current official spell information observed at retrieval:
 
 - name: Light Healing;
 - formula: `exura`;
@@ -33,7 +33,7 @@ Observed spell information:
 - mana: 20;
 - premium requirement: no.
 
-The official description presents the spell as healing the caster's own wounds/injuries and describes the effect as limited. This supports only a qualitative self-healing interpretation. It does **not** provide an exact healing formula, magnitude range, rounding rule, scaling coefficients, failure/legality precedence or complete target-policy semantics.
+The current official description presents the spell as healing the caster's own wounds/injuries and describes the effect as limited. This supports discovery of a qualitative self-healing hypothesis for the immutable target, but without continuity evidence it does **not** establish that target-cut behavior. It also does not provide an exact healing formula, magnitude range, rounding rule, scaling coefficients, failure/legality precedence or complete target-policy semantics.
 
 ## Ice Strike
 
@@ -41,7 +41,7 @@ Official locator:
 
 `https://www.tibia.com/library/?spell=icestrike&subtopic=spells`
 
-Observed spell information:
+Current official spell information observed at retrieval:
 
 - name: Ice Strike;
 - formula: `exori frigo`;
@@ -54,16 +54,20 @@ Observed spell information:
 - mana: 20;
 - premium requirement: no.
 
-The official description states qualitatively that the spell hits an aimed opponent in close range with ice and that its damage is determined by the caster's magical abilities. This supports targeted attack + ice-damage semantics only at a qualitative level. It does **not** provide an exact tile/range metric, exact target cardinality in every edge case, LoS/floor/PvP/PZ legality, damage formula, scaling coefficients, rounding, resistance interaction, critical/block/dodge behavior or RNG ordering.
+The current official description states qualitatively that the spell hits an aimed opponent in close range with ice and that its damage is determined by the caster's magical abilities. This supports discovery of targeted attack + ice-damage semantics for the immutable target, but without continuity evidence it does **not** establish that target-cut behavior. It also does not provide an exact tile/range metric, exact target cardinality in every edge case, LoS/floor/PvP/PZ legality, damage formula, scaling coefficients, rounding, resistance interaction, critical/block/dodge behavior or RNG ordering.
 
 ## Explicitly unresolved
 
-The following remain `UNKNOWN` for this package and must not be inferred from OTS implementations, current Oteryn convenience or absence of official patch notes:
+The following remain `UNKNOWN` for the immutable Reference target and must not be inferred from OTS implementations, current Oteryn convenience or absence of official patch notes:
 
-- exact 2026-07-28 continuity of every listed field;
+- continuity from the 2026-07-28 target boundary to the current official spell-library observations, including every listed metadata field and qualitative description;
 - exact Light Healing magnitude/formula/rounding/scaling;
 - exact Ice Strike range metric and complete targeting/legality matrix;
 - exact Ice Strike damage formula/rounding/scaling/mitigation/resistance;
 - exact mana/cooldown commit anchors on failed/interrupted/illegal casts;
 - error precedence and client-visible failure behavior;
 - any implementation or parity state in Oteryn.
+
+## Evidence needed for promotion
+
+A later package may promote a target case only if it supplies continuity evidence admissible under the manifest contract, for example a provenance-cleared time-appropriate official artifact/capture or another accepted evidence chain that directly bridges the immutable target boundary. Current-state agreement plus silence about intervening changes is insufficient.
