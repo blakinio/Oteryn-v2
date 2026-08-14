@@ -14,7 +14,7 @@ delivery_final_head_sha: 6744f655c6438eebeab70b30aae17d33b5bd2fa7
 delivery_merge_sha: d04f0939f0078cb677ca3ad66f5949e9f3dadc8d
 closeout_branch: docs/ability-combat-evidence-closeout
 closeout_issue: 256
-closeout_pr: pending
+closeout_pr: 257
 owner: released_after_closeout
 created_at: 2026-08-14T12:47:53+02:00
 delivery_merged_at: 2026-08-14T13:54:39+02:00
@@ -59,7 +59,7 @@ The source package records exact official Tibia Library locators, but content wa
 4. Final exact-head self-review on `6744f655c6438eebeab70b30aae17d33b5bd2fa7` passed with zero open material findings; immutable PR evidence is comment `5292724813`.
 5. The owner explicitly authorized Codex review for **PR #255 only**. Automatic Codex review started on ready transition and completed with PR `+1` reaction `454048359`; no review finding/thread was produced.
 
-The owner authorization for Codex was exact-use authorization for PR #255 and is not standing permission for closeout PR or later work.
+The owner authorization for Codex was exact-use authorization for PR #255 and is not standing permission for closeout PR #257 or later work.
 
 ## Terminal delivery validation
 
@@ -80,7 +80,7 @@ Exact final head: `6744f655c6438eebeab70b30aae17d33b5bd2fa7`.
 
 ## Lifecycle closeout
 
-Closeout issue #256 and branch `docs/ability-combat-evidence-closeout` perform lifecycle/status bookkeeping only: move this task from active to archive, release advisory ownership, and reconcile stale coordination overlays so they no longer select creation of the Reference manifest or first representative ABILITY_COMBAT package as future work.
+Closeout issue #256 / draft PR #257 perform lifecycle/status bookkeeping only: move this task from active to archive, release advisory ownership, and reconcile stale coordination overlays so they no longer select creation of the Reference manifest or first representative ABILITY_COMBAT package as future work.
 
 The next paper-only programme action after closeout is a bounded **target-continuity + provenance-clearance evidence package for the four registered ABILITY_COMBAT cases**. It must obtain provenance-cleared, time-appropriate evidence that directly bridges/captures the immutable 2026-07-28 target boundary and then either promotes or rejects the indexed hypotheses. It must not infer continuity from patch/search silence and must not broaden mechanics or freeze physical catalogue tooling first.
 
@@ -89,13 +89,13 @@ No runtime/client/protocol/content/DDL/Platform/production authority follows fro
 ## Context checkpoint
 
 ```yaml
-last_progress: PR #255 exact final head 6744f655c6438eebeab70b30aae17d33b5bd2fa7 passed self-review, owner-authorized Codex no-finding review and required exact-head gates, then squash-merged as d04f0939f0078cb677ca3ad66f5949e9f3dadc8d; main and issue #254 were verified post-merge; lifecycle closeout is issue #256.
+last_progress: PR #255 exact final head 6744f655c6438eebeab70b30aae17d33b5bd2fa7 passed self-review, owner-authorized Codex no-finding review and required exact-head gates, then squash-merged as d04f0939f0078cb677ca3ad66f5949e9f3dadc8d; main and issue #254 were verified post-merge; lifecycle closeout is issue #256 / draft PR #257.
 status: completed
 delivery_pr: 255
 final_head_sha: 6744f655c6438eebeab70b30aae17d33b5bd2fa7
 delivery_merge_sha: d04f0939f0078cb677ca3ad66f5949e9f3dadc8d
 closeout_issue: 256
-closeout_pr: pending
+closeout_pr: 257
 ci_run_ids:
   - 31795833321
   - 31795833334
