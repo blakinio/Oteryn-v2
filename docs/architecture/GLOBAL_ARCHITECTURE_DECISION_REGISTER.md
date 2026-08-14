@@ -52,7 +52,7 @@ Stable IDs are canonical across tasks, prompts and PRs. Stage labels are descrip
 | Minimum GAME-VISION product contract | `ACCEPTED` | `GAME-VISION-01_MINIMUM_OWNER_BASELINE.md` |
 | First immutable Reference cut: Global Tibia after 2026-07-28 server-save/maintenance | `ACCEPTED` | `GAME-VISION-01_FIRST_REFERENCE_BASELINE_OWNER_BASELINE.md` |
 | Reference evidence/parity manifest v1, schema v1, immutable first target | `ACCEPTED` | `REFERENCE_EVIDENCE_PARITY_MANIFEST_V1_OWNER_ACCEPTANCE.md`, PR #252 merge `52ef65f67e8a0e9c6f31d4754f8a6b7322d8d6d8` |
-| First representative ABILITY_COMBAT Reference case package | `DELIVERED_FAIL_CLOSED` | manifest revision 3 + `GAME-ABILITY-01_FIRST_REFERENCE_EVIDENCE_FIXTURE_PACKAGE.md`, PR #255 merge `d04f0939f0078cb677ca3ad66f5949e9f3dadc8d` |
+| First representative ABILITY_COMBAT Reference case package | `ACCEPTED` | manifest revision 3 registered fail-closed cases + `GAME-ABILITY-01_FIRST_REFERENCE_EVIDENCE_FIXTURE_PACKAGE.md`, PR #255 merge `d04f0939f0078cb677ca3ad66f5949e9f3dadc8d`; this does not imply mechanic parity |
 | GAME-CHAR Stage A + Stage B semantic closure | `ACCEPTED` | `GAME-CHAR-01_STAGE_A_OWNER_BASELINE.md` + Stage B baseline |
 | DUR-02 profile-neutral Character persistence sub-baseline | `ACCEPTED` | `DUR-02_PROFILE_NEUTRAL_CHARACTER_PERSISTENCE_OWNER_BASELINE.md` |
 | DUR-02 whole Persistence-v1 architecture | `ACCEPTED` | `DUR-02_PERSISTENCE_V1_OWNER_BASELINE.md` |
@@ -61,8 +61,6 @@ Stable IDs are canonical across tasks, prompts and PRs. Stage labels are descrip
 | GAME-CHANNEL-01 channel selection/queue/co-location/anti-hopping/multiplicity/lifecycle product policy | `ACCEPTED` | `GAME-CHANNEL-01_CHANNEL_PRODUCT_POLICY_CONTRACT.md`, PR #209 exact head `ca1112191ede7d316c874189f3053ad7f8247579`, merge `54dddbcfcb64baaf66e6cfd9fcd2cc3e1b4f04f1` |
 | DUR-04 deterministic content/package/bundle/migration and authoritative scripting boundary | `ACCEPTED` | `DUR-04_CONTENT_WORLD_AND_SCRIPTING_CONTRACT.md`, PR #212 exact head `77e68ffb9e9e0e31ca751d42ff5f7c03466b2b23`, merge `568236c33cd23da017bca1dbd1ed98afc8da71f4` |
 | SIM-DETERMINISM-01 authoritative arithmetic/RNG/order/replay/state-hash boundary | `ACCEPTED` | `SIM-DETERMINISM-01_AUTHORITATIVE_SIMULATION_CONTRACT.md`, PR #214 exact final head `4c6684328123aebd657696808372a5855980d34e`, merge `1e16b32069868f14aa1761a512b6cd8b1024e277` |
-
-`DELIVERED_FAIL_CLOSED` above is coordination wording only, not a new architecture status enum or gate. The owning manifest retains the normative evidence/provenance/implementation/parity axes.
 
 ## Progressive execution policy
 
