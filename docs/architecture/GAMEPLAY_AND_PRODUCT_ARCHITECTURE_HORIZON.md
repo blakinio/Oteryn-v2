@@ -348,10 +348,10 @@ SIM acceptance does not select concrete Rust numeric/RNG/hash libraries, exact g
 
 ## `GAME-ABILITY-01` — Ability, Spell and Condition Architecture
 
-- DecisionStatus: **`PARTIAL BASELINES ACCEPTED`**; the whole gate remains open.
-- DeliveryStatus: first representative Reference evidence package delivered by PR #255 / merge `d04f0939f0078cb677ca3ad66f5949e9f3dadc8d`.
+- DecisionStatus: **`CANDIDATE`** for the whole gate; accepted partial baselines remain binding only for their declared scopes.
+- DeliveryStatus: **`PLANNED`** for the whole gate; no active task/PR currently owns whole-gate delivery. The separate representative evidence package was delivered by PR #255 / merge `d04f0939f0078cb677ca3ad66f5949e9f3dadc8d`; its lifecycle bookkeeping is handled by closeout PR #257 and does not change the whole-gate delivery status.
 - ImplementationStatus: **`NOT_STARTED`**; runtime/client/protocol/content authority **`NONE`**.
-- Existing partial baselines cover typed effect pipeline, targeting/legality, cast/channel/commit, cooldown/charge/condition, effect composition/damage/heal, effect-family/reference-catalogue boundaries and catalogue-entry evidence/fixture binding.
+- Existing accepted partial baselines cover typed effect pipeline, targeting/legality, cast/channel/commit, cooldown/charge/condition, effect composition/damage/heal, effect-family/reference-catalogue boundaries and catalogue-entry evidence/fixture binding.
 - Manifest revision 3 registers four Light Healing/Ice Strike cases as target `UNKNOWN`, source/case/legal provenance `PENDING`, implementation `NOT_STARTED`, parity `PARITY_PENDING_EVIDENCE`; pending fixture blueprints are not executable parity fixtures.
 - The immediate GAME-ABILITY evidence successor is target-continuity + provenance-clearance for these existing cases, not broad mechanic expansion or physical catalogue-tooling freeze.
 
