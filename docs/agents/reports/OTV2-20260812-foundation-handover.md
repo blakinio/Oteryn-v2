@@ -7,7 +7,7 @@
 - Trusted refresh base: `main@d04f0939f0078cb677ca3ad66f5949e9f3dadc8d`
 - Reference manifest acceptance: PR #252 / merge `52ef65f67e8a0e9c6f31d4754f8a6b7322d8d6d8`
 - First representative ABILITY_COMBAT evidence delivery: PR #255 / exact final head `6744f655c6438eebeab70b30aae17d33b5bd2fa7` / squash merge `d04f0939f0078cb677ca3ad66f5949e9f3dadc8d`
-- Current lifecycle closeout: issue #256 / branch `docs/ability-combat-evidence-closeout`
+- Current lifecycle closeout: issue #256 / draft PR #257 / branch `docs/ability-combat-evidence-closeout`
 - Terminal successor result after closeout: **`ROTATE`**
 - Runtime/client/combat/AI/script implementation authority: **NOT GRANTED**
 - PostgreSQL DDL/migration execution authority: **NONE**
@@ -117,7 +117,7 @@ The human fixture records are **pending blueprints**, not executable/passing par
 - squash merge: `d04f0939f0078cb677ca3ad66f5949e9f3dadc8d`;
 - post-merge `main`: verified exactly at that SHA.
 
-The Codex authorization for PR #255 is consumed and does not authorize closeout PRs or future work.
+The Codex authorization for PR #255 is consumed and does not authorize closeout PR #257 or future work.
 
 ## 6. One next paper-only action
 
@@ -175,11 +175,11 @@ repository: blakinio/Oteryn-v2
 trusted_base_sha: d04f0939f0078cb677ca3ad66f5949e9f3dadc8d
 closeout_issue: 256
 closeout_branch: docs/ability-combat-evidence-closeout
-closeout_pr: pending
+closeout_pr: 257
 owned_paths: []
 public_contracts: []
-last_progress: PR #255 exact final head 6744f655c6438eebeab70b30aae17d33b5bd2fa7 passed final self-review, owner-authorized Codex no-finding review and exact-head repository gates, then squash-merged as d04f0939f0078cb677ca3ad66f5949e9f3dadc8d; issue #254 closed completed; lifecycle closeout #256 reconciles archive/status/handoff and releases task ownership.
-validation_state: delivery #255 merged after exact-head self-review, no-finding Codex and green Agent governance/Merge authority/Merge gate; closeout must pass its own exact-head documentation/governance validation.
+last_progress: PR #255 exact final head 6744f655c6438eebeab70b30aae17d33b5bd2fa7 passed final self-review, owner-authorized Codex no-finding review and exact-head repository gates, then squash-merged as d04f0939f0078cb677ca3ad66f5949e9f3dadc8d; issue #254 closed completed; lifecycle closeout #256 / draft PR #257 reconciles archive/status/handoff and releases task ownership.
+validation_state: delivery #255 merged after exact-head self-review, no-finding Codex and green Agent governance/Merge authority/Merge gate; closeout #257 must pass its own exact-head documentation/governance validation.
 e2e_state: NOT_APPLICABLE documentation-only architecture/closeout
 blocker: null
 owner_action_required: false
