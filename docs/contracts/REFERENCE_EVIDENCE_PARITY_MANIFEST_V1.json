@@ -92,17 +92,13 @@
       "title": "Light Healing cast metadata",
       "scope": {
         "summary": "Target-cut Light Healing spell metadata; indexed official metadata is retained only as a continuity hypothesis and exact quantitative heal semantics are excluded.",
-        "profiles": [
-          "Reference"
-        ],
-        "world_assumptions": [
-          "No world-specific variance is asserted by this case."
-        ]
+        "profiles": ["Reference"],
+        "world_assumptions": ["No world-specific variance is asserted by this case."]
       },
       "preconditions": [
         {
           "id": "precondition-1",
-          "description": "A later validation may apply indexed vocation/level/mana conditions only after target continuity evidence establishes them."
+          "description": "A later validation may apply indexed vocation/level/mana conditions only after target continuity evidence and source provenance establish them."
         }
       ],
       "target": {
@@ -116,12 +112,12 @@
             "effective_date": null,
             "observed_at": null,
             "retrieved_at": "2026-08-14T11:01:22Z",
-            "provenance_state": "CLEARED",
-            "uncertainty_notes": "Official Library content was surfaced through search on 2026-08-14; the search index reported an approximately two-week-old crawl and direct page open from the research environment returned HTTP 403. Exact crawl time and continuity to the immutable target are unknown, so this source cannot promote target evidence above UNKNOWN."
+            "provenance_state": "PENDING",
+            "uncertainty_notes": "Exact official locator/source identity is known, but Library content was surfaced through search; the index reported an approximately two-week-old crawl and direct page open from the research environment returned HTTP 403. Exact crawl time, live-page equality and target continuity are unknown, so source provenance remains PENDING for promotion."
           }
         ],
-        "confidence_notes": "High confidence that the indexed result for the exact official locator surfaced the stated fields. Direct live-page verification was unavailable because the research environment received HTTP 403; this is not historical continuity evidence.",
-        "uncertainty_notes": "Continuity from the 2026-07-28 target boundary is not evidenced. Exact crawl time/live-page equality, mana/cooldown commit anchors, legality precedence and failure behavior are also not evidenced.",
+        "confidence_notes": "The indexed result for the exact official locator surfaced the stated fields. Direct live-page verification was unavailable because the research environment received HTTP 403; the content is retained only as discovery evidence.",
+        "uncertainty_notes": "Continuity from the 2026-07-28 target boundary is not evidenced. Exact crawl time/live-page equality, source provenance clearance, mana/cooldown commit anchors, legality precedence and failure behavior are also not evidenced.",
         "conflicts": []
       },
       "oteryn": {
@@ -135,15 +131,15 @@
         "accepted_difference_reference": null
       },
       "provenance": {
-        "state": "CLEARED",
+        "state": "PENDING",
         "legal_review_state": "PENDING",
-        "notes": "Official-public locator identity and bounded transcription of indexed content are cleared for evidence registration. Legal review remains pending. Missing target-boundary continuity evidence and unavailable live-page verification keep target evidence UNKNOWN and block parity promotion."
+        "notes": "Exact official locator identity is known, but indexed content could not be directly revalidated against the official page. Source provenance and legal review remain PENDING; missing target continuity independently keeps target evidence UNKNOWN."
       },
       "history": [
         {
           "date": "2026-08-14",
-          "summary": "Registered as a fail-closed UNKNOWN target case from indexed post-boundary official Library content.",
-          "reason": "Issue #254; manifest continuity policy requires direct continuity evidence before post-target/indexed content may support the immutable 2026-07-28 target."
+          "summary": "Registered as a fail-closed UNKNOWN target case from indexed post-boundary official Library content with provenance pending.",
+          "reason": "Issue #254; target continuity is unproven and direct official-page verification was unavailable, so provenance cannot be marked CLEARED for promotion."
         }
       ]
     },
@@ -153,17 +149,13 @@
       "title": "Light Healing qualitative self-heal semantics",
       "scope": {
         "summary": "Target-cut qualitative healing direction; indexed official description is retained only as a continuity hypothesis and exact magnitude/scaling/rounding are excluded.",
-        "profiles": [
-          "Reference"
-        ],
-        "world_assumptions": [
-          "No world-specific variance is asserted by this case."
-        ]
+        "profiles": ["Reference"],
+        "world_assumptions": ["No world-specific variance is asserted by this case."]
       },
       "preconditions": [
         {
           "id": "precondition-1",
-          "description": "A later bounded validation may use an injured caster only after target continuity evidence establishes the self-heal semantics."
+          "description": "A later bounded validation may use an injured caster only after target continuity evidence and source provenance establish the self-heal semantics."
         }
       ],
       "target": {
@@ -177,12 +169,12 @@
             "effective_date": null,
             "observed_at": null,
             "retrieved_at": "2026-08-14T11:01:22Z",
-            "provenance_state": "CLEARED",
-            "uncertainty_notes": "Official Library content was surfaced through search on 2026-08-14; the search index reported an approximately two-week-old crawl and direct page open from the research environment returned HTTP 403. Exact crawl time and continuity to the immutable target are unknown, so this source cannot promote target evidence above UNKNOWN."
+            "provenance_state": "PENDING",
+            "uncertainty_notes": "Exact official locator/source identity is known, but Library content was surfaced through search; the index reported an approximately two-week-old crawl and direct page open from the research environment returned HTTP 403. Exact crawl time, live-page equality and target continuity are unknown, so source provenance remains PENDING for promotion."
           }
         ],
-        "confidence_notes": "High confidence that the indexed result for the exact official locator surfaced the qualitative self-healing description. Direct live-page verification was unavailable because the research environment received HTTP 403; this is not historical continuity evidence.",
-        "uncertainty_notes": "Continuity from the 2026-07-28 target boundary is not evidenced. Exact crawl time/live-page equality, heal formula, magnitude range, scaling, rounding and complete target legality are unproven.",
+        "confidence_notes": "The indexed result for the exact official locator surfaced the qualitative self-healing description. Direct live-page verification was unavailable because the research environment received HTTP 403; the content is retained only as discovery evidence.",
+        "uncertainty_notes": "Continuity from the 2026-07-28 target boundary is not evidenced. Exact crawl time/live-page equality, source provenance clearance, heal formula, magnitude range, scaling, rounding and complete target legality are unproven.",
         "conflicts": []
       },
       "oteryn": {
@@ -196,15 +188,15 @@
         "accepted_difference_reference": null
       },
       "provenance": {
-        "state": "CLEARED",
+        "state": "PENDING",
         "legal_review_state": "PENDING",
-        "notes": "Official-public locator identity and bounded transcription of indexed content are cleared for evidence registration. Legal review remains pending. Missing target-boundary continuity evidence and unavailable live-page verification keep target evidence UNKNOWN and block parity promotion."
+        "notes": "Exact official locator identity is known, but indexed content could not be directly revalidated against the official page. Source provenance and legal review remain PENDING; missing target continuity independently keeps target evidence UNKNOWN."
       },
       "history": [
         {
           "date": "2026-08-14",
-          "summary": "Registered as a fail-closed UNKNOWN target case from indexed post-boundary official Library content.",
-          "reason": "Issue #254; manifest continuity policy requires direct continuity evidence before post-target/indexed content may support the immutable 2026-07-28 target."
+          "summary": "Registered as a fail-closed UNKNOWN target case from indexed post-boundary official Library content with provenance pending.",
+          "reason": "Issue #254; target continuity is unproven and direct official-page verification was unavailable, so provenance cannot be marked CLEARED for promotion."
         }
       ]
     },
@@ -214,17 +206,13 @@
       "title": "Ice Strike cast metadata",
       "scope": {
         "summary": "Target-cut Ice Strike spell metadata; indexed official metadata is retained only as a continuity hypothesis and exact damage/range/legality semantics are excluded.",
-        "profiles": [
-          "Reference"
-        ],
-        "world_assumptions": [
-          "No world-specific variance is asserted by this case."
-        ]
+        "profiles": ["Reference"],
+        "world_assumptions": ["No world-specific variance is asserted by this case."]
       },
       "preconditions": [
         {
           "id": "precondition-1",
-          "description": "A later validation may apply indexed vocation/level/mana conditions only after target continuity evidence establishes them."
+          "description": "A later validation may apply indexed vocation/level/mana conditions only after target continuity evidence and source provenance establish them."
         }
       ],
       "target": {
@@ -238,12 +226,12 @@
             "effective_date": null,
             "observed_at": null,
             "retrieved_at": "2026-08-14T11:01:22Z",
-            "provenance_state": "CLEARED",
-            "uncertainty_notes": "Official Library content was surfaced through search on 2026-08-14; the search index reported an approximately two-week-old crawl and direct page open from the research environment returned HTTP 403. Exact crawl time and continuity to the immutable target are unknown, so this source cannot promote target evidence above UNKNOWN."
+            "provenance_state": "PENDING",
+            "uncertainty_notes": "Exact official locator/source identity is known, but Library content was surfaced through search; the index reported an approximately two-week-old crawl and direct page open from the research environment returned HTTP 403. Exact crawl time, live-page equality and target continuity are unknown, so source provenance remains PENDING for promotion."
           }
         ],
-        "confidence_notes": "High confidence that the indexed result for the exact official locator surfaced the stated fields. Direct live-page verification was unavailable because the research environment received HTTP 403; this is not historical continuity evidence.",
-        "uncertainty_notes": "Continuity from the 2026-07-28 target boundary is not evidenced. Exact crawl time/live-page equality, cost/cooldown commit anchors and failure behavior are also not evidenced.",
+        "confidence_notes": "The indexed result for the exact official locator surfaced the stated fields. Direct live-page verification was unavailable because the research environment received HTTP 403; the content is retained only as discovery evidence.",
+        "uncertainty_notes": "Continuity from the 2026-07-28 target boundary is not evidenced. Exact crawl time/live-page equality, source provenance clearance, cost/cooldown commit anchors and failure behavior are also not evidenced.",
         "conflicts": []
       },
       "oteryn": {
@@ -257,15 +245,15 @@
         "accepted_difference_reference": null
       },
       "provenance": {
-        "state": "CLEARED",
+        "state": "PENDING",
         "legal_review_state": "PENDING",
-        "notes": "Official-public locator identity and bounded transcription of indexed content are cleared for evidence registration. Legal review remains pending. Missing target-boundary continuity evidence and unavailable live-page verification keep target evidence UNKNOWN and block parity promotion."
+        "notes": "Exact official locator identity is known, but indexed content could not be directly revalidated against the official page. Source provenance and legal review remain PENDING; missing target continuity independently keeps target evidence UNKNOWN."
       },
       "history": [
         {
           "date": "2026-08-14",
-          "summary": "Registered as a fail-closed UNKNOWN target case from indexed post-boundary official Library content.",
-          "reason": "Issue #254; manifest continuity policy requires direct continuity evidence before post-target/indexed content may support the immutable 2026-07-28 target."
+          "summary": "Registered as a fail-closed UNKNOWN target case from indexed post-boundary official Library content with provenance pending.",
+          "reason": "Issue #254; target continuity is unproven and direct official-page verification was unavailable, so provenance cannot be marked CLEARED for promotion."
         }
       ]
     },
@@ -275,17 +263,13 @@
       "title": "Ice Strike qualitative targeted ice-damage semantics",
       "scope": {
         "summary": "Target-cut qualitative targeted attack/damage semantics; indexed official description is retained only as a continuity hypothesis and exact range/formula/legality/mitigation/RNG are excluded.",
-        "profiles": [
-          "Reference"
-        ],
-        "world_assumptions": [
-          "No world-specific variance is asserted by this case."
-        ]
+        "profiles": ["Reference"],
+        "world_assumptions": ["No world-specific variance is asserted by this case."]
       },
       "preconditions": [
         {
           "id": "precondition-1",
-          "description": "A later bounded validation may provide one candidate opponent only after target continuity and the relevant legality configuration are separately evidenced."
+          "description": "A later bounded validation may provide one candidate opponent only after target continuity, source provenance and the relevant legality configuration are separately evidenced."
         }
       ],
       "target": {
@@ -299,12 +283,12 @@
             "effective_date": null,
             "observed_at": null,
             "retrieved_at": "2026-08-14T11:01:22Z",
-            "provenance_state": "CLEARED",
-            "uncertainty_notes": "Official Library content was surfaced through search on 2026-08-14; the search index reported an approximately two-week-old crawl and direct page open from the research environment returned HTTP 403. Exact crawl time and continuity to the immutable target are unknown, so this source cannot promote target evidence above UNKNOWN."
+            "provenance_state": "PENDING",
+            "uncertainty_notes": "Exact official locator/source identity is known, but Library content was surfaced through search; the index reported an approximately two-week-old crawl and direct page open from the research environment returned HTTP 403. Exact crawl time, live-page equality and target continuity are unknown, so source provenance remains PENDING for promotion."
           }
         ],
-        "confidence_notes": "High confidence that the indexed result for the exact official locator surfaced aimed-opponent, close-range, ice-damage and magic-ability-scaling concepts. Direct live-page verification was unavailable because the research environment received HTTP 403; this is not historical continuity evidence.",
-        "uncertainty_notes": "Continuity from the 2026-07-28 target boundary is not evidenced. Exact crawl time/live-page equality, tile/range metric, cardinality/ordering, LoS/floor/PvP/PZ legality, damage formula/scaling/rounding, mitigation/resistance and crit/block/dodge/RNG remain unproven.",
+        "confidence_notes": "The indexed result for the exact official locator surfaced aimed-opponent, close-range, ice-damage and magic-ability-scaling concepts. Direct live-page verification was unavailable because the research environment received HTTP 403; the content is retained only as discovery evidence.",
+        "uncertainty_notes": "Continuity from the 2026-07-28 target boundary is not evidenced. Exact crawl time/live-page equality, source provenance clearance, tile/range metric, cardinality/ordering, LoS/floor/PvP/PZ legality, damage formula/scaling/rounding, mitigation/resistance and crit/block/dodge/RNG remain unproven.",
         "conflicts": []
       },
       "oteryn": {
@@ -318,15 +302,15 @@
         "accepted_difference_reference": null
       },
       "provenance": {
-        "state": "CLEARED",
+        "state": "PENDING",
         "legal_review_state": "PENDING",
-        "notes": "Official-public locator identity and bounded transcription of indexed content are cleared for evidence registration. Legal review remains pending. Missing target-boundary continuity evidence and unavailable live-page verification keep target evidence UNKNOWN and block parity promotion."
+        "notes": "Exact official locator identity is known, but indexed content could not be directly revalidated against the official page. Source provenance and legal review remain PENDING; missing target continuity independently keeps target evidence UNKNOWN."
       },
       "history": [
         {
           "date": "2026-08-14",
-          "summary": "Registered as a fail-closed UNKNOWN target case from indexed post-boundary official Library content.",
-          "reason": "Issue #254; manifest continuity policy requires direct continuity evidence before post-target/indexed content may support the immutable 2026-07-28 target."
+          "summary": "Registered as a fail-closed UNKNOWN target case from indexed post-boundary official Library content with provenance pending.",
+          "reason": "Issue #254; target continuity is unproven and direct official-page verification was unavailable, so provenance cannot be marked CLEARED for promotion."
         }
       ]
     }
@@ -374,7 +358,7 @@
     {
       "manifest_revision": 3,
       "date": "2026-08-14",
-      "summary": "Register first representative ABILITY_COMBAT cases for Light Healing and Ice Strike as UNKNOWN for the immutable target because indexed official post-boundary content lacks accepted continuity evidence; implementation remains not started and parity pending.",
+      "summary": "Register first representative ABILITY_COMBAT cases for Light Healing and Ice Strike as UNKNOWN with provenance pending because indexed official post-boundary content lacks direct live-page verification and accepted target continuity; implementation remains not started and parity pending.",
       "issue": "#254"
     }
   ]
