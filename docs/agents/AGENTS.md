@@ -39,7 +39,11 @@ When an architecture/research issue is explicitly allocated under `docs/agents/M
 - the Architecture Coordinator/Auditor is the only programme role allowed to integrate, merge, archive/release worker ownership and reconcile canonical programme overlays;
 - worker completion order never overrides dependency-aware coordinator integration order.
 
-For these allocated worker tasks, the more general own-PR merge authority in root/bootstrap governance is intentionally narrowed by this programme policy. This narrowing does not grant the coordinator any runtime, DDL, Platform, production, secret or cross-repository authority.
+For these allocated worker tasks, the general own-PR merge authority is redistributed deliberately: worker authority is narrowed, while the coordinator receives bounded authority to merge and close out allocated worker PRs authored by other domain agents. That coordinator-side cross-worker merge/closeout authority is a **merge-authority expansion** relative to the repository's general own-PR baseline.
+
+Therefore any governance change that introduces or materially widens this multi-agent coordinator authority requires explicit owner scope and a genuinely independent exact-head review before the governance change itself may merge. Once the reviewed governance policy is merged, ordinary coordinator integration of worker PRs within the already-approved allocation uses existing policy authority and is not itself a new governance expansion unless the allocation/authority is widened again.
+
+This authority redistribution does not grant the coordinator any runtime, DDL, Platform, production, secret, protected-environment or cross-repository authority.
 
 ## Architecture and contract changes
 
