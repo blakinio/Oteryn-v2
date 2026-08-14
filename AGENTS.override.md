@@ -1,7 +1,7 @@
 # Mandatory Agent Bootstrap
 
 ```yaml
-agent_bootstrap_policy_revision: 2.4-oteryn-v2
+agent_bootstrap_policy_revision: 2.5-oteryn-v2
 ```
 
 This bootstrap supplements and never weakens system, developer, owner, repository allowlist, safety, production, credential, data, authentication, protocol, asset, deployment, merge or cross-repository restrictions.
@@ -48,6 +48,22 @@ Final exact-head CI and resulting authorized merge may use the bounded terminal-
 Lack of Codex/local terminal is not itself a blocker. Use GitHub for repository operations and GitHub Actions for permitted remote validation.
 
 The owner durably authorizes auto-merge when protected or direct squash merge for the task's own PR only after every repository-required exact-head gate passes, audit/E2E are satisfied, review threads are resolved, diff ownership is clean and related PRs are reconciled.
+
+### Multi-agent architecture merge narrowing
+
+For an architecture/research task explicitly allocated to a **DOMAIN ARCHITECTURE DESIGN AGENT** under `docs/agents/MULTI_AGENT_ARCHITECTURE_ORCHESTRATION.md`, the general own-PR merge authorization above does **not** apply to that worker.
+
+Such a worker:
+
+- may create and update only its allocated task/branch/draft PR and owned architecture/evidence paths;
+- must leave its PR draft through worker handoff unless the Architecture Coordinator and any owner-funded-review authorization explicitly permit a later transition;
+- must not merge, enable auto-merge, lifecycle-close/archive its own task, release its own ownership or edit coordinator-only global overlays;
+- must not treat green CI, self-review or proposal completion as canonical architecture acceptance;
+- must end with `MERGE_AUTHORITY: ARCHITECTURE_COORDINATOR_ONLY`.
+
+The **Architecture Coordinator/Auditor** is the only programme role authorized to integrate and merge those allocated worker PRs, archive/release their tasks and reconcile coordinator-only programme surfaces, subject to all normal exact-head review/CI/ownership protections.
+
+This is a **narrowing** of worker authority. It does not expand the coordinator's repository allowlist and grants neither worker nor coordinator runtime implementation, PostgreSQL DDL/migration, Platform, production, secrets, protected-environment, live-data/session/account or cross-repository authority.
 
 Merge authority is not production authority. Production deployment, protected environment approval, production secrets, live data, live sessions/accounts and protected configuration remain separately unauthorized.
 
