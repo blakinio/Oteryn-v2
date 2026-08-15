@@ -318,11 +318,11 @@ cross_domain_finding:
 cross_domain_finding:
   id: GA-XD-02
   observed_in_domain: game-ability
-  target_owner: GAME-INTERACTION/world-owner
+  target_owner: GAME-ITEM/DUR-03
   severity: P1
-  evidence: docs/architecture/GLOBAL_ARCHITECTURE_DECISION_REGISTER.md (canonical GAME-INTERACTION-01 required-for-alpha registration); PR #277@efa310c5c581f823ab65f497c3968a754cc0eb8f is noncanonical/BLOCKED proposal evidence only
-  conflict_or_gap: Teleport/push/pull/occupancy/world-object consequences need an accepted owner legality/order/commit contract; GAME-ABILITY can route typed proposals only.
-  required_before: Movement/world-interaction consequences become executable.
+  evidence: docs/architecture/DUR-03_ITEM_TRANSACTION_AND_ANTI_DUPLICATION_CONTRACT.md + docs/architecture/GLOBAL_ARCHITECTURE_DECISION_REGISTER.md (canonical GAME-ITEM/DUR-03 ownership state)
+  conflict_or_gap: Conserved item/currency/value costs and consequences remain item/value-owner mutations; ability commit anchors do not create authority or distributed atomicity.
+  required_before: Ability execution mutates conserved item/currency/value state.
   worker_action: REPORT_ONLY
 ```
 
@@ -330,11 +330,11 @@ cross_domain_finding:
 cross_domain_finding:
   id: GA-XD-03
   observed_in_domain: game-ability
-  target_owner: GAME-ITEM/DUR-03
+  target_owner: GAME-INTERACTION/world-owner
   severity: P1
-  evidence: docs/architecture/DUR-03_ITEM_TRANSACTION_AND_ANTI_DUPLICATION_CONTRACT.md + docs/architecture/GLOBAL_ARCHITECTURE_DECISION_REGISTER.md (canonical GAME-ITEM/DUR-03 ownership state)
-  conflict_or_gap: Conserved item/currency/value costs and consequences remain item/value-owner mutations; ability commit anchors do not create authority or distributed atomicity.
-  required_before: Ability execution mutates conserved item/currency/value state.
+  evidence: docs/architecture/GLOBAL_ARCHITECTURE_DECISION_REGISTER.md (canonical GAME-INTERACTION-01 required-for-alpha registration); PR #277@efa310c5c581f823ab65f497c3968a754cc0eb8f is noncanonical/BLOCKED proposal evidence only
+  conflict_or_gap: Teleport/push/pull/occupancy/world-object consequences need an accepted owner legality/order/commit contract; GAME-ABILITY can route typed proposals only.
+  required_before: Movement/world-interaction consequences become executable.
   worker_action: REPORT_ONLY
 ```
 
