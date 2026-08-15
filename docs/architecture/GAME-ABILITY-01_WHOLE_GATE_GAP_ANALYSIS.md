@@ -1,14 +1,14 @@
 # GAME-ABILITY-01 — Whole-Gate Gap Analysis
 
-- Status: **WORKER CANDIDATE ANALYSIS / NONCANONICAL UNTIL ARCHITECTURE COORDINATOR AUDIT**
+- DecisionStatus: `CANDIDATE`
+- DeliveryStatus: `IN_REVIEW`
+- ImplementationStatus: `NOT_STARTED`
 - Date: 2026-08-15
 - Gate: `GAME-ABILITY-01`
 - Worker issue: #260
 - Worker branch: `docs/arch-b-game-ability-gap`
 - Trusted worker base: `main@088b46638ac014cd7928d6b0b75cee44902fe22c`
 - Canonical dependency re-read: `main@dc1eecae7952902bee3fb1e2d88aefc2be792cae`
-- DecisionStatus proposed by this analysis: **`CANDIDATE`**
-- ImplementationStatus: **`NOT_STARTED`**
 - Runtime/client/protocol/content/DDL/Platform/production authority: **NONE**
 - Merge authority: **ARCHITECTURE_COORDINATOR_ONLY**
 
@@ -54,7 +54,7 @@ The closure must preserve, not reopen:
 - typed cooldown/charge state and `ConditionDefinition != ConditionInstance`, deterministic stack/conflict transitions and condition ticks re-entering the authoritative pipeline;
 - staged deterministic damage/heal composition, separate damage/heal semantics, SIM-owned RNG identity and bounded reactive descendants;
 - a small typed effect-family vocabulary, domain-owned cross-domain transitions, no generic state patch and Reference catalogue metadata separate from executable content/effect vocabulary;
-- FND-03 one-writer/order/generation authority **plus explicit repeated-timer catch-up policy/backlog/fairness semantics** and FND-04 fencing;
+- FND-03 one-writer/order/generation authority **plus explicit repeated-timer catch-up policy/backlog/fairness semantics, including the non-semantic-only `SKIP_TO_LATEST` restriction**, and FND-04 fencing;
 - accepted SIM-DETERMINISM arithmetic/RNG/order/replay/revision semantics;
 - accepted DUR-04 deterministic content and capability-bounded proposal-only scripting;
 - GAME-ITEM/DUR-03 conservation and idempotency for item/currency/value consequences;
@@ -77,7 +77,9 @@ The worker consumed the following repository truth as read-only input:
 - `FND-03_RUNTIME_LIFECYCLE_FAILURE_AND_REPLAY_ANALYSIS_BASELINE.md`, especially the accepted repeated-timer catch-up policy section;
 - accepted FND-04, GAME-CHANNEL-01, GAME-CHAR-01, GAME-ITEM-01, DUR-02/DUR-03/DUR-04, SIM-DETERMINISM-01 and ANL-01 constraints as applicable;
 - `RESOURCE_LIMITS_REGISTRY.json` as the repository mechanism for hard implementation limits;
-- `MULTI_AGENT_ARCHITECTURE_ORCHESTRATION.md` for required structured cross-domain findings;
+- `MULTI_AGENT_ARCHITECTURE_ORCHESTRATION.md` for required structured cross-domain findings and canonical status axes;
+- `GLOBAL_ARCHITECTURE_DECISION_REGISTER.md` for canonical status/ownership of still-unaccepted GAME-AI-01, GAME-INTERACTION-01 and ALPHA-CLIENT-01 gates;
+- exact blocked sibling PR heads only as explicitly **noncanonical proposal evidence**, never as accepted repository architecture;
 - coordinator-owned horizon/register/current-status files as read-only context.
 
 No external source is used to promote Reference behavior or claim runtime implementation.
@@ -89,7 +91,7 @@ No external source is used to promote Reference behavior or claim runtime implem
 | Typed effect pipeline | definitions are versioned data; invocation produces bounded typed proposals; only authoritative owner commits | every closure rule re-enters the same plan/validation/commit authority | NO |
 | Targeting and legality | target discovery is deterministic, authoritative and separate from legality; no hidden effect-stage retarget | future/reaction occurrences either reuse an explicitly retained target policy or invoke the same bounded resolver at a declared anchor | NO |
 | Cast/channel/commit | explicit lifecycle, logical primary commit, named ancillary anchors, no hidden rollback, channel pulses are bounded occurrences | delayed/periodic work uses the same occurrence/commit semantics; committed parents are never erased by child failure | NO |
-| FND-03 repeated timers | each behavior-affecting repeated timer family declares catch-up policy; periodic combat/damage/healing must select one; run-each catch-up is bounded/fair | GAME-ABILITY must bind catch-up semantics per applicable ability/condition family rather than delegate to scheduler convenience | NO |
+| FND-03 repeated timers | each behavior-affecting repeated timer family declares catch-up policy; periodic combat/damage/healing must select one; run-each catch-up is bounded/fair; `SKIP_TO_LATEST` is only for explicitly non-semantic maintenance/AI-think-like work where skipping cannot alter required gameplay outcomes | GAME-ABILITY must bind catch-up semantics per applicable family and cannot use skip-to-latest to discard required gameplay ticks | NO |
 | Cooldown/charge/condition | typed owner-local state, deterministic transitions, condition ticks re-enter pipeline, persistence survival deferred | whole gate needs declaration/continuation boundary, not persistence schema | NO |
 | Damage/heal composition | staged read-only calculation, explicit RNG anchors, bounded reactive descendants | general proc/trigger semantics extend the same descendant model without creating event-bus mutation | NO |
 | Effect families/catalogue | small typed vocabulary; foreign invariants stay with owning domains; catalogue is provenance metadata | whole gate preserves typed domain routing and refuses invented global atomicity | NO |
@@ -102,7 +104,7 @@ No external source is used to promote Reference behavior or claim runtime implem
 | ID | Gap | Owner | Decide now? | Whole-gate architecture | Executable/parity impact | Treatment |
 |---|---|---|---:|---|---|---|
 | `GA-GAP-01` | general delayed/periodic/future mutating occurrence semantics | GAME-ABILITY | YES | `ARCH-BLOCKER` | blocks timers/ticks/channels/delays | one bounded future-occurrence envelope re-enters accepted pipeline |
-| `GA-GAP-01A` | repeated-timer catch-up/coalescing/backlog/fairness semantics | GAME-ABILITY semantic policy consuming FND-03 | YES | `ARCH-BLOCKER` | blocks periodic combat/damage/healing and other repeated authoritative timers | each family selects explicit FND-03-compatible policy; run-each is hard-bounded/fair; no unbounded catch-up storm |
+| `GA-GAP-01A` | repeated-timer catch-up/coalescing/backlog/fairness semantics | GAME-ABILITY semantic policy consuming FND-03 | YES | `ARCH-BLOCKER` | blocks periodic combat/damage/healing and other repeated authoritative timers | each family selects explicit FND-03-compatible policy; run-each is hard-bounded/fair; `SKIP_TO_LATEST` is forbidden for required gameplay-affecting ticks |
 | `GA-GAP-02` | proc/trigger/reactive ordering, lineage and cycle prevention | GAME-ABILITY + SIM | YES | `ARCH-BLOCKER` | blocks safe proc/reaction implementation | deterministic descendant generation, explicit re-entry and bounded lineage |
 | `GA-GAP-03` | plan partition, partial failure and cross-domain atomicity boundary | GAME-ABILITY + affected domain owners | YES for boundary | `ARCH-BLOCKER` | blocks multi-effect mechanics | validate owner-local group before commit; explicit sub-occurrences; no invented distributed transaction |
 | `GA-GAP-04` | continuation across logout/reconnect/recovery/transfer | GAME-ABILITY declaration + FND/GAME-CHANNEL/DUR/Character owners | YES for declaration; NO for exact policy | undeclared path blocks architecture | affected mechanic blocked | explicit continuation policy binding; no silent default |
@@ -115,8 +117,8 @@ No external source is used to promote Reference behavior or claim runtime implem
 | `GA-GAP-11` | physical schema/types/scheduler/Wasmtime | DUR-04/tooling/runtime | NO | not blocker | implementation-specific | semantic contract only |
 | `GA-GAP-12` | persistence representation | DUR-02 + owning domain | NO | not blocker | required when survival accepted | report-only dependency |
 | `GA-GAP-13` | protocol result/error/prediction encoding | FND-02/client | NO | not blocker | integration | semantic authority only |
-| `GA-GAP-14` | AI selection/use/spawn behavior | GAME-AI-01 | NO | not blocker | AI integration | same invocation pipeline, foreign decision policy |
-| `GA-GAP-15` | movement/world interaction execution | GAME-INTERACTION/world owner | NO | not blocker | affected mechanics fail closed | typed proposal only |
+| `GA-GAP-14` | AI selection/use/spawn behavior | GAME-AI-01 | NO | not blocker | AI integration | registered future owner; no noncanonical proposal is treated as accepted |
+| `GA-GAP-15` | movement/world interaction execution | GAME-INTERACTION/world owner | NO | not blocker | affected mechanics fail closed | registered future owner; typed proposal only until accepted owner contract |
 
 ## Closure decision A — future occurrences
 
@@ -135,12 +137,12 @@ Conceptual policies are:
 - `DEADLINE_STATE`;
 - `RUN_EACH_BOUNDED`;
 - `COALESCE_ELAPSED`;
-- `SKIP_TO_LATEST`;
+- `SKIP_TO_LATEST` — only for explicitly non-semantic maintenance/AI-think-like work where skipping cannot alter required gameplay outcomes;
 - `EXPIRE_OR_CANCEL`.
 
 A later accepted equivalent is possible only if it states the same semantic choice and hard bounds explicitly.
 
-Periodic combat, damage and healing must select the policy in the owning ability/condition/ruleset semantics. `RUN_EACH_BOUNDED` requires hard backlog/work bounds, fair carry-over of overdue work and participation in the normal per-scope deterministic work budget. It may not execute unlimited missed ticks in one turn or recursively schedule zero-delay work around the budget. Coalesced/skipped/expired/deferred work must be observable/replayable enough to explain player-visible timing behavior. Numeric backlog/time ceilings remain measured registry evidence.
+Periodic combat, damage and healing must select the policy in the owning ability/condition/ruleset semantics. `SKIP_TO_LATEST` is **not** a legal way to discard required gameplay-affecting periodic ability/combat/damage/healing occurrences. `RUN_EACH_BOUNDED` requires hard backlog/work bounds, fair carry-over of overdue work and participation in the normal per-scope deterministic work budget. It may not execute unlimited missed ticks in one turn or recursively schedule zero-delay work around the budget. Coalesced/expired/deferred work and any permitted non-semantic skipped work must be observable/replayable enough to explain relevant player-visible timing behavior. Numeric backlog/time ceilings remain measured registry evidence.
 
 This is a gameplay-semantic decision, not a timer-wheel implementation choice.
 
@@ -182,7 +184,7 @@ Exact numeric ceilings are not frozen here. Missing required limits block implem
 
 ## Closure decision F — client presentation and prediction
 
-Client prediction/presentation is non-authoritative UX over client-safe information. The server owns target legality/membership, interruption ordering, resource/cooldown/condition commits, final damage/heal/effect results, RNG/proc outcomes and authoritative revisions. Client state reconciles to server results. Exact messages, prediction algorithms and UI are downstream FND-02/ALPHA-CLIENT decisions.
+Client prediction/presentation is non-authoritative UX over client-safe information. The server owns target legality/membership, interruption ordering, resource/cooldown/condition commits, final damage/heal/effect results, RNG/proc outcomes and authoritative revisions. Client state reconciles to server results. Exact messages, prediction algorithms and UI are downstream FND-02/ALPHA-CLIENT decisions. The ALPHA-CLIENT gate remains registered but its current PR is blocked/noncanonical, so this analysis consumes no blocked client proposal as accepted architecture.
 
 ## Closure decision G — executable-fixture prerequisites
 
@@ -217,7 +219,8 @@ Benefits: replayability, safer content scripting, deterministic periodic/proc be
 ## Risks and mitigations
 
 - **Catch-up damage/heal storms:** explicit FND-03-compatible policy per family; hard backlog/work bound; fairness; no unbounded same-turn recursion.
-- **Silent tick loss/coalescing:** skip/coalesce/expiry only when owning semantics select it; observable disposition.
+- **Silent required tick loss:** `SKIP_TO_LATEST` is limited to non-semantic work where skipping cannot alter required gameplay outcomes; required gameplay-affecting periodic work must use another valid policy.
+- **Coalescing semantic drift:** coalesce only when owning gameplay semantics prove deterministic equivalence; observable disposition.
 - **Primitive/policy proliferation:** small core effect vocabulary plus composition/domain routing and bounded DUR-04 extension.
 - **Reaction graphs expensive:** static/runtime budgets and deterministic lineage/order.
 - **Safety limits alter valid gameplay:** measured safety boundaries + static/content validation, not hidden balance knobs.
@@ -225,6 +228,7 @@ Benefits: replayability, safer content scripting, deterministic periodic/proc be
 - **Cross-domain plan looks atomic:** owner-scoped commits + fail-closed stronger-atomicity requirement.
 - **Client prediction leaks authority:** client-safe projection + reconciliation.
 - **Architecture acceptance misreported as parity:** separate status/evidence axes and canonical A=`0/4` fail-closed truth.
+- **Noncanonical sibling evidence mistaken as accepted:** canonical register is the source of gate ownership/status; exact sibling PR/head is labeled noncanonical when referenced for proposal context.
 
 ## Player, producer and operations impact
 
@@ -236,7 +240,7 @@ Benefits: replayability, safer content scripting, deterministic periodic/proc be
 
 ## Recommendation
 
-Send the companion whole-gate candidate to Architecture Coordinator audit after consuming canonical A and repairing the two review findings. Owner acceptance, if later granted, freezes only semantic architecture. `ImplementationStatus` stays `NOT_STARTED`; Reference facts/parity remain per-case evidence-owned.
+Send the companion whole-gate candidate to Architecture Coordinator audit after canonical A and the current review repairs are incorporated. Owner acceptance, if later granted, freezes only semantic architecture. `ImplementationStatus` stays `NOT_STARTED`; Reference facts/parity remain per-case evidence-owned.
 
 ## Future impact
 
@@ -267,7 +271,7 @@ Exact numeric/gameplay/physical decisions classified NO are deliberately deferre
 
 | Dependency | Current relationship | GAME-ABILITY consumes | Outside this worker | Blocks architecture? |
 |---|---|---|---|---:|
-| FND-03 | accepted upstream | one writer, order/generation, stale-work rejection, catch-up policy/backlog/fairness semantics | scheduler/queue internals and numeric limits | NO; binding constraint |
+| FND-03 | accepted upstream | one writer, order/generation, stale-work rejection, catch-up policy/backlog/fairness semantics including non-semantic-only skip | scheduler/queue internals and numeric limits | NO; binding constraint |
 | FND-04 | accepted | session/lease/fence/recovery authority | admission/reconnect | NO |
 | GAME-CHANNEL-01 | accepted adjacent | locality/transfer boundary | product transfer implementation | NO; unsupported paths fail closed |
 | GAME-CHAR-01 | accepted adjacent | character-state owner boundary | exact formulas/policy | NO |
@@ -277,22 +281,22 @@ Exact numeric/gameplay/physical decisions classified NO are deliberately deferre
 | SIM-DETERMINISM-01 | accepted | revision/numeric/RNG/order/time/replay envelope | exact formulas/RNG runtime | NO |
 | ANL-01 | accepted | audit/event boundary | concrete producer schemas | NO |
 | Reference manifest + canonical A | accepted evidence truth | immutable target + fail-closed 0/4 current state | evidence research/classification | NO architecture; YES parity |
-| GAME-AI-01 | sibling/future | server-origin invocation shares pipeline | AI selection/threat/spawn/path | NO |
-| GAME-INTERACTION/world | sibling/future | typed routed consequence | movement/world commit semantics | NO; affected mechanics blocked |
-| FND-02/ALPHA-CLIENT | owners | server authority/client reconciliation | wire/prediction UX | NO |
+| GAME-AI-01 | registered required-for-alpha; successor PR #276 is blocked/noncanonical | only future server-origin invocation boundary, not proposal semantics | AI selection/threat/spawn/path | NO; integration blocked until accepted owner contract |
+| GAME-INTERACTION/world | registered required-for-alpha; successor PR #277 is blocked/noncanonical | only future typed route boundary, not proposal semantics | movement/world commit semantics | NO; affected mechanics blocked |
+| FND-02/ALPHA-CLIENT | FND-02 accepted; ALPHA-CLIENT registered required-for-alpha, PR #273 blocked/noncanonical | server authority + future client reconciliation boundary | wire/prediction UX | NO; client integration blocked until accepted contract where required |
 | RESOURCE_LIMITS_REGISTRY | governance | required named bounds | measured values/tests | NO paper; YES executable |
 
 ## Whole-gate owner-acceptance prerequisites proposed
 
 1. no accepted partial baseline weakened;
 2. future occurrences/reactions use one typed bounded authoritative model;
-3. each behavior-affecting repeated timer family has explicit catch-up policy; periodic combat/damage/healing cannot inherit scheduler convenience; run-each backlog is bounded/fair;
+3. each behavior-affecting repeated timer family has explicit catch-up policy; periodic combat/damage/healing cannot inherit scheduler convenience; run-each backlog is bounded/fair; skip-to-latest cannot discard required gameplay outcomes;
 4. owner-scoped commit versus cross-domain workflow explicit;
 5. continuation obligation explicit, no persistence defaults;
 6. resource dimensions/failures mandatory without speculative maxima;
 7. client prediction presentation-only;
 8. architecture/implementation/Reference evidence separate;
-9. cross-domain gaps reported in required structured form and not absorbed;
+9. cross-domain gaps reported in required structured form with canonical or explicitly noncanonical exact evidence;
 10. canonical Agent-A result is consumed as 0/4 without promotion;
 11. exact-head checks/self-review/independent review clean.
 
@@ -304,7 +308,7 @@ cross_domain_finding:
   observed_in_domain: game-ability
   target_owner: FND-03/DUR-02/recovery-persistence
   severity: P1
-  evidence: docs/architecture/FND-03_RUNTIME_LIFECYCLE_FAILURE_AND_REPLAY_ANALYSIS_BASELINE.md + docs/architecture/DUR-02 durability contracts
+  evidence: docs/architecture/FND-03_RUNTIME_LIFECYCLE_FAILURE_AND_REPLAY_ANALYSIS_BASELINE.md + docs/architecture/GLOBAL_ARCHITECTURE_DECISION_REGISTER.md (canonical DUR-02 accepted persistence gate)
   conflict_or_gap: Surviving ability state needs owner-defined representation, fencing and restoration; GAME-ABILITY defines semantic continuation only.
   required_before: Any ability state is claimed to survive recovery/restart/handoff.
   worker_action: REPORT_ONLY
@@ -316,8 +320,8 @@ cross_domain_finding:
   observed_in_domain: game-ability
   target_owner: GAME-INTERACTION/world-owner
   severity: P1
-  evidence: GAME-INTERACTION-01 owner contracts + GAME-ABILITY cross-domain routing boundary
-  conflict_or_gap: Teleport/push/pull/occupancy/world-object consequences need owner legality/order/commit semantics.
+  evidence: docs/architecture/GLOBAL_ARCHITECTURE_DECISION_REGISTER.md (canonical GAME-INTERACTION-01 required-for-alpha registration); PR #277@efa310c5c581f823ab65f497c3968a754cc0eb8f is noncanonical/BLOCKED proposal evidence only
+  conflict_or_gap: Teleport/push/pull/occupancy/world-object consequences need an accepted owner legality/order/commit contract; GAME-ABILITY can route typed proposals only.
   required_before: Movement/world-interaction consequences become executable.
   worker_action: REPORT_ONLY
 ```
@@ -328,7 +332,7 @@ cross_domain_finding:
   observed_in_domain: game-ability
   target_owner: GAME-ITEM/DUR-03
   severity: P1
-  evidence: docs/architecture/DUR-03_ITEM_TRANSACTION_AND_ANTI_DUPLICATION_CONTRACT.md + GAME-ITEM contracts
+  evidence: docs/architecture/DUR-03_ITEM_TRANSACTION_AND_ANTI_DUPLICATION_CONTRACT.md + docs/architecture/GLOBAL_ARCHITECTURE_DECISION_REGISTER.md (canonical GAME-ITEM/DUR-03 ownership state)
   conflict_or_gap: Conserved item/currency/value costs and consequences remain item/value-owner mutations; ability commit anchors do not create authority or distributed atomicity.
   required_before: Ability execution mutates conserved item/currency/value state.
   worker_action: REPORT_ONLY
@@ -340,8 +344,8 @@ cross_domain_finding:
   observed_in_domain: game-ability
   target_owner: GAME-AI-01/world-owner
   severity: P2
-  evidence: GAME-AI-01 contracts + GAME-ABILITY invocation boundary
-  conflict_or_gap: AI may originate invocation but target-choice strategy, threat/aggro, spawn/path and AI-control state remain foreign authority.
+  evidence: docs/architecture/GLOBAL_ARCHITECTURE_DECISION_REGISTER.md (canonical GAME-AI-01 required-for-alpha registration); PR #276@64d92dfb4a933115f0b59814be54e2f0d51edbe4 is noncanonical/BLOCKED proposal evidence only
+  conflict_or_gap: AI may originate invocation in future, but target-choice strategy, threat/aggro, spawn/path and AI-control state require an accepted GAME-AI owner contract and remain foreign authority.
   required_before: Authoritative AI-origin ability use is implemented.
   worker_action: REPORT_ONLY
 ```
@@ -352,7 +356,7 @@ cross_domain_finding:
   observed_in_domain: game-ability
   target_owner: SIM-DETERMINISM/ruleset/Reference-evidence
   severity: P1
-  evidence: docs/architecture/SIM-DETERMINISM-01_AUTHORITATIVE_SIMULATION_CONTRACT.md + canonical Reference evidence
+  evidence: docs/architecture/SIM-DETERMINISM-01_AUTHORITATIVE_SIMULATION_CONTRACT.md + docs/agents/evidence/OTV2-20260815-ability-combat-reference-continuity.md on canonical main@dc1eecae7952902bee3fb1e2d88aefc2be792cae
   conflict_or_gap: GAME-ABILITY fixes staging but not exact numeric formulas, RNG algorithms/probabilities or Reference draw/order facts.
   required_before: Formula/RNG-dependent execution or Reference parity is claimed.
   worker_action: REPORT_ONLY
@@ -364,8 +368,8 @@ cross_domain_finding:
   observed_in_domain: game-ability
   target_owner: FND-02/ALPHA-CLIENT-01
   severity: P1
-  evidence: docs/architecture/FND-02_PROTOCOL_OTERYN_V1_CONTRACT.md + ALPHA-CLIENT-01 contract
-  conflict_or_gap: Protocol/client owners must realize authoritative results/errors/reconciliation/prediction UX without moving authority client-side.
+  evidence: docs/architecture/FND-02_PROTOCOL_OTERYN_V1_CONTRACT.md + docs/architecture/GLOBAL_ARCHITECTURE_DECISION_REGISTER.md (canonical ALPHA-CLIENT-01 required-for-alpha registration); PR #273@e2eb37e1d099d25dd87ebc02a68c111dd8dd91ac is noncanonical/BLOCKED proposal evidence only
+  conflict_or_gap: Protocol/client owners must realize authoritative results/errors/reconciliation/prediction UX without moving authority client-side; current ALPHA-CLIENT proposal is not canonical.
   required_before: Native client gameplay exposes ability outcomes/prediction/reconciliation.
   worker_action: REPORT_ONLY
 ```
@@ -388,8 +392,8 @@ cross_domain_finding:
   observed_in_domain: game-ability
   target_owner: ANL-01/producer-registry
   severity: P2
-  evidence: docs/architecture/ANL-01_GAME_EVENT_AND_AUDIT_FOUNDATION_CONTRACT.md + GAME_EVENT_FOUNDATION_REGISTRY.json
-  conflict_or_gap: Analytics should receive bounded occurrence/reaction/revision/commit/catch-up evidence as producer-owned events while staying read-only.
+  evidence: docs/architecture/ANL-01_GAME_EVENT_AND_AUDIT_FOUNDATION_CONTRACT.md + docs/architecture/GLOBAL_ARCHITECTURE_DECISION_REGISTER.md (canonical ANL-01 accepted observational boundary)
+  conflict_or_gap: Analytics should receive bounded occurrence/reaction/revision/commit/catch-up evidence as producer-owned events while staying read-only; concrete GAME-ABILITY producer event registration is not owned by this gate.
   required_before: Concrete GAME-ABILITY analytics/audit coverage is claimed complete.
   worker_action: REPORT_ONLY
 ```
@@ -415,7 +419,7 @@ This analysis deliberately does **not** decide:
 
 ## Worker handoff
 
-This analysis supports the companion candidate. Both remain proposals until exact-head Architecture Coordinator audit and independent review. Canonical A has been consumed without changing its 0/4 fail-closed truth.
+This analysis supports the companion candidate. Both remain `CANDIDATE / IN_REVIEW / NOT_STARTED` until exact-head Architecture Coordinator audit and independent review. Canonical A has been consumed without changing its 0/4 fail-closed truth.
 
 `MERGE_AUTHORITY: ARCHITECTURE_COORDINATOR_ONLY`
 `IMPLEMENTATION_AUTHORITY: NONE`
