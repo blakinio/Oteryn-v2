@@ -73,6 +73,8 @@ The gate ID remains `GAME-INTERACTION-01`. This task does not create a new globa
 - For nested cascades the parent source is the stable parent `InteractionChildOccurrenceRef`, yielding a bounded deterministic ancestry path without a global UUID.
 - Runtime ownership generation and mutable state revisions fence application/completion but do not by themselves create a new logical child identity on failover.
 - Cross-owner ambiguity surfaces as `PENDING` and reconciles the same child/foreign-owner operation; a new client `CommandRef` for the same intent is forbidden until the prior occurrence is proven terminal.
+- Foundation `STALE_GENERATION` applies to rejection of the stale completion/application itself; if the underlying delegated operation may already have committed, the child remains separately `PENDING` under same-occurrence reconciliation.
+- Foundation `CANCELLED` is emitted only after documented cleanup/retirement; an ambiguous cancel/commit race remains `PENDING` rather than being prematurely labelled cancelled.
 
 ### UNKNOWN / explicitly outside this task
 
@@ -124,7 +126,8 @@ This successor MUST NOT decide, implement or mutate:
 - New draft PR: #277.
 - Predecessor: issue #262 / draft PR #269 / `docs/arch-d-game-interaction`.
 - Successor branch: `docs/arch-d-game-interaction-successor-r1`.
-- This task starts its own bounded repair budget at zero. It does not reset or reinterpret the exhausted predecessor's budget.
+- This task has used one repair cycle for the current successor gate after self-review separated stale-completion application failure from underlying delegated-operation outcome and aligned cancellation semantics with the Foundation vocabulary.
+- The predecessor remains at its independent exhausted count of three; this successor repair does not modify/reset that count.
 
 ### Intended semantic shape
 
@@ -146,19 +149,17 @@ The contract candidate defines tuple/path equality and lifecycle semantics while
 
 ### Public result shape
 
-The successor defines caller-visible semantic state:
-
 ```text
 COMMITTED | PENDING | REJECTED
 ```
 
-`PENDING` is not permission to issue a second logical attempt. It is an explicit reconciliation state for the same source occurrence/child/foreign-owner operation.
+`PENDING` is not permission to issue a second logical attempt. It is explicit reconciliation state for the same source occurrence/child/foreign-owner operation.
 
 ## Validation
 
 ### Focused
 
-- source-contract consistency review: final exact-head review pending
+- source-contract consistency review: final exact-head review pending after successor repair cycle 1
 - result: pending
 
 ### Component/integration
@@ -184,7 +185,7 @@ COMMITTED | PENDING | REJECTED
 
 - exact head: recorded externally after final metadata commit
 - method/reviewer: GAME-INTERACTION SUCCESSOR ARCHITECTURE AGENT D-R1
-- material findings: pending
+- material findings: one Foundation category/partial-mutation ambiguity found on first pass and repaired in successor repair cycle 1; final pass pending
 - verdict: pending
 
 ## Independent review
@@ -197,7 +198,7 @@ COMMITTED | PENDING | REJECTED
 
 ## PR and closeout
 
-- changed-file review: pending
+- changed-file review: pending final exact-head pass
 - unresolved review threads: pending
 - related/superseded PRs: predecessor draft PR #269 remains open/read-only to this worker
 - protected auto-merge: forbidden
@@ -207,7 +208,7 @@ COMMITTED | PENDING | REJECTED
 ## Context checkpoint
 
 ```yaml
-last_progress: successor artifacts authored and draft PR #277 created; final metadata committed before exact-head validation
+last_progress: successor repair cycle 1 aligned stale-completion and cancellation ambiguity with Foundation category semantics; metadata frozen for exact-head validation
 status: validating
 branch: docs/arch-d-game-interaction-successor-r1
 head_sha: null
@@ -224,12 +225,12 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 0
+repair_cycles_for_current_gate: 1
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: ARCHITECTURE_COORDINATOR_AUDIT_AFTER_WORKER_VALIDATION
 blocker: null
-next_action: perform full exact-head diff self-review and exact-head CI validation
+next_action: perform final full exact-head diff self-review and exact-head CI validation
 ```
 
 `MERGE_AUTHORITY: ARCHITECTURE_COORDINATOR_ONLY`  
