@@ -8,14 +8,14 @@ status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: tools/OTV2-20260815-tibia-reference-harvest
-pr: null
+pr: 283
 base_sha: 0cfd8d8ee3ecf4fbb1cb76cbc9680b53a152e3c1
-head_sha: null
+material_head_sha: 54165596f98b66c3164cccab881bb53f0655cb2b
 final_head_sha: null
 final_head_frozen_at: null
 owner: chatgpt-github
 created_at: 2026-08-15T23:24:00+02:00
-updated_at: 2026-08-15T23:24:00+02:00
+updated_at: 2026-08-15T23:51:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -52,9 +52,9 @@ Move the durable, proprietary-data-free worldmap normalization/comparison tool a
 - [x] The six safe worldmap reconstruction files are copied from Platform PR #1006 without proprietary assets or live-client material.
 - [x] Durable evidence records what was and was not migrated from PRs #1006 and #988.
 - [x] No Platform-specific GitHub runner workflow, credential path, login automation, VNC path, gdb/ptrace workflow, private-message action, screenshot/base64 evidence or proprietary binary is migrated.
-- [ ] Focused Python compile/unit/example validation passes on the exact PR head.
-- [ ] Oteryn-v2 merge-gate/governance/CodeQL checks pass on the exact PR head.
-- [ ] Whole-diff self-review finds no material ownership, provenance or safety defect.
+- [x] Focused Python compile/unit/example validation passes on material head `54165596f98b66c3164cccab881bb53f0655cb2b`.
+- [ ] Oteryn-v2 required exact-final-head merge-gate/governance/CodeQL checks pass after this lifecycle checkpoint commit.
+- [x] Whole-diff self-review found no remaining material ownership, provenance or safety defect after four automated-review findings were repaired.
 - [ ] Merge and task closeout are terminal before the Platform source research PRs are closed/deleted.
 
 ## Excluded scope
@@ -69,19 +69,30 @@ Move the durable, proprietary-data-free worldmap normalization/comparison tool a
 
 The migrated worldmap tool remains fail-closed: unobserved data is distinct from empty data, unknown client-to-server ID mappings remain `UNMAPPED`, and the OTBM export plan refuses readiness when observed static data lacks proven mapping or ground identity.
 
+Automated review on initial head `a6ed5231913bb5f59a1f80c2accf69ae2fdb2e8b` found four material edge cases. Repair head `54165596f98b66c3164cccab881bb53f0655cb2b` now:
+
+- skips explicit `observed:false` placeholders in OTBM export readiness;
+- prevents an unobserved update from erasing previously observed evidence;
+- rejects non-empty incoming `entities` until entity merge semantics are defined;
+- rejects JSON booleans from integer coordinate/content fields.
+
+Regression tests cover all four repairs and every corresponding review thread is resolved.
+
 The current Platform-side official Linux reference harness is not copied by this task. It is classified as infrastructure/reference execution tooling rather than native product code. Only its durable client/game findings are recorded in the evidence document.
 
 ## Validation
 
 ### Focused
 
-- command/run: `.github/workflows/tibia-reference-tools.yml`
-- result: pending exact-head run
+- command/run: `Tibia Reference Tooling` run `31910093544`, job `95073747757`
+- exact head: `54165596f98b66c3164cccab881bb53f0655cb2b`
+- result: PASS
 
 ### Component/integration
 
-- command/run: deterministic synthetic worldmap validation only
-- result: pending exact-head run
+- command/run: deterministic synthetic worldmap compile, unit suite and CLI validation
+- exact head: `54165596f98b66c3164cccab881bb53f0655cb2b`
+- result: PASS
 
 ### E2E
 
@@ -90,19 +101,17 @@ The current Platform-side official Linux reference harness is not copied by this
 
 ### Exact-head CI
 
-- final head: pending
-- trigger source: pull_request
-- workflow/run/job: pending
-- runner assignment: GitHub-hosted
-- classification: migration/reference-tooling
-- result: pending
+- material head: `54165596f98b66c3164cccab881bb53f0655cb2b`
+- observed PASS: Merge authority audit, merge-gate scope/governance/Rust policy/Rust supply chain/Linux workspace/dependency review, CodeQL actions/python, standalone CodeQL and focused worldmap reconstruction.
+- remaining before final freeze: fresh pull-request generation for the lifecycle checkpoint commit, including Agent governance with the corrected current PR body and any repository-required Windows job.
+- result: PENDING FINAL GENERATION
 
 ## Self-review
 
-- exact head: pending
-- method/reviewer: implementing/coordinating agent
-- material findings: pending
-- verdict: pending
+- exact head: `54165596f98b66c3164cccab881bb53f0655cb2b`
+- method/reviewer: whole-diff implementing/coordinating self-review recorded as PR review `4944784918`
+- material findings: none remaining after repair
+- verdict: PASS
 
 ## Independent review
 
@@ -114,37 +123,44 @@ The current Platform-side official Linux reference harness is not copied by this
 
 ## PR and closeout
 
-- changed-file review: pending
-- unresolved review threads: pending
+- PR: #283
+- changed-file review: PASS on material head after repair
+- unresolved review threads: 0
 - related/superseded PRs: Platform #1006 and #988 remain open until destination/Platform harvest is merged
-- protected auto-merge: pending
+- protected auto-merge: pending final exact-head generation
 - merge commit/result: pending
 - ownership release: pending
 
 ## Context checkpoint
 
 ```yaml
-last_progress: ownership audit completed and clean migration package prepared
+last_progress: four automated-review findings repaired and material-head validation/self-review passed
 status: validating
 branch: tools/OTV2-20260815-tibia-reference-harvest
-head_sha: null
-pr: null
+pr: 283
+material_head_sha: 54165596f98b66c3164cccab881bb53f0655cb2b
 final_head_sha: null
 final_head_frozen_at: null
 ci_trigger_source: pull_request
-ci_check_generation: initial
-ci_checks_for_current_head: 0
-ci_run_ids: []
-ci_job_ids: []
-runner_assignment_state: unknown
+ci_check_generation: lifecycle-checkpoint-refresh
+ci_checks_for_current_head: 1
+ci_run_ids:
+  - 31910093544
+  - 31910093485
+  - 31910093480
+ci_job_ids:
+  - 95073747757
+  - 95073860301
+  - 95073747527
+runner_assignment_state: assigned
 terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 0
-ci_recovery_actions_for_current_head: 0
+repair_cycles_for_current_gate: 1
+ci_recovery_actions_for_current_head: 1
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: Create the destination PR, run the focused reference-tool validation and repository merge gate, then merge before closing the Platform source research PRs.
+next_action: Validate the fresh pull-request generation created by this task checkpoint commit; if all required checks pass and no new review finding exists, merge PR #283 and archive/release this task before Platform source PR #1006 is closed.
 ```
