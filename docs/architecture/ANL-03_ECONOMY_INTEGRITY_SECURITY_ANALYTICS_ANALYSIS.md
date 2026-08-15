@@ -38,12 +38,14 @@ ANL-03 may discover evidence of a defect, exploit, suspicious pattern or economy
 - SIM-DETERMINISM-01 makes deterministic replay/state hashes read-only evidence, preserves exact build/protocol/World Bundle provenance and prohibits replay from repairing live state.
 - GAME-VISION-01 accepts conservation before tuning, measurable value provenance and economy-health evidence in world-age/population context.
 - `GAME_EVENT_FOUNDATION_REGISTRY.json.event_types` is intentionally empty at the trusted base; concrete domain event families remain producer-owned.
+- Accepted client crash/disconnect privacy baselines make client-originated diagnostics optional, define diagnostic opt-out as non-suspicious/non-adverse and keep server-generated evidence sufficient for investigation without optional client diagnostics.
 
 ### DERIVED
 
 - ANL-03 can define detector/evidence/case semantics now, but concrete detector coverage cannot become production-valid until DUR/gameplay/FND owners register the necessary event families and evidence fields.
 - A deterministic invariant violation and a statistical anomaly are different epistemic classes and must not share one undifferentiated “cheat score”.
 - Missing durable evidence can be a data-quality/integrity incident; it is not automatically proof that a player caused the problem.
+- Missing, opted-out or unavailable optional client diagnostics are evidence-availability/quality facts only; they must never become a suspiciousness feature or adverse subject inference.
 
 ## 3. Decision timing
 
@@ -118,6 +120,21 @@ A behavioral anomaly score remains a hypothesis even with high confidence; it is
 ### 5.4 Operational observability
 
 Low-cardinality service health may contextualize detector gaps, outbox lag or incident timing. High-cardinality player/item/session IDs remain prohibited as ordinary Prometheus labels.
+
+### 5.5 Optional client diagnostics are non-adverse evidence availability
+
+If an ANL-03 detector, signal, case or investigator can consume optional client-originated evidence — including client diagnostics, an OS forensic capsule, Launcher telemetry, Guardian telemetry, or a crash/network forensic package — that source remains supplemental and subject to its owning privacy/consent contract.
+
+The following invariant is mandatory:
+
+- diagnostics opt-out is not suspicious;
+- absence, opt-out, disabled collection, unavailability, delay, expiry or non-submission of optional diagnostics is not adverse evidence and must not be treated as guilt evidence;
+- disabling or withholding optional diagnostics **MUST NOT** increase an abuse/risk score, signal severity, confidence, enforcement priority or reviewer/triage priority;
+- optional-diagnostic availability/completeness/quality may be recorded only as an evidence availability/quality dimension and may constrain what conclusions can be supported; missing optional diagnostics can reduce usable evidence or yield an inconclusive result but can never strengthen an adverse inference;
+- missingness/opt-out itself must not be transformed into a detector feature, anti-cheat signal, correlation bonus or suspiciousness indicator;
+- server-generated/authoritative evidence must remain sufficient to investigate and triage the incident/case without optional client diagnostics.
+
+Presence of an optional diagnostic package may corroborate or refute a hypothesis according to its producer-owned provenance and trust class. Its absence has no converse adverse meaning. ANL-03 does not define, expand or modify any producer schema by naming these optional evidence classes.
 
 ## 6. Integrity/economy analytical taxonomy
 
@@ -253,6 +270,8 @@ status/disposition linkage
 
 Severity estimates possible impact/triage priority. Confidence/score estimates detector evidence under its documented semantics. Neither field means guilt or grants enforcement authority.
 
+When optional client diagnostics are a possible source, the source completeness/quality vector may record their availability/quality only. Missing or opted-out optional diagnostics cannot increase severity/priority, confidence/score or any adverse classification and cannot be used as guilt evidence.
+
 Repeated evaluation of identical evidence should be deduplicable/coalescible without deleting the original signal/evidence lineage.
 
 ## 11. Deterministic versus statistical conclusions
@@ -294,9 +313,12 @@ SIGNAL_EMITTED
 
 - original signals are immutable historical evidence except for separately versioned annotation/status fields;
 - grouping signals into a case preserves every source signal reference;
-- evidence additions record actor/time/source and do not rewrite original detector output;
+- every material lifecycle transition and reviewer/operator action appends an immutable ordered audit record; a mutable latest-status projection may exist for convenience but cannot be the only history;
+- audited actions include at minimum signal triage, case open, assignment/reassignment when assignment exists, evidence addition/removal/supersession, state transition, close, reopen, referral and final disposition;
+- each audit record carries the privacy-appropriate reviewer/operator identity or pseudonymous privileged identity, role/capability, timestamp and ordered occurrence, previous state where applicable, new state/action, reason/rationale where applicable, linked evidence references, detector/rule/model/config revision where relevant, and case/correlation identity;
+- evidence removal or supersession changes the active evidence set without erasing the historical audit event or original evidence reference; underlying evidence retention/deletion remains governed by its owning privacy/retention/legal-hold policy;
+- false-positive dispositions and reviewer actions remain reconstructible and auditable from the immutable history;
 - privileged identity resolution is separately authorized and access-audited;
-- human disposition records reviewer identity/role, timestamp, rationale category and evidence references;
 - enforcement/remediation outcome may be linked by foreign reference but is not executed by ANL-03.
 
 ### Analytical disposition vocabulary
@@ -321,11 +343,11 @@ A conforming design requires:
 1. no automatic sanction, value mutation or gameplay effect from detector output;
 2. exact detector/rule/model/config revision retained with every signal;
 3. input evidence/checkpoint references retained within policy;
-4. human disposition and false-positive rationale auditable;
+4. every material reviewer action, lifecycle transition and false-positive disposition is preserved in immutable ordered case audit history;
 5. detector threshold/model changes create new versioned semantics rather than rewriting historical signals;
 6. suppression/allow-list policy, if later authorized, is versioned, scoped and auditable and cannot become a hidden enforcement bypass;
 7. false positives are measurable as detector-quality evidence where ground truth/reviewer disposition is suitable;
-8. missing evidence does not become negative proof or automatic exoneration;
+8. missing required authoritative/durable evidence may constrain the conclusion to inconclusive/data-quality; missing or opted-out optional client diagnostics are non-adverse and cannot increase score, confidence, severity, review/enforcement priority or guilt inference;
 9. a data-pipeline defect is classified separately from subject behavior;
 10. a reviewed false positive remains available according to its retention policy for detector evaluation; it is not silently deleted to improve reported accuracy.
 
@@ -368,6 +390,10 @@ The AnalyticsActorId-to-operational identity mapping remains separately protecte
 
 Fine location/timestamps and any later network/device facts are re-identification/security-sensitive context and require explicit purpose/retention/export controls. Ordinary economy-health analytics should use coarser aggregates.
 
+### Optional client diagnostic availability
+
+Optional client diagnostics remain governed by their owning consent/privacy contract. ANL-03 may record whether eligible evidence was available and its quality, but opt-out, non-collection or absence is never an adverse subject attribute and never grants broader collection, identity resolution, retention or access authority.
+
 ### Retention
 
 At minimum, separate finite profiles are required for:
@@ -376,10 +402,11 @@ At minimum, separate finite profiles are required for:
 - detector features/projections;
 - signals;
 - case evidence/annotations;
+- immutable case lifecycle/reviewer audit history;
 - privileged identity-resolution access logs;
 - exported evidence packages.
 
-Legal hold is an explicit authorized exception, never default unlimited retention.
+Legal hold is an explicit authorized exception, never default unlimited retention. Case-history immutability means recorded audit events cannot be rewritten into a latest-only narrative; it does not override an applicable authorized privacy deletion/anonymization requirement for referenced personal evidence.
 
 ## 16. Access/credential boundary
 
@@ -422,6 +449,7 @@ A detector may lag, pause, quarantine or fail. It may not block authoritative ga
 | Condition | Required ANL-03 behavior |
 |---|---|
 | Best-effort feature loss | mark detector input partial; no completeness-dependent conclusion |
+| Missing/opted-out/unavailable optional client diagnostics | record availability/quality only; no adverse evidence, no increase in score/confidence/severity/review or enforcement priority, no guilt inference; server-generated evidence path remains sufficient for investigation |
 | Durable audit checkpoint/event-set gap | stop/inconclusive for completeness-dependent invariant; emit pipeline-quality incident as appropriate |
 | Same EventId conflict | ANL evidence-integrity incident; no overwrite |
 | Unsupported durable schema | quarantine/reject per ANL-01; detector does not reinterpret |
@@ -440,8 +468,8 @@ A detector may lag, pause, quarantine or fail. It may not block authoritative ga
 - `FS-EVENT-DUPLICATE-DELIVERY`: **PASS** — one derived analytical effect per identical EventId.
 - `FS-EVENT-OUT-OF-ORDER`: **PASS** — bounded reconcile/defer, no fabricated provenance.
 - `FS-AUDIT-MUTATION-MISMATCH`: **PASS at analytical semantic level** — mismatch becomes named integrity/data-quality evidence and never silent repair; physical prevention remains DUR-02/03.
-- `FS-ANALYTICS-PRIVACY-POLICY`: **PASS** — missing purpose/privacy/retention/access blocks collection/projection/disclosure.
-- `FS-DETECTOR-FALSE-POSITIVE`: **PASS at candidate semantic level** — no auto-sanction/mutation; detector version, evidence, review and disposition remain auditable.
+- `FS-ANALYTICS-PRIVACY-POLICY`: **PASS** — missing purpose/privacy/retention/access blocks collection/projection/disclosure; optional diagnostic opt-out/absence remains non-adverse.
+- `FS-DETECTOR-FALSE-POSITIVE`: **PASS at candidate semantic level** — no auto-sanction/mutation; detector version, evidence, immutable case-transition/reviewer history and disposition remain auditable.
 - `FS-INVESTIGATION-MUTATION-ATTEMPT`: **DEFERRED_BY_ACCEPTED_GATE** for runtime proof to ANL-04/implementation; ANL-03 preserves read-only credential requirements.
 
 Architecture PASS does not claim runtime evidence.
@@ -469,7 +497,7 @@ Architecture PASS does not claim runtime evidence.
 - Must decide now: **YES**.
 - Blocks: safe security tooling and future ANL-04 AI composition.
 - Owner: ANL-03 for evidence workflow; sanction/GM/product action foreign.
-- Failure/security implication: false positive cannot directly become punitive mutation.
+- Failure/security implication: false positive cannot directly become punitive mutation, and every material lifecycle/reviewer action remains reconstructible from immutable audit history.
 - Supersession evidence: any automated enforcement would require a separately accepted higher-authority security/product contract and explicit override of ADR-0006; not an ANL-03 local change.
 
 ### ANL03-D4 — Absence is proof only under proven durable completeness
@@ -477,7 +505,7 @@ Architecture PASS does not claim runtime evidence.
 - Must decide now: **YES**.
 - Blocks: duplication/source-sink/invariant claims.
 - Owner: ANL-03 interpretation constrained by ANL-01/DUR-03.
-- Failure implication: consumer lag/schema gaps cannot falsely implicate or exonerate.
+- Failure implication: consumer lag/schema gaps cannot falsely implicate or exonerate; optional client-diagnostic absence is separately non-adverse and never increases suspicion, score, confidence or priority.
 - Supersession evidence: none that removes completeness requirement; implementation can strengthen proofs.
 
 ### ANL03-D5 — Economy health remains world-contextual and non-controlling
