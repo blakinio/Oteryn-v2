@@ -13,7 +13,7 @@ base_sha: cb98fd32a2bb71fce83234ebf8bf69bdd1a1970e
 delivery_final_head_sha: 8ac75c7f5d1bb840ca203b213db6e94e3c0a8c80
 delivery_merge_sha: 8c5c76684b522bbd4475494074755786f58e1752
 closeout_branch: docs-ecosystem-repository-topology-review-closeout-20260815
-closeout_pr: null
+closeout_pr: 279
 owner: architecture-review-agent
 owner_state: released_after_closeout
 created_at: 2026-08-15T13:49:00+02:00
@@ -71,7 +71,7 @@ This delivery does not itself accept or execute a repository rename, create repo
 - [x] Persisted the preferred review document through a governed PR without implementing repository reorganization.
 - [x] Completed exact-head self-review and protected repository validation.
 - [x] Squash-merged the delivery PR and verified the merge commit on `main`.
-- [ ] Lifecycle-close by merging the bookkeeping-only active-task -> archive change for this record.
+- [x] Lifecycle closeout is performed by PR #279, which archives this record and releases the task-owned paths without changing the review document.
 
 ## Excluded scope
 
@@ -111,33 +111,33 @@ Repository policy required only `Merge gate / validate` for `main`; PR #278 was 
 
 ### Closeout validation
 
-The closeout is bookkeeping-only and must contain exactly:
-
-- this completed archive record; and
-- removal of the corresponding active task record.
-
-Before closeout merge it requires a full two-path diff self-review, `behind_by=0`, zero unresolved review threads and a fresh exact-head required `Merge gate / validate` PASS. No runtime/component/E2E execution applies.
+PR #279 is bookkeeping-only and contains exactly the active-task -> archive lifecycle movement for this task. Before merge it requires full two-path self-review, `behind_by=0`, zero unresolved review threads and a fresh exact-head required `Merge gate / validate` PASS. The canonical merge of this archive is itself evidence that those protected merge requirements were satisfied; exact workflow evidence remains attached to PR #279. No runtime/component/E2E execution applies.
 
 ## Review and audit history
 
 - An early task-record checkpoint incorrectly used tree SHA `5c86773be23059956dc887dc48b19b0228090b40` as the base commit; this was detected before the review document was written and corrected to actual base commit `cb98fd32a2bb71fce83234ebf8bf69bdd1a1970e`.
 - Delivery self-review inspected the exact two-path diff and found no open material architecture, ownership, security or current-vs-target mismatch.
 - No independent second reviewer was required for this low-risk non-authoritative audit/recommendation because it changed no governance rule, accepted protocol, durable data, security control, production path or executable public contract. Any future ADR that actually accepts the cross-repository topology remains separately gated under normal risk policy.
+- Closeout is bookkeeping-only; it does not change the delivered review or any architecture authority.
 
 ## Lifecycle closeout
 
-PR #278 is merged. This archive closeout releases the task's two owned paths and preserves the delivery/review evidence without changing the review document or any architecture authority.
+PR #279 performs only:
+
+- active review task -> archive;
+- release of the two task-owned paths;
+- preservation of PR #278 delivery and validation evidence.
 
 No linked Issue was created for this bounded task, so there is no Issue closeout action. No related/superseded PR requires terminalization by this task.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: Delivery PR #278 merged as 8c5c76684b522bbd4475494074755786f58e1752 after exact-head self-review and required repository checks; bookkeeping-only archive closeout is in progress.
+last_progress: Delivery PR #278 merged as 8c5c76684b522bbd4475494074755786f58e1752 after exact-head self-review and required repository checks; PR #279 performs the bookkeeping-only archive and ownership release.
 status: completed
 branch: docs-ecosystem-repository-topology-review-closeout-20260815
-pr: null
+pr: 279
 owner_action_required: false
 blocker: null
-next_action: merge the bookkeeping-only two-path closeout after exact-head validation, then release task ownership
+next_action: none
 ```
