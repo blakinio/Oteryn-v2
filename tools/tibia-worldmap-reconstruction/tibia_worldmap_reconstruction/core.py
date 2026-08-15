@@ -37,6 +37,10 @@ def _require(condition: bool, message: str) -> None:
         raise ValidationError(message)
 
 
+def _is_int(value: object) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool)
+
+
 def tile_key(tile: dict[str, Any]) -> tuple[int, int, int]:
     coordinate = tile["coordinate"]
     return coordinate["x"], coordinate["y"], coordinate["z"]
@@ -55,12 +59,12 @@ def validate_document(document: dict[str, Any]) -> None:
         coordinate = tile.get("coordinate")
         _require(isinstance(coordinate, dict), f"tiles[{tile_index}].coordinate must be an object")
         for axis in ("x", "y", "z"):
-            _require(isinstance(coordinate.get(axis), int), f"tiles[{tile_index}].coordinate.{axis} must be int")
+            _require(_is_int(coordinate.get(axis)), f"tiles[{tile_index}].coordinate.{axis} must be int")
         key = tile_key(tile)
         _require(key not in seen, f"duplicate tile coordinate {key}")
         seen.add(key)
         _require(isinstance(tile.get("observed"), bool), f"tiles[{tile_index}].observed must be bool")
-        _require(isinstance(tile.get("sequence"), int) and tile["sequence"] >= 0, f"tiles[{tile_index}].sequence must be non-negative int")
+        _require(_is_int(tile.get("sequence")) and tile["sequence"] >= 0, f"tiles[{tile_index}].sequence must be non-negative int")
         contents = tile.get("contents")
         _require(isinstance(contents, list), f"tiles[{tile_index}].contents must be a list")
         stack_indices: list[int] = []
@@ -68,17 +72,17 @@ def validate_document(document: dict[str, Any]) -> None:
             prefix = f"tiles[{tile_index}].contents[{content_index}]"
             _require(isinstance(content, dict), f"{prefix} must be an object")
             stack_index = content.get("stack_index")
-            _require(isinstance(stack_index, int) and stack_index >= 0, f"{prefix}.stack_index must be non-negative int")
+            _require(_is_int(stack_index) and stack_index >= 0, f"{prefix}.stack_index must be non-negative int")
             stack_indices.append(stack_index)
             appearance_id = content.get("client_appearance_id")
-            _require(isinstance(appearance_id, int) and appearance_id >= 0, f"{prefix}.client_appearance_id must be non-negative int")
+            _require(_is_int(appearance_id) and appearance_id >= 0, f"{prefix}.client_appearance_id must be non-negative int")
             semantic_class = content.get("semantic_class")
             _require(semantic_class in SEMANTIC_CLASSES, f"{prefix}.semantic_class is invalid")
             mapping_status = content.get("mapping_status")
             _require(mapping_status in MAPPING_STATUSES, f"{prefix}.mapping_status is invalid")
             server_id = content.get("server_otb_id")
             if mapping_status == "MAPPED":
-                _require(isinstance(server_id, int) and server_id > 0, f"{prefix}.server_otb_id required for MAPPED")
+                _require(_is_int(server_id) and server_id > 0, f"{prefix}.server_otb_id required for MAPPED")
             else:
                 _require(server_id is None, f"{prefix}.server_otb_id must be null unless MAPPED")
         _require(stack_indices == sorted(stack_indices) and len(stack_indices) == len(set(stack_indices)), f"tiles[{tile_index}] stack indices must be unique and ascending")
@@ -92,11 +96,16 @@ def index_tiles(document: dict[str, Any]) -> dict[tuple[int, int, int], dict[str
 def merge_documents(base: dict[str, Any], update: dict[str, Any]) -> dict[str, Any]:
     validate_document(base)
     validate_document(update)
+    if update.get("entities"):
+        raise ValidationError("entity merge semantics are not defined; incoming entities must be empty")
+
     merged = deepcopy(base)
     indexed = {tile_key(tile): deepcopy(tile) for tile in merged["tiles"]}
     history = list(merged.get("merge_history", []))
 
     for incoming in update["tiles"]:
+        if not incoming["observed"]:
+            continue
         key = tile_key(incoming)
         previous = indexed.get(key)
         if previous is None or incoming["sequence"] > previous["sequence"]:
@@ -184,9 +193,7 @@ def build_otbm_export_plan(document: dict[str, Any]) -> dict[str, Any]:
     output_tiles: list[dict[str, Any]] = []
     blockers: list[dict[str, Any]] = []
     for tile in document["tiles"]:
-        key = tile_key(tile)
         if not tile["observed"]:
-            blockers.append({"coordinate": dict(tile["coordinate"]), "reason": "NOT_OBSERVED"})
             continue
         ground, items, unmapped = _static_signature(tile)
         if unmapped:

@@ -32,12 +32,12 @@ def tile(x=100, y=200, z=7, *, observed=True, sequence=1, contents=None):
     }
 
 
-def document(*tiles, name="test"):
+def document(*tiles, name="test", entities=None):
     return {
         "format": "oteryn-worldmap-normalized-v1",
         "source": {"name": name, "client_version": "synthetic"},
         "tiles": list(tiles),
-        "entities": [],
+        "entities": list(entities or []),
     }
 
 
@@ -59,6 +59,21 @@ class ValidationTests(unittest.TestCase):
         value = document(tile(), tile())
         with self.assertRaises(ValidationError):
             validate_document(value)
+
+    def test_boolean_coordinate_is_rejected(self):
+        value = document(tile())
+        value["tiles"][0]["coordinate"]["x"] = True
+        with self.assertRaises(ValidationError):
+            validate_document(value)
+
+    def test_boolean_numeric_content_fields_are_rejected(self):
+        fields = ("stack_index", "client_appearance_id", "server_otb_id")
+        for field in fields:
+            with self.subTest(field=field):
+                value = document(tile(contents=[content(0, 10, "ground", 100)]))
+                value["tiles"][0]["contents"][0][field] = True
+                with self.assertRaises(ValidationError):
+                    validate_document(value)
 
 
 class ComparisonTests(unittest.TestCase):
@@ -119,6 +134,18 @@ class MergeTests(unittest.TestCase):
         with self.assertRaises(ValidationError):
             merge_documents(old, conflict)
 
+    def test_unobserved_update_does_not_erase_observed_tile(self):
+        old = document(tile(sequence=1, contents=[content(0, 10, "ground", 100)]), name="old")
+        unseen = document(tile(sequence=2, observed=False), name="unseen")
+        merged = merge_documents(old, unseen)
+        self.assertTrue(merged["tiles"][0]["observed"])
+        self.assertEqual(merged["tiles"][0]["sequence"], 1)
+        self.assertEqual(merged["tiles"][0]["contents"][0]["server_otb_id"], 100)
+
+    def test_incoming_entities_are_rejected_until_merge_semantics_exist(self):
+        with self.assertRaisesRegex(ValidationError, "entity merge semantics"):
+            merge_documents(document(tile()), document(tile(x=101), entities=[{"kind": "npc"}]))
+
 
 class ExportPlanTests(unittest.TestCase):
     def test_ready_only_when_ground_and_static_ids_are_mapped(self):
@@ -136,6 +163,17 @@ class ExportPlanTests(unittest.TestCase):
         blocked = build_otbm_export_plan(document(tile(contents=[content(0, 11, "static_item", 101)])))
         self.assertFalse(blocked["ready"])
         self.assertEqual(blocked["blockers"][0]["reason"], "GROUND_NOT_PROVEN")
+
+    def test_unobserved_tiles_do_not_block_export_readiness(self):
+        ready = build_otbm_export_plan(
+            document(
+                tile(contents=[content(0, 10, "ground", 100)]),
+                tile(x=101, observed=False),
+            )
+        )
+        self.assertTrue(ready["ready"])
+        self.assertEqual(len(ready["tiles"]), 1)
+        self.assertEqual(ready["blockers"], [])
 
 
 if __name__ == "__main__":
