@@ -9,7 +9,7 @@ repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs-ecosystem-repository-topology-review-20260815
 pr: null
-base_sha: 5c86773be23059956dc887dc48b19b0228090b40
+base_sha: cb98fd32a2bb71fce83234ebf8bf69bdd1a1970e
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
@@ -73,7 +73,7 @@ Produce one critical, evidence-backed architecture review of the proposed future
 ## Context checkpoint
 
 ```yaml
-last_progress: Task registered from current main after governance, main/open-PR/active-task and relevant architecture inspection began.
+last_progress: Task registered from current main after governance, main/open-PR/active-task and relevant architecture inspection began; base commit corrected after distinguishing commit SHA from tree SHA.
 status: investigating
 branch: docs-ecosystem-repository-topology-review-20260815
 head_sha: null
@@ -90,7 +90,7 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 0
+repair_cycles_for_current_gate: 1
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: false
