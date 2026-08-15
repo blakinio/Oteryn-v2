@@ -197,18 +197,41 @@ The ANL-03 analytical lifecycle is:
 SIGNAL_EMITTED
 -> TRIAGED
 -> CASE_OPENED (optional)
--> EVIDENCE_ASSEMBLED
+-> ASSIGNED / REASSIGNED (when assignment exists)
+-> EVIDENCE_ASSEMBLED / UPDATED
 -> HUMAN_DISPOSITION
 -> CLOSED or REFERRED_TO_FOREIGN_OWNER
+-> REOPENED (when later evidence or review requires it)
+```
+
+The state sketch is illustrative rather than a storage schema. Regardless of the concrete workflow/state vocabulary, **every material lifecycle transition and reviewer/operator action MUST append an immutable audit record**. This includes at least signal triage; case open; assignment/reassignment when supported; evidence addition, removal or supersession; state transition; close; reopen; referral; and final disposition.
+
+Each lifecycle audit record retains at least:
+
+```text
+case identity and correlation identity
+stable action/transition reference or ordered occurrence
+reviewer/operator actor identity, or pseudonymous privileged identity under the privacy model
+actor role/capability used for the action
+timestamp plus sufficient ordering information
+previous state when a state exists
+new state and/or action performed
+reason/rationale category or explanation where applicable
+linked signal/evidence references relevant to the action
+detector/rule/model/config revision where relevant to the reviewed evidence or decision
 ```
 
 Required properties:
 
 - original signal content/revision/evidence lineage remains immutable;
 - one case may group multiple signals while preserving every source reference;
-- evidence additions/annotations record actor, time and source;
+- evidence additions, annotations, removals and supersessions are represented by immutable lifecycle actions rather than rewriting history;
+- signal triage before case creation retains correlation identity and is linked to the case if one is later opened;
 - privileged identity resolution is separately purpose-authorized and audited;
-- human disposition records reviewer role/identity, time, rationale category and evidence refs;
+- human disposition records reviewer role/identity, time, rationale and evidence refs through the same immutable action history;
+- false-positive decisions and the reviewer actions leading to them remain reconstructable/auditable within the applicable retention policy;
+- a mutable `latest status` may exist only as a derived projection and MUST NOT replace, truncate or rewrite lifecycle history;
+- audit-history immutability does not authorize unlimited retention or override ANL-01/privacy deletion requirements; while retained, history is append-only and non-rewritten;
 - any enforcement/remediation result is linked only as a foreign-owner reference and is not executed by ANL-03.
 
 Allowed evidence dispositions:
@@ -229,7 +252,7 @@ To satisfy `FS-DETECTOR-FALSE-POSITIVE` at semantic level:
 1. detector output creates no automatic sanction/mutation;
 2. detector/rule/model/config revision is retained with every signal;
 3. source evidence/checkpoints are traceable within policy;
-4. human review/disposition is auditable;
+4. human review/disposition and every material lifecycle/reviewer action remain reconstructable from immutable audit history;
 5. threshold/model changes do not rewrite historical outputs;
 6. any suppression/allow-list mechanism is separately versioned/scoped/audited and cannot be a hidden authority bypass;
 7. false-positive outcomes may be used as detector-quality evidence without deleting historical errors;
@@ -266,6 +289,21 @@ No generalized device fingerprinting, invasive client surveillance, credential c
 7. Legal hold is an explicit audited exception, never ordinary unlimited retention.
 8. Privacy classification can be raised but never silently downgraded.
 
+### Optional client diagnostics are non-adverse
+
+For **every** ANL-03 detector, feature, signal, triage path, case and reviewer workflow that may consume optional client-originated evidence — including client diagnostics/crash reports, an OS capsule, Launcher telemetry, Guardian telemetry, or a crash/network forensic package — the following invariant applies:
+
+- diagnostics opt-out is not suspicious;
+- absence, opt-out, upload failure or unavailability of optional client diagnostics is not adverse evidence and MUST NOT be represented as a guilt/concealment feature;
+- disabling or withholding optional diagnostics through the supported privacy control MUST NOT increase an abuse/suspicion/risk score, detector confidence, signal severity, triage/review/enforcement priority, case escalation priority or adverse disposition;
+- missing optional diagnostics MUST NOT by itself open, escalate, refer or otherwise worsen a case;
+- evidence availability/quality may be recorded only as an availability/quality dimension and may justify lower evidentiary certainty or an inconclusive/data-quality result where material; it MUST NOT become behavioral guilt evidence;
+- enabling diagnostics does not create an innocence presumption or lower an otherwise evidence-based risk conclusion merely because diagnostics are enabled;
+- affirmative content from diagnostics that are actually present may corroborate evidence or improve diagnostic/classification confidence according to the detector contract; the mere fact that diagnostics are enabled MUST NOT do so;
+- server-generated evidence MUST remain sufficient for incident visibility and abuse/security investigation without optional client diagnostics; optional client evidence may enrich/corroborate but MUST NOT be a prerequisite for server-side investigation capability.
+
+This applies equally whether the optional evidence originates from the native client, OS allowlist capsule, Launcher/Guardian extension point, or crash/network forensic packaging. ANL-03 MUST NOT implement an anti-cheat feature equivalent to “missing diagnostics = suspicious”.
+
 ## 15. Read-only credential boundary
 
 Future ANL-03 components must use least-privilege read-only credentials/views appropriate to their source and must not possess:
@@ -301,6 +339,7 @@ Exact numbers require implementation/PERF/OPS evidence and registry ownership. L
 ## 17. Failure semantics
 
 - Best-effort feature loss -> input partial; no completeness-dependent finding.
+- Optional client diagnostics absent/opted-out/unavailable -> availability/quality dimension only; no adverse score/confidence/priority/guilt inference; server-side investigation remains viable.
 - Durable audit/event-set/checkpoint gap -> completeness-dependent detector stops/inconclusive; pipeline incident may be emitted.
 - EventId conflict -> evidence-integrity incident; no overwrite.
 - Unsupported durable schema -> quarantine/reject per ANL-01.
@@ -319,8 +358,8 @@ Exact numbers require implementation/PERF/OPS evidence and registry ownership. L
 - `FS-EVENT-DUPLICATE-DELIVERY`: semantic `PASS`.
 - `FS-EVENT-OUT-OF-ORDER`: semantic `PASS`.
 - `FS-AUDIT-MUTATION-MISMATCH`: semantic `PASS` as explicit integrity/data-quality evidence; prevention remains DUR-02/03.
-- `FS-ANALYTICS-PRIVACY-POLICY`: semantic `PASS`.
-- `FS-DETECTOR-FALSE-POSITIVE`: semantic `PASS` through no-auto-sanction + versioned evidence + human disposition.
+- `FS-ANALYTICS-PRIVACY-POLICY`: semantic `PASS`, including non-adverse optional-diagnostics opt-out/absence semantics.
+- `FS-DETECTOR-FALSE-POSITIVE`: semantic `PASS` through no-auto-sanction + versioned evidence + immutable reviewer/lifecycle audit + human disposition.
 - `FS-INVESTIGATION-MUTATION-ATTEMPT`: `DEFERRED_BY_ACCEPTED_GATE` for executable proof to ANL-04/implementation; ANL-03 requires read-only credentials.
 
 Architecture status does not imply runtime proof.
@@ -343,6 +382,8 @@ Implementation acceptance requires, proportionally to each detector family:
 - checkpoint loss/recovery and durable source-completeness tests;
 - stable detector/model/config/artifact revision reproduction;
 - known false-positive corpus and human-disposition workflow evidence;
+- immutable lifecycle-audit replay proving triage/open/assignment/evidence/state/close/reopen/referral/disposition actions are reconstructable with actor/capability/reason/evidence/revision linkage;
+- optional client-diagnostics tests proving opt-out/absence cannot raise abuse/risk score, confidence or review/enforcement priority and cannot become guilt evidence;
 - best-effort sampling/loss propagation tests for statistical detectors;
 - privacy raw-ID/pseudonym mapping/access-audit tests;
 - graph/query/export/resource boundary tests;
