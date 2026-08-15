@@ -3,6 +3,7 @@
 - Status: `PROPOSED / NONCANONICAL`
 - Gate: `GAME-INTERACTION-01` (same gate; no new global gate ID)
 - Successor issue/task: #274 / `OTV2-20260815-game-interaction-successor-r1`
+- Successor draft PR: #277
 - Predecessor issue/PR: #262 / draft PR #269
 - Predecessor reviewed head: `71253a8d5805ed37ec451e40e2c7200c38031a52`
 - Base: `main@cb98fd32a2bb71fce83234ebf8bf69bdd1a1970e`
@@ -10,95 +11,88 @@
 - Merge authority: `ARCHITECTURE_COORDINATOR_ONLY`
 - Implementation authority: `NONE`
 
-## 1. Contract purpose and predecessor boundary
+## 1. Successor boundary
 
 This candidate is a fresh bounded successor for the unchanged `GAME-INTERACTION-01` gate.
 
-The predecessor task reached `repair_cycles_for_current_gate: 3`. The final coordinator review of draft PR #269 identified two remaining material findings. Repository governance forbids treating another edit under the predecessor task as repair cycle 4. Therefore:
+The predecessor task reached `repair_cycles_for_current_gate: 3`. The final coordinator review of draft PR #269 identified two remaining material findings after that budget was exhausted. Repository governance therefore forbids another predecessor repair cycle.
 
-- predecessor issue #262, PR #269, branch and three worker-owned files remain read-only evidence to this successor;
-- this candidate resolves only the child-occurrence identity and cross-owner/client retry/error findings;
+Normative governance consequences:
+
+- issue #262, PR #269, predecessor branch and predecessor-owned files are read-only evidence to this worker;
+- this candidate resolves only child fan-out/cascade identity and cross-owner/client retry/error semantics;
 - no predecessor lifecycle state is rewritten;
-- no new global gate ID is created.
+- no new global gate ID is created;
+- this candidate is intended for Architecture Coordinator integration with the sound predecessor contract, not as a replacement for all predecessor design.
 
-If accepted, this successor is intended to be integrated by the Architecture Coordinator with the sound predecessor contract, not to erase its other design work.
+## 2. Preserved predecessor invariants
 
-## 2. Normative inherited invariants
+This successor MUST preserve:
 
-The successor MUST preserve all of the following predecessor invariants:
+1. server-authoritative target resolution;
+2. typed/versioned interaction state machines;
+3. explicit semantic scope, lifetime, reset and recovery;
+4. GAME-ITEM + DUR-03 item/value authority;
+5. GAME-ABILITY effect authority;
+6. movement/relocation/handoff delegation without choosing its final owner here;
+7. named coupled workflows rather than a generic multi-owner transaction;
+8. bounded cascades, with numeric bounds owned elsewhere;
+9. DUR-04 proposal-only guest scripts;
+10. deterministic semantic revisions/order/RNG under SIM-DETERMINISM;
+11. no generic mutable process-global/`GLOBAL` interaction scope.
 
-1. **server-authoritative target resolution** — client selection/hints never create target authority;
-2. **typed/versioned state machines** — interaction state is typed rather than free-form mutable bags;
-3. **explicit scope/lifetime/reset/recovery** — no implicit process lifetime defines gameplay semantics;
-4. **GAME-ITEM + DUR-03 value authority** — interaction cannot mint/move/consume durable value outside owning item/value contracts;
-5. **GAME-ABILITY effect authority** — interaction can trigger an ability-owned proposal/operation but cannot own formulas/effect commit semantics;
-6. **movement/relocation/handoff delegation** — this candidate does not select that owner;
-7. **named coupled workflows** — no generic distributed multi-owner transaction is introduced;
-8. **bounded cascades** — depth/fan-out/work remain bounded by owning policy, although numeric values are out of scope here;
-9. **proposal-only scripts** — DUR-04 guest code proposes typed effects and never self-grants authoritative mutation;
-10. **deterministic revisions/order/RNG** — SIM-DETERMINISM remains authoritative;
-11. **no generic mutable `GLOBAL` interaction scope** — authoritative state belongs to explicit World/Channel/Instance/domain scope.
+## 3. Consumed contracts
 
-Nothing in the retry contract below weakens those invariants.
+This candidate consumes without redefining:
 
-## 3. Consumed contracts and ownership
-
-This candidate consumes, without redefining:
-
-- `docs/contracts/FOUNDATION_ERROR_VOCABULARY.md` — public/cross-component error requirements;
-- `docs/contracts/FOUNDATION_FAILURE_SCENARIOS.md` — ambiguity/retry/reconciliation expectations;
-- `docs/architecture/FND-02_PROTOCOL_OTERYN_V1_CONTRACT.md` — `CommandRef`, command ordering/idempotency, generation fence, client reconciliation transport;
-- `docs/architecture/FND-03_RUNTIME_EXECUTION_CONTRACT.md` — authoritative runtime ownership/execution/fencing;
-- `docs/architecture/FND-04C_ERROR_DIAGNOSTICS_FAILURE_COMPATIBILITY_CONTRACT.md` — accepted session/admission/recovery error pattern and security-terminal semantics;
-- `docs/architecture/DUR-03_ITEM_TRANSACTION_AND_ANTI_DUPLICATION_CONTRACT.md` — item/value transaction identity, durable commit and ambiguity reconciliation;
-- `docs/architecture/DUR-04_CONTENT_WORLD_AND_SCRIPTING_CONTRACT.md` — proposal-only script boundary;
-- `docs/architecture/SIM-DETERMINISM-01_AUTHORITATIVE_SIMULATION_CONTRACT.md` — semantic revision binding, canonical order and retry-stable RNG;
+- `docs/contracts/FOUNDATION_ERROR_VOCABULARY.md`;
+- `docs/contracts/FOUNDATION_FAILURE_SCENARIOS.md`;
+- `docs/architecture/FND-02_PROTOCOL_OTERYN_V1_CONTRACT.md`;
+- `docs/architecture/FND-03_RUNTIME_EXECUTION_CONTRACT.md`;
+- `docs/architecture/FND-04C_ERROR_DIAGNOSTICS_FAILURE_COMPATIBILITY_CONTRACT.md`;
+- `docs/architecture/DUR-03_ITEM_TRANSACTION_AND_ANTI_DUPLICATION_CONTRACT.md`;
+- `docs/architecture/DUR-04_CONTENT_WORLD_AND_SCRIPTING_CONTRACT.md`;
+- `docs/architecture/SIM-DETERMINISM-01_AUTHORITATIVE_SIMULATION_CONTRACT.md`;
 - accepted GAME-ITEM-01 authority contracts;
 - an eventually accepted GAME-ABILITY-01 owning contract for ability-owned effect internals.
 
-Where a narrow operation code belongs to another owner, this candidate names that dependency and does not invent the owner's code.
+FND-02 remains the client-command idempotency/order authority. GAME-INTERACTION MUST NOT invent a competing client command identity.
 
-## 4. Terms
+## 4. Identity terms
 
-### 4.1 Root source occurrence
+### 4.1 `RootSourceOccurrenceRef`
 
-A `RootSourceOccurrenceRef` is a stable authoritative occurrence identity owned by the domain that accepted the causal input.
+A stable authoritative source occurrence accepted by its owning domain, for example:
 
-Examples include:
+- client action -> FND-02 `CommandRef`;
+- movement-derived interaction -> committed authoritative movement occurrence reference;
+- timer -> stable timer occurrence identity;
+- domain workflow -> accepted owner operation/transaction/cause reference;
+- event -> accepted event occurrence identity.
 
-- FND-02 `CommandRef` for a client command;
-- committed movement occurrence reference for movement-derived contact/enter/leave;
-- stable timer occurrence;
-- accepted domain `OperationId`/`TransactionId`/cause reference;
-- accepted event occurrence identity.
+A client hint, transport packet, UI selection, callback object or pointer is never a root authority identity.
 
-A root source occurrence is not a client visual target, pointer, callback instance or transport packet identity.
+### 4.2 `OwnerOperationRef`
 
-### 4.2 Child occurrence
+A stable typed operation/transaction/attempt identity owned by a delegated domain, for example a DUR-03 TransactionId/OperationId.
 
-An `InteractionChildOccurrenceRef` identifies one semantic child of a root/parent occurrence. It is not a globally allocated UUID and is not a credential.
+GAME-INTERACTION MUST NOT create one generic global `OperationId` to replace owner-specific identities.
 
-### 4.3 Owner operation reference
+### 4.3 `SemanticRevisionContext`
 
-`OwnerOperationRef` means the stable typed operation/transaction/attempt identity owned by a delegated domain. Examples may include a DUR-03 TransactionId or a future movement/handoff operation reference.
+The exact immutable behavior-affecting artifact/revision set bound to a logical occurrence, as required by SIM/content/owner contracts.
 
-GAME-INTERACTION MUST NOT define one generic process-wide/global `OperationId` type to replace those owner-specific identities.
+### 4.4 `AuthorityFenceEvidence`
 
-### 4.4 Semantic revision context
+Current runtime ownership generation and mutable state/domain revisions used to prove that the current owner may apply or complete work.
 
-`SemanticRevisionContext` is the exact immutable behavior-affecting revision/artifact set bound to one logical occurrence, as required by SIM/content/owning contracts.
-
-### 4.5 Authority fences
-
-`AuthorityFenceEvidence` includes current runtime ownership generation and relevant mutable state/domain revisions used to prove the current owner may apply/complete work.
-
-Authority fences are not logical child identity merely because they change over failover.
+Authority fences are not automatically logical occurrence identity.
 
 ## 5. Stable child-occurrence identity
 
-### 5.1 Direct child shape
+### 5.1 Normative shape
 
-A direct child MUST have semantic identity equivalent to:
+A child occurrence MUST have semantic identity equivalent to:
 
 ```text
 InteractionChildOccurrenceRef = (
@@ -117,13 +111,13 @@ For first-level fan-out:
 ParentSourceOccurrenceRef = RootSourceOccurrenceRef
 ```
 
-For a cascaded child:
+For a nested cascade:
 
 ```text
 ParentSourceOccurrenceRef = parent InteractionChildOccurrenceRef
 ```
 
-Thus a bounded cascade forms a stable source-derived ancestry path without allocating a new global UUID:
+A bounded cascade therefore forms a deterministic source-derived ancestry path:
 
 ```text
 RootSourceOccurrenceRef
@@ -132,115 +126,107 @@ RootSourceOccurrenceRef
   / ...
 ```
 
-The full logical identity is the bounded recursive tuple/path. A compact implementation representation may be derived later, but semantic equality remains defined by the path fields, not by a transient allocation.
+No globally allocated `InteractionId`/UUID is required.
 
-### 5.2 Why parent ancestry is required for cascades
+### 5.2 Why parent ancestry is required
 
-If two distinct parent children in the same root cascade can both reach the same interaction definition, target and typed edge, using only the ultimate root plus final target/edge could merge semantically distinct siblings.
+Two distinct siblings under the same root can independently cascade into the same final target/edge. Identity truncated to only the ultimate root + final target/edge could merge those semantic children.
 
-Including the stable parent child reference prevents this collision while remaining deterministic and source-derived.
-
-If an owning mechanic intentionally defines two paths as one idempotent semantic join, that join rule MUST be explicit in the owning typed interaction definition. Runtime MUST NOT accidentally create such a join through dedup-key truncation.
+Including the stable parent child ref prevents that collision. If an owning mechanic intentionally defines two paths as one semantic idempotent join, that join MUST be explicit in its typed contract; accidental dedup-key truncation is forbidden.
 
 ### 5.3 `InteractionDefinitionRef`
 
-`InteractionDefinitionRef` MUST be stable within the exact bound content artifact/revision and MUST identify the authored/compiled interaction semantics being executed.
+MUST identify the stable authored/compiled interaction definition/object under the exact bound content revision.
 
-It MUST NOT be:
+MUST NOT use:
 
 - memory address;
-- process-local loader index unless that index is itself a versioned stable authored key;
+- transient loader slot;
 - unordered registry position;
-- source file line number used as accidental runtime identity.
+- source-code line number as accidental runtime identity.
 
 ### 5.4 `AuthoritativeTargetDiscriminator`
 
-The target discriminator MUST come from server-authoritative resolution in the applicable semantic scope and MUST be stable enough to replay/reconcile the bound occurrence.
+MUST derive from server-authoritative target/object resolution in the applicable World/Channel/Instance scope.
 
-Allowed shapes are owner-contract-defined strong semantic object/entity identity or canonical typed world-object keys.
+It may be a strong owner-defined object/entity identity or canonical typed world-object key.
 
-It MUST NOT derive authority or identity from:
+MUST NOT use:
 
-- client hints;
+- client target hint;
 - UI selection order;
-- pointer/reference addresses;
-- hash buckets;
-- physical vector/map iteration index;
-- thread/worker discovery order;
+- pointer/reference address;
+- hash bucket;
+- container discovery index;
+- thread/worker completion order;
 - unspecified database row order.
 
-If no stable target discriminator exists for an interaction family, implementation of that family is `BLOCKED` until its owning contract supplies one.
+If an interaction family cannot name a stable authoritative target discriminator, that family is implementation-`BLOCKED`.
 
 ### 5.5 `TypedEdgeOrCapabilityDiscriminator`
 
-Multiple semantic edges/capabilities on the same object MUST remain distinguishable.
+MUST distinguish semantically different edges/capabilities on the same target, such as accepted typed `ON_ENTER`, `ON_LEAVE`, `ON_CONTACT`, `USE` or mechanic-specific versioned edge keys.
 
-The discriminator MUST be an authored/compiled stable typed key such as an accepted `ON_ENTER`, `ON_LEAVE`, `ON_CONTACT`, `USE` edge kind or versioned mechanic-specific capability key.
-
-Free-form callback names or function pointers MUST NOT become authoritative identity.
+Free-form callback names/function pointers do not become authoritative identity.
 
 ### 5.6 `OptionalCanonicalChildOrdinal`
 
-The ordinal MUST be absent unless all non-ordinal fields still identify more than one **intentionally distinct** semantic child.
+The ordinal MUST be absent by default.
+
+It MAY be present only when all non-ordinal fields still describe more than one intentionally distinct semantic child.
 
 When present:
 
-1. multiplicity MUST be explicit in the accepted interaction definition;
-2. ordinal assignment MUST derive from explicit authored semantic order or a canonical typed comparator over stable semantic fields;
-3. the same content/revision MUST reproduce the same ordinal;
-4. hash-map/container iteration, thread scheduling, worker completion, pointer order or unspecified DB row order MUST NOT assign it;
-5. an ordinal MUST NOT be used to hide an invalid duplicate definition.
+1. multiplicity is explicit in authored/compiled semantics;
+2. assignment follows explicit authored semantic order or a canonical typed comparator over stable semantic fields;
+3. the same content revision reproduces the same ordinal;
+4. runtime enumeration/hash-map/thread/worker/unspecified DB order never assigns it;
+5. accidental duplicate definitions fail validation rather than receiving invented ordinals.
 
-If two configured children are accidentally indistinguishable, validation MUST reject the definition fail-closed rather than inventing runtime ordinals.
+The ordinal is a semantic discriminator of last resort, not a patch over unstable iteration.
 
 ### 5.7 `SemanticRevisionContext`
 
-Every child MUST bind the exact behavior-affecting semantic context needed to interpret it. Depending on the mechanic this includes the applicable subset of:
+The child MUST retain the applicable exact behavior-affecting context, including as needed:
 
 - World Bundle/content artifact identity;
 - interaction-definition revision;
 - ruleset/world-policy revision;
 - SIM profile revision;
 - script artifact/WIT/execution-profile revision;
-- delegated owner semantic revision required to interpret its result.
+- delegated-owner semantic revision needed to interpret its outcome.
 
-Retry/replay/recovery MUST use the same bound context or an explicit accepted compatibility/reconciliation rule. A newer active content revision MUST NOT silently reinterpret an already accepted child.
+Retry/replay/recovery uses the same bound context or an explicitly accepted compatibility/reconciliation rule. A historical child MUST NOT be silently reinterpreted under the newest active content.
 
 ### 5.8 Logical identity versus current authority
 
-Transient runtime ownership generation MUST NOT be appended to logical child equality merely to make a new key after failover.
-
-Normative separation:
+Transient runtime ownership generation MUST NOT create a new logical child after failover.
 
 ```text
-logical occurrence identity = InteractionChildOccurrenceRef
-current right to apply work = validate AuthorityFenceEvidence now
+logical child identity = InteractionChildOccurrenceRef
+current mutation authority = validate current AuthorityFenceEvidence
 ```
 
-A completion produced under stale generation/revision is rejected before mutation. The replacement/current owner then reconciles the **same** child/OwnerOperationRef.
+A stale generation/revision/fence completion fails before mutation. The current/replacement owner then reconciles the same child/foreign operation where one exists.
 
-Mutable optimistic state revisions used only as preconditions/fences do not create a new logical child when they change. Immutable behavior-affecting revision context does remain bound to the logical child.
+Immutable behavior-affecting revisions remain bound semantic identity context. Mutable revisions that are only optimistic/fencing preconditions remain fence evidence rather than fresh-occurrence identity.
 
-### 5.9 Representation
+### 5.9 Representation is deliberately unfrozen
 
-This candidate deliberately does not freeze:
+This candidate does not choose:
 
 - UUID allocation;
-- hash/digest algorithm;
-- binary layout;
-- database primary key;
-- retention count/window;
-- protocol numeric field/code values.
+- digest/hash algorithm;
+- binary representation;
+- database key/schema;
+- retention window/count;
+- numeric protocol code/field values.
 
-An implementation MAY derive a compact digest/index from the canonical tuple/path, but collision handling MUST preserve semantic tuple equality and MUST NOT turn the digest into a new authority source.
+A later implementation MAY derive a compact digest/index from the canonical tuple/path, but tuple semantics remain authoritative and collisions MUST be handled safely. A diagnostic trace/correlation ID is never dedup authority.
 
-A diagnostic trace/correlation ID MUST NOT be used as dedup authority.
+## 6. Deterministic child plan
 
-## 6. Deterministic child-plan rule
-
-### 6.1 Authoritative child plan
-
-Before any child can commit or any foreign owner can accept work, the interaction owner MUST have a reproducible authoritative child plan equivalent to:
+Before any child can commit or any foreign owner can accept work, the interaction owner MUST have a reproducible semantic child plan equivalent to:
 
 ```text
 InteractionChildPlan {
@@ -253,63 +239,49 @@ InteractionChildPlan {
 
 This is a semantic contract, not a storage schema.
 
-### 6.2 Canonical collection/order
+### 6.1 Canonical order
 
-Eligible targets/edges MUST first be resolved authoritatively and then ordered by a declared semantic rule:
+Server-authoritative eligible targets/edges MUST be canonicalized using one accepted rule:
 
-- explicit authored semantic order where order is meaningful; or
-- a stable typed comparator over authoritative semantic keys where the set is otherwise unordered; or
-- retained FND-03 accepted execution order only where the owning contract explicitly makes that accepted order semantic/replay evidence.
+- explicit authored semantic order where order matters;
+- stable typed comparator over authoritative semantic keys where the collection is set-like; or
+- retained accepted FND-03 execution order only where the owning contract explicitly makes that order semantic/replay evidence.
 
-The implementation MUST NOT use:
+Forbidden tie-breakers include hash-map/set traversal, pointer order, OS/thread/worker order and unspecified database row order.
 
-- hash-map iteration;
-- unordered set traversal;
-- pointer order;
-- thread/worker completion order;
-- OS scheduler order;
-- unspecified database row order.
+### 6.2 Partial-progress recovery
 
-The canonical order is part of replay evidence when order affects behavior.
-
-### 6.3 Recovery after partial progress
-
-Once any child has committed or any delegated owner has accepted work, recovery MUST reproduce the same accepted child set/order from retained authoritative evidence and/or the exact immutable bound content/state.
+Once any child has committed or a delegated owner has accepted work, recovery MUST reproduce the same accepted child set/order from retained authoritative evidence and/or exact immutable bound content/state.
 
 Recovery MUST NOT:
 
-- re-enumerate against a newer mutable world and treat the result as the same root occurrence;
-- drop a previously accepted sibling because it is no longer discoverable in current state;
-- add a new sibling from changed state to the historical root;
-- renumber siblings based on a new physical iteration order.
+- re-enumerate a newer mutable world and call it the same historical root;
+- add/drop siblings because current state differs;
+- renumber siblings from a different physical order;
+- allocate a fresh UUID because original identity is inconvenient to reconstruct.
 
-If the accepted child plan cannot be reconstructed safely, the root/affected children fail closed into explicit reconciliation rather than guessed re-execution.
+If the accepted plan cannot be reconstructed safely, fail closed into explicit reconciliation.
 
-## 7. Child lifecycle and exactly-once semantics
+## 7. Child lifecycle and exactly-once rule
 
-An implementation MAY choose a different internal representation, but it MUST preserve semantic states equivalent to:
+An implementation MAY represent state differently internally, but MUST preserve semantics equivalent to:
 
 ```text
-UNSTARTED
-PENDING
-COMMITTED
-REJECTED
+UNSTARTED | PENDING | COMMITTED | REJECTED
 ```
 
-Rules:
+- `UNSTARTED`: accepted child exists; no semantic commit/delegated acceptance yet; recovery may execute it once if current fences authorize.
+- `PENDING`: final outcome unresolved; same child and same accepted foreign operation are reconciled.
+- `COMMITTED`: semantic commit proven exactly once; replay/retry never reapplies it.
+- `REJECTED`: logical child terminal; replay does not reevaluate it as fresh work.
 
-- `UNSTARTED`: accepted child exists but no semantic commit/delegated operation acceptance has occurred; recovery may execute it once if current fences authorize.
-- `PENDING`: final outcome cannot yet be proven; reconcile the same child and same accepted foreign operation if any.
-- `COMMITTED`: semantic commit is proven exactly once; replay/retry never reapplies it.
-- `REJECTED`: this logical child is terminal and cannot later be reinterpreted as a fresh attempt.
+Sibling refs MUST be distinct. Duplicate delivery of the same sibling MUST converge to one lifecycle/outcome.
 
-Different siblings MUST have different child refs. The same sibling delivered more than once MUST resolve to one lifecycle entry/outcome.
+Loss of a retained result payload MUST NOT re-enable execution.
 
-A child terminal result MAY be retained/reconstructed under bounded owner policy, but loss of a convenience payload MUST NOT re-enable semantic execution.
+## 8. Deterministic RNG
 
-## 8. Deterministic RNG contract
-
-For every child-owned authoritative random decision, identity MUST be equivalent to:
+Every child-owned authoritative random decision MUST have semantic identity equivalent to:
 
 ```text
 InteractionRngDecisionRef = (
@@ -319,21 +291,22 @@ InteractionRngDecisionRef = (
 )
 ```
 
-SIM owns the actual algorithm/profile/seed derivation.
+SIM owns the algorithm/profile/seed derivation.
 
 GAME-INTERACTION requirements:
 
-1. same child + purpose + draw ordinal => same logical random decision on retry/replay/recovery;
-2. runtime failover/generation change MUST NOT reroll;
-3. stale/deferred result delivery MUST NOT reroll;
-4. draw ordinal MUST follow semantic purpose order, not scheduling order;
-5. adding an unrelated sibling/purpose MUST NOT accidentally perturb another purpose stream;
-6. rejected work before authoritative acceptance consumes no authoritative gameplay RNG state unless the owning SIM mechanism explicitly defines and commits that occurrence;
-7. secret seed/root material is never exposed merely to correlate interaction results.
+1. same child + purpose + draw ordinal is the same logical random decision;
+2. retry/replay/recovery cannot reroll;
+3. runtime failover/generation change cannot reroll;
+4. stale/deferred completion cannot reroll;
+5. draw ordinal follows semantic purpose order, not scheduling order;
+6. unrelated siblings/purposes do not gain accidental draw-order coupling;
+7. rejected work before authoritative acceptance does not consume gameplay RNG unless SIM/owner semantics explicitly commit such an occurrence;
+8. security-sensitive seed/root evidence is not public correlation.
 
 ## 9. Public/cross-owner outcome state
 
-Every public/cross-component interaction result that can be affected by retry/ambiguity MUST expose one semantic outcome state:
+A public/cross-component interaction outcome subject to retry/ambiguity MUST expose:
 
 ```text
 InteractionOutcomeState = COMMITTED | PENDING | REJECTED
@@ -341,73 +314,69 @@ InteractionOutcomeState = COMMITTED | PENDING | REJECTED
 
 ### 9.1 `COMMITTED`
 
-`COMMITTED` means the interaction's declared semantic commit point is proven complete exactly once.
+The declared semantic commit point is proven complete exactly once.
 
-For a named coupled workflow, only the workflow's final reconciliation owner/coordinator may establish whole-workflow `COMMITTED`. A participant-local commit is insufficient.
+For a named coupled workflow, only its final reconciliation owner/coordinator may establish whole-workflow `COMMITTED`. Participant-local success is insufficient.
 
 ### 9.2 `PENDING`
 
-`PENDING` means final semantic outcome is unresolved and another blind semantic attempt could duplicate effects/value.
+Final semantic outcome is unresolved and blind re-execution could duplicate effects/value.
 
-While `PENDING`:
+While pending:
 
-- same `InteractionChildOccurrenceRef` MUST be retained;
-- same `OwnerOperationRef` MUST be used if a foreign owner accepted/may have accepted work and the owner contract can identify it;
-- same client `CommandRef` remains the parent command occurrence when the root is client-originated;
-- caller MUST reconcile/query/resume the same occurrence;
-- caller MUST NOT issue a new `CommandRef` for the same semantic intent while the prior occurrence may still commit;
-- transport reconnection/new `connection_generation` is not a new semantic occurrence;
-- any FND-04-required new GameSession recovery does not by itself authorize replaying the old interaction as new;
-- owner-specific recovery/retirement proof is required before a fresh semantic attempt is permitted.
+- retain the same `InteractionChildOccurrenceRef`;
+- retain the same `OwnerOperationRef` where foreign work was accepted/may have been accepted and the owner can identify it;
+- retain the same parent `CommandRef` for client-originated roots;
+- reconcile/query/resume the same occurrence;
+- do not issue a new `CommandRef` for the same semantic intent while the prior occurrence may still commit;
+- transport reconnect/new `connection_generation` does not create a new semantic occurrence;
+- a Foundation session recovery path does not erase durable/foreign operation history;
+- retirement/final-outcome proof is required before a logically duplicate fresh attempt.
 
 ### 9.3 `REJECTED`
 
-`REJECTED` means the original logical occurrence is terminal and no accepted work from it may later commit.
+The original logical occurrence is terminal and no accepted work from it may later commit.
 
-If retry policy allows a fresh attempt:
+If policy permits a fresh attempt:
 
-- client-originated fresh attempt MUST use a new `CommandRef` under the currently valid GameSession, or a new valid session only if FND-04 requires it;
-- non-client fresh attempt MUST use a new root source occurrence owned by that domain;
-- replay of the old source occurrence returns/reconciles the old rejection and MUST NOT reevaluate it as new work.
+- client fresh attempt uses a **new `CommandRef`** under the current valid GameSession, or a new valid session only when Foundation requires it;
+- non-client fresh attempt uses a new owner-defined root occurrence;
+- old source replay returns the same rejection and never becomes fresh work.
 
-## 10. Local mutation state for ambiguity
+## 10. Local mutation state under ambiguity
 
-Where a `PENDING` cross-owner result can coexist with local participant mutation, the safe public/cross-component envelope MUST carry an owner-approved state equivalent to:
+Where a pending cross-owner outcome can coexist with participant-local mutation, the safe envelope MUST expose an owner-approved state equivalent to:
 
 ```text
 LocalMutationState = NOT_COMMITTED | COMMITTED | UNKNOWN
 ```
 
-Rules:
+- `NOT_COMMITTED`: proven no local authoritative mutation from this occurrence committed;
+- `COMMITTED`: local commit proven, but whole coupled workflow may still be pending;
+- `UNKNOWN`: current recovery evidence cannot classify it safely.
 
-- `NOT_COMMITTED` may be asserted only when the owner can prove no local authoritative mutation from the occurrence committed;
-- `COMMITTED` may be asserted only when the local commit is proven, but this does not imply whole coupled-workflow commit;
-- `UNKNOWN` is required when recovery evidence cannot safely classify local mutation yet;
-- absence of a response or timeout MUST NOT be interpreted as `NOT_COMMITTED`;
-- a named coupled workflow may expose a richer owner-owned participant state, but it MUST map boundedly to these caller safety semantics.
+Timeout, cancellation request, lost response or dependency outage MUST NOT be interpreted as `NOT_COMMITTED` without proof.
 
-Purely local `REJECTED` codes defined below require `NOT_COMMITTED`. Purely local `COMMITTED` is terminal and idempotent.
+## 11. Mandatory safe correlation
 
-## 11. Mandatory correlation fields
+A public/cross-component result MUST carry the applicable safe correlation needed for deterministic reconciliation:
 
-A public/cross-component result MUST carry the applicable safe correlation required to reconcile without guessing:
-
-- `RootSourceOccurrenceRef` or its externally legal parent command/event reference;
-- `InteractionChildOccurrenceRef` or a protocol-safe exact representation/reference to it;
+- root source occurrence / externally legal parent `CommandRef` or event reference;
+- `InteractionChildOccurrenceRef` or protocol-safe exact representation/reference;
 - semantic scope (`WorldId`, `ChannelId`, `InstanceId` as applicable; never generic mutable `GLOBAL`);
-- exact bound semantic revision reference sufficient to reject incompatible replay;
+- exact bound semantic revision reference;
 - `InteractionOutcomeState`;
-- stable machine category;
+- stable Foundation machine category;
 - contract-owned symbolic code;
-- `OwnerOperationRef` when foreign work was accepted/may have been accepted and the owner contract exposes such a reference;
+- `OwnerOperationRef` when foreign work was accepted/may have been accepted and the owner exposes it;
 - `LocalMutationState` when partial/local mutation ambiguity exists;
-- optional redacted diagnostic/correlation reference that is not itself authority.
+- optional redacted diagnostic/correlation reference that carries no authority.
 
-The public envelope MUST NOT expose raw internal exception strings, credentials, secret RNG material, unrestricted DB identifiers, stack traces or other sensitive internals.
+MUST NOT expose credentials, secret RNG material, raw exceptions, stack traces or unrestricted internal persistence identifiers.
 
 ## 12. Retry authority vocabulary
 
-GAME-INTERACTION uses these semantic retry authorities:
+GAME-INTERACTION distinguishes:
 
 ```text
 RECONCILE_SAME_OCCURRENCE
@@ -416,330 +385,326 @@ OWNER_INTERVENTION_REQUIRED
 NO_RETRY
 ```
 
-Interpretation:
+- `RECONCILE_SAME_OCCURRENCE`: physical calls may repeat idempotently; source/child/OwnerOperationRef remains the same.
+- `NEW_OCCURRENCE_ALLOWED`: prior occurrence is terminal; a fresh user/domain attempt gets a new root/new CommandRef.
+- `OWNER_INTERVENTION_REQUIRED`: automated bounded reconciliation cannot establish a safe terminal state; the owning recovery/operations path must resolve it before a fresh semantic attempt.
+- `NO_RETRY`: the owning terminal/security contract forbids interaction-level retry.
 
-- `RECONCILE_SAME_OCCURRENCE`: transport/service calls may repeat idempotently, but semantic source/child/OwnerOperationRef does not change.
-- `NEW_OCCURRENCE_ALLOWED`: the old occurrence is terminal; a new user/domain intent may create a new source occurrence/new CommandRef.
-- `OWNER_INTERVENTION_REQUIRED`: automatic bounded reconciliation cannot establish a safe terminal state; owning operational/recovery procedure must resolve it before fresh semantic execution.
-- `NO_RETRY`: security/terminal state forbids interaction-level retry; caller follows the owning session/security/domain contract.
+This is orthogonal to Foundation progression `RETRYABLE | TERMINAL | SECURITY_TERMINAL` and exists to remove ambiguity about **what** may be retried.
 
-This vocabulary is orthogonal to Foundation progression `RETRYABLE | TERMINAL | SECURITY_TERMINAL` and is included to remove caller ambiguity.
+## 13. GAME-INTERACTION-owned outcome/error codes
 
-## 13. GAME-INTERACTION-owned public error codes
+The symbolic `GI_*` codes below are contract-owned by `GAME-INTERACTION-01` if this candidate is accepted. Numeric wire registration remains explicitly deferred to the future registered GAME-INTERACTION payload/schema path under FND-02.
 
-The codes in this section are stable symbolic contract codes owned by `GAME-INTERACTION-01`. This successor does **not** assign numeric wire values. Client-visible numeric registration/IDL is explicitly blocked on the future GAME-INTERACTION payload integration under `FND-02_PROTOCOL_OTERYN_V1_CONTRACT.md`.
+### 13.1 Normative outcome matrix
 
-### 13.1 Normative matrix
-
-| Code | Machine category | Foundation progression | Outcome state | Retry authority | Same source / OwnerOperationRef | New CommandRef/source | Local mutation possible? | Caller terminal-state test | Final reconciliation owner |
+| Code | Foundation category | Progression | Outcome | Retry authority | Same source / owner operation | New CommandRef/source | Local mutation | Caller terminal test | Final reconciliation owner |
 |---|---|---|---|---|---|---|---|---|---|
-| `GI_DEPENDENCY_UNAVAILABLE_REJECTED` | `DEPENDENCY_UNAVAILABLE` | `RETRYABLE` | `REJECTED` | `NEW_OCCURRENCE_ALLOWED` | same source only replays rejection; no foreign op exists | **required for a fresh semantic attempt** if still authorized | `NO`; code is legal only before foreign acceptance/local commit | `REJECTED` + this code proves old occurrence terminal | current interaction owner |
-| `GI_DEPENDENCY_UNAVAILABLE_PENDING` | `DEPENDENCY_UNAVAILABLE` | `RETRYABLE` | `PENDING` | `RECONCILE_SAME_OCCURRENCE` | **same child and same OwnerOperationRef** where accepted/maybe accepted | **forbidden for same intent while pending** | `YES/UNKNOWN`; report `LocalMutationState` as required by owner/workflow | only later owner proof may produce `COMMITTED` or terminal `REJECTED` | delegated owner or named workflow coordinator; interaction maps result |
-| `GI_TIMEOUT_REJECTED` | `TIMEOUT` | `RETRYABLE` | `REJECTED` | `NEW_OCCURRENCE_ALLOWED` | same source only replays rejection; no accepted foreign op | **required for fresh semantic attempt** | `NO`; timeout-before-acceptance must be proven | `REJECTED` proves old occurrence terminal | current interaction owner |
-| `GI_TIMEOUT_PENDING` | `TIMEOUT` | `RETRYABLE` | `PENDING` | `RECONCILE_SAME_OCCURRENCE` | **same child/OwnerOperationRef** | **forbidden for same intent while pending** | `YES/UNKNOWN`; timeout is not proof of abort | owner proof of commit/cancel/reject decides terminal state | delegated owner or named workflow coordinator |
-| `GI_CANCELLED_REJECTED` | `CANCELLED` | `TERMINAL` for this occurrence | `REJECTED` | `NEW_OCCURRENCE_ALLOWED` only for a later distinct intent | same source replays cancellation result | **new source required for later distinct intent** | `NO`; all accepted participants must be proven retired before semantic commit | cancellation-before-commit proof makes old occurrence terminal | interaction owner or workflow coordinator that proved retirement |
-| `GI_CANCELLED_PENDING` | `CANCELLED` | `RETRYABLE` for reconciliation | `PENDING` | `RECONCILE_SAME_OCCURRENCE` | **same child/OwnerOperationRef** | **forbidden for same intent while pending** | `YES/UNKNOWN`; cancel request is not rollback proof | commit proof -> `COMMITTED`; cancel-before-commit proof -> terminal `REJECTED`; otherwise pending | delegated owner/workflow coordinator |
-| `GI_STALE_FENCE_REJECTED` | `STALE_GENERATION` | `TERMINAL` for stale application attempt | `REJECTED` | `NEW_OCCURRENCE_ALLOWED` only after current authority resolves a genuinely new intent | old source remains terminal only when no underlying foreign op can still commit | new source only after terminal proof/current authorization | `NO` from the stale application itself | stale application was rejected before mutation; underlying op must be known absent/terminal | current authoritative runtime owner |
-| `GI_DELEGATED_STALE_COMPLETION_PENDING` | `STALE_GENERATION` | `RETRYABLE` for reconciliation | `PENDING` | `RECONCILE_SAME_OCCURRENCE` | **same child and same delegated OwnerOperationRef** | **forbidden for same intent while pending** | underlying local/foreign mutation may be `COMMITTED` or `UNKNOWN`; stale completion itself mutates nothing | stale message rejection is **not** operation rejection; later current-owner reconciliation decides | underlying delegated owner + current interaction owner mapping |
-| `GI_RECONCILIATION_REQUIRED` | `INTERNAL_UNAVAILABLE` | `RETRYABLE` bounded reconciliation | `PENDING` | `RECONCILE_SAME_OCCURRENCE`; may escalate to owner intervention under owning policy | same source/child/op | **forbidden until terminal retirement/proof** | `YES/UNKNOWN` as reported; never infer none | terminal only after authoritative reconciliation | owner named by underlying operation/workflow |
-| `GI_COUPLED_WORKFLOW_RECONCILIATION_REQUIRED` | `INTERNAL_UNAVAILABLE` | `RETRYABLE` bounded reconciliation | `PENDING` | `RECONCILE_SAME_OCCURRENCE` | same child + same workflow/participant operation refs | **forbidden for same semantic workflow while pending** | participant-local mutation may be `COMMITTED`/`UNKNOWN`; whole workflow not committed yet | only named workflow coordinator can emit whole terminal classification | named coupled-workflow coordinator |
+| `GI_DEPENDENCY_UNAVAILABLE_REJECTED` | `DEPENDENCY_UNAVAILABLE` | `RETRYABLE` | `REJECTED` | `NEW_OCCURRENCE_ALLOWED` | old source replay-only; no foreign op exists | required for fresh attempt if still authorized | `NOT_COMMITTED` | this `REJECTED` proves old occurrence terminal | current interaction owner |
+| `GI_DEPENDENCY_UNAVAILABLE_PENDING` | `DEPENDENCY_UNAVAILABLE` | `RETRYABLE` | `PENDING` | `RECONCILE_SAME_OCCURRENCE` | same child + same `OwnerOperationRef` where accepted/maybe accepted | forbidden for same intent while pending | `NOT_COMMITTED` / `COMMITTED` / `UNKNOWN` as owner evidence permits | only later owner proof yields terminal state | delegated owner or named workflow coordinator; interaction maps |
+| `GI_TIMEOUT_REJECTED` | `TIMEOUT` | `RETRYABLE` | `REJECTED` | `NEW_OCCURRENCE_ALLOWED` | old source replay-only; no accepted foreign op | required for fresh attempt | `NOT_COMMITTED` | this `REJECTED` proves old occurrence terminal | current interaction owner |
+| `GI_TIMEOUT_PENDING` | `TIMEOUT` | `RETRYABLE` | `PENDING` | `RECONCILE_SAME_OCCURRENCE` | same child + same owner operation | forbidden for same intent while pending | may be `COMMITTED`/`UNKNOWN`; timeout is not abort proof | owner commit/reject/cancel proof decides | delegated owner/workflow coordinator |
+| `GI_CANCELLED_REJECTED` | `CANCELLED` | `TERMINAL` | `REJECTED` | `NEW_OCCURRENCE_ALLOWED` only for later distinct intent | same source replays cancellation result | new source required for later distinct intent | `NOT_COMMITTED`; all accepted work proven retired before semantic commit | documented cleanup/retirement proves terminal cancellation | interaction owner or workflow coordinator that proves retirement |
+| `GI_CANCELLATION_RECONCILIATION_REQUIRED` | `INTERNAL_UNAVAILABLE` | `RETRYABLE` | `PENDING` | `RECONCILE_SAME_OCCURRENCE` | same child + same owner operation | forbidden for same intent while pending | `NOT_COMMITTED` / `COMMITTED` / `UNKNOWN` | a cancel request is not `CANCELLED`; terminal only after owner proof | delegated owner/workflow coordinator |
+| `GI_RECONCILIATION_REQUIRED` | `INTERNAL_UNAVAILABLE` | `RETRYABLE` | `PENDING` | `RECONCILE_SAME_OCCURRENCE` or owner intervention after bounded automatic policy | same source/child/op | forbidden until terminal retirement/proof | `NOT_COMMITTED` / `COMMITTED` / `UNKNOWN` | terminal only after authoritative reconciliation | owner named by underlying operation/workflow |
+| `GI_COUPLED_WORKFLOW_RECONCILIATION_REQUIRED` | `INTERNAL_UNAVAILABLE` | `RETRYABLE` | `PENDING` | `RECONCILE_SAME_OCCURRENCE` | same child + same workflow/participant operation refs | forbidden while same workflow intent pending | participant local may be `COMMITTED`/`UNKNOWN`; whole workflow still pending | only coordinator emits whole terminal classification | named workflow coordinator |
 
-### 13.2 `DEPENDENCY_UNAVAILABLE`
+### 13.2 Dependency unavailable
 
-#### Before acceptance
+`GI_DEPENDENCY_UNAVAILABLE_REJECTED` is legal only when the interaction owner proves:
 
-`GI_DEPENDENCY_UNAVAILABLE_REJECTED` MUST be used only if the interaction owner can prove:
-
-- dependency was unavailable before any delegated owner accepted work;
+- dependency failed before foreign acceptance;
 - no local authoritative mutation committed;
-- no operation from this occurrence can later commit.
+- nothing from this occurrence can later commit.
 
-A fresh attempt is a new source occurrence. For a client this means a new `CommandRef`. The old CommandRef remains terminal/replay-only.
+Otherwise use `GI_DEPENDENCY_UNAVAILABLE_PENDING` and reconcile the same child/owner operation.
 
-#### After or ambiguously around acceptance
+A dependency outage never means `safe to issue a new CommandRef` while prior acceptance/commit is ambiguous.
 
-If work was accepted or acceptance cannot safely be disproven, `GI_DEPENDENCY_UNAVAILABLE_PENDING` MUST be used instead.
+### 13.3 Timeout
 
-The caller MUST reconcile the same child/OwnerOperationRef. A dependency outage cannot be converted into a second semantic attempt while the first may still commit.
+Timeout describes expiration of a named deadline, not rollback.
 
-### 13.3 `TIMEOUT`
+- `GI_TIMEOUT_REJECTED`: only when timeout-before-acceptance/no-mutation is proven;
+- `GI_TIMEOUT_PENDING`: when work was/may have been accepted or committed.
 
-Timeout describes observation/deadline failure, not semantic rollback.
+No general `timeout => fresh retry` rule is permitted.
 
-`GI_TIMEOUT_REJECTED` is legal only when the owner proves timeout occurred before any operation acceptance/mutation that might later commit.
+### 13.4 Cancellation
 
-Otherwise `GI_TIMEOUT_PENDING` is required and the same occurrence is reconciled.
+Foundation defines `CANCELLED` as intentionally cancelled with documented cleanup state. Therefore GAME-INTERACTION MUST NOT return the `CANCELLED` category merely because a cancel request was sent.
 
-No implementation may use `timeout => safe to retry with new CommandRef` as a general rule.
+- proven cleanup/retirement before semantic commit -> `GI_CANCELLED_REJECTED`, category `CANCELLED`, terminal old occurrence;
+- commit proven to have won -> `COMMITTED`;
+- cancel/commit ordering still ambiguous -> `GI_CANCELLATION_RECONCILIATION_REQUIRED`, category `INTERNAL_UNAVAILABLE`, state `PENDING`, same child/op.
 
-### 13.4 `CANCELLED`
+This prevents a cancellation request from being mistaken for rollback proof.
 
-A cancellation request is an intent, not proof of rollback.
+### 13.5 Generic reconciliation
 
-`GI_CANCELLED_REJECTED` requires proof that the original occurrence can no longer commit.
+`GI_RECONCILIATION_REQUIRED` is the fallback only when no narrower truthful public category owns the current wait condition.
 
-If cancellation races with or follows possible acceptance, use `GI_CANCELLED_PENDING` until the owner/workflow coordinator proves one of:
+Automatic reconciliation MUST be bounded by the owning contract. If that contract exhausts automatic recovery without safe terminal proof, retry authority becomes `OWNER_INTERVENTION_REQUIRED`; this candidate does not invent numeric thresholds.
 
-- commit won -> `COMMITTED`;
-- cancellation retired the operation before commit -> terminal `REJECTED`;
-- still ambiguous -> remain `PENDING`.
+### 13.6 Coupled workflow recovery
 
-A proven commit MUST NOT be rewritten as cancelled merely because the caller no longer wants it.
+Use `GI_COUPLED_WORKFLOW_RECONCILIATION_REQUIRED` only when a named coupled workflow remains unresolved and no more specific dependency/timeout/cancellation code is truthful.
 
-### 13.5 Stale/delegated completion ambiguity
+- whole state stays `PENDING`;
+- same workflow/participant operation refs are retained;
+- participant-local commit never implies whole-workflow commit;
+- new duplicate CommandRef/source occurrence is forbidden;
+- final whole classification belongs to the named coordinator.
 
-Stale delivery and underlying operation outcome are separate facts.
+## 14. Stale generation/revision and delegated completion ambiguity
 
-A stale generation/revision completion MUST fail before mutation.
+This section deliberately separates **stale delivery/apply failure** from **underlying operation outcome**.
 
-- if there was no accepted/maybe-accepted foreign operation and no local mutation, `GI_STALE_FENCE_REJECTED` may terminally reject that stale application attempt;
-- if a delegated operation exists or may exist, use `GI_DELEGATED_STALE_COMPLETION_PENDING` for the interaction occurrence, preserve the same child/OwnerOperationRef, and reconcile through current authority.
+### 14.1 Stale completion application
 
-The implementation MUST NOT infer `operation rejected` merely from `completion message stale`.
+A completion/input produced under stale runtime generation/revision/fence MUST be rejected before it can mutate current authority.
 
-### 13.6 Coupled workflow pending/recovery
+Stable application-level code:
 
-When a named coupled workflow has not reached a provable terminal semantic commit/reject state and no narrower category is more truthful, use `GI_COUPLED_WORKFLOW_RECONCILIATION_REQUIRED`.
+```text
+GI_STALE_COMPLETION_REJECTED
+category = STALE_GENERATION
+progression = TERMINAL for this stale completion/application attempt
+mutation_by_stale_attempt = NOT_COMMITTED
+retry_authority_for_stale_message = NO_RETRY
+```
 
-Requirements:
+The stale message itself is never replayed as current-authority mutation and never receives a new child identity.
 
-- state remains `PENDING`;
-- same workflow/participant operation identities remain authoritative;
-- local participant `COMMITTED` does not imply whole workflow `COMMITTED`;
-- new client CommandRef/source occurrence for the same workflow intent is forbidden while pending;
-- bounded automatic recovery follows the named workflow contract;
-- after that contract's bounded automatic recovery is exhausted, owner intervention may be required, but this candidate does not invent numeric retry counts;
-- final whole-workflow classification belongs to the named coordinator.
+Safe correlation carries the existing child ref, stale/current relation class and existing owner operation reference when safe; it MUST NOT expose secrets or use raw generation as a credential.
 
-If the known cause is specifically dependency outage, timeout or cancellation, use the corresponding more specific GAME-INTERACTION code rather than this fallback.
+### 14.2 Underlying child may still be pending
 
-## 14. SECURITY_TERMINAL and session-owned failures
+`GI_STALE_COMPLETION_REJECTED` does **not** prove that the underlying delegated operation failed or rolled back.
 
-GAME-INTERACTION does not reinterpret authentication/session/security failures as ordinary retryable interaction failures.
+If the foreign operation was accepted/may have been accepted and final outcome is unknown:
 
-When FND-02/FND-04/FND-04C owns the narrow code, its code and progression remain authoritative, including `SECURITY_TERMINAL` where specified.
+```text
+underlying child state = PENDING
+underlying code = GI_RECONCILIATION_REQUIRED
+retry authority = RECONCILE_SAME_OCCURRENCE
+same InteractionChildOccurrenceRef
+same OwnerOperationRef
+new CommandRef/source for same intent = FORBIDDEN
+local/foreign mutation = COMMITTED or UNKNOWN until owner proves otherwise
+final reconciliation owner = underlying delegated owner, mapped by current interaction owner
+```
 
-Examples of required behavior:
+If the current owner already has authoritative terminal evidence, it surfaces that terminal result instead of converting stale delivery into ambiguity.
 
-- stale connection generation cannot submit/revive an interaction;
-- authentication/binding/security-terminal session failure follows FND-04C reauthentication/recovery rules;
-- GAME-INTERACTION MUST NOT tell the caller to reuse the same command/session when the owning Foundation contract requires a new authenticated issuance/session path;
-- no interaction-level code downgrades `SECURITY_TERMINAL` to `RETRYABLE`;
-- safe correlation is restricted to the owning Foundation contract's allowed fields.
+This split conforms to Foundation `STALE_GENERATION`'s no-mutation guarantee for the stale application while still representing an operation that may have committed elsewhere before its stale completion was delivered.
 
-Thus Foundation security/session codes remain **contract-owned by Foundation** rather than being duplicated under `GI_*` names.
+## 15. Foundation-owned security/session failures
 
-## 15. Bounded internal-to-public mapping
+GAME-INTERACTION MUST NOT reinterpret authentication/session/security failures as ordinary retryable interaction errors.
 
-Internal errors MUST map by semantic evidence, not exception type text.
+When FND-02/FND-04/FND-04C owns the narrow code:
 
-### 15.1 Mapping classes
+- its stable code/category/progression remains authoritative;
+- `SECURITY_TERMINAL` MUST NOT be downgraded to `RETRYABLE`;
+- same-vs-new session/credential action follows Foundation;
+- stale connection generation cannot submit or revive gameplay mutation;
+- Foundation-safe correlation restrictions apply;
+- GAME-INTERACTION does not mint a replacement `GI_*` session code.
 
-GAME-INTERACTION exposes only the bounded stable codes defined in section 13 for interaction-owned dependency/timeout/cancel/stale/reconciliation conditions, plus explicitly delegated owner codes/classes when the owning contract requires them.
+A new GameSession does not erase previously accepted durable/delegated operation history; logically duplicate action remains blocked until any prior ambiguous operation is reconciled/retired.
+
+## 16. Bounded internal-to-public mapping
+
+Mapping MUST depend on semantic acceptance/commit evidence, not raw exception text.
 
 Examples:
 
 ```text
-many internal transport/service-unavailable causes
+internal service unavailable
   -> GI_DEPENDENCY_UNAVAILABLE_REJECTED
      OR GI_DEPENDENCY_UNAVAILABLE_PENDING
-     selected by acceptance/commit evidence
 
-many deadline/internal timeout causes
+internal deadline expiry
   -> GI_TIMEOUT_REJECTED
      OR GI_TIMEOUT_PENDING
-     selected by acceptance/commit evidence
 
-many cancellation implementation details
-  -> GI_CANCELLED_REJECTED
-     OR GI_CANCELLED_PENDING
-     selected by owner retirement/commit evidence
+cancel request/ack implementation details
+  -> GI_CANCELLED_REJECTED only with documented cleanup
+     OR GI_CANCELLATION_RECONCILIATION_REQUIRED
+
+stale worker completion
+  -> GI_STALE_COMPLETION_REJECTED for stale application
+     + GI_RECONCILIATION_REQUIRED for underlying child only if outcome remains ambiguous
 ```
 
-Raw driver/network/database/library strings MUST NOT cross the public boundary.
+Raw driver/network/DB/library exception strings MUST NOT become public API behavior.
 
-### 15.2 No lossy mapping across authority boundaries
+Foreign-owner narrow errors whose retry/mutation/security semantics matter MUST remain owner-owned and be mapped according to the accepted adapter/workflow contract. Distinct `SECURITY_TERMINAL`, `TERMINAL` and same-attempt reconciliation semantics MUST NOT collapse into generic `TEMPORARY_FAILURE`.
 
-When a foreign owner has a narrow code whose semantics affect legal retry, mutation or security disposition, GAME-INTERACTION MUST retain/map that owner-owned code/class according to the accepted adapter contract. It MUST NOT collapse distinct `SECURITY_TERMINAL`, `TERMINAL`, or same-attempt reconciliation requirements into generic `TEMPORARY_FAILURE`.
+## 17. CommandRef / session retry rules
 
-## 16. New CommandRef rules
+### 17.1 Same `CommandRef`
 
-For client-originated interactions the following rules are normative:
+Same `CommandRef` is used for:
 
-### 16.1 Same CommandRef
+- FND-02 duplicate replay/reconciliation of an already-reserved command;
+- recovering the same eventual terminal command result;
+- retaining the parent source identity of pending interaction children across eligible same-GameSession reconnect.
 
-The same `CommandRef` is used for:
+It never converts a terminal command into a fresh semantic attempt.
 
-- duplicate replay/reconciliation of the same already-reserved client command;
-- receiving/recovering the same eventual terminal result;
-- preserving the parent identity of `PENDING` children across eligible same-GameSession reconnect.
+### 17.2 New `CommandRef`
 
-It is **not** a mechanism to make a terminal command become a fresh attempt.
+A new `CommandRef` is required for a fresh client semantic attempt only after the prior occurrence is provably terminal and gameplay policy permits the new attempt.
 
-### 16.2 New CommandRef
+Examples:
 
-A new `CommandRef` is required only when:
+- terminal `REJECTED` + retry permitted -> new CommandRef;
+- prior `COMMITTED` + later distinct player action -> new CommandRef;
+- prior `PENDING` -> new CommandRef for the same semantic intent is forbidden.
 
-- prior occurrence is provably terminal `REJECTED` and policy permits a fresh semantic attempt; or
-- prior occurrence is `COMMITTED` and the player intentionally issues a distinct subsequent action permitted by gameplay rules.
+### 17.3 New GameSession
 
-A new CommandRef is forbidden as a duplicate workaround while prior state is `PENDING`.
+Session admission/recovery belongs to FND-04. If old GameSession terminates and a new valid one is created, GAME-INTERACTION still MUST reconcile any durable/foreign operation from the old occurrence that could have committed before allowing a logically duplicate new action.
 
-### 16.3 New GameSession
+New command/session namespace is not proof that old external value/effect history disappeared.
 
-A new GameSession is Foundation-owned recovery/admission behavior, not interaction retry policy.
-
-If FND-04 terminates the old session and establishes a new valid session, GAME-INTERACTION MUST still reconcile any durable/delegated operation that could have committed from the old occurrence before allowing a logically duplicate new interaction attempt.
-
-A new GameSession namespace does not erase external/DUR-03 operation history.
-
-## 17. Non-client root retry rules
+## 18. Non-client source retry
 
 For movement/timer/event/domain-owned roots:
 
-- physical redelivery/recovery of the **same** root source occurrence MUST reuse the same child refs;
-- a genuinely new committed movement/timer/event occurrence creates new child refs through its new root identity;
-- current world state MUST NOT be used to relabel a historical root as a new occurrence merely because recovery happened;
-- when root source identity cannot be reconstructed, fail closed/reconcile instead of allocating an ad hoc UUID.
+- physical redelivery/recovery of the same source occurrence reuses the same child refs;
+- a genuinely new committed movement/timer/event occurrence has a new root and therefore new child refs;
+- recovery must not relabel a historical root merely because current world state or runtime generation changed;
+- inability to reconstruct root identity fails closed/reconciles rather than allocating an ad hoc UUID.
 
-## 18. Foreign-owner blocking dependencies
+## 19. Foreign-owner dependencies and explicit blockers
 
-### 18.1 DUR-03 item/value
+### 19.1 DUR-03 item/value
 
-Owner: `docs/architecture/DUR-03_ITEM_TRANSACTION_AND_ANTI_DUPLICATION_CONTRACT.md`.
+Owning contract: `docs/architecture/DUR-03_ITEM_TRANSACTION_AND_ANTI_DUPLICATION_CONTRACT.md`.
 
-For interaction-driven item/value mutation:
+- DUR-03 TransactionId/OperationId/cause is the foreign owner identity;
+- DUR-03 owns durable value commit/abort/ambiguity;
+- GAME-INTERACTION preserves trigger/child correlation only;
+- ambiguous durable result remains pending on the same DUR-03 transaction;
+- stale runtime completion cannot duplicate committed value.
 
-- DUR-03 TransactionId/OperationId/cause is the foreign `OwnerOperationRef`;
-- DUR-03 decides durable commit/abort/ambiguity;
-- GAME-INTERACTION child identity correlates the trigger but does not become item value authority;
-- ambiguous durable outcome remains `PENDING` until same DUR-03 transaction is reconciled;
-- stale runtime completion cannot rematerialize or duplicate committed value.
+### 19.2 GAME-ABILITY effect
 
-### 18.2 GAME-ABILITY effect
+Owning contract: accepted GAME-ABILITY-01 effect/whole-gate contract.
 
-Owner: accepted GAME-ABILITY-01 effect/whole-gate contract.
+At this successor baseline draft PR #268 remains unmerged/blocked and is therefore noncanonical.
 
-Current status at this successor base: draft PR #268 is unmerged/blocked and therefore noncanonical.
+**Implementation blocker:** any interaction adapter requiring final GAME-ABILITY effect operation identity, narrow effect code or formula/effect commit semantics is blocked until the Architecture Coordinator accepts the relevant GAME-ABILITY contract.
 
-Implementation dependency:
+This successor does not freeze GAME-ABILITY formulas or error internals.
 
-> Any GAME-INTERACTION adapter that needs final GAME-ABILITY effect operation identity, narrow effect failure code or formula/effect commit semantics is `BLOCKED` until the Architecture Coordinator accepts the relevant GAME-ABILITY contract.
+### 19.3 Movement/relocation/handoff
 
-GAME-INTERACTION MUST NOT guess those codes or formulas.
+Owning contract: `UNKNOWN / NOT YET ACCEPTED` by explicit predecessor boundary.
 
-### 18.3 Movement/relocation/handoff
+**Implementation blocker:** any teleport/movement/relocation/handoff interaction is blocked until a named accepted owner contract defines operation identity, fences, completion, timeout/cancellation, stale completion and recovery.
 
-Owner contract: `UNKNOWN / NOT YET ACCEPTED` by explicit predecessor boundary.
+This successor does not choose that owner.
 
-Implementation dependency:
+### 19.4 Durable writable text
 
-> Any interaction that delegates teleport/movement/relocation/handoff is `BLOCKED` until a named accepted owner contract defines operation identity, current-authority fences, completion, timeout/cancellation, stale completion and recovery semantics.
+Owning contract: `UNKNOWN / NOT YET ACCEPTED`.
 
-This candidate does not choose that owner.
+**Implementation blocker:** any authoritative durable writable-text interaction is blocked until a named accepted owner contract exists.
 
-### 18.4 Durable writable text
+This successor does not choose that owner.
 
-Owner contract: `UNKNOWN / NOT YET ACCEPTED` by explicit predecessor boundary.
+### 19.5 Client protocol registration
 
-Implementation dependency:
+Owning contract: `docs/architecture/FND-02_PROTOCOL_OTERYN_V1_CONTRACT.md` plus a future registered GAME-INTERACTION typed gameplay payload/schema.
 
-> Any interaction requiring authoritative durable writable-text mutation is `BLOCKED` until a named accepted owner contract exists.
+**Implementation blocker:** client-visible child-ref representation, outcome state, symbolic `GI_*` codes and correlation fields require accepted FND-02 gameplay payload/registry integration before runtime/client implementation acceptance.
 
-This candidate does not choose that owner.
+This successor does not allocate numeric message/error IDs or modify FND-02.
 
-### 18.5 Client protocol registration
+## 20. Named coupled-workflow requirements
 
-Owner: `docs/architecture/FND-02_PROTOCOL_OTERYN_V1_CONTRACT.md` plus future registered GAME-INTERACTION typed payload schema.
+Any mechanic spanning multiple authoritative owners where partial success matters MUST have a named accepted workflow contract before implementation.
 
-Implementation dependency:
-
-> Client-visible `InteractionChildOccurrenceRef` representation, `InteractionOutcomeState`, stable symbolic `GI_*` codes and correlation fields MUST be registered in the accepted FND-02 gameplay payload/registry path before runtime/client implementation is accepted. This successor does not allocate numeric message/error IDs or change FND-02.
-
-## 19. Coupled workflow contract requirements
-
-A mechanic that spans interaction plus another authoritative owner MUST have a named accepted workflow contract before implementation if partial success can matter.
-
-That workflow MUST define:
+It MUST define:
 
 - coordinator/final reconciliation owner;
-- source occurrence and participant `OwnerOperationRef` identities;
+- source occurrence and participant owner operation refs;
 - participant authority boundaries;
 - exact bound semantic revision context;
-- current generation/revision/fence checks;
-- prepare/commit or equivalent semantic commit protocol;
-- local/participant mutation states;
-- idempotency and duplicate handling;
-- timeout semantics;
-- cancellation semantics;
-- stale completion handling;
+- generation/revision/fence checks;
+- semantic commit point / accepted prepare-commit equivalent;
+- participant/local mutation states;
+- idempotency/duplicate behavior;
+- timeout;
+- cancellation;
+- stale completion;
 - crash/restart/failover recovery;
-- compensation only when explicitly legal and owner-defined;
-- bounded internal-to-public error mapping;
-- when whole workflow becomes `COMMITTED`, `PENDING` or terminal `REJECTED`.
+- compensation only where explicitly legal;
+- bounded public error mapping;
+- exact conditions for whole `COMMITTED`, `PENDING` and terminal `REJECTED`.
 
-No implementation may infer those semantics from generic `InteractionOutcomeState` alone.
+Generic interaction outcome state does not substitute for this workflow contract.
 
-## 20. Final reconciliation ownership
+## 21. Final reconciliation owner matrix
 
-| Case | Final authority | Required behavior |
+| Case | Final authority | GAME-INTERACTION behavior |
 |---|---|---|
-| pure interaction-local child | current FND-03 authoritative runtime owner in exact semantic scope | validate current fences, dedup by child ref, emit terminal result once |
-| DUR-03 item/value child | DUR-03 durable transaction owner/coordinator | same TransactionId/OperationId reconciliation; interaction maps result |
-| GAME-ABILITY child | accepted GAME-ABILITY effect owner | same effect operation/cause as owner contract; interaction does not calculate/commit formula-owned result |
-| movement/handoff child | `BLOCKED` pending named accepted owner | no guessed retry/completion semantics |
-| coupled workflow | named accepted workflow coordinator | only coordinator declares whole semantic unit terminal |
-| client CommandRef lifecycle | FND-02/FND-04 | same command replay/reconcile vs new command/session follows Foundation contract |
+| interaction-local child | current FND-03 authoritative runtime owner in exact semantic scope | validate fences, dedup child, emit one terminal outcome |
+| DUR-03 item/value | DUR-03 transaction owner/coordinator | same transaction reconciliation; boundedly map result |
+| GAME-ABILITY effect | accepted GAME-ABILITY effect owner | preserve trigger correlation; do not own formula/effect commit |
+| movement/handoff | **BLOCKED** until named accepted owner | do not infer retry/completion semantics |
+| named coupled workflow | accepted workflow coordinator | only coordinator declares whole semantic unit terminal |
+| client command/session identity | FND-02/FND-04 | same-vs-new command/session follows Foundation |
 
-The interaction runtime is responsible for preserving the child/source correlation and refusing to overstate another owner's commit status.
+## 22. Deterministic acceptance scenarios
 
-## 21. Deterministic acceptance scenarios
-
-### GI-SR-01 — movement fan-out, partial delivery, retry and recovery
+### GI-SR-01 — one movement occurrence -> N contacts -> partial delivery/retry/recovery
 
 **Given**
 
 - committed authoritative movement occurrence `M`;
-- bound semantic revision context `R`;
-- authoritative contacts `A`, `B`, `C`;
-- physical discovery order may vary;
-- canonical semantics produce ordered children:
+- exact semantic revision context `R`;
+- authoritative contacts `A`, `B`, `C` discovered in arbitrary physical order;
+- canonical semantics produce distinct ordered children:
   - `C1 = (M, DefA, A, EdgeEnter, -, R)`;
   - `C2 = (M, DefB, B, EdgeContact, -, R)`;
-  - `C3 = (M, DefC, C, EdgeEnter, -, R)`.
+  - `C3 = (M, DefC, C, EdgeEnter, -, R)`;
+- child RNG uses `(Ci, purpose, draw_ordinal)`.
 
-**Progress before failure**
+**Progress**
 
 1. `C1` commits.
-2. `C2` delegates to owner operation `O2`, which is accepted, but final response is lost; child is `PENDING`.
-3. process/runtime ownership changes before `C3` commits.
-4. an old-generation completion for `C2` later arrives.
+2. `C2` delegates as owner operation `O2`, which is accepted, but final response is lost; `C2=PENDING`.
+3. runtime fails before `C3` commits.
+4. replacement owner recovers under newer ownership generation.
+5. stale old-generation completion for `C2` arrives.
 
-**Required recovery**
+**Required**
 
-1. replacement owner reconstructs the same child plan under `R`;
+1. same child plan under `R` is reconstructed;
 2. `C1` is not applied again;
-3. `C2` remains the same child and same `O2`; stale completion cannot mutate current owner, and current owner reconciles `O2`;
-4. `C3` executes at most once under its original child ref if current fences authorize;
-5. siblings never collapse into one dedup key;
-6. physical hash/container order cannot change `C1/C2/C3` identity/order;
-7. every child random decision uses the same `(Ci,purpose,draw)` identity and cannot reroll;
-8. final state contains one terminal outcome per child exactly once;
-9. replay reconstructs the same semantic child set/order/results under `R`.
+3. stale `C2` completion is rejected before mutation as `GI_STALE_COMPLETION_REJECTED`;
+4. underlying `C2` remains the same child and reconciles the same `O2` under `GI_RECONCILIATION_REQUIRED` until owner truth is known;
+5. `C3` executes at most once under its original child ref if current fences authorize;
+6. siblings never collapse;
+7. hash/container/worker order cannot change child identity/order;
+8. retries/replay cannot reroll child RNG;
+9. after reconciliation each child has exactly one terminal outcome;
+10. replay under `R` reproduces the same semantic child plan/outcomes.
 
-**Acceptance verdict:** PASS only if all nine properties hold.
+PASS requires all ten.
 
-### GI-SR-01B — nested cascade path collision
+### GI-SR-01B — nested cascade collision
 
-**Given** two first-level children under root `M` both cascade into the same target/edge tuple.
-
-**Required** the two nested children remain distinct because their `ParentSourceOccurrenceRef` values are distinct parent child refs. A runtime that truncates identity to `(M, final_target, final_edge)` fails acceptance.
+Two first-level children under `M` both cascade into the same final target/edge. Their nested child refs MUST remain distinct because their `ParentSourceOccurrenceRef` values differ. Truncating identity to `(M, final_target, final_edge)` fails acceptance.
 
 ### GI-SR-02 — dependency unavailable before acceptance
 
-**Given** no foreign operation was accepted and no local mutation committed.
-
-**Then** return:
+No foreign work accepted and no local mutation committed:
 
 ```text
 GI_DEPENDENCY_UNAVAILABLE_REJECTED
@@ -747,94 +712,72 @@ state = REJECTED
 local_mutation = NOT_COMMITTED
 ```
 
-Same CommandRef replay returns the same rejection. A later fresh client attempt uses a new CommandRef.
+Old CommandRef remains terminal/replay-only. Fresh permitted client attempt uses a new CommandRef.
 
-### GI-SR-03 — timeout after possible foreign acceptance
+### GI-SR-03 — timeout after possible acceptance
 
-**Given** delegation may have been accepted when timeout occurs.
-
-**Then** return:
+Possible delegated acceptance at timeout:
 
 ```text
 GI_TIMEOUT_PENDING
 state = PENDING
 same child
-same OwnerOperationRef / same owner attempt identity
+same OwnerOperationRef
+new same-intent CommandRef = forbidden
 ```
 
-A new CommandRef for the same intent is forbidden until owner reconciliation proves terminal state.
+Final delegated owner reconciles.
 
-### GI-SR-04 — cancellation races commit
+### GI-SR-04 — cancellation race
 
-**Given** cancellation request races a delegated commit.
+- commit proof -> `COMMITTED`;
+- documented retirement before semantic commit -> `GI_CANCELLED_REJECTED` / terminal `REJECTED`;
+- ordering ambiguous -> `GI_CANCELLATION_RECONCILIATION_REQUIRED` / `PENDING`.
 
-**Then**:
+No path guesses rollback or duplicates the operation.
 
-- owner proves commit first -> `COMMITTED`;
-- owner proves operation retired before commit -> `GI_CANCELLED_REJECTED` / `REJECTED`;
-- neither proven -> `GI_CANCELLED_PENDING` / `PENDING`.
+### GI-SR-05 — stale delegated completion
 
-No path duplicates the operation and cancellation never rewrites a proven commit.
+Old-generation completion mutates nothing and receives `GI_STALE_COMPLETION_REJECTED`. If underlying operation outcome remains unknown, child remains `PENDING` with `GI_RECONCILIATION_REQUIRED`, same child and same owner operation. No new CommandRef/source/RNG stream is created.
 
-### GI-SR-05 — stale delegated completion after ownership change
+### GI-SR-06 — coupled workflow partial participant success
 
-**Given** a delegated operation exists and an old-generation completion arrives after runtime ownership moves.
+One participant locally committed, another/final coordinator unresolved. Whole workflow remains `PENDING`; local state may say `COMMITTED`, but only the named coordinator emits whole terminal outcome. New duplicate CommandRef/source is forbidden.
 
-**Then** stale completion mutates nothing, occurrence remains/re-enters `PENDING` as `GI_DELEGATED_STALE_COMPLETION_PENDING`, and current owner reconciles the same foreign operation. No new child, owner operation, CommandRef or RNG stream is created.
+### GI-SR-07 — terminal rejection then fresh attempt
 
-### GI-SR-06 — coupled workflow participant partial success
+After proven `GI_TIMEOUT_REJECTED`, if gameplay still permits another attempt, old CommandRef remains terminal/replay-only and the fresh action uses a new CommandRef/new child refs. New random decisions are legal because this is a genuinely new occurrence, not retry of the old one.
 
-**Given** one participant has locally committed but another participant/final coordinator is unresolved.
+### GI-SR-08 — Foundation security-terminal
 
-**Then** whole workflow remains `PENDING`; `LocalMutationState` may be `COMMITTED` for the proven participant, but only the workflow coordinator may emit whole `COMMITTED` or terminal `REJECTED`. New duplicate CommandRef/source occurrence remains forbidden while pending.
+If FND-04C classifies the owning session/admission failure `SECURITY_TERMINAL`, GAME-INTERACTION does not wrap it as ordinary `GI_DEPENDENCY_UNAVAILABLE_*`, does not advise same-command/session retry, and follows Foundation recovery/reauthentication semantics.
 
-### GI-SR-07 — terminal rejection followed by intentional fresh attempt
+## 23. Failure-mode invariants
 
-**Given** `GI_TIMEOUT_REJECTED` was proven before acceptance and the gameplay rule still permits retry.
+Under crash/restart/retry/failover:
 
-**Then** old CommandRef remains terminal/replay-only and the player's fresh attempt uses a new CommandRef. The new root creates new child refs and, where randomness is semantically part of the new occurrence, may lawfully receive new RNG decisions because it is a new occurrence rather than a retry of the old one.
-
-### GI-SR-08 — Foundation security-terminal failure
-
-**Given** FND-04C classifies the session/admission condition `SECURITY_TERMINAL`.
-
-**Then** GAME-INTERACTION does not wrap it as `GI_DEPENDENCY_UNAVAILABLE_*`, does not recommend same-command/session retry, and follows the owning Foundation reauthentication/recovery disposition. No interaction mutation is authorized by the failed/stale session evidence.
-
-## 22. Failure-mode invariants
-
-The following MUST hold under crash/restart/retry/failover:
-
-1. one semantic sibling => at most one authoritative commit;
-2. different siblings => different semantic refs unless an explicit owning join contract says otherwise;
-3. same child retry => same semantic revisions and RNG purpose identity;
-4. old ownership generation => no mutation authority;
-5. stale completion rejection => no assumption about underlying operation outcome;
-6. timeout => no assumption of abort;
-7. cancellation request => no assumption of rollback;
-8. `PENDING` => no blind new semantic attempt;
-9. `REJECTED` => no pending operation may later commit;
-10. `COMMITTED` => no retry/recovery may reapply;
-11. new GameSession => does not erase durable/foreign operation reconciliation requirements;
+1. one semantic child has at most one authoritative commit;
+2. distinct siblings/path siblings have distinct refs unless an explicit owner join rule says otherwise;
+3. same child retry retains semantic revisions and RNG identity;
+4. stale authority cannot mutate;
+5. stale completion rejection does not imply underlying rollback;
+6. timeout does not imply abort;
+7. cancellation request does not imply `CANCELLED`;
+8. `PENDING` forbids blind new semantic attempt;
+9. `REJECTED` means nothing from that occurrence can later commit;
+10. `COMMITTED` is never reapplied;
+11. new GameSession does not erase durable/foreign reconciliation;
 12. scripts remain proposal-only;
-13. foreign owner commit remains foreign-owned;
-14. missing owner/narrow error contract => implementation blocked rather than guessed.
+13. foreign commit authority remains foreign-owned;
+14. missing owner/narrow error contract blocks implementation rather than caller guesswork.
 
-## 23. Decision timing
+## 24. Decision timing
 
-These decisions are required **now** before implementation because they define:
+These semantics MUST be decided before implementation because they define dedup equality, deterministic RNG occurrence identity, failover/recovery, caller retry, cross-owner adapter safety and public result meaning.
 
-- dedup/equality semantics;
-- deterministic RNG occurrence identity;
-- failover/recovery behavior;
-- client retry behavior;
-- cross-owner adapter safety;
-- public result contract.
+Deferring them until runtime/DDL/protocol coding risks persisting unstable identity or shipping retry behavior capable of duplicating value/effects.
 
-Deferring them until runtime/DDL/protocol coding would risk persisting unstable identities or shipping ambiguous retry behavior that can duplicate effects/value.
-
-This candidate intentionally does **not** decide physical storage, hashing, wire numeric codes, numeric limits, runtime topology or foreign-owner internals.
-
-## 24. Explicit non-decisions
+## 25. Explicit non-decisions
 
 `DECISIONS_NOT_TAKEN`:
 
@@ -842,80 +785,76 @@ This candidate intentionally does **not** decide physical storage, hashing, wire
 - no generic global `InteractionId`/UUID;
 - no generic global owner `OperationId`;
 - no generic mutable `GLOBAL` interaction scope;
-- no teleport/movement/handoff owner decision;
-- no writable-text owner decision;
+- no teleport/movement/handoff owner;
+- no writable-text owner;
 - no GAME-ABILITY formulas/effect internals;
 - no numeric cascade/resource/retry limits;
 - no Rust/runtime/client/server implementation;
-- no DDL/migration/schema decision;
-- no Platform/external-repository decision;
-- no production/deployment change;
-- no coordinator-only global architecture overlay mutation.
+- no DDL/migration/storage schema;
+- no physical hash/digest/serialization choice;
+- no numeric wire error IDs;
+- no Platform/external-repository work;
+- no production/deployment work;
+- no coordinator-only global overlay mutation.
 
-## 25. Cross-domain findings
+## 26. Cross-domain findings
 
 `CROSS_DOMAIN_FINDINGS: NONE NEW`.
 
-Inherited explicit blockers are retained, not solved:
+Inherited explicit blockers remain:
 
-- GAME-ABILITY final whole-gate integration remains noncanonical while draft PR #268 is unmerged/blocked;
-- movement/handoff owner contract remains unresolved;
-- durable writable-text owner contract remains unresolved.
+- GAME-ABILITY whole-gate integration is noncanonical while draft PR #268 remains unmerged/blocked;
+- movement/handoff owner remains unresolved;
+- durable writable-text owner remains unresolved.
 
-## 26. Implementation readiness conditions
+## 27. Implementation readiness conditions
 
-Even if this candidate is accepted, runtime implementation remains `NOT_STARTED` and is permitted only after the relevant future implementation task verifies all required dependencies.
+Even after architecture acceptance, runtime remains `NOT_STARTED` until a future authorized implementation task verifies the necessary dependencies.
 
-At minimum, implementation MUST be blocked until:
+Implementation is blocked until, as applicable:
 
-- Architecture Coordinator integrates/accepts the GAME-INTERACTION whole-gate contract including this successor;
-- client-visible typed payload/error registration is accepted under FND-02 where needed;
-- every used target/object family has a stable authoritative target discriminator;
-- every used coupled workflow has a named accepted coordinator/error/recovery contract;
-- every delegated owner supplies stable operation identity and narrow retry/commit semantics;
-- GAME-ABILITY/movement/writable-text blockers are resolved for mechanics that depend on them;
-- executable tests prove the scenarios/invariants above.
+- coordinator integrates/accepts GAME-INTERACTION including this successor;
+- client-visible typed payload/error registration is accepted under FND-02;
+- every used object family has a stable target discriminator;
+- each delegated owner has stable operation identity and retry/commit semantics;
+- each coupled workflow has a named coordinator/recovery/error contract;
+- GAME-ABILITY/movement/writable-text blockers are resolved for mechanics that need them;
+- executable tests prove the scenarios/invariants below.
 
-## 27. Acceptance evidence required from a future implementation task
+## 28. Future executable evidence
 
-Future executable acceptance MUST include, at minimum:
+A future implementation task MUST provide at minimum:
 
-- property/golden tests that canonical child-plan order is independent of randomized container insertion order;
-- duplicate/replay tests proving sibling uniqueness and same-sibling idempotency;
-- crash/failover tests at every child lifecycle boundary;
+- property/golden tests showing child order independence from randomized container insertion;
+- sibling uniqueness + same-sibling duplicate/replay idempotency tests;
+- nested cascade path-collision tests;
+- crash/failover tests at child lifecycle boundaries;
 - stale-generation/revision completion tests;
-- deterministic RNG replay tests proving no retry reroll;
+- deterministic RNG replay/no-reroll tests;
 - dependency unavailable pre/post acceptance tests;
 - timeout pre/post acceptance tests;
 - cancellation race tests;
 - FND-02 duplicate CommandRef/reconnect tests;
-- DUR-03 ambiguous transaction integration tests where item/value is involved;
-- coupled-workflow participant partial-success recovery tests;
-- public error-schema tests proving bounded mapping and safe correlation;
-- security-terminal tests proving no downgrade to ordinary retry.
+- DUR-03 ambiguous transaction integration where item/value is involved;
+- coupled-workflow participant partial-success recovery;
+- public error mapping/safe correlation tests;
+- Foundation security-terminal no-downgrade tests.
 
-Exact numeric limits and runtime mechanics belong to their implementation/owner tasks, not this paper-only candidate.
+Numeric limits/runtime mechanics remain owner-task work.
 
-## 28. Governance terminal condition
+## 29. Governance terminal condition
 
-This successor worker MUST stop after:
-
-- successor task/analysis/candidate are committed;
-- draft PR is created;
-- full exact-head diff self-review is complete;
-- ordinary exact-head repository CI is evaluated;
-- any worker-owned material finding is repaired within this successor's bounded budget;
-- final checkpoint evidence is recorded outside the frozen commit where necessary.
+The successor worker MUST stop after task/analysis/candidate delivery, draft PR, exact-head full-diff self-review and exact-head ordinary repository CI evaluation.
 
 The worker MUST NOT:
 
-- mark the PR ready;
+- mark PR ready;
 - trigger Codex/OpenAI/owner-funded independent review;
 - merge/auto-merge;
 - close issue #274 or predecessor #262;
-- close/archive predecessor PR #269;
+- close/archive PR #269;
 - archive task/release ownership;
-- update coordinator-only global architecture surfaces.
+- mutate coordinator-only global architecture surfaces.
 
 Required handoff:
 
