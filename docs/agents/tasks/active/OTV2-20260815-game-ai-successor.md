@@ -4,19 +4,19 @@
 task_id: OTV2-20260815-game-ai-successor
 title: Re-scope GAME-AI-01 final architecture findings after predecessor repair-budget exhaustion
 mode: PAPER_ONLY_SUCCESSOR_RESCOPED
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/arch-c-game-ai-successor
 issue: 275
-pr: null
+pr: 276
 base_sha: cb98fd32a2bb71fce83234ebf8bf69bdd1a1970e
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: agent-c-game-ai-successor
 created_at: 2026-08-15T12:00:00+02:00
-updated_at: 2026-08-15T12:00:00+02:00
+updated_at: 2026-08-15T12:00:49+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 stable_architecture_gate: GAME-AI-01
@@ -133,12 +133,12 @@ The successor MUST preserve:
 - [x] New successor issue exists and explicitly links #261/#272.
 - [x] New branch starts from trusted current `main`.
 - [x] New active task records predecessor repair history without resetting it.
-- [ ] GAME-AI analysis applies mandatory decision timing and removes premature FSM representation freeze if not required now.
-- [ ] Candidate contract defines staged/preflighted all-or-nothing semantic-resolution atomicity.
-- [ ] Candidate contract replaces one-retry freeze with policy-defined finite retry policy and hard maximum.
-- [ ] Preserved predecessor decisions remain present.
-- [ ] Disconnect/re-entry suppression is represented only as downstream target/action legality input.
-- [ ] Draft PR exists and remains draft.
+- [x] GAME-AI analysis applies mandatory decision timing and records `Must decide now: NO` for FSM representation while preserving bounded semantic execution.
+- [x] Candidate contract defines staged/preflighted all-or-nothing semantic-resolution atomicity.
+- [x] Candidate contract replaces one-retry freeze with policy-defined finite retry policy and hard maximum.
+- [x] Preserved predecessor decisions remain present.
+- [x] Disconnect/re-entry suppression is represented only as downstream target/action legality input.
+- [x] Draft PR #276 exists and remains draft.
 - [ ] Full successor diff is self-reviewed on exact final head with zero open material findings.
 - [ ] Required exact-head CI/checks pass on the unchanged final head.
 - [x] No owner-funded AI/Codex/OpenAI workflow is authorized or invoked by this worker.
@@ -146,7 +146,7 @@ The successor MUST preserve:
 
 ## Readiness truth and freeze rule
 
-Repository content MUST NOT claim `ready` before exact-head evidence exists. During authoring this task is `implementing`; after the final content mutation it becomes `validating`.
+Repository content MUST NOT claim `ready` before exact-head evidence exists. The task is now `validating` because all intended content and PR metadata have been authored.
 
 Because a commit cannot contain truthful evidence about its own future SHA/check results, the final exact-head self-review/CI outcome and any resulting `ready` transition are recorded as immutable PR/issue evidence **without moving the reviewed head**. No post-validation commit may be created merely to copy check state back into this file.
 
@@ -173,25 +173,26 @@ The worker performs a full-diff exact-head review for scope, architectural consi
 ## Context checkpoint
 
 ```yaml
-status: implementing
+status: validating
 completed:
   - read #261, #272, all final review threads and coordinator BLOCKED disposition
   - read root/agent governance and decision/closeout policies
   - read FND-03, SIM-DETERMINISM-01, GAME-CHANNEL-01, DUR-04, accepted GAME-ABILITY partials and disconnect/re-entry owner decision
   - created successor issue #275
   - created branch docs/arch-c-game-ai-successor from main cb98fd32a2bb71fce83234ebf8bf69bdd1a1970e
+  - created draft PR #276 with coordinator-only merge authority
+  - authored bounded successor analysis and candidate on the owned GAME-AI paths
 in_progress:
-  - authoring bounded successor analysis and candidate
+  - exact-final-head full-diff self-review and repository CI/check validation
 blocked: []
 validation_pending:
-  - draft PR metadata
   - full diff review
   - exact-head self-review
   - exact-head required checks
 repair_cycles_for_current_gate: 5
 successor_task_repair_cycles: 0
 last_head_sha: null
-next_action: AUTHOR_SUCCESSOR_CONTRACT
+next_action: VALIDATE_EXACT_HEAD
 ```
 
 `MERGE_AUTHORITY: ARCHITECTURE_COORDINATOR_ONLY`
