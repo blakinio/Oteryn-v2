@@ -55,21 +55,22 @@ Draft PR #271 is the worker handover artifact. Merge and lifecycle closeout rema
 - **PROVEN:** manifest revision 3 contains exactly the four scoped cases from PR #255. Each is target `UNKNOWN`, Oteryn `NOT_STARTED`, parity `PARITY_PENDING_EVIDENCE`, with source/case provenance and legal review `PENDING`.
 - **PROVEN RESEARCH:** exact Light Healing and Ice Strike Library locators still surface expected metadata/descriptions through official-domain search indexing, but direct opens return HTTP 403.
 - **PROVEN RESEARCH:** search-index freshness is approximate only (`2 weeks` for exact spell pages; `3 weeks` for an aggregate spell-list surface), with no exact crawl timestamp tying a capture to the 2026-07-28 post-server-save state.
-- **PROVEN RESEARCH:** July 27/28 official news establishes the maintenance/change boundary and selected July 28 changes; omission of these spells is inadmissible as continuity proof. An official delayed Echo Raid disclosure demonstrates the accepted no-silence-inference risk.
+- **PROVEN RESEARCH:** July 27/28 official News Archive/search indexing surfaces the maintenance/change boundary and selected July 28 changes; exact E1/E2 article IDs were not independently verified and are not asserted. E6 has a separately verified exact official News Ticker locator, `id=8901&subtopic=newsarchive`.
+- **PROVEN RESEARCH:** omission of these spells from July 27/28 news is inadmissible as continuity proof. The delayed Echo Raid disclosure remains methodological evidence for the accepted no-silence-inference risk, not spell evidence.
 - **UNKNOWN:** a provenance-cleared exact-time capture or affirmative continuity chain may exist elsewhere, but the bounded research did not obtain one.
 
 ## Acceptance criteria
 
 - [x] Preflight evidence table records all four target cases and their current `UNKNOWN / PENDING` blockers.
-- [x] Research is bounded to the four issue #259 cases and records exact official locators, retrieval mode, timing relation, provenance limitations, uncertainty and conflict handling in `docs/agents/evidence/OTV2-20260815-ability-combat-reference-continuity.md`.
+- [x] Research is bounded to the four issue #259 cases and records verified exact official locators where independently demonstrable, explicitly classifies broad News Archive/search surfaces where exact article identity is not proven, and records retrieval mode, timing relation, provenance limitations, uncertainty and conflict handling in `docs/agents/evidence/OTV2-20260815-ability-combat-reference-continuity.md`.
 - [x] Every case has explicit promotion rejection reasoning; all four retain `UNKNOWN`, provenance/legal `PENDING` and `PARITY_PENDING_EVIDENCE`.
 - [x] Patch-note/search silence, approximate crawl ages, community documentation, OTS similarity and implementation convenience are explicitly rejected as independent continuity proof.
 - [x] Conditional manifest/fixture changes were not made because evidence does not change an existing classification or provenance state; no contract defect requiring clarification was found.
 - [x] Manifest integrity verified by identical blob SHA `f5828732038ac2fd3ae03f3d1793505d48a61122` on worker branch and trusted base; first evidence/fixture package integrity verified by identical blob SHA `5c9961a99616839a40b3ca933ac4371f93ffca48`.
 - [x] No runtime/client/protocol/DDL/Platform/production or external-repository write was performed; no proprietary code/assets or restricted material were used.
 - [x] Draft PR #271 was created against `main` and its pre-final-metadata diff contained exactly the two Agent A-owned files.
-- [x] Complete pre-final-metadata patches for both changed files were inspected; no unresolved material evidence/scope finding remains.
-- [ ] Exact final-head repository governance/PR checks are external PR/check evidence generated after this self-referentially impossible final metadata commit; coordinator must consume the exact-head result on PR #271.
+- [x] Complete pre-repair patches for both changed files were inspected; the coordinator's locator-integrity finding is addressed by the bounded repair and requires a fresh exact-head coordinator re-audit.
+- [ ] Exact repaired-head repository governance/PR checks and coordinator re-audit are external PR/check evidence generated after the repair commits; the exact final SHA is recorded externally because a commit cannot contain its own SHA.
 
 ## Excluded scope
 
@@ -86,8 +87,10 @@ The research found official-domain corroboration but not admissible continuity/p
 - exact Light Healing and Ice Strike Library locators remain search-index readable while direct opens return HTTP 403;
 - index freshness is approximate and has no exact timestamp;
 - the aggregate official spell list has approximate crawl age and incomplete case-aspect coverage;
+- E1/E2 exact Tibia news article IDs were not independently verified, so their formerly malformed/broad result URLs are no longer represented as exact source identities;
+- E6 exact official News Ticker locator was independently verified as `https://www.tibia.com/news/?id=8901&subtopic=newsarchive`;
 - July 27/28 official news cannot prove continuity through omission;
-- the accepted no-silence-inference rule is supported by the official delayed Echo Raid disclosure.
+- the accepted no-silence-inference rule is supported methodologically by the official delayed Echo Raid disclosure.
 
 Therefore the correct evidence action is **rejection of promotion**, not a manifest update.
 
@@ -97,6 +100,7 @@ Therefore the correct evidence action is **rejection of promotion**, not a manif
 2. Preflight initially treated the post-activation main lifecycle commit as a stale-branch problem; coordinator issue comments prove this branch was intentionally activated from `088b46638...`. No force move occurred.
 3. Initial task ownership over-declared `REFERENCE_EVIDENCE_PARITY_MANIFEST_CONTRACT.md`; ownership was corrected to only the Agent A task record and new evidence artifact.
 4. Full PR file review confirms no conditional manifest/package or coordinator-overlay changes entered the diff.
+5. Coordinator re-audit found malformed Tibia-news query strings for E1/E2/E6. Repair reclassified E1/E2 as broad official News Archive/search-surface evidence because exact article IDs could not be independently verified, replaced E6 with its verified exact ticker locator, and removed wording that overstated exact-source identity. No case classification was promoted.
 
 ## Validation
 
@@ -104,9 +108,10 @@ Therefore the correct evidence action is **rejection of promotion**, not a manif
 
 - four-case source/classification matrix: **PASS**.
 - fail-closed classification discipline: **PASS** — 0/4 promoted.
-- exact changed-file scope before final task metadata: **PASS** — only task + evidence artifact.
-- conditional manifest blob check: **PASS** — branch/base SHA both `f5828732038ac2fd3ae03f3d1793505d48a61122`.
-- conditional first evidence/fixture package blob check: **PASS** — branch/base SHA both `5c9961a99616839a40b3ca933ac4371f93ffca48`.
+- news-locator provenance repair: **PASS** — E1/E2 exact article IDs are explicitly `NOT VERIFIED`; E6 exact ticker locator is verified; malformed/broad query strings are not represented as exact source identity.
+- exact changed-file scope before repaired-head external checks: **PASS** — only task + evidence artifact are intended.
+- conditional manifest blob check: **PASS** — branch/base SHA both `f5828732038ac2fd3ae03f3d1793505d48a61122` before this repair; manifest remains outside the changed-file set.
+- conditional first evidence/fixture package blob check: **PASS** — branch/base SHA both `5c9961a99616839a40b3ca933ac4371f93ffca48` before this repair; fixture package remains outside the changed-file set.
 - manifest/schema validation: `NOT_APPLICABLE` — neither machine artifact is changed and no JSON payload is introduced by this PR.
 
 ### Component/integration
@@ -121,7 +126,7 @@ Therefore the correct evidence action is **rejection of promotion**, not a manif
 
 ### Exact-head CI
 
-- final head: recorded externally on PR #271 after this commit exists; a commit cannot contain its own SHA
+- final head: recorded externally on PR #271 after the repair commit exists; a commit cannot contain its own SHA
 - trigger source: draft PR
 - workflow/run/job: external PR/check evidence
 - runner assignment: external PR/check evidence
@@ -130,24 +135,24 @@ Therefore the correct evidence action is **rejection of promotion**, not a manif
 
 ## Self-review
 
-- exact head: recorded externally on PR #271 after final commit exists
+- exact head: recorded externally on PR #271 after the repair commit exists
 - method/reviewer: DOMAIN ARCHITECTURE DESIGN AGENT / Agent A worker
-- material findings: four bookkeeping/ownership/scope findings above repaired; complete evidence/task patches inspected
-- verdict: **READY FOR COORDINATOR AUDIT**, subject to exact-final-head PR checks
+- material findings: five bookkeeping/ownership/scope/evidence-integrity findings above repaired; exact repaired-head full diff must be inspected before PR handoff
+- verdict: **PENDING EXACT-HEAD FULL-DIFF SELF-REVIEW**, then coordinator re-audit
 
 ## Independent review
 
 - required: YES — issue #259 explicitly requires coordinator audit
-- exact head: coordinator must pin the final PR #271 head
+- exact head: coordinator must pin the repaired PR #271 head
 - method/auditor: architecture coordinator
-- material findings: pending coordinator audit
-- verdict: pending coordinator audit
+- material findings: locator-integrity finding returned for repair; fresh repaired-head audit pending
+- verdict: pending coordinator re-audit
 
 ## PR and closeout
 
 - draft PR: #271
-- changed-file review: expected exactly the two Agent A-owned files; final exact-head file set must remain identical after this task-metadata-only commit
-- unresolved review threads: none existed at worker handover review; coordinator to re-check
+- changed-file review: expected exactly the two Agent A-owned files; exact repaired-head file set must be rechecked externally before handoff
+- unresolved review threads: locator-integrity thread exists from the coordinator/audit cycle and must be rechecked after repair; worker does not substitute its self-review for coordinator disposition
 - related/superseded PRs: PR #255 is accepted predecessor evidence package
 - protected auto-merge: FORBIDDEN BY ISSUE #259 / user instruction
 - merge commit/result: NOT PERFORMED
@@ -158,7 +163,7 @@ Therefore the correct evidence action is **rejection of promotion**, not a manif
 ## Context checkpoint
 
 ```yaml
-last_progress: draft PR #271 prepared with bounded evidence result 0/4 promotions and clean pre-final-metadata full-diff self-review
+last_progress: coordinator locator-integrity finding repaired without promotion; exact repaired-head full-diff self-review and CI check precede coordinator re-audit handoff
 status: ready
 branch: docs/arch-a-reference-continuity
 head_sha: 8262cdd0ad364d3b5fa61410b1f6eb9dd633ddb6
@@ -166,7 +171,7 @@ pr: 271
 final_head_sha: null
 final_head_frozen_at: null
 ci_trigger_source: pull_request
-ci_check_generation: pending-final-head
+ci_check_generation: pending-repaired-final-head
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -175,12 +180,12 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 0
+repair_cycles_for_current_gate: 1
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
-owner_action_required: coordinator audit after exact-head checks
+owner_action_required: architecture coordinator re-audit after exact-head checks
 blocker: null
-next_action: architecture coordinator audits exact PR #271 head; worker must not merge or lifecycle-close
+next_action: ARCHITECTURE_COORDINATOR_REAUDIT after worker exact-head self-review and CI status recording; worker must not merge or lifecycle-close
 ```
 
 **MERGE_AUTHORITY: ARCHITECTURE_COORDINATOR_ONLY**
