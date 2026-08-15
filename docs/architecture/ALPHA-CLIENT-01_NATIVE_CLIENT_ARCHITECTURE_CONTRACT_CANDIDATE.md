@@ -7,12 +7,14 @@
 - Issue: `#263`
 - Worker: `DOMAIN ARCHITECTURE DESIGN AGENT / worker E`
 - Depends on:
+  - `docs/architecture/ADR-0003-platform-identity-game-gateway-and-admission-boundary.md`
   - `docs/architecture/ADR-0011-native-client-pre-protocol-migration-state.md`
   - `docs/architecture/ADR-0016-gameplay-transport-client-mode-runtime-readiness.md`
   - `docs/architecture/FND-02_PROTOCOL_OTERYN_V1_CONTRACT.md`
   - `docs/architecture/FND-04_IDENTITY_GAME_SESSION_ADMISSION_CHARACTER_LEASE_CONTRACT.md`
   - `docs/architecture/DUR-04_CONTENT_WORLD_AND_SCRIPTING_CONTRACT.md`
   - `docs/architecture/ADR-0007-native-end-to-end-test-platform.md`
+  - `docs/architecture/ARCHITECTURE_REVIEW_REFINEMENTS_2026-08-07.md`
   - `docs/architecture/CLIENT_CRASH_DIAGNOSTICS_PRIVACY_OWNER_BASELINE.md`
 - Companion analysis: `docs/architecture/ALPHA-CLIENT-01_NATIVE_CLIENT_ARCHITECTURE_ANALYSIS.md`
 - Authority: candidate for Architecture Coordinator audit; not canonical until coordinator acceptance/merge
@@ -27,6 +29,8 @@ Responsibility labels in this document are architectural roles. They are **not**
 ## 2. Parent authority
 
 This candidate does not supersede or reinterpret its parent contracts.
+
+`ADR-0003-platform-identity-game-gateway-and-admission-boundary.md` is an explicit consumed parent authority for the client game-entry control-plane chain. It owns the separation of Platform Identity, one-time Game Login Ticket issuance/redemption, Platform-owned Game Gateway route selection and short-lived pre-admission material from final game-domain admission. `FND-04` remains authoritative for final gameplay admission, `GameSessionId` creation/replacement and `CharacterLease`; Platform/Gateway pre-admission material MUST NOT be promoted into final gameplay authority.
 
 Where a conflict exists:
 
@@ -49,7 +53,7 @@ gameplay listener                     = UNAVAILABLE
 TCP/QUIC player modes                 = UNAVAILABLE
 ```
 
-The production client MUST therefore continue to fail gameplay entry before gameplay route/credential consumption and before gameplay network connection while those capabilities remain unavailable.
+The production client MUST therefore continue to fail gameplay entry before requesting or consuming gameplay authority material, including a one-time Game Login Ticket for a connection that cannot complete, before gameplay route/credential consumption and before gameplay network connection while those capabilities remain unavailable.
 
 ## 4. Production composition contract
 
@@ -66,7 +70,7 @@ The composition root owns:
 - client configuration/privacy state;
 - client-safe content provider lifetime;
 - diagnostics/crash provider lifetime;
-- future gameplay admission and transport provider lifetime when separately implemented and authorized;
+- future Game Gateway/pre-admission control-plane and gameplay transport provider lifetime when separately implemented and authorized;
 - release/update status presented to the application.
 
 Screens/widgets MUST NOT construct infrastructure clients, async runtimes, gameplay sessions or authority-bearing transports.
@@ -121,30 +125,42 @@ A transport mode MUST NOT be shown as selectable/usable if its runtime implement
 
 The UI MUST NOT implement security downgrade/fallback semantics. Any future cross-transport retry/fallback MUST be driven by accepted admission/transport policy and fresh authority where required.
 
-## 7. Identity, directory and gameplay boundary
+## 7. Identity, directory, Gateway and gameplay boundary
 
 The client MUST preserve a hard semantic separation between:
 
-1. Identity/reusable credential handling;
-2. Platform world/channel/character directory/selection data;
-3. future FND-04 gameplay admission/reconnect material;
-4. future FND-02 gameplay transport/protocol binding.
+1. Platform Identity and reusable credential handling;
+2. Platform world/channel/character directory data and bounded player selection intent;
+3. one-time Game Login Ticket issuance for the selected gameplay attempt;
+4. Platform-owned Game Gateway ticket redemption, bounded supported protocol offer where applicable, World Registry route selection and returned selected endpoint/channel/revisions plus short-lived pre-admission session/admission material;
+5. FND-02 `protocol-oteryn` transport/bootstrap to the Gateway-selected endpoint using only the selected route/revision context;
+6. final game-owned FND-04 admission, `CharacterLease` acquisition/validation and canonical `GameSessionId` authority.
 
-Platform directory responses MUST NOT be reinterpreted as gameplay credentials or final game-domain authority.
+Platform directory responses MUST NOT be reinterpreted as gameplay credentials, Gateway authorization or final game-domain authority. A client MUST NOT bypass Game Gateway ticket redemption/route selection by turning directory selection directly into FND-04 admission or a direct gameplay endpoint choice.
 
-The conceptual flow is:
+The conceptual fresh-entry flow is:
 
 ```text
-Identity
-  -> bounded Platform directory
-  -> player selection intent
-  -> FND-04-owned admission/reconnect boundary
-  -> FND-02 gameplay transport/bootstrap
-  -> game-domain acceptance
-  -> synchronized client projection
+Platform Identity
+  -> bounded Platform directory + player selection intent
+  -> one-time Game Login Ticket
+  -> Platform-owned Game Gateway
+       -> redeem ticket through Platform authority
+       -> consume bounded supported protocol offer where applicable
+       -> apply World Registry route/channel policy
+       -> select endpoint/channel/revisions
+       -> return short-lived pre-admission session/admission material
+  -> establish FND-02 protocol-oteryn transport/bootstrap to the selected endpoint
+  -> final game-owned FND-04 admission
+       -> validate/consume pre-admission material and route/revision bindings
+       -> acquire/validate CharacterLease
+       -> create/replace canonical GameSession authority only on successful final admission
+  -> synchronized non-authoritative client projection
 ```
 
-This contract does not freeze the future API/token/route shape at those seams.
+Opening the selected transport or presenting valid Gateway material is not final gameplay admission. Platform/Gateway remain the pre-admission/control-plane boundary; final `GameSessionId`/`CharacterLease` gameplay authority remains in the Oteryn-v2 game domain under FND-04.
+
+This contract does not freeze the future API/token/route representation at those seams.
 
 ## 8. Local gameplay-session observation contract
 
@@ -341,11 +357,22 @@ The accepted ADR-0007 tiers remain distinct.
 
 The future headless system client MUST:
 
-- traverse the supported Platform/Gateway/gameplay transport/protocol/server boundaries;
-- use the same accepted protocol schemas/codecs, sequencing and admission contracts as the product client;
+- traverse the supported Platform Identity -> Game Login Ticket -> Game Gateway -> selected route/pre-admission -> gameplay transport/protocol -> final FND-04 game-domain admission/server boundaries;
+- use the same accepted production protocol schemas/codecs, sequencing and admission contracts as the product client where useful;
 - emit normal player intent/commands;
 - expose deterministic semantic observations;
 - never call authoritative game-domain mutation APIs directly.
+
+Shared production schemas/codecs MAY be reused by Tier 1, but they MUST NOT be the only oracle for wire correctness. Tier-1/future protocol evidence MUST consume the independent-proof property required by FND-02 and the owner-accepted 2026-08-07 refinement, including as applicable:
+
+- canonical byte-level golden fixtures for framing/messages;
+- malformed/adversarial corpus coverage;
+- property/invariant encode/decode round-trip tests;
+- fuzzing of externally controlled framing/decoders/parsers;
+- cross-version compatibility fixtures for permitted same-major evolution;
+- explicit resource ceilings and stable failure classes/dispositions.
+
+This requirement is for independent evidence against common-mode codec defects. It MUST NOT be interpreted as requiring or authorizing a second production protocol implementation or duplicated production stack.
 
 The current `tools/synthetic-client-harness` MUST NOT be reported as Tier 1 system E2E under its current synthetic/no-production-network classification.
 
@@ -416,13 +443,14 @@ The current shell MAY claim only the capabilities proven by the migrated baselin
 
 A product build MUST NOT change gameplay availability to enabled until exact-revision evidence proves, together:
 
-- gameplay transport client implementation;
-- FND-04 client admission/reconnect integration;
+- ADR-0003-compatible Platform Identity/Game Login Ticket/Game Gateway route/pre-admission client integration;
+- gameplay transport client implementation to the Gateway-selected endpoint;
+- FND-04 final game-owned admission/reconnect and `CharacterLease` integration without moving canonical GameSession authority to Platform/Gateway;
 - FND-02 codec/registry/reconciliation implementation;
 - authoritative server counterpart;
 - compatible client-safe content projection;
 - native client projection/input/render integration;
-- required Tier 1 and Tier 2 E2E journeys.
+- required Tier 1 and Tier 2 E2E journeys with FND-02 independent wire evidence.
 
 ### 22.3 External alpha
 
@@ -435,20 +463,24 @@ Coordinator acceptance of this document alone satisfies none of those implementa
 Implementation claiming conformance to this candidate should prove at minimum:
 
 1. application/screen code cannot bypass provider/capability gates to create gameplay network activity while runtime is unavailable;
-2. Platform directory handling still rejects gameplay secret/route/session fields unless a separately accepted contract changes that boundary;
-3. stale `connection_generation` traffic cannot mutate the active projection;
-4. state revision mismatch enters resync and never applies a speculative authoritative delta;
-5. incomplete snapshot cannot become active world state;
-6. semantic input routing prevents UI/text events from unintended gameplay egress;
-7. renderer/device/resource recreation does not alter gameplay/session authority;
-8. incompatible client-safe content fails closed before world activation;
-9. config migration is recoverable and preserves diagnostic opt-out;
-10. logs/crash packages reject/redact prohibited secret/private data before upload;
-11. update activation cannot launch an accepted mixed partial release and rollback remains compatibility-checked;
-12. Tier 1 headless, Tier 2 native and Tier 3 release evidence are classified distinctly;
-13. exact build/Platform/protocol/content revisions are retained in E2E evidence;
-14. no hidden retry converts failed physical E2E attempts into pass evidence;
-15. exact-head implementation review and CI prove the claimed build, not a parent commit.
+2. Platform directory handling still rejects gameplay secret/route/session fields and cannot bypass the ADR-0003 Game Login Ticket -> Game Gateway redemption/route-selection boundary;
+3. fresh gameplay entry follows the authorized chain through selected endpoint/channel/revisions and short-lived pre-admission material before final FND-04 admission, while final `GameSessionId`/`CharacterLease` authority remains game-owned;
+4. stale `connection_generation` traffic cannot mutate the active projection;
+5. state revision mismatch enters resync and never applies a speculative authoritative delta;
+6. incomplete snapshot cannot become active world state;
+7. canonical byte-level protocol/framing golden fixtures provide an independent wire oracle rather than only shared production-code round trips;
+8. malformed/adversarial corpus and property/invariant tests cover bounded decode/encode semantics;
+9. externally controlled decoders/parsers are fuzzed under explicit resource ceilings and stable failure classes;
+10. cross-version fixtures prove permitted same-major compatibility without duplicating the production protocol stack;
+11. semantic input routing prevents UI/text events from unintended gameplay egress;
+12. renderer/device/resource recreation does not alter gameplay/session authority;
+13. incompatible client-safe content fails closed before world activation;
+14. config migration is recoverable and preserves diagnostic opt-out;
+15. logs/crash packages reject/redact prohibited secret/private data before upload;
+16. update activation cannot launch an accepted mixed partial release and rollback remains compatibility-checked;
+17. Tier 1 headless, Tier 2 native and Tier 3 release evidence are classified distinctly with exact build/Platform/protocol/content revisions retained;
+18. no hidden retry converts failed physical E2E attempts into pass evidence;
+19. exact-head implementation review and CI prove the claimed build, not a parent commit.
 
 ## 24. Decision timing
 
@@ -460,7 +492,7 @@ Implementation claiming conformance to this candidate should prove at minimum:
 
 ### Downstream work blocked without this contract
 
-- safe native gameplay client implementation after FND-02/FND-04 runtime work exists;
+- safe native gameplay client implementation after ADR-0003/FND-02/FND-04 runtime integration exists;
 - stable UI/navigation/provider composition;
 - client content loader/update packaging work;
 - Tier 2 native-client automation design;
@@ -499,7 +531,7 @@ This candidate intentionally does not select:
 - gameplay prediction/interpolation/rollback semantics;
 - gameplay transport adapter implementation or TCP/QUIC activation;
 - QUIC library/profile/fallback timing/default;
-- admission/reconnect credential/API representation;
+- Game Gateway/admission/reconnect credential/API representation;
 - protocol/TLS/protobuf implementation libraries;
 - client bundle/patch/CDN format;
 - installer/updater framework or code-signing provider;
