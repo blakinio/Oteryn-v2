@@ -12,13 +12,13 @@
 
 ## 1. Executive summary
 
-Oteryn-v2 already has a real Windows-first native Rust shell and a deliberately fail-closed `pre-native-protocol` product state. The alpha-client problem is therefore not “choose a GUI framework and build a client from zero”. It is to define the boundaries that let the existing shell grow into a production gameplay client without allowing UI state, local simulation, content files, transport convenience or diagnostics to become a second gameplay authority.
+Oteryn-v2 already has a real Windows-first native Rust shell and a deliberately fail-closed `pre-native-protocol` product state. The alpha-client problem is therefore not “choose a GUI framework and build a client from zero”. It is to define the boundaries that let the existing shell grow into a production gameplay client without allowing UI state, local simulation, content files, transport convenience, audio presentation or diagnostics to become a second gameplay authority.
 
-This analysis recommends one production client composition root in `apps/client`, with explicit application/screen coordination and provider boundaries around Identity/Platform directory access, the ADR-0003 Game Login Ticket/Game Gateway pre-admission control-plane chain, future gameplay admission and transport, client-safe content, configuration/filesystem, diagnostics/crash handling and release/update state. Renderer and OS input remain adapters. Network ingress is reduced into a **non-authoritative client projection** only after protocol generation, sequence, revision and snapshot rules have been satisfied. Player input becomes semantic intent before it can reach future protocol egress. No widget, renderer, local cache or synthetic simulation may write authoritative gameplay state.
+This analysis recommends one production client composition root in `apps/client`, with explicit application/screen coordination and provider boundaries around Identity/Platform directory access, the ADR-0003 Game Login Ticket/Game Gateway pre-admission control-plane chain, future gameplay admission and transport, client-safe content, audio presentation, configuration/filesystem, diagnostics/crash handling and release/update state. Renderer, audio-device backend and OS input remain adapters. Network ingress is reduced into a **non-authoritative client projection** only after protocol generation, sequence, revision and snapshot rules have been satisfied. Player input becomes semantic intent before it can reach future protocol egress. No widget, renderer, audio subsystem, local cache or synthetic simulation may write authoritative gameplay state.
 
 The current `pre-native-protocol` behavior remains the only runtime truth. `ADR-0016` and `docs/contracts/PROTOCOL_OTERYN_TRANSPORT_POLICY.json` explicitly say that the gameplay transport adapter, listener and native-client gameplay entry are not implemented and every named client transport mode is unavailable now. This design therefore defines seams and evidence gates without exposing fake TCP/QUIC selectors or requesting/consuming a one-time gameplay credential for a path that cannot complete.
 
-For alpha readiness, the client architecture must also treat content compatibility, configuration migration, crash privacy, update/rollback, Windows packaging and E2E evidence as first-class product boundaries. A green renderer or synthetic harness is insufficient. `ADR-0007` requires separate Tier 1 headless system E2E through the production Platform/protocol/server path, Tier 2 real native-client E2E and Tier 3 release-binary smoke evidence. Tier 1 may share production schemas/codecs, but FND-02 and the owner-accepted 2026-08-07 refinement require independent wire evidence so that a common codec defect cannot become its own oracle.
+For alpha readiness, the client architecture must also treat content compatibility, audio degradation and resource ownership, configuration migration, crash privacy, update/rollback, Windows packaging and E2E evidence as first-class product boundaries. A green renderer or synthetic harness is insufficient. `ADR-0007` requires separate Tier 1 headless system E2E through the production Platform/protocol/server path, Tier 2 real native-client E2E and Tier 3 release-binary smoke evidence. Tier 1 may share production schemas/codecs, but FND-02 and the owner-accepted 2026-08-07 refinement require independent wire evidence so that a common codec defect cannot become its own oracle.
 
 ## 2. Scope and authority boundary
 
@@ -31,6 +31,7 @@ This work decides or proposes only client-side architecture needed to make later
 - local runtime/session observation state;
 - future protocol ingress/egress and reconciliation seams;
 - renderer/UI/input integration;
+- audio provider/device lifetime and presentation-only boundary;
 - client-safe content projection and active-content boundary;
 - configuration, filesystem, logging and crash diagnostics boundaries;
 - update, packaging, install and rollback boundaries;
@@ -48,7 +49,7 @@ This analysis does **not**:
 - construct ADR-0003/FND-04 pre-admission, admission or reconnect grants or change GameSession/CharacterLease authority;
 - change server/gameplay legality, deterministic simulation or persistence semantics;
 - promote synthetic client simulation to production gameplay authority;
-- select a new UI toolkit, protobuf/TLS library, updater framework, installer technology or credential vault;
+- select a new UI toolkit, audio library/backend/vendor, protobuf/TLS library, updater framework, installer technology or credential vault;
 - define production numeric limits that belong to protocol, security, release or SRE owners;
 - modify external repositories, global architecture overlays, executable client code, DDL or production configuration.
 
@@ -61,14 +62,14 @@ This analysis does **not**:
 | `apps/client/src/lib.rs` | `ClientBootstrap` composes runtime/renderer/input and `request_gameplay_entry()` returns `NativeProtocolUnavailable`. | Preserve a single product composition root and an explicit gameplay-availability gate. |
 | `apps/client/src/windows_shell.rs` | The current product shell is a real `winit` Windows window with renderer resize/render/suspend/close handling and `--smoke`. | Interactive lifecycle is already concrete; later UI belongs above this OS/render adapter boundary. |
 | `crates/client-runtime/src/lib.rs` | The client owns an async runtime and cancellation/shutdown boundary. | Runtime ownership belongs to application composition, not individual screens/providers; current thread count is implementation detail, not new architecture authority. |
-| `crates/platform-client/src/lib.rs` | Platform directory traffic is bounded and rejects gameplay route/credential/session fields. | Directory/selection remains distinct from the later Game Login Ticket/Game Gateway pre-admission flow and gameplay transport. |
+| `crates/platform-client/src/lib.rs` | Platform directory traffic is bounded. Its recursive forbidden-field check rejects only the 12 literal keys `host`, `port`, `endpoint`, `endpoint_uri`, `protocol`, `protocol_profile`, `ticket`, `credential`, `game_session`, `admission`, `route`, `address`; it is not a complete-schema or generic unknown-field rejection mechanism. | Preserve the bounded directory/Gateway separation, but do not claim compound unknown keys such as `game_session_id`, `admission_token` or `selected_endpoint` are currently rejected unless implementation evidence proves it. A stronger complete-schema boundary is a future requirement, not current runtime truth. |
 | `workspace-boundaries.toml` | `client-domain`, `client-simulation`, synthetic assets and synthetic harness are classified synthetic, not production. | Do not silently add them to the shipping client or call synthetic proof native gameplay proof. |
 | `crates/client-domain/src/lib.rs` | Existing synthetic model explicitly describes itself as a protocol-neutral, non-authoritative client projection. | Its semantics are useful evidence for projection separation, but production promotion requires separate authorization. |
 | `crates/client-simulation/src/lib.rs` | Existing synthetic simulation deterministically mutates only the non-authoritative projection. | It is not a server-authority substitute and is not a prediction contract. |
 | `docs/architecture/FND-02_PROTOCOL_OTERYN_V1_CONTRACT.md` | Server authority, `connection_generation`, server sequence, state revisions, snapshot/delta/resync and bounded parsing are accepted wire semantics. FND-02 also requires independent byte/malformed/property/fuzz/cross-version evidence beyond shared production codecs. | Future ingress/reconciliation must enforce these semantics before presentation state changes, and Tier-1/shared-code E2E cannot be the only wire-correctness oracle. |
 | `docs/architecture/FND-04_IDENTITY_GAME_SESSION_ADMISSION_CHARACTER_LEASE_CONTRACT.md` | Final gameplay admission/control belongs to current Oteryn-v2 game-domain authority; client evidence is corroborative only. | Local “session state” is an observation/progress state machine, never authority to create/restore a GameSession or lease. |
 | `docs/contracts/PROTOCOL_OTERYN_TRANSPORT_POLICY.json` | TCP profile 1 is registered architecturally, but gameplay transport adapter/listener/native-client entry are unavailable; all client modes have `runtime_available_now=false`. | No player-visible transport selector or optimistic runtime capability may appear before exact implementation/proof. |
-| `docs/architecture/DUR-04_CONTENT_WORLD_AND_SCRIPTING_CONTRACT.md` | Client artifacts are explicit allowlisted projections; incompatible revision/capability combinations fail closed; client content is non-authoritative. | Client content loading needs immutable compatible projection activation, not “load anything and hide server fields”. |
+| `docs/architecture/DUR-04_CONTENT_WORLD_AND_SCRIPTING_CONTRACT.md` | Client artifacts are explicit allowlisted projections; incompatible revision/capability combinations fail closed; client content is non-authoritative. | Client content loading, including audio assets, needs immutable compatible projection activation, not “load anything and hide server fields”. |
 | `docs/architecture/CLIENT_CRASH_DIAGNOSTICS_PRIVACY_OWNER_BASELINE.md` | Eligible crash uploads are enabled by default with a persistent global opt-out; payloads are allowlisted/redacted/bounded and optional diagnostics cannot gate gameplay. | Diagnostics must be isolated from authority and respect durable privacy state before upload/retry. |
 | `docs/architecture/ADR-0007-native-end-to-end-test-platform.md` | Three E2E tiers are accepted: headless production-protocol system E2E, instrumented native client, production-binary smoke. | Alpha client proof must include all relevant tiers; synthetic-only evidence cannot close gameplay readiness. |
 | `docs/architecture/ARCHITECTURE_REVIEW_REFINEMENTS_2026-08-07.md` | Owner-accepted protocol evidence refinement says shared Tier-1 production schemas/codecs cannot be the only proof; canonical byte goldens, malformed/adversarial corpus, properties, fuzzing, cross-version fixtures, limits and stable failures are required as applicable. | Tier 1 remains allowed to share production codecs, but it must be complemented by independent evidence rather than a duplicated production stack. |
@@ -85,7 +86,8 @@ The migrated shell has correct fail-closed behavior but does not yet have the ar
 4. update/content mutation could change assets or client semantics under a live session without a compatible revision boundary;
 5. crash/logging convenience could capture credentials, private chat or unrelated files;
 6. a test harness could bypass normal admission/networking or validate client/server with one shared defective codec and still be reported as end-to-end/wire proof;
-7. a current architectural transport target could be rendered as a runtime option despite no adapter existing.
+7. a current architectural transport target could be rendered as a runtime option despite no adapter existing;
+8. screen/gameplay code could directly own an audio device or use audio timing/cue success as gameplay state, while unbounded voice/buffer queues create product instability.
 
 The architecture must make these errors structurally difficult while remaining reversible on technologies that are not yet evidenced.
 
@@ -100,11 +102,12 @@ The following invariants are proposed for coordinator acceptance:
 5. **Protocol ingress precedes projection mutation.** Connection-generation fencing, message/server sequencing, state revisions and snapshot barriers are validated before authoritative observations are reflected in the local projection.
 6. **Revision mismatch fails closed.** Missing/contradictory state triggers resync or terminal handling according to FND-02; no guessed delta application.
 7. **Input becomes intent before wire.** OS events are normalized by input adapters into semantic actions; future gameplay egress maps allowed intent to protocol commands only while an accepted binding is active.
-8. **Client content is a projection.** Only verified, client-safe, compatible projected artifacts are exposed to renderer/UI; server-only content never enters the client package merely to be hidden later.
+8. **Client content is a projection.** Only verified, client-safe, compatible projected artifacts are exposed to renderer/UI/audio; server-only content never enters the client package merely to be hidden later.
 9. **Active release payload is immutable.** A running gameplay client does not self-mutate its executable/content payload under an active session.
 10. **Optional diagnostics never grant or deny gameplay authority.** Crash/log upload state is independent of server security/audit evidence and cannot be used as an admission prerequisite.
 11. **Capabilities are evidence-backed.** UI exposes gameplay/transport functionality only when an implementation-backed capability state says it is available; architectural targets alone are not runtime features.
 12. **Tests do not create a hidden product path or sole common-mode oracle.** Test-only adapters may observe/invoke normal client paths but cannot forge admission, mutate server state, inject authoritative snapshots or ship enabled by default; shared production codecs must be supplemented by the independent wire evidence required by FND-02.
+13. **Audio is presentation only.** Audio device/cue state never owns gameplay legality, RNG, simulation, admission, protocol sequencing or authoritative state; audio failure degrades presentation rather than gameplay authority.
 
 ## 6. Recommended logical architecture
 
@@ -120,6 +123,7 @@ apps/client composition root
         +--> configuration/privacy/release state
         +--> Identity + Platform directory provider
         +--> client-safe content provider
+        +--> audio provider/device adapter
         +--> diagnostics/crash provider
         +--> future Game Login Ticket + Gateway/pre-admission provider [UNAVAILABLE NOW]
         +--> future gameplay transport provider                    [UNAVAILABLE NOW]
@@ -134,6 +138,8 @@ application/screen coordinator
         +--> local session-observation state                  ^
         |                                                     |
         +--> non-authoritative world/presentation projection--+
+        |                                                     |
+        +--> presentation events ----------------------> audio adapter
         ^
         |
 future protocol reconciliation boundary
@@ -142,30 +148,31 @@ future protocol reconciliation boundary
 future protocol ingress/egress [ADR-0003/FND-02/FND-04 authority preserved]
 ```
 
-The names above are responsibility labels, not frozen Rust trait/crate/API names. The Gateway/pre-admission provider label does not move the external Platform-owned Gateway into this repository or make it a gameplay authority; it denotes only the future client-side seam that invokes the accepted control-plane boundary.
+The names above are responsibility labels, not frozen Rust trait/crate/API names. The Gateway/pre-admission provider label does not move the external Platform-owned Gateway into this repository or make it a gameplay authority; it denotes only the future client-side seam that invokes the accepted control-plane boundary. The audio label is likewise a presentation adapter boundary, not a gameplay/event authority.
 
 ### 6.2 Dependency direction
 
 The preferred dependency direction is:
 
 ```text
-OS/window/input/network/filesystem adapters
+OS/window/input/network/filesystem/audio-device adapters
              -> application ports
              -> client application state / projection semantics
-             -> immutable view data
-             -> renderer/UI presentation
+             -> immutable view/presentation data
+             -> renderer/UI/audio presentation
 ```
 
-Infrastructure may satisfy application ports. Application/screen logic must not depend on concrete socket, TLS, installer, registry, crash-upload or renderer-backend details.
+Infrastructure may satisfy application ports. Application/screen logic must not depend on concrete socket, TLS, installer, registry, crash-upload, audio-backend or renderer-backend details.
 
 ### 6.3 Current-to-target mapping
 
-- `apps/client`: remains the production composition root and owner of interactive lifecycle.
+- `apps/client`: remains the production composition root and owner of interactive lifecycle, including future audio provider/device lifetime.
 - `crates/client-runtime`: remains an application-owned async execution/cancellation facility; no screen-specific runtime ownership.
 - `crates/platform-client` + `crates/identity`: remain bounded Platform/Identity adapters and must not absorb gameplay transport or be treated as the final game-domain admission owner.
 - `crates/input-platform`: remains physical/OS event translation.
 - `crates/input-actions`: remains the semantic-action boundary suitable for UI and future gameplay intent.
 - `crates/renderer`: remains presentation infrastructure; it receives renderable state and never owns network/session authority.
+- audio implementation: no production library/crate/backend is selected here; when implemented it belongs behind an application-owned presentation provider/device adapter and consumes only client-safe compatible assets/presentation events.
 - `crates/client-domain` and `crates/client-simulation`: remain synthetic under current workspace classification. A later implementation may propose promoting or replacing suitable non-authoritative projection semantics, but this task does not change their production status.
 - `tools/synthetic-client-harness`: remains synthetic/non-release and is **not** equivalent to ADR-0007 Tier 1 headless system E2E.
 
@@ -197,13 +204,13 @@ These labels are descriptive, not a frozen enum. The important rule is that tran
 
 Screens should consume immutable/read-only snapshots of application/view state and emit semantic commands such as “start identity flow”, “select world/channel/character”, “request gameplay entry”, “move north”, “use selected action”, “open settings”, or “shutdown”. The coordinator decides whether an intent is legal in the current local state and delegates to the owning provider. Server legality remains server-owned.
 
-Player-facing operational states should be distinguishable without exposing secrets: world/channel selection, gameplay unavailable, queue/maintenance when later provided by authority, reconnect progress, version/content incompatibility, session conflict and bounded transport diagnostics. Error wording must not invent topology or credential detail that upstream contracts intentionally hide.
+Player-facing operational states should be distinguishable without exposing secrets: world/channel selection, gameplay unavailable, queue/maintenance when later provided by authority, reconnect progress, version/content incompatibility, session conflict, audio unavailable/degraded and bounded transport diagnostics. Error wording must not invent topology or credential detail that upstream contracts intentionally hide.
 
 ## 8. Future gameplay admission and transport seam
 
 ### 8.1 Separation from Platform directory and preservation of ADR-0003
 
-The current Platform client intentionally rejects fields that look like gameplay endpoint, protocol, credential, ticket, session or admission material in directory data. Preserve that safety property: directory selection is not an alternate route to final admission.
+The current Platform client recursively rejects only the 12 literal forbidden key names `host`, `port`, `endpoint`, `endpoint_uri`, `protocol`, `protocol_profile`, `ticket`, `credential`, `game_session`, `admission`, `route`, `address`. It does not currently prove complete-schema rejection of unknown compound gameplay-shaped keys. Preserve the existing fail-closed denylist safety property without overstating it, and require stronger complete-schema/reject-unknown-field evidence before claiming a broader boundary. In every case, directory selection is not an alternate route to final admission.
 
 A future **fresh-entry** client flow should conceptually be:
 
@@ -277,7 +284,7 @@ The projection may contain only state required to present and interact with the 
 
 No gameplay prediction/rollback algorithm is accepted by this task. Visual interpolation and input responsiveness may be studied later, but any speculative representation of gameplay outcome must remain reversible presentation state and must never advance authoritative `StateRevision`, `server_sequence`, `CommandId` result or GameSession/lease state.
 
-## 10. Renderer, UI and input integration
+## 10. Renderer, UI, input and audio integration
 
 ### 10.1 Main-thread shell boundary
 
@@ -304,9 +311,23 @@ UI widgets and renderer passes should receive view models/render descriptions de
 
 No exact retained/immediate UI framework is selected here. The current `winit`/renderer foundation is preserved until evidence requires supersession.
 
+### 10.4 Audio presentation boundary
+
+Audio belongs to the same presentation side of the client authority boundary as rendering. It may consume already-accepted server observations and local UI/presentation events and translate them into requested cues, but it must not decide whether an ability landed, a timer fired authoritatively, RNG succeeded, a session exists, or any gameplay mutation is legal. Missing, delayed, dropped or muted audio can affect presentation only.
+
+The `apps/client` composition root owns construction and lifetime of the audio provider and selected output-device/session adapter. Screens, widgets and gameplay reducers do not open devices or hold long-lived backend state. Device initialization/reopen and shutdown must be bounded and coordinated with application lifecycle.
+
+Audio assets must be part of the client-safe allowlisted content projection and remain compatible with the active build/content/release revision. Incompatible/missing audio assets fail or degrade as presentation; they do not cause content semantics to be guessed. Staged updates must not mutate the active audio asset set in place for the running release/session compatibility context.
+
+Resource use must be bounded: active voices/streams, decoded or streaming buffers, queued cue requests and device-recovery work all need explicit implementation ceilings. Numeric limits remain evidence-driven. Audio device loss, unavailable output or unsupported format must degrade to a recoverable muted/degraded state without blocking gameplay authority or corrupting client state.
+
+Settings/accessibility must support an extensible semantic control surface such as master/effects/music classes or equivalent, mute, output selection where supported and correct operation when audio is disabled. Exact category taxonomy and UI are not frozen here.
+
+The native-client implementation/test owner must prove lifecycle/recovery, bounded resources, client-safe asset/revision compatibility, presentation-event-to-cue mapping where deterministic behavior is claimed, settings persistence/accessibility and non-interference with gameplay authority. No audio library, mixer/codec stack, OS backend or vendor is selected by this architecture gate.
+
 ## 11. Client-safe content projection and patch boundary
 
-DUR-04 requires an explicit allowlisted client projection. The alpha client should therefore treat content as a verified artifact set rather than loose source files.
+DUR-04 requires an explicit allowlisted client projection. The alpha client should therefore treat content, including audio assets, as a verified artifact set rather than loose source files.
 
 Recommended lifecycle:
 
@@ -315,7 +336,7 @@ installed/staged candidate projection
         -> integrity + compatibility verification
         -> immutable local availability
         -> selected active projection revision
-        -> session/view consumption
+        -> session/view/audio consumption
 ```
 
 Rules:
@@ -324,7 +345,7 @@ Rules:
 - content/build/protocol/capability compatibility metadata must be checked before activation;
 - unknown/incompatible required semantics fail closed;
 - an active gameplay session pins the accepted client projection/release compatibility context needed for that session;
-- staged updates do not mutate the active gameplay projection in-place;
+- staged updates do not mutate the active gameplay projection or audio asset set in-place;
 - hot-reload of gameplay-relevant content is not authorized by this task;
 - caches may be deleted/rebuilt, but authoritative or compatibility meaning may not depend on cache survival.
 
@@ -335,7 +356,7 @@ The physical bundle encoding, patch delta format, CDN and signing mechanism rema
 The Windows client should distinguish four logical storage classes:
 
 1. **Installed release payload** — executable/libraries/resources and shipped client-safe content; immutable while running.
-2. **Durable per-user state** — user settings, privacy choice, accessibility/input/layout preferences and versioned migration metadata.
+2. **Durable per-user state** — user settings, privacy choice, accessibility/input/layout/audio preferences and versioned migration metadata.
 3. **Rebuildable cache** — derived/download staging/cache data that can be removed without changing authority.
 4. **Diagnostic spool** — bounded local logs/crash packages subject to redaction/privacy/upload policy.
 
@@ -366,7 +387,7 @@ A bounded local crash package may include build/content/protocol identifiers, fa
 
 ### 14.1 Immutable running version
 
-Release mutation must occur outside an active authority-bearing gameplay process. A running client may detect that an update is required/available and may stage non-active bytes through a dedicated release/update boundary, but it must not replace its live executable/content semantics mid-session.
+Release mutation must occur outside an active authority-bearing gameplay process. A running client may detect that an update is required/available and may stage non-active bytes through a dedicated release/update boundary, but it must not replace its live executable/content/audio semantics mid-session.
 
 ### 14.2 Verification boundary
 
@@ -402,7 +423,7 @@ Platform Identity
 -> authoritative game server
 ```
 
-It may reuse the same accepted production protocol schemas/codecs, sequencing and admission contracts as the native client and has no renderer or physical input requirement, but it cannot call authoritative domain mutation APIs directly.
+It may reuse the same accepted production protocol schemas/codecs, sequencing and admission contracts as the native client and has no renderer, audio-device or physical input requirement, but it cannot call authoritative domain mutation APIs directly.
 
 Shared production schemas/codecs are useful but cannot be the only proof of wire correctness. Independent evidence appropriate to FND-02 and the owner-accepted 2026-08-07 refinement must include, as applicable:
 
@@ -419,11 +440,11 @@ This is a **real network/system client**, not the current synthetic harness.
 
 ### 15.2 Tier 2 — instrumented interactive native client
 
-The real `apps/client` product path may later expose a test-only adapter that invokes normal input/client-command paths and reads semantic observations/screenshots/logs. It must not forge sessions, teleport/mutate server state, inject snapshots/results or exist in production-default builds.
+The real `apps/client` product path may later expose a test-only adapter that invokes normal input/client-command paths and reads semantic observations/screenshots/logs. It must not forge sessions, teleport/mutate server state, inject snapshots/results or exist in production-default builds. When audio is implemented, Tier 2 owns representative real-client audio lifecycle/settings/degradation evidence without using audible output as a gameplay oracle.
 
 ### 15.3 Tier 3 — release-binary smoke
 
-The exact release candidate must prove startup through supported product entry, world entry and bounded gameplay/relog/cleanup once native gameplay exists. The current `--smoke` window-launch path is useful shell evidence but does not by itself satisfy the future Tier 3 gameplay journey.
+The exact release candidate must prove startup through supported product entry, world entry and bounded gameplay/relog/cleanup once native gameplay exists. The current `--smoke` window-launch path is useful shell evidence but does not by itself satisfy the future Tier 3 gameplay journey. Shipped audio presence/degradation may be checked as a presentation/release property, not as gameplay authority proof.
 
 ### 15.4 Existing synthetic harness
 
@@ -439,6 +460,7 @@ Alpha Windows concerns that belong to the shell/platform layer include:
 - DPI/scaling and multi-monitor transitions;
 - focus/capture and keyboard layout behavior;
 - text/IME integration;
+- audio output-device/session lifecycle and device-change recovery;
 - filesystem known-folder resolution and permissions;
 - process activation/exit/update handoff;
 - crash capture integration;
@@ -456,11 +478,11 @@ Already supported by accepted migration evidence:
 
 - real Windows shell launches;
 - renderer/input/runtime initialize;
-- Platform directory boundary remains bounded;
+- Platform directory boundary remains bounded to the current parser contract;
 - gameplay entry fails closed before requesting/consuming one-time gameplay authority material, route selection or gameplay network use;
 - shutdown is bounded.
 
-This gate does **not** prove native gameplay.
+This gate does **not** prove native gameplay or audio implementation.
 
 ### Gate AC1 — client product substrate implemented
 
@@ -468,6 +490,7 @@ Future implementation evidence should prove:
 
 - versioned safe configuration/privacy persistence;
 - client-safe content artifact verification/activation;
+- audio provider/device lifetime, bounded-resource behavior, client-safe asset compatibility, degradation/recovery and settings/accessibility when audio is shipped;
 - structured bounded diagnostics/crash spool/redaction;
 - release identity/version compatibility presentation;
 - Windows packaging/install/update/rollback mechanics on disposable environments;
@@ -487,7 +510,7 @@ Blocked until owning programmes provide and prove at exact revisions:
 - client reconciliation path;
 - Tier 1 and Tier 2 E2E across real boundaries.
 
-Only then can gameplay availability change from `pre-native-protocol` for a supported build.
+Only then can gameplay availability change from `pre-native-protocol` for a supported build. Audio success is never a precondition for game-domain authority.
 
 ### Gate AC3 — external alpha release readiness
 
@@ -509,6 +532,7 @@ The client should fail closed and remain diagnostically clear for at least these
 - session/lease conflict -> show bounded user state while server remains authoritative;
 - content/release mismatch -> do not enter incompatible world;
 - renderer/device loss -> rebuild presentation resources without changing gameplay authority;
+- audio initialization/device/asset failure -> degrade to bounded muted/unavailable presentation and recover where supported without changing gameplay authority;
 - config corruption/migration failure -> safe recoverable defaults/backup strategy without secret leakage or privacy reset;
 - diagnostics opted out -> no automatic upload/retry, no gameplay impact;
 - update activation failure -> preserve/recover verified previous release rather than launch a mixed payload.
@@ -524,13 +548,14 @@ The client should fail closed and remain diagnostically clear for at least these
 | connection generation / sequencing / revision resync | property/golden/negative | broad required | representative required | representative |
 | independent FND-02 wire oracle | byte goldens + adversarial/property/fuzz/cross-version/limits/failures | required alongside shared-code E2E | representative product-code confirmation | packaged compatibility evidence |
 | renderer/UI operational state | renderer/view tests | N/A | required | required smoke |
+| audio lifecycle/content/degradation/settings | provider/asset/settings tests | N/A to game-authority proof | required when shipped | packaged presentation smoke/degradation |
 | client-safe content compatibility | loader/manifest tests | exact revision declared | required | exact packaged artifact |
 | disconnect/reconnect | reducer/adapter tests | broad fault injection | required user journey | release smoke/relog |
 | diagnostics opt-out/redaction | required | N/A | required settings/restart path | packaged smoke as appropriate |
 | updater/install/rollback | package harness | N/A | install-to-native journey | release gate |
 | cleanup/evidence envelope | required where applicable | mandatory | mandatory | mandatory |
 
-No hidden retry converts a failed attempt into a pass. Exact client/server/Platform/protocol/content/build revisions must be retained according to ADR-0007. Shared production schemas/codecs may be exercised by Tier 1 and Tier 2, but they are not sufficient alone to satisfy FND-02 wire correctness; independent evidence must remain capable of catching common-mode encode/decode defects without becoming a second production implementation.
+No hidden retry converts a failed attempt into a pass. Exact client/server/Platform/protocol/content/build revisions must be retained according to ADR-0007. Shared production schemas/codecs may be exercised by Tier 1 and Tier 2, but they are not sufficient alone to satisfy FND-02 wire correctness; independent evidence must remain capable of catching common-mode encode/decode defects without becoming a second production implementation. Audio evidence remains presentation evidence and is never substituted for game/protocol proof.
 
 ## 20. Security and privacy consequences
 
@@ -541,12 +566,13 @@ The client is an untrusted edge from the server's perspective and a secret-beari
 - directory data, one-time Game Login Ticket/Gateway pre-admission material and final game-domain authority remain different trust classes;
 - Game Gateway route selection cannot be bypassed by direct client endpoint choice;
 - protocol parsing is bounded before expensive work and validated through independent malformed/property/fuzz evidence;
-- content is allowlisted and compatibility-checked;
+- content, including audio assets, is allowlisted and compatibility-checked;
+- audio events/devices cannot confer gameplay rights or become a hidden RNG/timing oracle;
 - update activation requires verified provenance/signing policy before external alpha;
 - test-only control surfaces are compile/profile-bounded and cannot ship enabled by default;
 - logs/crash packages are structured, bounded and redacted before transmission;
 - optional diagnostics cannot be security authority or abuse-score input;
-- renderer/UI caches are reconstructable and cannot confer gameplay rights.
+- renderer/UI/audio caches and devices are reconstructable and cannot confer gameplay rights.
 
 ## 21. Recommendation decision tests
 
@@ -646,6 +672,14 @@ The client is an untrusted edge from the server's perspective and a secret-beari
 - Superseding evidence: none expected; future capability availability changes through implementation/proof, not removal of this invariant.
 - Deliberately not decided: exact capability-query API and future QUIC activation/default.
 
+### R13 — keep audio application-owned, bounded and presentation-only
+
+- Must decide now? **YES** for authority/lifetime/content/degradation boundaries, **NO** for implementation technology.
+- Downstream blocked: safe audio provider/device implementation, release-content projection, settings/accessibility and Tier-2 evidence.
+- Becomes harder later: screens/game reducers own devices, cue queues become unbounded, or audio timing/device success becomes coupled to gameplay state.
+- Superseding evidence: a later accepted client architecture with an equivalent or stronger non-authoritative presentation/resource boundary and migration evidence.
+- Deliberately not decided: audio library/vendor, codec/mixer stack, OS backend, exact voice/buffer limits and final UX taxonomy.
+
 ## 22. Alternatives considered
 
 ### A. Screen-owned services/networking
@@ -680,17 +714,22 @@ Rejected. Current machine-readable policy says every client mode is unavailable 
 
 Rejected by ADR-0003/FND-04. Directory selection must not bypass one-time ticket redemption and Game Gateway route selection, while Gateway pre-admission material authorizes only a bounded admission attempt; final GameSession/CharacterLease authority remains game-owned.
 
+### I. Let gameplay/screens own audio devices or make audio success part of gameplay flow
+
+Rejected. Audio is optional/degradable presentation, and coupling it to gameplay authority would create a client-side state/timing dependency unrelated to server truth while making lifecycle/resource recovery harder.
+
 ## 23. Risks requiring later evidence
 
 - **Client/server version skew:** compatibility policy exists at protocol/content layers but release/update skew matrix still needs an implementation/release owner.
 - **Credential lifetime in process memory:** exact secret container/zeroization/OS credential reuse policy requires security/Identity implementation review.
 - **Renderer recovery:** actual device-loss and multi-monitor/DPI behavior requires Windows hardware evidence.
+- **Audio device/backend variance:** device hotplug/loss, format support, latency and resource ceilings require Windows hardware/driver evidence after a backend is selected.
 - **Content footprint/patch cost:** physical format, caching and delta strategy require measured bundle/download data.
 - **Update trust:** signed-artifact/updater/provenance/SBOM requirement is accepted, but trust root/toolchain is not selected.
 - **Gateway/client integration drift:** future client implementation must preserve one-time ticket redemption, selected route/revision bindings and pre-admission/final-admission separation across repository revisions.
 - **Headless/native semantic drift and common-mode codec defects:** shared protocol/generated semantics need cross-tier scenario equivalence, while independent byte goldens, adversarial/property/fuzz and cross-version fixtures must remain capable of catching defects shared by both production endpoints.
 - **Error information disclosure:** useful diagnostics must be reconciled with hidden topology/credential constraints.
-- **Accessibility/input policy:** architecture supports semantic input separation but product requirements remain a later owner decision.
+- **Accessibility/input/audio policy:** architecture supports semantic input/audio settings separation but final product accessibility and category requirements remain later owner/product decisions.
 
 ## 24. DECISIONS_NOT_TAKEN
 
@@ -709,12 +748,13 @@ The following are deliberately **not** decided by ALPHA-CLIENT-01:
 11. updater framework, code-signing provider, trust-root mechanism or SBOM generator;
 12. secure storage technology for any future reusable sign-in credential;
 13. exact log/crash retention durations, upload backend or legal/privacy wording;
-14. production timeouts, retry/backoff, cache/log/spool byte ceilings unless owned by an accepted parent contract;
-15. Linux/macOS support commitment;
-16. final accessibility/keybind/controller policy;
-17. release-channel/version-skew/mandatory-update product policy;
-18. server/gameplay legality, persistence, simulation or balance behavior;
-19. any second production protocol implementation for testing.
+14. audio library/vendor, codec/mixer stack, OS device backend, exact voice/buffer/queue limits or final category taxonomy;
+15. production timeouts, retry/backoff, cache/log/spool byte ceilings unless owned by an accepted parent contract;
+16. Linux/macOS support commitment;
+17. final accessibility/keybind/controller/audio UX policy;
+18. release-channel/version-skew/mandatory-update product policy;
+19. server/gameplay legality, persistence, simulation or balance behavior;
+20. any second production protocol implementation for testing.
 
 ## 25. CROSS_DOMAIN_FINDINGS
 
@@ -737,8 +777,8 @@ cross_domain_finding:
   target_owner: admission-session-integration
   severity: P1
   evidence: docs/architecture/ADR-0003-platform-identity-game-gateway-and-admission-boundary.md + docs/architecture/FND-04_IDENTITY_GAME_SESSION_ADMISSION_CHARACTER_LEASE_CONTRACT.md + crates/platform-client/src/lib.rs
-  conflict_or_gap: The accepted target chain is Platform Identity -> one-time Game Login Ticket -> Platform-owned Game Gateway ticket redemption/route selection -> selected endpoint/channel/revisions + short-lived pre-admission material -> protocol-oteryn transport -> final game-owned FND-04 admission/CharacterLease/GameSession authority, while the current production client intentionally implements none of that gameplay handoff beyond bounded directory selection.
-  required_before: Real interactive Identity/directory selection can continue through Gateway pre-admission and authoritative gameplay admission/reconnect E2E without bypassing the security boundary or moving final authority into Platform/Gateway.
+  conflict_or_gap: The accepted target chain is Platform Identity -> one-time Game Login Ticket -> Platform-owned Game Gateway ticket redemption/route selection -> selected endpoint/channel/revisions + short-lived pre-admission material -> protocol-oteryn transport -> final game-owned FND-04 admission/CharacterLease/GameSession authority, while the current production client intentionally implements none of that gameplay handoff beyond bounded directory selection. Current platform-client forbidden-field enforcement is the exact recursive 12-key denylist, not complete-schema unknown-field rejection.
+  required_before: Real interactive Identity/directory selection can continue through Gateway pre-admission and authoritative gameplay admission/reconnect E2E without bypassing the security boundary or moving final authority into Platform/Gateway; any stronger directory-field rejection claim must have implementation/schema evidence.
   worker_action: REPORT_ONLY
 ```
 
@@ -797,12 +837,14 @@ The Architecture Coordinator should explicitly verify that this proposal:
 1. does not promote the synthetic client model into production by documentation alone;
 2. preserves current pre-native fail-closed behavior and ADR-0016 runtime unavailability, including no one-time gameplay-ticket consumption for an unavailable path;
 3. preserves ADR-0003 Platform Identity -> Game Login Ticket -> Game Gateway ticket redemption/route selection -> selected route/pre-admission -> protocol transport -> final game-owned FND-04 admission chain without moving canonical GameSession/CharacterLease authority to Platform/Gateway;
-4. does not redefine FND-02/FND-04 server/protocol authority and preserves generation/sequence/revision/snapshot reconciliation;
-5. is compatible with DUR-04 client-safe projection and future bundle/toolchain work;
-6. preserves ADR-0007's distinction among synthetic, Tier 1 headless, Tier 2 native and Tier 3 release evidence;
-7. requires independent FND-02 wire evidence so shared production schemas/codecs are not the only correctness oracle, without creating a second production protocol stack;
-8. places external-alpha update/signing/security requirements in the correct owner domain rather than pretending they are solved here;
-9. keeps technology choices reversible while freezing the authority/dependency boundaries needed before implementation.
+4. states current Platform directory rejection exactly as the recursive 12-literal-key denylist and does not present complete-schema unknown-field rejection as implemented;
+5. does not redefine FND-02/FND-04 server/protocol authority and preserves generation/sequence/revision/snapshot reconciliation;
+6. is compatible with DUR-04 client-safe projection and future bundle/toolchain work, including audio assets;
+7. preserves ADR-0007's distinction among synthetic, Tier 1 headless, Tier 2 native and Tier 3 release evidence;
+8. requires independent FND-02 wire evidence so shared production schemas/codecs are not the only correctness oracle, without creating a second production protocol stack;
+9. keeps audio provider/device lifetime application-owned, resource-bounded, client-safe/revision-compatible, degradable and strictly non-authoritative without prematurely selecting a library/vendor;
+10. places external-alpha update/signing/security requirements in the correct owner domain rather than pretending they are solved here;
+11. keeps technology choices reversible while freezing the authority/dependency boundaries needed before implementation.
 
 ## 27. Proposed disposition
 
