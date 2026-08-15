@@ -12,6 +12,7 @@ delivery_pr: 271
 delivery_final_head_sha: 5b13f0145301700b6c3249ef01de49da4352d4f5
 delivery_merge_sha: dc1eecae7952902bee3fb1e2d88aefc2be792cae
 closeout_branch: docs/arch-a-b-lifecycle-closeout-20260815
+closeout_pr: 282
 owner: DOMAIN ARCHITECTURE DESIGN AGENT / Agent A worker
 owner_state: released_after_closeout
 created_at: 2026-08-15T00:20:22+02:00
@@ -70,19 +71,19 @@ Delivery merge:
 
 ## Lifecycle closeout
 
-This closeout performs bookkeeping only:
+PR #282 performs bookkeeping only:
 
 - remove the active task record;
 - preserve this completed archive record;
 - release the two Agent-A task-owned paths;
 - preserve the canonical evidence artifact and the 0/4 fail-closed result unchanged.
 
-Issue #259 may be closed as completed only after this closeout is merged. No Reference manifest, fixture package, runtime, protocol, content, DDL, Platform or production state is modified by closeout.
+Issue #259 may be closed as completed only after PR #282 is merged. No Reference manifest, fixture package, runtime, protocol, content, DDL, Platform or production state is modified by closeout.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: PR #271 merged after exact-head CI, self-review and clean independent review; closeout archives the task and releases ownership without changing the 0/4 evidence result
+last_progress: PR #271 merged after exact-head CI, self-review and clean independent review; closeout PR #282 archives the task and releases ownership without changing the 0/4 evidence result
 status: completed
 owner_action_required: false
 blocker: null
