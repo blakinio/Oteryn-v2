@@ -13,7 +13,7 @@ closeout_pr: 284
 base_sha: 0cfd8d8ee3ecf4fbb1cb76cbc9680b53a152e3c1
 material_head_sha: 54165596f98b66c3164cccab881bb53f0655cb2b
 final_head_sha: 5b3d16c9fdc0f50a58a52e30146456e6473180f0
-final_head_frozen_at: 2026-08-15T22:03:33+02:00
+final_head_frozen_at: 2026-08-15T23:50:00+02:00
 delivery_merge_sha: 0c307db73832b824ccf50801e626671e0aeb38d1
 owner: chatgpt-github
 owner_state: released_after_closeout
