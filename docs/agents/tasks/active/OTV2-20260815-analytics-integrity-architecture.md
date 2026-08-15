@@ -178,3 +178,13 @@ owner_action_required: Architecture Coordinator audit/acceptance only; no worker
 blocker: null
 next_action: Architecture Coordinator audit of draft PR #270 using its immutable final-head validation evidence
 ```
+
+## Narrow repair checkpoint — final-review P2s
+
+- Reviewed head requiring repair: `1c1980b9741ef58361c271ad8395bd10faa815a2`.
+- `P2 #1`: optional client diagnostics/OS capsule/Launcher/Guardian/crash-network evidence is explicitly non-adverse; opt-out/absence cannot raise abuse/risk score, confidence, severity, review/enforcement priority or guilt inference, and server-generated evidence remains sufficient for investigation.
+- `P2 #2`: every material security-case lifecycle transition/reviewer action is represented by immutable ordered audit history with privacy-compatible actor identity, role/capability, ordering/time, previous/new state or action, rationale where applicable, evidence/revision links and case/correlation identity; latest status cannot replace history.
+- Repair is paper-only and does not change ANL-01 registry, runtime detectors, DUR-03 prevention/conservation, GM/enforcement policy, DDL, Platform/production, coordinator overlays or merge authority.
+- Exact repaired head, full-diff self-review and exact-head CI evidence are recorded on PR #270 after the final repair/checkpoint commit so this file does not create self-referential head churn.
+- PR must remain `DRAFT / OPEN / UNMERGED` until coordinator disposition.
+- `NEXT_ACTION: ARCHITECTURE_COORDINATOR_EXACT_HEAD_REAUDIT`.
