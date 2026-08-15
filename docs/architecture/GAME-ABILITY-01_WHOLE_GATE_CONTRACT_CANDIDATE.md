@@ -12,7 +12,7 @@
 
 ## 1. Purpose
 
-This candidate composes the existing GAME-ABILITY partial baselines into one implementable semantic contract without rewriting or superseding them. It adds only the minimum whole-gate rules needed at their seams: future occurrences, reactive descendants, owner-scoped commit grouping, lifecycle-continuation declaration, resource-bound obligations, client trust separation and evidence/readiness layering.
+This candidate composes the existing GAME-ABILITY partial baselines into one implementable semantic contract without rewriting or superseding them. It adds only the minimum whole-gate rules needed at their seams: future occurrences, repeated-timer catch-up policy, reactive descendants, owner-scoped commit grouping, lifecycle-continuation declaration, resource-bound obligations, client trust separation and evidence/readiness layering.
 
 If this candidate is later accepted, it means the **architecture of the ability/spell/condition execution domain is closed enough for separately authorized implementation work**. It does not mean any runtime exists, any Reference mechanic is parity-confirmed, any Alpha content is complete or any downstream domain integration is implemented.
 
@@ -26,7 +26,8 @@ The following existing GAME-ABILITY documents remain binding for their declared 
 - `GAME-ABILITY-01_COOLDOWN_CHARGE_CONDITION_OWNER_BASELINE.md`;
 - `GAME-ABILITY-01_EFFECT_COMPOSITION_DAMAGE_HEAL_OWNER_BASELINE.md`;
 - `GAME-ABILITY-01_EFFECT_FAMILIES_REFERENCE_CATALOGUE_OWNER_BASELINE.md`;
-- catalogue-entry/parity-fixture binding semantics from `GAME-ABILITY-01_REFERENCE_MECHANIC_CATALOGUE_ENTRY_PARITY_FIXTURE_CONTRACT.md`, read together with the later accepted Reference-manifest pin/current programme state that supersedes only its historical statement that the manifest was still candidate.
+- catalogue-entry/parity-fixture binding semantics from `GAME-ABILITY-01_REFERENCE_MECHANIC_CATALOGUE_ENTRY_PARITY_FIXTURE_CONTRACT.md`, read together with the later accepted Reference-manifest pin/current programme state that supersedes only its historical statement that the manifest was still candidate;
+- the FND-03 repeated-timer/catch-up contract in `FND-03_RUNTIME_LIFECYCLE_FAILURE_AND_REPLAY_ANALYSIS_BASELINE.md`.
 
 This candidate MUST NOT be interpreted to reopen their deliberate deferrals. Where this candidate appears less specific than an accepted partial baseline, the partial baseline governs. Where a later accepted owner contract explicitly supersedes a rule, that later decision governs only its stated scope.
 
@@ -137,6 +138,22 @@ When eligible, every future mutating occurrence re-enters the applicable Target/
 
 The contract does not require every deterministic future consequence to be materialized as a timer object. An implementation MAY use an equivalent deterministic derivation if replay, ordering, revision binding, bounds and failure behavior are identical.
 
+### 8.1 Repeated-timer catch-up policy
+
+Every repeated timer family whose individual occurrences can affect gameplay MUST declare an explicit **catch-up/coalescing policy**. There is no implicit global default. The semantic policy MUST be equivalent to one of the FND-03 conceptual classes, or to a later accepted class with the same explicitness and bounds:
+
+- `DEADLINE_STATE` — compute state from the authoritative logical deadline rather than replaying every missed callback;
+- `RUN_EACH_BOUNDED` — execute each missed occurrence only within an explicit hard backlog/work bound and carry remaining overdue work fairly across later turns;
+- `COALESCE_ELAPSED` — combine missed elapsed periods only where the owning gameplay semantics explicitly define a deterministic equivalent result;
+- `SKIP_TO_LATEST` — discard obsolete intermediate occurrences only where the owning mechanic explicitly permits it;
+- `EXPIRE_OR_CANCEL` — terminate overdue work when its accepted semantic deadline/eligibility has expired.
+
+**Periodic combat, damage and healing families MUST select their catch-up policy in the owning ability/condition/ruleset definition or accepted semantic policy.** A scheduler implementation MUST NOT decide this by convenience.
+
+`RUN_EACH_BOUNDED` MUST NOT produce an unbounded same-turn catch-up storm. Its backlog participates in the same per-scope deterministic work budget/fairness policy as other authoritative work. Zero-delay recursive rescheduling that bypasses the bound is forbidden.
+
+Coalesced, skipped, expired and budget-deferred work MUST remain observable enough to explain player-visible timing/recovery behavior and to reproduce the deterministic disposition under the same semantic revisions. Exact backlog counts/time limits are implementation evidence and resource-registry decisions; missing required numeric bounds block implementation acceptance rather than implying unlimited catch-up.
+
 ## 9. Conditions, cooldowns and charges as future-authoritative state
 
 The accepted cooldown/charge/condition baseline remains binding. In particular, `ConditionDefinition` is immutable/versioned semantics while `ConditionInstance` is authoritative runtime state, and mutating condition ticks re-enter the same pipeline.
@@ -196,7 +213,8 @@ Every implementation MUST enforce hard bounds for reactive/future work. The sema
 - bounded total reaction/future work for one root occurrence;
 - bounded dynamic retarget/re-resolution depth where applicable;
 - bounded multi-hit/multi-target sub-occurrences;
-- bounded channel/periodic count/duration.
+- bounded channel/periodic count/duration;
+- bounded repeated-timer catch-up backlog/work per authoritative scope.
 
 Exact maxima are implementation-evidence decisions and MUST be registered through the repository's resource-limit mechanism before implementation acceptance.
 
@@ -214,7 +232,7 @@ At minimum, applicable entries MUST cover:
 - Effect Plan entry count and any relevant bounded encoded/in-memory plan size;
 - calculation/contribution stage cardinality;
 - multi-hit/multi-target sub-occurrence count;
-- channel/periodic occurrence count and outstanding future work;
+- channel/periodic occurrence count, outstanding future work and `RUN_EACH_BOUNDED` catch-up backlog/work;
 - condition instance/stack cardinality and pending scheduled condition work;
 - reaction depth, descendant cardinality and total root reaction work;
 - cross-domain proposal count;
@@ -271,7 +289,7 @@ The following whole-gate rules are mandatory:
 - committed costs/effects/cooldowns/charges/ticks are never erased as implicit rollback;
 - any reversal/refund after commit is a new explicit compensation action under the owning domain;
 - a failed reactive descendant does not erase its committed parent or earlier committed siblings;
-- missing required revision, unsupported owner integration, unknown required Reference behavior, missing resource limit or stale fence fails closed for the affected executable path;
+- missing required revision, unsupported owner integration, unknown required Reference behavior, missing resource limit, missing repeated-timer catch-up policy or stale fence fails closed for the affected executable path;
 - retry MUST NOT reroll or reinterpret the same logical occurrence under a newer incompatible revision;
 - no client, analytics, script or catalogue record can be used as fallback gameplay authority.
 
@@ -287,6 +305,7 @@ Every behavior-affecting execution path MUST preserve enough typed evidence to e
 - named commitment anchors and owner-scoped commit groups;
 - formula/SIM/RNG purpose evidence needed by accepted replay policy;
 - cooldown/charge/condition transitions and future-occurrence lineage;
+- repeated-timer catch-up/coalescing/skip/expiry/deferred-backlog disposition where behavior-affecting;
 - reaction/proc eligibility/order/descendant lineage;
 - cross-domain routing result;
 - deterministic capacity/failure disposition.
@@ -298,6 +317,8 @@ ANL-01 remains observational/read-only and owns event/audit envelope semantics. 
 Reference Mechanic Catalogue metadata remains separate from executable content and core effect vocabulary.
 
 The accepted Reference manifest is the evidence/parity authority. A catalogue entry MAY bind to manifest cases and exact GAME-ABILITY revisions; it MUST NOT upgrade evidence or parity.
+
+The canonical Agent-A continuity result merged by PR #271 is consumed exactly as-is: **0/4 registered `ABILITY_COMBAT` cases are promoted**; target evidence remains `UNKNOWN`; source/case provenance and legal review remain `PENDING`; implementation remains `NOT_STARTED`; parity remains fail-closed. This whole-gate candidate does not reinterpret or improve those classifications.
 
 For every concrete Reference mechanic exercised by a Reference milestone:
 
@@ -313,8 +334,6 @@ sufficient target evidence for the exercised cases/aspects
 
 Absent any required element, the affected parity claim remains fail closed. Aggregate parity cannot be inferred from catalogue presence, content similarity, source-code similarity or a single happy-path scenario.
 
-The current Light Healing/Ice Strike cases are read-only to this worker and do not become parity-confirmed through this contract.
-
 ## 19. Architecture evidence versus executable evidence
 
 Acceptance of this paper contract, if granted later, requires architecture/governance evidence only. It does not require pretending an unimplemented engine can pass runtime fixtures.
@@ -329,14 +348,15 @@ Future executable GAME-ABILITY acceptance MUST add at least representative evide
 6. cooldown/charge/condition transition determinism and bounded future occurrences;
 7. retry/replay preserving exact semantic revision and RNG outcome/identity as applicable;
 8. periodic/delayed occurrence ordering independent of OS/thread/wall-clock scheduling;
-9. reaction/proc ordering independent of registration/hash/thread order;
-10. reaction cycle/re-entry rejection and all configured hard-bound boundary tests;
-11. post-commit descendant failure/budget exhaustion preserving committed parent history;
-12. bounded Wasm proposal failure/trap/fuel exhaustion causing zero unauthorized mutation;
-13. unsupported/missing cross-domain owner integration failing closed;
-14. continuation/recovery fixtures for every lifecycle boundary an implemented mechanic claims to survive;
-15. client prediction mismatch reconciling to authoritative result without local authority;
-16. Reference fixture evidence only after manifest/provenance/revision prerequisites are met.
+9. deterministic repeated-timer catch-up fixtures for every implemented periodic family, including missed-deadline/backlog, coalescing/skip/expiry behavior, fairness and hard-bound exhaustion;
+10. reaction/proc ordering independent of registration/hash/thread order;
+11. reaction cycle/re-entry rejection and all configured hard-bound boundary tests;
+12. post-commit descendant failure/budget exhaustion preserving committed parent history;
+13. bounded Wasm proposal failure/trap/fuel exhaustion causing zero unauthorized mutation;
+14. unsupported/missing cross-domain owner integration failing closed;
+15. continuation/recovery fixtures for every lifecycle boundary an implemented mechanic claims to survive;
+16. client prediction mismatch reconciling to authoritative result without local authority;
+17. Reference fixture evidence only after manifest/provenance/revision prerequisites are met.
 
 The exact test framework, fixture runner and implementation architecture are not selected here.
 
@@ -348,6 +368,7 @@ Once executable content/runtime authority exists, the semantic validator/compile
 - unsupported effect family or owner-domain integration;
 - generic authoritative state patches;
 - hidden/unbounded targeting, future work or reaction graphs;
+- a repeated timer family with no explicit accepted catch-up policy or required hard backlog/work bound;
 - a reaction/re-entry policy without deterministic ordering/loop bounds;
 - a future-authoritative state path whose exercised continuation behavior is undeclared;
 - required resource dimensions with no accepted hard limit;
@@ -361,7 +382,7 @@ Physical compiler/schema details remain DUR-04/tooling implementation choices.
 
 | Dependency/owner | Binding use in this contract | Not owned/decided here | Failure posture |
 |---|---|---|---|
-| FND-03 | authoritative owner order/generation, stale-work rejection | runtime scheduler/process internals | fail closed on stale/ambiguous authority |
+| FND-03 | authoritative owner order/generation, stale-work rejection, repeated-timer catch-up/coalescing policy and fairness/backlog requirements | runtime scheduler/process internals; exact numeric catch-up limits | fail closed on stale/ambiguous authority or missing required catch-up policy/bounds |
 | FND-04 | session/lease/recovery fences | admission/reconnect implementation | no ability authority bypass |
 | GAME-CHANNEL-01 | Channel/Instance locality/transfer policy boundary | channel selection/transfer implementation | no implicit cross-Channel mutable state |
 | GAME-CHAR-01 | character-owned state/progression boundary | exact character rules/formulas | typed owner route only |
@@ -383,72 +404,136 @@ This candidate is suitable for owner acceptance only if the Architecture Coordin
 - no accepted partial baseline is weakened or contradicted;
 - one authoritative typed pipeline remains the only GAME-ABILITY mutation path;
 - future occurrences and reactions are explicit, bounded, deterministic and revision-bound;
+- every behavior-affecting repeated timer family has an explicit FND-03-compatible catch-up policy and required bounds/fairness behavior;
 - owner-scoped commit groups cannot masquerade as distributed atomicity;
 - continuation semantics are explicit obligations rather than implementation defaults;
 - resource dimensions/failure rules are architecturally mandatory without speculative numeric ceilings;
 - client prediction remains presentation-only;
-- Reference evidence/parity remains a separate fail-closed axis;
+- Reference evidence/parity remains a separate fail-closed axis and current canonical Agent-A state is consumed without promotion;
 - foreign-domain work is reported as dependency/finding and not silently absorbed;
-- any merged Agent A change to the four existing cases is re-read before acceptance;
 - ordinary exact-head repository checks and worker self-review are clean.
 
 Even after owner acceptance, implementation remains `NOT_STARTED` until separately authorized and proven.
 
 ## 23. Decision timing
 
-**Must decide now: YES** for the semantic closure rules in sections 4, 7.1/7.2, 8, 9's declaration boundary, 11, 12, 13's obligation, 15's trust boundary and 18/19's evidence separation.
+**Must decide now: YES** for the semantic closure rules in sections 4, 7.1/7.2, 8/8.1, 9's declaration boundary, 11, 12, 13's obligation, 15's trust boundary and 18/19's evidence separation.
 
-These choices shape identity/lineage, ordering, rollback, recovery, resource safety and trust boundaries. Deferring them until content/runtime implementation would make incompatible local designs expensive and unsafe to reconcile.
+These choices shape identity/lineage, ordering, catch-up/fairness, rollback, recovery, resource safety and trust boundaries. Deferring them until content/runtime implementation would make incompatible local designs expensive and unsafe to reconcile.
 
-**Must decide now: NO** for exact mechanic values, physical representations, algorithms and foreign-owner APIs listed in `DECISIONS_NOT_TAKEN`. They are either evidence-dependent, measurement-dependent or owned elsewhere. Freezing them now would be speculative.
+**Must decide now: NO** for exact mechanic values, physical representations, algorithms, numeric catch-up maxima and foreign-owner APIs listed in `DECISIONS_NOT_TAKEN`. They are either evidence-dependent, measurement-dependent or owned elsewhere. Freezing them now would be speculative.
 
 ## 24. Supersession criteria
 
 Reopen this candidate after acceptance only with concrete evidence such as:
 
 - representative Reference/Evolved mechanics cannot be represented without unsafe complexity or pathological primitive/policy proliferation;
-- deterministic replay or retry evidence disproves the occurrence/lineage model;
+- deterministic replay or retry evidence disproves the occurrence/lineage/catch-up model;
 - required cross-domain atomicity cannot be safely expressed through accepted owner workflows;
 - measured performance remains unacceptable after semantics-preserving optimization;
 - Studio/content-production evidence shows the explicit model is impractical at scale;
 - security/abuse findings demonstrate the reaction, capability or resource model is insufficient;
 - a later accepted Foundation/SIM/DUR/domain contract materially changes an authority boundary this contract depends on.
 
-Supersession MUST explicitly preserve or replace server authority, deterministic ordering/revision binding, bounded work, domain ownership, no-hidden-rollback and fail-closed evidence properties.
+Supersession MUST explicitly preserve or replace server authority, deterministic ordering/revision binding, bounded work, explicit catch-up semantics, domain ownership, no-hidden-rollback and fail-closed evidence properties.
 
 ## 25. CROSS_DOMAIN_FINDINGS
 
-### `CROSS_DOMAIN_FINDING GA-XD-01 — durable/recoverable future state`
+```yaml
+cross_domain_finding:
+  id: GA-XD-01
+  observed_in_domain: game-ability
+  target_owner: FND-03/DUR-02/recovery-persistence
+  severity: P1
+  evidence: docs/architecture/FND-03_RUNTIME_LIFECYCLE_FAILURE_AND_REPLAY_ANALYSIS_BASELINE.md + docs/architecture/DUR-02_*
+  conflict_or_gap: Any ability state declared to survive recovery/restart/handoff needs owner-defined representation, fencing and restoration; GAME-ABILITY defines semantic continuation only and has no DDL/checkpoint/handoff authority.
+  required_before: Any cast/channel/cooldown/charge/condition/future occurrence is claimed to survive a recovery or transfer boundary.
+  worker_action: REPORT_ONLY
+```
 
-FND/DUR owners must define the safe representation/fencing/recovery mechanism for any ability state declared to survive a boundary. No DDL, checkpoint format or transfer protocol is defined here.
+```yaml
+cross_domain_finding:
+  id: GA-XD-02
+  observed_in_domain: game-ability
+  target_owner: GAME-ITEM/DUR-03
+  severity: P1
+  evidence: docs/architecture/DUR-03_ITEM_TRANSACTION_AND_ANTI_DUPLICATION_CONTRACT.md + GAME-ITEM owner contracts
+  conflict_or_gap: Conserved item/currency/value costs and consequences remain item/value-owner mutations; GAME-ABILITY commit anchors do not create item authority or distributed atomicity.
+  required_before: An ability may consume, create, destroy or transfer conserved item/currency/value state.
+  worker_action: REPORT_ONLY
+```
 
-### `CROSS_DOMAIN_FINDING GA-XD-02 — item/value integration`
+```yaml
+cross_domain_finding:
+  id: GA-XD-03
+  observed_in_domain: game-ability
+  target_owner: GAME-INTERACTION/world-owner
+  severity: P1
+  evidence: docs/architecture/GAME-INTERACTION-01_WORLD_INTERACTION_CONTRACT_CANDIDATE.md + world ownership contracts
+  conflict_or_gap: Teleport/push/pull/occupancy/world-object consequences require owner-defined legality/ordering/commit semantics; GAME-ABILITY can route typed proposals only.
+  required_before: Any movement or world-interaction ability consequence becomes executable.
+  worker_action: REPORT_ONLY
+```
 
-GAME-ITEM/DUR-03 remain the only owners for conserved item/currency/value transitions. Ability cost/commit anchors do not create item ownership or distributed atomicity.
+```yaml
+cross_domain_finding:
+  id: GA-XD-04
+  observed_in_domain: game-ability
+  target_owner: GAME-AI-01/world-owner
+  severity: P2
+  evidence: docs/architecture/GAME-AI-01_CREATURE_AI_SPAWN_PATHFINDING_CONTRACT_CANDIDATE.md + GAME-ABILITY invocation boundary
+  conflict_or_gap: AI-origin ability use can share the invocation pipeline, but intent selection, threat/aggro, spawn/pathfinding and AI-control state are foreign authority.
+  required_before: Authoritative AI-origin ability selection/control is implemented.
+  worker_action: REPORT_ONLY
+```
 
-### `CROSS_DOMAIN_FINDING GA-XD-03 — movement/world interaction integration`
+```yaml
+cross_domain_finding:
+  id: GA-XD-05
+  observed_in_domain: game-ability
+  target_owner: SIM-DETERMINISM/ruleset/Reference-evidence
+  severity: P1
+  evidence: docs/architecture/SIM-DETERMINISM-01_AUTHORITATIVE_SIMULATION_CONTRACT.md + canonical Reference manifest/evidence
+  conflict_or_gap: The whole gate fixes deterministic staging but does not own exact numeric formulas, RNG algorithm/probabilities or Reference draw/order facts.
+  required_before: Any affected formula/RNG-dependent mechanic is implemented or claimed Reference-parity-confirmed.
+  worker_action: REPORT_ONLY
+```
 
-Teleport/push/pull/occupancy/world-object consequences require the GAME-INTERACTION/world owner. This contract supplies only the typed-routing requirement.
+```yaml
+cross_domain_finding:
+  id: GA-XD-06
+  observed_in_domain: game-ability
+  target_owner: FND-02/ALPHA-CLIENT-01
+  severity: P1
+  evidence: docs/architecture/FND-02_PROTOCOL_OTERYN_V1_CONTRACT.md + ALPHA-CLIENT-01 contract
+  conflict_or_gap: Protocol/client owners must realize authoritative results, errors and reconciliation/prediction UX; client presentation cannot become ability authority.
+  required_before: Native client gameplay exposes ability outcomes/prediction/reconciliation.
+  worker_action: REPORT_ONLY
+```
 
-### `CROSS_DOMAIN_FINDING GA-XD-04 — AI integration`
+```yaml
+cross_domain_finding:
+  id: GA-XD-07
+  observed_in_domain: game-ability
+  target_owner: Reference-evidence/coordinator
+  severity: P1
+  evidence: main@dc1eecae7952902bee3fb1e2d88aefc2be792cae + docs/agents/evidence/OTV2-20260815-ability-combat-reference-continuity.md
+  conflict_or_gap: Canonical Agent-A result is 0/4 promoted with target UNKNOWN and provenance/legal PENDING; GAME-ABILITY cannot create or shadow parity truth.
+  required_before: Any of the four registered ABILITY_COMBAT cases or aggregate Reference ability parity is promoted.
+  worker_action: REPORT_ONLY
+```
 
-AI-origin invocations use the same GAME-ABILITY pipeline, but AI intent selection, threat/aggro, spawn/pathfinding and AI-control state remain GAME-AI/world owned.
-
-### `CROSS_DOMAIN_FINDING GA-XD-05 — exact SIM/formula behavior`
-
-SIM supplies deterministic arithmetic/RNG/order semantics; concrete formula/RNG values/order for a Reference mechanic still require ruleset/evidence ownership.
-
-### `CROSS_DOMAIN_FINDING GA-XD-06 — protocol/client realization`
-
-FND-02/ALPHA-CLIENT must realize result/reconciliation/prediction UX without moving authority to the client.
-
-### `CROSS_DOMAIN_FINDING GA-XD-07 — Reference continuity/provenance lane`
-
-The four current `ABILITY_COMBAT` classifications remain owned by Agent A/evidence governance. Any merged classification change must be consumed before coordinator acceptance; this worker does not edit or shadow that truth.
-
-### `CROSS_DOMAIN_FINDING GA-XD-08 — analytics schema realization`
-
-ANL event/schema work should expose bounded occurrence/reaction/revision/commit evidence as needed, while remaining read-only and non-authoritative.
+```yaml
+cross_domain_finding:
+  id: GA-XD-08
+  observed_in_domain: game-ability
+  target_owner: ANL-01/producer-registry
+  severity: P2
+  evidence: docs/architecture/ANL-01_GAME_EVENT_AND_AUDIT_FOUNDATION_CONTRACT.md + GAME_EVENT_FOUNDATION_REGISTRY.json
+  conflict_or_gap: Analytics schemas should expose bounded occurrence/reaction/revision/commit/failure lineage as producer-owned events without becoming mutation or gameplay-order authority.
+  required_before: Concrete GAME-ABILITY analytics/audit event coverage is claimed complete.
+  worker_action: REPORT_ONLY
+```
 
 ## 26. DECISIONS_NOT_TAKEN
 
@@ -461,6 +546,7 @@ This candidate deliberately does **not** decide:
 - exact cast/channel duration, interruption causes/precedence, cost values, reservation timing, refund policy, cooldown groups/durations, charge capacity/recharge cadence;
 - exact condition stack/refresh/replace/match/source partitioning, immunity/resistance/suppression/dispel precedence, durations or tick cadence;
 - exact damage/heal formulas, modifier operation values/order, armor/resistance/absorb, crit/block/dodge, proc chances, lifesteal, RNG probability/order or numeric representation;
+- exact repeated-timer policy for a concrete mechanic where the owning ruleset/definition has not yet selected it, and exact catch-up/backlog numeric limits;
 - exact reaction priorities, concrete re-entry/cycle policy values or hard resource maxima;
 - whether any concrete cast/channel/cooldown/charge/condition survives logout, reconnect, GameNode recovery, process restart or Channel/world transfer;
 - physical content/catalogue serializer/schema, Rust enums/types/IDs/layout, scheduler/timer wheel, thread/task model or caches;
@@ -475,6 +561,7 @@ This candidate deliberately does **not** decide:
 
 ## 27. Worker status and handoff
 
-This file is a worker-authored candidate, not canonical accepted architecture. The worker must finish exact-head path/diff/CI/self-review evidence and leave the PR in draft. The next lifecycle action is Architecture Coordinator/Auditor classification (`ACCEPT`, `REWORK`, `BLOCKED` or `SUPERSEDED`) under the orchestration policy.
+This file is a worker-authored candidate, not canonical accepted architecture. Exact-head validation and independent review must use the current repaired head after canonical Agent-A integration.
 
 `MERGE_AUTHORITY: ARCHITECTURE_COORDINATOR_ONLY`
+`IMPLEMENTATION_AUTHORITY: NONE`
