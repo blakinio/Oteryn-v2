@@ -12,6 +12,7 @@ delivery_pr: 268
 delivery_final_head_sha: a65680d9504b3a4e6394ad3bb3dc25c6630cd098
 delivery_merge_sha: 0cfd8d8ee3ecf4fbb1cb76cbc9680b53a152e3c1
 closeout_branch: docs/arch-a-b-lifecycle-closeout-20260815
+closeout_pr: 282
 owner: domain-architecture-agent-b
 owner_state: released_after_closeout
 created_at: 2026-08-15T00:17:00+02:00
@@ -73,19 +74,19 @@ Delivery merge:
 
 ## Lifecycle closeout
 
-This closeout performs bookkeeping only:
+PR #282 performs bookkeeping only:
 
 - remove the active task record;
 - preserve this completed archive record;
 - release the three Agent-B task-owned paths;
 - leave the merged GAME-ABILITY architecture and canonical Agent-A 0/4 evidence result unchanged.
 
-Issue #260 may be closed as completed only after this closeout is merged. No runtime, client, protocol, content, DDL, Platform, production or sibling C/D/E/F state is modified by closeout.
+Issue #260 may be closed as completed only after PR #282 is merged. No runtime, client, protocol, content, DDL, Platform, production or sibling C/D/E/F state is modified by closeout.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: PR #268 merged after canonical Agent-A integration, exact-head CI, full-diff self-review and clean independent review; closeout archives task and releases ownership
+last_progress: PR #268 merged after canonical Agent-A integration, exact-head CI, full-diff self-review and clean independent review; closeout PR #282 archives task and releases ownership
 status: completed
 owner_action_required: false
 blocker: null
