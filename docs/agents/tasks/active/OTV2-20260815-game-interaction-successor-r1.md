@@ -4,18 +4,18 @@
 task_id: OTV2-20260815-game-interaction-successor-r1
 title: GAME-INTERACTION-01 successor — child occurrence identity and retry semantics
 mode: CONTRACT
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/arch-d-game-interaction-successor-r1
-pr: null
+pr: 277
 base_sha: cb98fd32a2bb71fce83234ebf8bf69bdd1a1970e
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: GAME-INTERACTION SUCCESSOR ARCHITECTURE AGENT D-R1
 created_at: 2026-08-15T11:59:42+02:00
-updated_at: 2026-08-15T11:59:42+02:00
+updated_at: 2026-08-15T12:09:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -69,9 +69,10 @@ The gate ID remains `GAME-INTERACTION-01`. This task does not create a new globa
 
 ### DERIVED / proposed in this successor
 
-- A child occurrence can be represented without a global UUID as a stable composite of the root source occurrence plus definition/object, target, typed edge/capability, optional semantically justified child ordinal and exact behavior-affecting semantic revision context.
-- Runtime ownership generation and mutable state revisions must fence application/completion but must not by themselves create a new logical child identity on failover.
-- Cross-owner ambiguity must surface as `PENDING` and reconcile the same child/foreign-owner operation; a new client `CommandRef` for the same intent is forbidden until the prior occurrence is proven terminal.
+- A direct child is a stable composite of parent/root source occurrence, definition/object identity, authoritative target, typed edge/capability, optional semantically justified child ordinal and exact behavior-affecting semantic revision context.
+- For nested cascades the parent source is the stable parent `InteractionChildOccurrenceRef`, yielding a bounded deterministic ancestry path without a global UUID.
+- Runtime ownership generation and mutable state revisions fence application/completion but do not by themselves create a new logical child identity on failover.
+- Cross-owner ambiguity surfaces as `PENDING` and reconciles the same child/foreign-owner operation; a new client `CommandRef` for the same intent is forbidden until the prior occurrence is proven terminal.
 
 ### UNKNOWN / explicitly outside this task
 
@@ -85,7 +86,7 @@ The gate ID remains `GAME-INTERACTION-01`. This task does not create a new globa
 
 - [ ] Successor artifacts explicitly link predecessor #262/#269 and explain the repair-cycle stop condition.
 - [ ] Gate remains `GAME-INTERACTION-01`; no new global gate ID is introduced.
-- [ ] Composite child-occurrence identity distinguishes siblings without a generic global UUID.
+- [ ] Composite child-occurrence identity distinguishes flat siblings and nested cascade paths without a generic global UUID.
 - [ ] Same child retry/replay/recovery is exactly-once/idempotent and cannot reroll deterministic RNG.
 - [ ] Canonical child ordering/ordinal assignment cannot derive from hash-map/container/thread/worker iteration order.
 - [ ] Ownership generation/revision fencing remains fail-closed without turning failover into a fresh semantic child.
@@ -120,6 +121,7 @@ This successor MUST NOT decide, implement or mutate:
 ### Successor governance
 
 - New successor issue: #274.
+- New draft PR: #277.
 - Predecessor: issue #262 / draft PR #269 / `docs/arch-d-game-interaction`.
 - Successor branch: `docs/arch-d-game-interaction-successor-r1`.
 - This task starts its own bounded repair budget at zero. It does not reset or reinterpret the exhausted predecessor's budget.
@@ -127,21 +129,24 @@ This successor MUST NOT decide, implement or mutate:
 ### Intended semantic shape
 
 ```text
-ChildOccurrenceRef = (
-  RootSourceOccurrenceRef,
+InteractionChildOccurrenceRef = (
+  ParentSourceOccurrenceRef,
   InteractionDefinitionRef,
   AuthoritativeTargetDiscriminator,
   TypedEdgeOrCapabilityDiscriminator,
   OptionalCanonicalChildOrdinal,
   SemanticRevisionContext
 )
+
+first-level ParentSourceOccurrenceRef = RootSourceOccurrenceRef
+nested ParentSourceOccurrenceRef = parent InteractionChildOccurrenceRef
 ```
 
-The contract candidate must define tuple equality and lifecycle semantics, while leaving physical serialization, digest/hash algorithm, storage schema and numeric wire representation unfrozen.
+The contract candidate defines tuple/path equality and lifecycle semantics while leaving physical serialization, digest/hash algorithm, storage schema and numeric wire representation unfrozen.
 
 ### Public result shape
 
-The successor will define the caller-visible semantic state set:
+The successor defines caller-visible semantic state:
 
 ```text
 COMMITTED | PENDING | REJECTED
@@ -153,7 +158,7 @@ COMMITTED | PENDING | REJECTED
 
 ### Focused
 
-- source-contract consistency review: pending
+- source-contract consistency review: final exact-head review pending
 - result: pending
 
 ### Component/integration
@@ -168,7 +173,7 @@ COMMITTED | PENDING | REJECTED
 
 ### Exact-head CI
 
-- final head: pending
+- final head: recorded externally after this final metadata commit to avoid a self-referential SHA mutation
 - trigger source: draft PR / final metadata commit
 - workflow/run/job: pending
 - runner assignment: pending
@@ -177,7 +182,7 @@ COMMITTED | PENDING | REJECTED
 
 ## Self-review
 
-- exact head: pending
+- exact head: recorded externally after final metadata commit
 - method/reviewer: GAME-INTERACTION SUCCESSOR ARCHITECTURE AGENT D-R1
 - material findings: pending
 - verdict: pending
@@ -202,14 +207,14 @@ COMMITTED | PENDING | REJECTED
 ## Context checkpoint
 
 ```yaml
-last_progress: successor issue #274 and dedicated branch created from trusted main; authoring bounded successor artifacts
-status: implementing
+last_progress: successor artifacts authored and draft PR #277 created; final metadata committed before exact-head validation
+status: validating
 branch: docs/arch-d-game-interaction-successor-r1
 head_sha: null
-pr: null
+pr: 277
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
+ci_trigger_source: pull_request
 ci_check_generation: null
 ci_checks_for_current_head: 0
 ci_run_ids: []
@@ -224,7 +229,7 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: ARCHITECTURE_COORDINATOR_AUDIT_AFTER_WORKER_VALIDATION
 blocker: null
-next_action: author successor analysis and contract candidate
+next_action: perform full exact-head diff self-review and exact-head CI validation
 ```
 
 `MERGE_AUTHORITY: ARCHITECTURE_COORDINATOR_ONLY`  
