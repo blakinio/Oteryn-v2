@@ -13,7 +13,7 @@ base_sha: dcc4a7773a48ea07720ae3f19f090bcfee2d266b
 delivery_final_head_sha: 55193e83ddb6c6e440532a58990eef6c34fde383
 delivery_merge_sha: a01937b0db497e82e946fea2fddd46ec7958339e
 closeout_branch: docs-ecosystem-topology-senior-dev-pm-review-closeout-20260815
-closeout_pr: null
+closeout_pr: 281
 owner: senior-dev-pm-review-agent
 owner_state: released_after_closeout
 created_at: 2026-08-15T14:13:00+02:00
@@ -74,7 +74,7 @@ No repository reorganization, runtime implementation, external repository write,
 - [x] Completed exact-head full-diff self-review with zero open material findings.
 - [x] Completed required exact-head repository validation.
 - [x] Squash-merged delivery PR #280 and verified the merge on `main`.
-- [ ] Complete bookkeeping-only lifecycle closeout through the archive PR.
+- [x] Lifecycle closeout is performed by PR #281, which archives this task and releases the task-owned paths without modifying the delivered review.
 
 ## Excluded scope
 
@@ -111,16 +111,26 @@ Exact head `55193e83ddb6c6e440532a58990eef6c34fde383`:
 - dependency review, governance and CodeQL sub-gates: **PASS**;
 - Rust-only sub-gates: correctly skipped for documentation-only scope.
 
+### Closeout validation
+
+PR #281 is bookkeeping-only and contains exactly:
+
+- removal of the active task record; and
+- addition of this completed archive record.
+
+Before merge it requires a full two-path self-review, `behind_by=0`, zero unresolved review threads and fresh exact-head required `Merge gate / validate` PASS. The merge of PR #281 will be the durable evidence that these protected closeout requirements were satisfied; exact workflow evidence remains attached to that PR.
+
 ## Review and audit history
 
 - The review was independently re-derived from current repository facts and accepted architecture rather than copying the first-pass conclusion as authority.
 - The second pass upheld `ACCEPT_WITH_CHANGES` but added stronger PM/delivery constraints around migration timing, META creation, release identities, CI cost, heavy asset storage and future extraction.
 - Exact-head self-review found zero material architecture/ownership/security/current-vs-target contradictions.
 - A separate independent reviewer was not required for this low-risk non-authoritative documentation audit because it changed no accepted ADR/contract, authority/security rule, protocol, durable-data invariant, production path or executable public contract.
+- The closeout is bookkeeping-only and changes no architecture authority.
 
 ## Lifecycle closeout
 
-The closeout performs only:
+PR #281 performs only:
 
 - active task -> archive;
 - release of task-owned paths;
@@ -131,11 +141,11 @@ No linked Issue was created for this task. No other PR is superseded or terminal
 ## Context checkpoint
 
 ```yaml
-last_progress: Delivery PR #280 merged as a01937b0db497e82e946fea2fddd46ec7958339e after clean exact-head self-review and required repository validation; bookkeeping-only archive closeout is in progress.
+last_progress: Delivery PR #280 merged as a01937b0db497e82e946fea2fddd46ec7958339e after clean exact-head self-review and required repository validation; PR #281 performs the bookkeeping-only archive and ownership release.
 status: completed
 branch: docs-ecosystem-topology-senior-dev-pm-review-closeout-20260815
-pr: null
+pr: 281
 owner_action_required: false
 blocker: null
-next_action: merge the bookkeeping-only active-task-to-archive closeout after exact-head validation
+next_action: none
 ```
