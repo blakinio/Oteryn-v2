@@ -19,7 +19,7 @@ closeout_pr: 282
 owner: DOMAIN ARCHITECTURE DESIGN AGENT / Agent A worker
 owner_state: released_after_closeout
 created_at: 2026-08-15T00:20:22+02:00
-updated_at: 2026-08-15T23:20:00+02:00
+updated_at: 2026-08-15T23:24:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths: []
@@ -205,6 +205,20 @@ next_action: WORKER_EXACT_HEAD_FULL_DIFF_SELF_REVIEW_AND_CI_THEN_COORDINATOR_REA
 ## Post-merge lifecycle closeout
 
 Delivery PR #271 was independently re-audited on exact final head `5b13f0145301700b6c3249ef01de49da4352d4f5`, passed required exact-head repository checks, completed a clean owner-authorized independent Codex review, and was squash-merged as `dc1eecae7952902bee3fb1e2d88aefc2be792cae`.
+
+### Exact delivery validation snapshot
+
+The merge decision used the following immutable delivery evidence on unchanged final head `5b13f0145301700b6c3249ef01de49da4352d4f5` against then-live `main@4246b165473059c0ac81475d885d71350c2cfb36`:
+
+- drift: `behind_by=0`;
+- changed-file scope: exactly the two Agent-A allocated paths;
+- Agent governance run `31904625485`: **PASS**;
+- Merge authority audit run `31904625821`: **PASS**;
+- Merge gate run `31904626082`, including final `Merge gate / validate`: **PASS**;
+- coordinator exact-head full-diff audit/self-review: **PASS**, zero open material findings;
+- owner-authorized independent Codex review on the exact final head: **clean**;
+- unresolved review threads immediately before merge: **0**;
+- runtime/component/E2E: `NOT_APPLICABLE` — paper-only evidence/task-state delivery.
 
 Closeout PR #282 changes bookkeeping only:
 
