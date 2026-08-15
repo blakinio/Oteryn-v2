@@ -66,6 +66,7 @@ The composition root owns:
 - application lifecycle and ordered shutdown;
 - async runtime lifetime;
 - renderer/window/input adapter lifetime;
+- audio provider and audio-device/session lifetime;
 - Identity/Platform provider lifetime;
 - client configuration/privacy state;
 - client-safe content provider lifetime;
@@ -73,13 +74,13 @@ The composition root owns:
 - future Game Gateway/pre-admission control-plane and gameplay transport provider lifetime when separately implemented and authorized;
 - release/update status presented to the application.
 
-Screens/widgets MUST NOT construct infrastructure clients, async runtimes, gameplay sessions or authority-bearing transports.
+Screens/widgets MUST NOT construct infrastructure clients, async runtimes, audio devices, gameplay sessions or authority-bearing transports.
 
 ### 4.2 Dependency direction
 
-Application and presentation logic MUST depend on semantic ports/state rather than concrete OS, socket, TLS, filesystem, installer or renderer-backend APIs.
+Application and presentation logic MUST depend on semantic ports/state rather than concrete OS, socket, TLS, filesystem, installer, audio-device or renderer-backend APIs.
 
-Infrastructure adapters MAY depend inward on those semantic boundaries. The inward layer MUST NOT depend outward on a concrete installer/updater/network/UI technology solely for convenience.
+Infrastructure adapters MAY depend inward on those semantic boundaries. The inward layer MUST NOT depend outward on a concrete installer/updater/network/UI/audio technology solely for convenience.
 
 ## 5. Application and screen contract
 
@@ -90,7 +91,8 @@ The client MUST separate:
 - local gameplay-session **observation** state;
 - non-authoritative world projection;
 - purely local UI/presentation state;
-- renderer resource/cache state.
+- renderer resource/cache state;
+- audio presentation state/resource state.
 
 A screen MUST:
 
@@ -137,6 +139,29 @@ The client MUST preserve a hard semantic separation between:
 6. final game-owned FND-04 admission, `CharacterLease` acquisition/validation and canonical `GameSessionId` authority.
 
 Platform directory responses MUST NOT be reinterpreted as gameplay credentials, Gateway authorization or final game-domain authority. A client MUST NOT bypass Game Gateway ticket redemption/route selection by turning directory selection directly into FND-04 admission or a direct gameplay endpoint choice.
+
+### 7.1 Current Platform-directory parser precision
+
+The current implementation in `crates/platform-client/src/lib.rs` does **not** provide complete-schema or generic unknown-gameplay-field rejection. It recursively rejects only these 12 literal JSON key names:
+
+```text
+host
+port
+endpoint
+endpoint_uri
+protocol
+protocol_profile
+ticket
+credential
+game_session
+admission
+route
+address
+```
+
+Unknown compound keys such as `game_session_id`, `admission_token` or `selected_endpoint` are not proven rejected by that denylist and may be ignored by the current manual parser when the otherwise required directory shape is valid. Documentation and conformance evidence MUST describe the current behavior at exactly this scope.
+
+Before a future implementation may claim a complete directory-schema boundary against unknown gameplay-shaped fields, it MUST provide explicit schema/allowlist or equivalent reject-unknown-field evidence that closes that gap. This is a future implementation requirement; this paper contract does not modify `platform-client` runtime code.
 
 The conceptual fresh-entry flow is:
 
@@ -246,6 +271,20 @@ Renderer-local caches and GPU resources MUST be reconstructable without creating
 The Windows interactive shell MUST keep OS/window/surface lifecycle handling at the platform adapter boundary, including implementation-appropriate handling of resize/DPI/focus/suspend/resume/device/surface loss/shutdown.
 
 The exact UI toolkit and renderer implementation remain unfrozen by this candidate.
+
+### 13.1 Audio presentation contract
+
+Audio is a client-side **presentation-only** subsystem. It MUST NOT own or decide gameplay legality, authoritative simulation, RNG, combat outcomes, timers, session/admission state or server reconciliation. Audio cues MAY be derived from already-accepted client observations and local presentation/UI events, but loss or delay of audio MUST NOT alter the authoritative or client-observed gameplay state machine.
+
+The `apps/client` production composition root MUST own audio-provider construction, selected output-device/session lifetime, ordered shutdown and recovery. Screens, widgets and gameplay reducers MUST NOT open devices or own long-lived audio infrastructure directly.
+
+Audio assets MUST come only from the same client-safe content/release projection boundary used by the shipping client. Audio lookup/activation MUST be compatible with the active build/content/release revision; an incompatible or missing required audio asset MUST fail/degrade as presentation rather than reinterpret content semantics or authorize gameplay. Staged release/content updates MUST NOT mutate the active audio asset set in place for a running release/session compatibility context.
+
+The implementation MUST bound audio resource use, including simultaneously active voices/streams, decoded/streaming buffers, queued events and retry/reopen work. Exact numeric ceilings are implementation/evidence-driven and are deliberately not fixed here. Device loss, initialization failure, unsupported format or unavailable output MUST degrade to a clear recoverable/muted presentation state; gameplay entry and server authority MUST NOT depend on audio availability.
+
+Settings/accessibility MUST expose the semantic controls needed by product requirements, including at least master/effect/music class controls or an equivalent extensible category model, mute, selected output where supported, and accessibility-safe operation when audio is disabled. Exact UX and category taxonomy remain product/implementation decisions.
+
+Audio conformance evidence belongs to the native-client implementation/test owner. It MUST prove provider/device lifecycle and recovery, bounded-resource behavior, client-safe asset/revision compatibility, deterministic mapping from eligible presentation events to requested cues where determinism is claimed, settings persistence/accessibility behavior, and non-interference with gameplay authority. This candidate intentionally does **not** select an audio library, codec stack, mixer, OS backend or vendor.
 
 ## 14. Client-safe content contract
 
@@ -405,7 +444,8 @@ Without exposing credentials or hidden topology, the client MUST be able to pres
 - transport connection/security failure;
 - reconnect/resynchronization progress;
 - terminal gameplay-session failure;
-- update required/activation failure.
+- update required/activation failure;
+- audio unavailable/degraded where audio is implemented.
 
 A lower-level socket error MUST NOT automatically become a security downgrade or a claim that the server ended/accepted gameplay authority. Error mapping must respect the owning contract.
 
@@ -418,9 +458,10 @@ It MUST:
 1. stop accepting new user/gameplay intents;
 2. cancel/close application-owned asynchronous work through bounded ownership;
 3. close/release future transport/session client resources without inventing server success;
-4. flush only bounded, policy-permitted local state/diagnostics;
-5. release renderer/window resources;
-6. terminate without orphaned client worker ownership.
+4. stop/release audio playback/device resources without blocking gameplay/session authority cleanup;
+5. flush only bounded, policy-permitted local state/diagnostics;
+6. release renderer/window resources;
+7. terminate without orphaned client worker ownership.
 
 Exact timeout values are implementation/SRE decisions unless already fixed by a parent contract.
 
@@ -452,6 +493,8 @@ A product build MUST NOT change gameplay availability to enabled until exact-rev
 - native client projection/input/render integration;
 - required Tier 1 and Tier 2 E2E journeys with FND-02 independent wire evidence.
 
+Audio implementation is not gameplay-authority readiness. When audio is in the shipped alpha scope, its independent provider/content/degradation/settings evidence MUST be satisfied without making gameplay availability depend on the presence of an output device.
+
 ### 22.3 External alpha
 
 External-alpha production enablement additionally requires accepted release/security/SRE/privacy evidence, including signed artifact/updater strategy and implementation, build provenance/SBOM strategy, threat model, rollback/operability, required runbooks/SLOs and Tier 3 release-binary evidence.
@@ -463,7 +506,7 @@ Coordinator acceptance of this document alone satisfies none of those implementa
 Implementation claiming conformance to this candidate should prove at minimum:
 
 1. application/screen code cannot bypass provider/capability gates to create gameplay network activity while runtime is unavailable;
-2. Platform directory handling still rejects gameplay secret/route/session fields and cannot bypass the ADR-0003 Game Login Ticket -> Game Gateway redemption/route-selection boundary;
+2. current Platform directory parsing recursively rejects the 12 literal denylisted keys `host`, `port`, `endpoint`, `endpoint_uri`, `protocol`, `protocol_profile`, `ticket`, `credential`, `game_session`, `admission`, `route`, `address`; any stronger complete-schema/reject-unknown-fields claim is made only after explicit evidence for that stronger implementation, and directory handling cannot bypass the ADR-0003 Game Login Ticket -> Game Gateway redemption/route-selection boundary;
 3. fresh gameplay entry follows the authorized chain through selected endpoint/channel/revisions and short-lived pre-admission material before final FND-04 admission, while final `GameSessionId`/`CharacterLease` authority remains game-owned;
 4. stale `connection_generation` traffic cannot mutate the active projection;
 5. state revision mismatch enters resync and never applies a speculative authoritative delta;
@@ -475,26 +518,28 @@ Implementation claiming conformance to this candidate should prove at minimum:
 11. semantic input routing prevents UI/text events from unintended gameplay egress;
 12. renderer/device/resource recreation does not alter gameplay/session authority;
 13. incompatible client-safe content fails closed before world activation;
-14. config migration is recoverable and preserves diagnostic opt-out;
-15. logs/crash packages reject/redact prohibited secret/private data before upload;
-16. update activation cannot launch an accepted mixed partial release and rollback remains compatibility-checked;
-17. Tier 1 headless, Tier 2 native and Tier 3 release evidence are classified distinctly with exact build/Platform/protocol/content revisions retained;
-18. no hidden retry converts failed physical E2E attempts into pass evidence;
-19. exact-head implementation review and CI prove the claimed build, not a parent commit.
+14. audio provider/device lifecycle, bounded-resource behavior, compatible client-safe audio assets, non-authoritative cue mapping, degradation/recovery and settings/accessibility behavior are proven when audio is implemented;
+15. config migration is recoverable and preserves diagnostic opt-out;
+16. logs/crash packages reject/redact prohibited secret/private data before upload;
+17. update activation cannot launch an accepted mixed partial release and rollback remains compatibility-checked;
+18. Tier 1 headless, Tier 2 native and Tier 3 release evidence are classified distinctly with exact build/Platform/protocol/content revisions retained;
+19. no hidden retry converts failed physical E2E attempts into pass evidence;
+20. exact-head implementation review and CI prove the claimed build, not a parent commit.
 
 ## 24. Decision timing
 
 ### Must these boundaries be decided now?
 
-**YES** for composition/authority/projection/content/filesystem/update/test boundaries. Client implementation would otherwise hard-code cross-domain ownership before the missing gameplay runtime exists.
+**YES** for composition/authority/projection/content/filesystem/update/test/audio-ownership boundaries. Client implementation would otherwise hard-code cross-domain ownership before the missing gameplay runtime exists.
 
-**NO** for the concrete GUI/network/updater/installer/content-packaging libraries. Those choices remain safely reversible and require implementation evidence.
+**NO** for the concrete GUI/network/updater/installer/content-packaging/audio libraries. Those choices remain safely reversible and require implementation evidence.
 
 ### Downstream work blocked without this contract
 
 - safe native gameplay client implementation after ADR-0003/FND-02/FND-04 runtime integration exists;
 - stable UI/navigation/provider composition;
 - client content loader/update packaging work;
+- client audio provider/content/settings implementation without authority leakage;
 - Tier 2 native-client automation design;
 - honest external-alpha client readiness gate.
 
@@ -502,6 +547,7 @@ Implementation claiming conformance to this candidate should prove at minimum:
 
 - direct screen-to-network coupling;
 - UI state accidentally becoming gameplay state authority;
+- direct screen/reducer ownership of audio devices and unbounded playback queues;
 - irreversible loose-content/file layouts;
 - updater/install mutation mixed into the gameplay process;
 - test hooks that bypass product boundaries;
@@ -517,6 +563,7 @@ A future change may supersede these boundaries only with explicit accepted evide
 - credential/privacy isolation;
 - release atomicity/rollback;
 - real-boundary E2E proof;
+- presentation/audio non-authority and resource boundedness;
 - implementation simplicity/operability on measured production constraints.
 
 Framework preference alone is insufficient superseding evidence.
@@ -538,9 +585,10 @@ This candidate intentionally does not select:
 - Windows directory/registry/install-scope details;
 - credential vault technology;
 - crash backend/retention/legal text;
+- audio library, codec/mixer stack, device backend/vendor or exact category taxonomy;
 - release channel/version-skew/forced-update product policy;
 - Linux/macOS support plan;
-- exact numeric retry/cache/log/spool limits outside accepted parent contracts;
+- exact numeric retry/cache/log/spool/audio-voice/buffer limits outside accepted parent contracts;
 - any server/gameplay/persistence/balance authority.
 
 ## 26. CROSS_DOMAIN_FINDINGS
