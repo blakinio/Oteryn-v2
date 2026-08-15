@@ -23,10 +23,11 @@ ANL-02 owns:
 - deterministic session/hunt grouping and reporting-window semantics;
 - evidence-quality representation;
 - revision-aware comparison/regression semantics;
+- minimum dashboard/presentation truth and warning semantics;
 - privacy-safe gameplay/world analytical projections;
 - bounded analytical evidence-package requirements.
 
-ANL-02 does **not** own gameplay formulas, gameplay-session authority, content rules, channel/reward policy, item/currency prevention, authoritative replay, sanctions, warehouse/DB technology, runtime implementation or production rollout.
+ANL-02 does **not** own gameplay formulas, gameplay-session authority, content rules, channel/reward policy, item/currency prevention, authoritative replay, sanctions, warehouse/DB/dashboard technology, runtime implementation or production rollout.
 
 ## 2. Authority invariant
 
@@ -39,13 +40,13 @@ ANL-02 output
 != economy mutation authority
 ```
 
-No ANL-02 metric, session/hunt grouping, anomaly, model output or evidence packet may directly create/extend a gameplay session, change authoritative gameplay state, ruleset/content, reward rates or production configuration.
+No ANL-02 metric, session/hunt grouping, dashboard, anomaly, model output or evidence packet may directly create/extend a gameplay session, change authoritative gameplay state, ruleset/content, reward rates or production configuration.
 
 ## 3. Upstream contracts
 
 A conforming ANL-02 consumer preserves:
 
-- ADR-0006 data-class and read-only boundaries;
+- ADR-0006 data-class, dashboard/regression and read-only boundaries;
 - ANL-01 EventId/schema/durability/privacy/retention/order/idempotency semantics;
 - FND-owned `GameSessionId`/session-generation authority when those fields are consumed as evidence;
 - DUR-03 conservation/prevention authority when value facts are consumed;
@@ -139,7 +140,7 @@ The observation additionally records:
 - material privacy suppression;
 - source checkpoint/gap state.
 
-Known source loss or unsupported semantics may not be hidden by an aggregate.
+Known source loss or unsupported semantics may not be hidden by an aggregate or presentation layer.
 
 ## 7. Cohort and denominator rules
 
@@ -163,9 +164,9 @@ A metric that claims session/hunt semantics MUST use a versioned grouping contra
 Required grouping behavior:
 
 1. A session/hunt grouping is scoped to one `WorldId`; it MUST NOT silently span Worlds.
-2. Group start, continuation and terminal boundary are determined by the registered grouping identity/boundary evidence, not by analyst-local wall-clock inactivity guesses, process restarts, dashboard refreshes or ingestion gaps.
-3. A reconnect or `GameSessionId`/`session_generation` change MUST NOT by itself merge two otherwise unrelated analytical groups. If the producer-owned grouping identity explicitly continues across the reconnect, the analytical group continues and the game-session/generation change is retained as a segment boundary/dimension; without such continuity evidence, implementations MUST NOT heuristically stitch the groups.
-4. Channel or Instance transition MUST NOT by itself create a new hunt/session when the explicit grouping identity continues, but source `ChannelId`/`InstanceId` is retained. Metrics whose exposure or semantics differ by Channel/Instance MUST segment/stratify those contributions before any compatible higher-level rollup.
+2. Group start, continuation and terminal boundary are determined by registered grouping identity/boundary evidence, not analyst-local wall-clock inactivity guesses, process restarts, dashboard refreshes or ingestion gaps.
+3. A reconnect or `GameSessionId`/`session_generation` change MUST NOT by itself merge two otherwise unrelated analytical groups. If producer-owned grouping identity explicitly continues across the reconnect, the analytical group continues and the game-session/generation change is retained as a segment boundary/dimension; without continuity evidence, implementations MUST NOT heuristically stitch the groups.
+4. Channel or Instance transition MUST NOT by itself create a new hunt/session when explicit grouping identity continues, but source `ChannelId`/`InstanceId` is retained. Metrics whose exposure or semantics differ by Channel/Instance MUST segment/stratify those contributions before compatible higher-level rollup.
 5. An explicit terminal boundary or a new incompatible grouping identity ends the group. Missing terminal evidence leaves the analytical group open/incomplete rather than authorizing a guessed semantic stop time.
 6. Duplicate/replayed source events produce at most one analytical effect per accepted ANL-01 `EventId`/idempotency semantics.
 7. Out-of-order events are reconciled using accepted ANL-01 ordering/causation evidence. If ordering is insufficient to establish a boundary or attribution, the affected grouping/metric is partial or inconclusive; implementations MUST NOT manufacture order.
@@ -188,7 +189,7 @@ Rules:
 
 1. Calendar reporting assignment uses the source event's accepted canonical occurrence wall time (`occurred_at_wall` for event families that declare it valid/required for this purpose), normalized to UTC; ingestion, persistence, replay or query execution time MUST NOT choose the reporting day.
 2. An event exactly at `00:00:00 UTC` belongs to the new day. An event strictly before that boundary belongs to the preceding day.
-3. A session/hunt spanning UTC midnight is not semantically terminated merely by the calendar boundary. Session-wide evidence may span days, while each daily aggregate allocates event-derived contribution/exposure to the UTC window containing the canonical event occurrence.
+3. A session/hunt spanning UTC midnight is not semantically terminated merely by the calendar boundary. Session-wide evidence may span days, while each daily aggregate allocates event-derived contribution/exposure to the UTC window containing canonical event occurrence.
 4. A duplicate or replay retains the original event-time window and contributes at most once.
 5. A late-arriving event is assigned to its original event-time window, never to the arrival/reprocessing day. Any published result affected by late reconciliation MUST retain a source checkpoint/as-of/recomputation identity sufficient to reproduce which event set produced that result; correction MUST NOT silently erase provenance.
 6. Out-of-order delivery does not change window assignment. If required canonical occurrence time is absent/invalid or semantic ordering is insufficient for a time-weighted attribution, the affected result is partial/inconclusive rather than assigned by arrival time.
@@ -273,6 +274,44 @@ A regression claim must name a compatible baseline and account for, as applicabl
 
 Multiple material simultaneous changes keep the cause ambiguous unless a controlled experiment, deterministic replay or owning-domain evidence isolates it.
 
+### 11.1 Dashboard presentation and regression-acceptance boundary
+
+A dashboard is a **presentation of ANL-02 evidence**, not an alternate metric definition or authority layer. Any dashboard/panel used for a material balance, world-health, regression, release or product decision MUST make the evidence state visible enough that a reader cannot mistake partial, suppressed, stale or incomparable data for complete homogeneous truth.
+
+For every material displayed observation or comparison, the presentation MUST expose directly or through an unambiguous drill-down/evidence affordance at least:
+
+- `metric_id` and `metric_revision`;
+- observation/reporting window and World/cohort identity;
+- denominator/exposure definition identity and sample/exposure size;
+- material ruleset/content/world-policy/server-build revisions or an explicit comparable-revision grouping;
+- source completeness and schema-compatibility state;
+- duplicate/order/late-event reconciliation state where material;
+- sampling/loss/coverage state;
+- privacy suppression/redaction state;
+- source checkpoint/as-of/recomputation identity sufficient to distinguish reconciled/stale results;
+- comparison baseline/method revision for regression or comparative panels.
+
+Presentation rules:
+
+1. `PARTIAL`, `UNKNOWN`, `PARTIAL_UNSUPPORTED`, unresolved reconciliation, known collection loss, incompatible/mixed revisions, or privacy suppression MUST produce a visible warning/state. A visualization MUST NOT hide those conditions behind a normal-looking number or green status.
+2. Missing/unknown/suppressed data MUST NOT be rendered or exported as semantic zero.
+3. Minimum-sample/exposure warnings are mandatory for metrics whose interpretation is sample-sensitive. Exact minimums are metric/privacy/product-policy owned and versioned; this contract does not impose one universal numeric threshold.
+4. If a minimum-sample or privacy rule suppresses a value, the dashboard MUST show that the result is suppressed/insufficient rather than silently omit it in a way that can be read as zero/no activity.
+5. A dashboard MAY summarize dimensions for usability, but the underlying decision-grade evidence packet and material semantic revisions remain retrievable. Presentation aggregation MUST NOT pool incompatible revisions/cohorts forbidden by the metric contract.
+6. A visual trend/regression flag is not itself a balance or deployment decision. Dashboard colors, alert icons and thresholds have no gameplay or release authority.
+
+A material regression evaluation MUST retain a named, versioned acceptance record separate from the visualization. The record binds the metric/baseline/method revisions, exact compared windows/cohorts, sample/exposure, evidence-quality state, checkpoint/as-of identity, known confounders and the responsible human/product/release owner disposition.
+
+Allowed analytical regression dispositions are:
+
+- `REGRESSION_NOT_EVALUATED` — no owner disposition yet;
+- `REGRESSION_REVIEW_REQUIRED` — signal is decision-relevant and requires owner review;
+- `NO_MATERIAL_REGRESSION_SUPPORTED` — evidence supports no material regression under the named method/threshold and declared scope;
+- `KNOWN_CHANGE_ACCEPTED_BY_OWNER` — a measured change is acknowledged/accepted by the appropriate owner for its declared purpose;
+- `REGRESSION_EVIDENCE_INSUFFICIENT` — quality/sample/comparability/reconciliation state is insufficient for a valid acceptance decision.
+
+These are analytical/release-evidence dispositions only. `KNOWN_CHANGE_ACCEPTED_BY_OWNER` does not authorize a code/content deploy, gameplay mutation or waiver of another gate. Numeric regression thresholds, confidence methodology and release policy remain versioned owner decisions rather than universal ANL-02 constants.
+
 ## 12. SIM integration
 
 ANL-02 may consume SIM-DETERMINISM evidence to reproduce behavior, compare exact supported-target outcomes and locate first deterministic divergence.
@@ -292,7 +331,7 @@ It may not:
 3. `AnalyticsActorId` follows ANL-01 domain/epoch rules; cross-epoch correlation requires separately authorized/audited mapping.
 4. Fine geography, exact time, rare cohort or party composition is treated as potential re-identification risk.
 5. Presentation/export applies purpose-specific aggregation/suppression before disclosure; exact thresholds remain privacy-policy owned.
-6. Balance/world analyst roles do not receive the privileged pseudonym-to-operational-identity mapping by default.
+6. Balance/world analyst roles do not receive privileged pseudonym-to-operational-identity mapping by default.
 7. Raw, intermediate, aggregate and exported datasets each bind finite accepted retention profiles.
 8. Privacy classification may be raised but not silently downgraded.
 
@@ -309,13 +348,14 @@ Any implementation must additionally register hard bounds before acceptance for 
 - geography resolution/result cells;
 - backfill/recompute work units;
 - concurrent jobs/intermediate memory;
-- open session/hunt grouping state and late-reconciliation work.
+- open session/hunt grouping state and late-reconciliation work;
+- dashboard query/result/drill-down scope where user-controlled.
 
-Large work is paged/partitioned/resumable. Analytical storage failure does not block authoritative gameplay. ANL-02 processing may lag or become unavailable but never acquires gameplay mutation authority.
+Large work is paged/partitioned/resumable. Analytical storage/dashboard failure does not block authoritative gameplay. ANL-02 processing may lag or become unavailable but never acquires gameplay mutation authority.
 
 ## 15. Failure semantics
 
-- Best-effort loss/sampling -> explicit quality degradation; no completeness claim.
+- Best-effort loss/sampling -> explicit quality degradation; no completeness claim; dashboard warns when displayed.
 - Durable source gap/conflict -> affected durable-derived observation stops/marks incomplete; no fabricated state.
 - Duplicate event -> one derived effect per identical EventId.
 - Replayed event -> same event-time/grouping semantics and at most one derived effect under ANL-01 idempotency.
@@ -324,7 +364,9 @@ Large work is paged/partitioned/resumable. Analytical storage failure does not b
 - Missing explicit session/hunt grouping evidence -> session/hunt result partial/unavailable; no heuristic stitch.
 - Unsupported schema -> ANL-01 class-specific behavior; no reinterpretation.
 - Missing denominator/revision -> observation invalid/unknown for that use.
+- Insufficient sample/exposure for an applicable metric rule -> warning/suppression or `REGRESSION_EVIDENCE_INSUFFICIENT`; never silent confidence.
 - Privacy/retention/access policy absent -> collection/projection/disclosure fails closed.
+- Dashboard/presentation dependency unavailable -> evidence remains read-only; gameplay unchanged and no fabricated green/zero state.
 - Analytical dependency unavailable -> gameplay unchanged.
 - SIM provenance incomplete -> no `REPLAY_CORROBORATED` claim.
 
@@ -348,23 +390,27 @@ Implementation acceptance requires, proportionally to each metric family:
 - known best-effort drop/sampling propagation into quality metadata;
 - mixed-revision rejection/stratification tests, including revision changes inside one producer grouping;
 - denominator/cohort edge cases including empty/partial windows;
+- dashboard fixtures proving metric revision, sample/exposure, quality/completeness/schema/reconciliation/suppression/as-of state cannot be silently hidden for material panels;
+- minimum-sample warning/suppression tests proving insufficient or suppressed data is never rendered as zero/normal confidence;
+- regression-acceptance fixtures proving compatible baseline/method/revisions and evidence quality are retained and insufficient evidence cannot become a green acceptance;
 - replay-recompute determinism for analytical transforms where applicable;
 - privacy raw-ID rejection and cross-epoch mapping separation;
 - geography suppression/redaction tests;
 - query/result/evidence-package boundary tests;
-- proof no analytical path can mutate gameplay or synchronously block authoritative execution.
+- proof no analytical/dashboard path can mutate gameplay or synchronously block authoritative execution.
 
 ## 18. DECISIONS_NOT_TAKEN
 
 This candidate does not select or authorize:
 
-- concrete producer event IDs/payload schemas or a concrete session/hunt identifier representation;
-- database/warehouse/lake/broker/dashboard/vendor;
+- concrete producer event IDs/payload schemas or concrete session/hunt identifier representation;
+- database/warehouse/lake/broker/dashboard vendor or visualization framework;
 - physical schemas/indexes/partitions;
 - collector/service topology;
-- exact KPI/balance thresholds or statistical significance numbers;
+- exact KPI/balance/regression thresholds or statistical significance numbers;
+- universal minimum-sample size or dashboard color/visual design;
 - sampling percentages or numeric late-data/finalization horizons;
-- inactivity timeout as an implicit hunt/session semantic boundary;
+- inactivity timeout as implicit hunt/session semantic boundary;
 - exact retention durations or anonymity/suppression thresholds;
 - gameplay/content/reward/formula policy;
 - automatic balancing/LiveOps control;
@@ -372,7 +418,7 @@ This candidate does not select or authorize:
 
 ## 19. CROSS_DOMAIN_FINDINGS
 
-- `ANL02-XD-01` (`P1`, report only): concrete gameplay analytical event families, including any producer-owned session/hunt grouping evidence required by concrete metrics, are not yet registered; owning gameplay/content domains plus ANL-01 registry integration must supply them before concrete coverage claims.
+- `ANL02-XD-01` (`P1`, report only): concrete gameplay analytical event families, including producer-owned session/hunt grouping evidence required by concrete metrics, are not yet registered; owning gameplay/content domains plus ANL-01 registry integration must supply them before concrete coverage claims.
 - `ANL02-XD-02` (`P2`, report only): ability/AI/interaction/quest/event attribution semantics remain dependent on their owning gameplay gates and cannot be invented by analytics.
 
 Full evidence is recorded in `ANL-02_GAMEPLAY_BALANCE_WORLD_ANALYTICS_ANALYSIS.md`.
@@ -388,5 +434,7 @@ DecisionStatus: ACCEPTED only if coordinator promotes it
 ImplementationStatus: NOT_STARTED until separately proven
 Runtime/production authority: NONE
 ```
+
+A canonical dashboard implementation must preserve the evidence/warning/regression-acceptance semantics above, but architecture acceptance does not select a dashboard technology or authorize any gameplay/release mutation.
 
 `MERGE_AUTHORITY: ARCHITECTURE_COORDINATOR_ONLY`
