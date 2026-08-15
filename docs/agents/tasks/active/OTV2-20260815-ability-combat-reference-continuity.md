@@ -4,13 +4,13 @@
 task_id: OTV2-20260815-ability-combat-reference-continuity
 title: Build target-continuity and provenance-clearance evidence package for first ABILITY_COMBAT cases
 mode: CONTRACT
-status: ready
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/arch-a-reference-continuity
 pr: 271
 base_sha: 088b46638ac014cd7928d6b0b75cee44902fe22c
-head_sha: 8262cdd0ad364d3b5fa61410b1f6eb9dd633ddb6
+head_sha: a76f674b4d231fc0f33f65893ba56153583083a7
 final_head_sha: null
 final_head_frozen_at: null
 owner: DOMAIN ARCHITECTURE DESIGN AGENT / Agent A worker
@@ -163,15 +163,15 @@ Therefore the correct evidence action is **rejection of promotion**, not a manif
 ## Context checkpoint
 
 ```yaml
-last_progress: coordinator locator-integrity finding repaired without promotion; exact repaired-head full-diff self-review and CI check precede coordinator re-audit handoff
-status: ready
+last_progress: task-state repair applied without changing the 0/4 evidence conclusion; exact new-head full-diff self-review and CI must complete before coordinator re-audit
+status: validating
 branch: docs/arch-a-reference-continuity
-head_sha: 8262cdd0ad364d3b5fa61410b1f6eb9dd633ddb6
+head_sha: a76f674b4d231fc0f33f65893ba56153583083a7
 pr: 271
 final_head_sha: null
 final_head_frozen_at: null
 ci_trigger_source: pull_request
-ci_check_generation: pending-repaired-final-head
+ci_check_generation: pending-task-state-repair-final-head
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -180,12 +180,12 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 1
+repair_cycles_for_current_gate: 2
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: architecture coordinator re-audit after exact-head checks
 blocker: null
-next_action: ARCHITECTURE_COORDINATOR_REAUDIT after worker exact-head self-review and CI status recording; worker must not merge or lifecycle-close
+next_action: WORKER_EXACT_HEAD_FULL_DIFF_SELF_REVIEW_AND_CI_THEN_COORDINATOR_REAUDIT
 ```
 
 **MERGE_AUTHORITY: ARCHITECTURE_COORDINATOR_ONLY**
