@@ -11,12 +11,12 @@ branch: docs/arch-b-game-ability-gap
 issue: 260
 pr: 268
 base_sha: 088b46638ac014cd7928d6b0b75cee44902fe22c
-head_sha: a0596cfb0f5feb357bb5ffc604275bdf2049332e
+head_sha: 98085bc2586c0e66ecf9715599f0e9a09c62952c
 final_head_sha: null
 final_head_frozen_at: null
 owner: domain-architecture-agent-b
 created_at: 2026-08-15T00:17:00+02:00
-updated_at: 2026-08-15T22:56:00+02:00
+updated_at: 2026-08-15T23:02:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: whole-gate architecture reconciliation across accepted partial baselines and multiple read-only dependency contracts
 owned_paths:
@@ -48,13 +48,13 @@ merge_authority: ARCHITECTURE_COORDINATOR_ONLY
 
 The GAME-ABILITY whole-gate package remains paper-only/noncanonical and consumes the canonical Agent-A result exactly: **0/4 registered `ABILITY_COMBAT` cases promoted**, target evidence `UNKNOWN`, source/case provenance and legal review `PENDING`, implementation `NOT_STARTED`, parity fail closed.
 
-Repair cycle 1 closed the original P1 findings for repeated-timer catch-up policy and structured cross-domain finding shape. The owner-authorized independent review of exact head `4025141218da7418b73b542f9844a6d9c0084a62`, plus coordinator self-audit, then identified four issues consolidated into this **second material repair cycle**.
+Repair cycle 1 closed the original P1 findings for repeated-timer catch-up policy and structured cross-domain finding shape. The owner-authorized independent review of exact head `4025141218da7418b73b542f9844a6d9c0084a62`, plus coordinator self-audit, then identified issues consolidated into this **second material repair cycle**.
 
 ## Repair cycle 2 findings and resolution
 
 ### P1 — canonical status axes
 
-Repaired in both candidate and analysis. Their headers now explicitly declare current independent axes:
+Repaired in both candidate and analysis. Their headers explicitly declare current independent axes:
 
 ```text
 DecisionStatus: CANDIDATE
@@ -62,29 +62,31 @@ DeliveryStatus: IN_REVIEW
 ImplementationStatus: NOT_STARTED
 ```
 
-No future conditional status is substituted for current state.
-
 ### P1 — FND-03 `SKIP_TO_LATEST` restriction
-
-Repaired in both candidate and analysis. The FND-03 restriction is preserved exactly in substance:
-
-- `SKIP_TO_LATEST` is only for explicitly non-semantic maintenance/AI-think-like work where skipping cannot alter required gameplay outcomes;
-- it is not a legal way to discard required gameplay-affecting ability/combat/damage/healing ticks;
-- periodic combat/damage/healing still must explicitly choose a valid owning semantic policy;
-- `RUN_EACH_BOUNDED` remains hard-bounded/fair and coalescing remains allowed only with proven semantic equivalence.
-
-### P1/P2 — cross-domain evidence provenance
-
-The independent review and coordinator self-audit found that some newly structured `evidence:` fields used bare candidate paths that do not exist on canonical `main`, especially GAME-INTERACTION, GAME-AI and ALPHA-CLIENT.
 
 Repaired in both candidate and analysis:
 
-- canonical ownership/status evidence now points to `GLOBAL_ARCHITECTURE_DECISION_REGISTER.md` and accepted canonical contracts;
-- where useful, exact sibling PR/head is named explicitly as **noncanonical/BLOCKED proposal evidence only**;
-- GAME-INTERACTION uses canonical registration plus `PR #277@efa310c5c581f823ab65f497c3968a754cc0eb8f` only as noncanonical proposal context;
-- GAME-AI uses canonical registration plus `PR #276@64d92dfb4a933115f0b59814be54e2f0d51edbe4` only as noncanonical proposal context;
-- ALPHA-CLIENT uses accepted FND-02 + canonical ALPHA-CLIENT registration; `PR #273@e2eb37e1d099d25dd87ebc02a68c111dd8dd91ac` is explicitly noncanonical/BLOCKED proposal evidence only;
-- DUR-02/GAME-ITEM/ANL evidence fields use exact canonical files/register state rather than wildcard or vague nonexistent owner-contract references.
+- `SKIP_TO_LATEST` is only for explicitly non-semantic maintenance/AI-think-like work where skipping cannot alter required gameplay outcomes;
+- it is not legal for required gameplay-affecting ability/combat/damage/healing ticks;
+- periodic combat/damage/healing still select a valid owning semantic policy;
+- `RUN_EACH_BOUNDED` remains hard-bounded/fair; coalescing requires proven semantic equivalence.
+
+### P1/P2 — cross-domain evidence provenance
+
+Repaired in candidate and analysis. Bare candidate paths that do not exist on canonical `main` were removed from authoritative-looking evidence fields. Canonical owner/status evidence uses `GLOBAL_ARCHITECTURE_DECISION_REGISTER.md` and accepted contracts; exact sibling PR/head references are explicitly labeled noncanonical/BLOCKED proposal context.
+
+The finding IDs are now stable and consistent across both artifacts:
+
+```text
+GA-XD-01 persistence/recovery
+GA-XD-02 item/value
+GA-XD-03 interaction/world
+GA-XD-04 AI/world
+GA-XD-05 SIM/Reference
+GA-XD-06 FND-02/client
+GA-XD-07 Reference evidence
+GA-XD-08 ANL producer registry
+```
 
 No blocked sibling proposal is promoted into accepted architecture.
 
@@ -96,7 +98,7 @@ No blocked sibling proposal is promoted into accepted architecture.
 - [x] Future/periodic mutating occurrences use one bounded authoritative occurrence model.
 - [x] Every behavior-affecting repeated timer family has an explicit FND-03-compatible catch-up policy obligation.
 - [x] `SKIP_TO_LATEST` is restricted to non-semantic work where skipping cannot alter required gameplay outcomes.
-- [x] Required gameplay-affecting ability/combat/damage/healing ticks cannot be silently skipped under `SKIP_TO_LATEST`.
+- [x] Required gameplay-affecting ability/combat/damage/healing ticks cannot be silently skipped.
 - [x] Catch-up backlog/work is bounded/fair and cannot produce an unlimited same-turn storm.
 - [x] Proc/reaction lineage/order/re-entry and loop bounds remain deterministic and explicit.
 - [x] Owner-scoped commit grouping does not create hidden distributed atomicity.
@@ -104,7 +106,7 @@ No blocked sibling proposal is promoted into accepted architecture.
 - [x] Resource dimensions are mandatory while exact maxima remain implementation evidence.
 - [x] Client prediction/presentation remains non-authoritative and does not consume blocked ALPHA-CLIENT proposal as canonical.
 - [x] Architecture, executable conformance and Reference parity evidence remain distinct.
-- [x] All eight cross-domain findings use mandatory structured shape and canonical or explicitly noncanonical exact evidence provenance.
+- [x] All eight cross-domain findings use mandatory structured shape, stable IDs, and canonical or explicitly noncanonical exact evidence provenance.
 - [x] Changed paths remain exactly the three worker-B paths.
 - [ ] Exact-final-head full-diff self-review and exact-head repository CI are externally recorded after this task commit.
 - [ ] Independent exact-head review is clean.
@@ -118,9 +120,10 @@ No executable runtime/client/server/protocol/content implementation; no DDL/migr
 ### Source reconciliation
 
 - canonical A merged result on `main@dc1eecae7952902bee3fb1e2d88aefc2be792cae`: PASS;
-- canonical status discipline in `MULTI_AGENT_ARCHITECTURE_ORCHESTRATION.md`: PASS, directly verified;
-- FND-03 `SKIP_TO_LATEST` non-semantic-only restriction: PASS, directly verified;
+- canonical status discipline in `MULTI_AGENT_ARCHITECTURE_ORCHESTRATION.md`: PASS;
+- FND-03 `SKIP_TO_LATEST` non-semantic-only restriction: PASS;
 - `GLOBAL_ARCHITECTURE_DECISION_REGISTER.md`: PASS for canonical GAME-AI/GAME-INTERACTION/ALPHA-CLIENT registration/status truth;
+- stable cross-domain finding ID mapping: PASS after final within-cycle consistency repair;
 - worker-B scope: exactly three allocated paths.
 
 ### Runtime/component/E2E
@@ -140,17 +143,17 @@ repair_cycles_for_current_gate: 2
 Material stable-gate generations:
 
 1. original review P1s: repeated-timer catch-up binding + structured cross-domain schema;
-2. current independent/self-audit findings: current status axes + strict FND-03 skip semantics + exact evidence provenance.
+2. current independent/self-audit findings: current status axes + strict FND-03 skip semantics + exact evidence provenance + stable cross-document finding IDs.
 
 One ordinary material repair cycle remains available under the repository's three-cycle stable-gate rule if a later exact-head independent review finds another material defect.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: second GAME-ABILITY-01 repair generation completed for canonical status axes, FND-03 skip restriction and exact cross-domain evidence provenance
+last_progress: second GAME-ABILITY-01 repair generation finalized for status axes, strict FND-03 skip semantics, exact evidence provenance and stable cross-document finding IDs
 status: validating
 branch: docs/arch-b-game-ability-gap
-head_sha: a0596cfb0f5feb357bb5ffc604275bdf2049332e
+head_sha: 98085bc2586c0e66ecf9715599f0e9a09c62952c
 pr: 268
 final_head_sha: null
 final_head_frozen_at: null
