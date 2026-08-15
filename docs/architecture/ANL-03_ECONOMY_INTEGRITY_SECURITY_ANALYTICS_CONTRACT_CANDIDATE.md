@@ -19,6 +19,7 @@ Freeze the minimum read-only consumer contract for economy health, item/currency
 ANL-03 owns:
 
 - integrity/economy analytical classifications;
+- normative deterministic invariant-evaluation catalogue over accepted authoritative evidence;
 - detector definition/version semantics;
 - signal evidence requirements;
 - deterministic-versus-statistical conclusion boundaries;
@@ -103,6 +104,31 @@ When producer event families exist, ANL-03 may maintain a read-only derived prov
 - reward/source occurrence and multiplicity/eligibility context.
 
 This projection is evidence only. It is not a second authoritative item-location/value store and cannot repair production state.
+
+### 6.1 Normative deterministic invariant catalogue
+
+A conforming ANL-03 integrity implementation MUST evaluate the following invariant classes whenever the applicable producer-owned event families, authoritative semantics and completeness evidence exist for the declared scope. It MUST NOT implement an arbitrary subset and claim complete ANL-03 integrity coverage.
+
+1. **Single authoritative location** — one live `ItemInstanceId` cannot occupy two authoritative locations at the same authoritative state/revision.
+2. **Duplicate/idempotency safety** — duplicate or replayed delivery/evaluation of one accepted event, idempotency key, operation, transaction or source occurrence cannot duplicate an item, currency, quantity, value or derived durable effect.
+3. **Split conservation and identity safety** — a split conserves total quantity/value under the owning DUR-03 semantics and resulting live identities are non-conflicting; the pre-split identity lifecycle follows the owning rule.
+4. **Merge conservation and identity retirement** — a merge conserves total quantity/value and retires/retains source/result identities exactly according to the owning DUR-03 rule; no merged source identity may remain live in a conflicting authoritative location.
+5. **Authorized creation/credit** — item/value creation and currency credit require an accepted authorized source/cause/source occurrence under the owning durable contract; unexplained mint/credit is an integrity finding only when required evidence is complete.
+6. **Authorized destruction/debit** — item/value destruction and currency debit require an accepted authorized sink/cause under the owning durable contract; unexplained burn/debit is an integrity finding only when required evidence is complete.
+7. **Reward exactly-once** — one accepted reward/source occurrence cannot commit durable item/currency/value more than once for the owning idempotency/source-occurrence identity and multiplicity/eligibility semantics.
+8. **Ownership-generation fencing** — stale gameplay session, connection/session generation or stale ownership generation cannot transfer or acquire authoritative ownership.
+9. **Transaction/outbox agreement** — transaction commit/abort state and required durable outbox/audit evidence cannot silently disagree. A mismatch is evidence of a durable-integrity/pipeline defect; ANL-03 does not guess or repair the authoritative outcome.
+10. **Retry/crash/rollback no-unexplained-value** — retry, timeout, process/node failure, recovery, replay or rollback cannot create unexplained item/currency/value or cause one accepted mutation/source occurrence to commit twice.
+11. **Authoritative view reconciliation** — inventory, ground, container, depot, trade, market and mail projections/views reconcile to the authoritative owner/location model and accepted transaction state; a read-model disagreement is reported as evidence, not repaired by analytics.
+
+Normative evaluation rules:
+
+- DUR-03 and the relevant owning runtime/domain contract remain the authoritative prevention, conservation and mutation owners. ANL-03 is a read-only evidence/detection consumer only.
+- ANL-03 MUST consume the exact applicable invariant semantics/revisions from those owners; it MUST NOT reinterpret a generic catalogue item to invent market, reward, inventory or transaction business rules.
+- A catalogue check that requires missing/unregistered producer evidence, unsupported semantic revision or incomplete durable scope is `INCONCLUSIVE_INSUFFICIENT_EVIDENCE` or `DATA_QUALITY_OR_PIPELINE_FAILURE` as applicable; absence of evidence MUST NOT be reported as invariant satisfaction or subject guilt.
+- `INVARIANT_VIOLATION_SUPPORTED` requires the completeness/reproducibility preconditions in section 10. A catalogue mismatch from best-effort-only input is not deterministic proof.
+- Duplicate, out-of-order and replayed evidence are handled under ANL-01 identity/order/idempotency semantics before a deterministic invariant conclusion is emitted.
+- No catalogue result authorizes automatic ban, confiscation, rollback, DB mutation, value repair, economy tuning, balance change or deployment. Any remediation/enforcement remains a foreign-owner decision with independent authority and audit.
 
 ## 7. Economy interpretation
 
@@ -376,7 +402,8 @@ The trusted-base empty `GAME_EVENT_FOUNDATION_REGISTRY.json.event_types` is ther
 
 Implementation acceptance requires, proportionally to each detector family:
 
-- deterministic projection fixtures for DUR-03 conservation/location/lineage classes;
+- deterministic projection fixtures for every applicable normative catalogue invariant: single authoritative location, duplicate/idempotency safety, split/merge conservation and identity lifecycle, authorized source/sink, reward exactly-once, stale-generation fencing, transaction/outbox agreement, retry/crash/rollback no-unexplained-value and authoritative view reconciliation;
+- explicit fixtures showing incomplete/unregistered evidence yields inconclusive/data-quality classification rather than a false pass or guilt finding;
 - TransactionEventRef complete/gap/duplicate/conflict cases;
 - EventId duplicate/conflict and unsupported-schema cases;
 - checkpoint loss/recovery and durable source-completeness tests;
