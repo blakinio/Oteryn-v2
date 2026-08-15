@@ -24,7 +24,7 @@ ANL-03 owns:
 - signal evidence requirements;
 - deterministic-versus-statistical conclusion boundaries;
 - false-positive controls;
-- analytical case/evidence lifecycle through human disposition/referral;
+- auditable signal/case evidence lifecycle through human disposition/referral;
 - privacy/access/retention/resource requirements for these consumers.
 
 ANL-03 does not own authoritative prevention, gameplay/database mutation, sanctions, rollback, GM policy, concrete producer event IDs, detector technology or production rollout.
@@ -40,7 +40,7 @@ ANL-03 detector/signal/case
 != automatic economy/balance control
 ```
 
-No detector score, anomaly, model output, graph feature, invariant observation or case disposition grants mutation/enforcement authority by itself.
+No detector score, anomaly, model output, graph feature, invariant observation, signal disposition or case disposition grants mutation/enforcement authority by itself.
 
 ## 3. Upstream authority
 
@@ -86,7 +86,7 @@ Every material ANL-03 output is classified as one of:
 - `ECONOMY_HEALTH_OBSERVATION` — non-guilt economy source/sink/supply/concentration/liquidity/scarcity evidence;
 - `ENGINE_DEFECT_HYPOTHESIS` — evidence suggests a product defect, optionally replay-corroborated.
 
-A statistical anomaly is never relabeled as deterministic proof merely because its score is high.
+A statistical anomaly is never relabeled as deterministic proof merely because its score is high or because a human reviewer finds it credible. Human corroboration may produce the non-sanctioning `SUPPORTED_SECURITY_FINDING` disposition defined below while the underlying analytical class remains statistical/rule/model/graph evidence unless a separately accepted deterministic invariant is proven.
 
 ## 6. DUR-03 provenance projection
 
@@ -107,48 +107,48 @@ This projection is evidence only. It is not a second authoritative item-location
 
 ### 6.1 Normative deterministic invariant catalogue
 
-A conforming ANL-03 integrity implementation MUST evaluate the following invariant classes whenever the applicable producer-owned event families, authoritative semantics and completeness evidence exist for the declared scope. It MUST NOT implement an arbitrary subset and claim complete ANL-03 integrity coverage.
+A conforming ANL-03 integrity implementation MUST evaluate the following invariant classes whenever applicable producer-owned event families, authoritative semantics and completeness evidence exist for the declared scope. It MUST NOT implement an arbitrary subset and claim complete ANL-03 integrity coverage.
 
 1. **Single authoritative location** — one live `ItemInstanceId` cannot occupy two authoritative locations at the same authoritative state/revision.
-2. **Duplicate/idempotency safety** — duplicate or replayed delivery/evaluation of one accepted event, idempotency key, operation, transaction or source occurrence cannot duplicate an item, currency, quantity, value or derived durable effect.
-3. **Split conservation and identity safety** — a split conserves total quantity/value under the owning DUR-03 semantics and resulting live identities are non-conflicting; the pre-split identity lifecycle follows the owning rule.
-4. **Merge conservation and identity retirement** — a merge conserves total quantity/value and retires/retains source/result identities exactly according to the owning DUR-03 rule; no merged source identity may remain live in a conflicting authoritative location.
-5. **Authorized creation/credit** — item/value creation and currency credit require an accepted authorized source/cause/source occurrence under the owning durable contract; unexplained mint/credit is an integrity finding only when required evidence is complete.
-6. **Authorized destruction/debit** — item/value destruction and currency debit require an accepted authorized sink/cause under the owning durable contract; unexplained burn/debit is an integrity finding only when required evidence is complete.
-7. **Reward exactly-once** — one accepted reward/source occurrence cannot commit durable item/currency/value more than once for the owning idempotency/source-occurrence identity and multiplicity/eligibility semantics.
-8. **Ownership-generation fencing** — stale gameplay session, connection/session generation or stale ownership generation cannot transfer or acquire authoritative ownership.
-9. **Transaction/outbox agreement** — transaction commit/abort state and required durable outbox/audit evidence cannot silently disagree. A mismatch is evidence of a durable-integrity/pipeline defect; ANL-03 does not guess or repair the authoritative outcome.
-10. **Retry/crash/rollback no-unexplained-value** — retry, timeout, process/node failure, recovery, replay or rollback cannot create unexplained item/currency/value or cause one accepted mutation/source occurrence to commit twice.
-11. **Authoritative view reconciliation** — inventory, ground, container, depot, trade, market and mail projections/views reconcile to the authoritative owner/location model and accepted transaction state; a read-model disagreement is reported as evidence, not repaired by analytics.
+2. **Duplicate/idempotency safety** — duplicate or replayed delivery/evaluation of one accepted event, idempotency key, operation, transaction or source occurrence cannot duplicate item, currency, quantity, value or derived durable effect.
+3. **Split conservation and identity safety** — split conserves total quantity/value under owning DUR-03 semantics and resulting live identities are non-conflicting.
+4. **Merge conservation and identity retirement** — merge conserves total quantity/value and retires/retains source/result identities exactly according to owning DUR-03 rule.
+5. **Authorized creation/credit** — creation/credit requires accepted authorized source/cause/source occurrence; unexplained mint/credit is an integrity finding only when required evidence is complete.
+6. **Authorized destruction/debit** — destruction/debit requires accepted authorized sink/cause; unexplained burn/debit is an integrity finding only when required evidence is complete.
+7. **Reward exactly-once** — one accepted reward/source occurrence cannot commit durable value more than once for owning idempotency/source-occurrence identity and multiplicity/eligibility semantics.
+8. **Ownership-generation fencing** — stale gameplay session, connection/session generation or stale ownership generation cannot transfer/acquire authoritative ownership.
+9. **Transaction/outbox agreement** — transaction commit/abort state and required durable outbox/audit evidence cannot silently disagree; ANL-03 never guesses or repairs authoritative outcome.
+10. **Retry/crash/rollback no-unexplained-value** — retry, timeout, failure, recovery, replay or rollback cannot create unexplained value or duplicate one accepted mutation/source occurrence.
+11. **Authoritative view reconciliation** — inventory, ground, container, depot, trade, market and mail projections/views reconcile to authoritative owner/location model and accepted transaction state; disagreement is evidence, not analytics repair.
 
 Normative evaluation rules:
 
-- DUR-03 and the relevant owning runtime/domain contract remain the authoritative prevention, conservation and mutation owners. ANL-03 is a read-only evidence/detection consumer only.
-- ANL-03 MUST consume the exact applicable invariant semantics/revisions from those owners; it MUST NOT reinterpret a generic catalogue item to invent market, reward, inventory or transaction business rules.
-- A catalogue check that requires missing/unregistered producer evidence, unsupported semantic revision or incomplete durable scope is `INCONCLUSIVE_INSUFFICIENT_EVIDENCE` or `DATA_QUALITY_OR_PIPELINE_FAILURE` as applicable; absence of evidence MUST NOT be reported as invariant satisfaction or subject guilt.
-- `INVARIANT_VIOLATION_SUPPORTED` requires the completeness/reproducibility preconditions in section 10. A catalogue mismatch from best-effort-only input is not deterministic proof.
-- Duplicate, out-of-order and replayed evidence are handled under ANL-01 identity/order/idempotency semantics before a deterministic invariant conclusion is emitted.
-- No catalogue result authorizes automatic ban, confiscation, rollback, DB mutation, value repair, economy tuning, balance change or deployment. Any remediation/enforcement remains a foreign-owner decision with independent authority and audit.
+- DUR-03 and relevant owning runtime/domain contract remain authoritative prevention/conservation/mutation owners. ANL-03 is read-only evidence/detection only.
+- ANL-03 MUST consume exact applicable invariant semantics/revisions and MUST NOT invent market/reward/inventory/transaction business rules.
+- Missing/unregistered producer evidence, unsupported semantic revision or incomplete durable scope is `INCONCLUSIVE_INSUFFICIENT_EVIDENCE` or `DATA_QUALITY_OR_PIPELINE_FAILURE`; absence of evidence is neither invariant satisfaction nor guilt.
+- `INVARIANT_VIOLATION_SUPPORTED` requires completeness/reproducibility preconditions in section 10.
+- Duplicate/out-of-order/replayed evidence is handled under ANL-01 identity/order/idempotency before deterministic conclusion.
+- No catalogue result authorizes automatic ban, confiscation, rollback, DB mutation, value repair, economy tuning, balance change or deployment.
 
 ## 7. Economy interpretation
 
-1. `WorldId` is the default economy boundary; ChannelId is contextual simulation scope, not a separate economy namespace.
+1. `WorldId` is the default economy boundary; ChannelId is contextual simulation scope, not separate economy namespace.
 2. Channel-local simulation does not imply repeatable durable reward/source eligibility.
-3. Reference analysis measures Oteryn's actual world history under Reference mechanical source/sink rules; Global historical market prices/supply are not parity constants.
+3. Reference analysis measures Oteryn actual world history under Reference mechanical source/sink rules; Global historical market prices/supply are not parity constants.
 4. Supply/concentration/liquidity/scarcity observations include world age, population/exposure and semantic revision context.
-5. “Unexplained value” requires proven durable completeness for the declared scope; otherwise the result is partial/inconclusive.
+5. “Unexplained value” requires proven durable completeness for declared scope; otherwise result is partial/inconclusive.
 6. Durable value truth outranks best-effort activity telemetry where they disagree.
-7. Market valuation requires an accepted market semantic source; external scrape/value guesses do not become authority by convenience.
-8. Economy-health evidence may recommend owner review but cannot change rates, sinks, drops, fees or other live policy.
+7. Market valuation requires an accepted market semantic source; external scrape/value guesses do not become authority.
+8. Economy-health evidence may recommend owner review but cannot change rates, sinks, drops, fees or live policy.
 
 ## 8. Detector-definition identity
 
-Every material detector has a stable logical `detector_id` and immutable positive `detector_revision`.
+Every material detector has stable logical `detector_id` and immutable positive `detector_revision`.
 
 A detector definition declares at least:
 
 1. purpose/threat/defect hypothesis;
-2. detector class (`deterministic-rule`, `statistical-rule`, `model`, `graph`, `reconciliation` or later explicitly versioned class);
+2. detector class (`deterministic-rule`, `statistical-rule`, `model`, `graph`, `reconciliation` or later versioned class);
 3. required input event/projection families and supported schema revisions;
 4. required durability/completeness/privacy classes;
 5. applicable World/ruleset/content/build/SIM revisions;
@@ -164,7 +164,7 @@ A detector definition declares at least:
 15. evaluation corpus/revision requirements;
 16. privacy/retention/access policy.
 
-Rule/feature/model/threshold semantic change receives a new explicit revision according to the detector contract. Historical outputs retain the exact detector/config/artifact revision used to produce them.
+Rule/feature/model/threshold semantic change receives a new explicit revision. Historical outputs retain exact detector/config/artifact revision used.
 
 ## 9. Signal contract
 
@@ -186,12 +186,13 @@ source completeness/quality vector
 relevant World/Channel/Instance + semantic revisions
 known exclusions/false-positive caveats
 creation time
-case/disposition linkage when later assigned
+terminal/current disposition reference(s) when disposition exists
+case linkage when a case is opened
 ```
 
 Severity is triage/impact context, not guilt. Confidence/score expresses detector semantics, not enforcement authorization.
 
-Duplicate re-evaluation may coalesce operational noise only if original evidence/signal lineage remains addressable and historical outputs are not rewritten.
+Duplicate re-evaluation may coalesce operational noise only if original evidence/signal lineage remains addressable and historical outputs/dispositions are not rewritten.
 
 ## 10. Evidence conclusion rules
 
@@ -199,91 +200,106 @@ Duplicate re-evaluation may coalesce operational noise only if original evidence
 
 May be used only when:
 
-- the invariant and relevant revisions are accepted;
-- required durable source/checkpoint/event-set evidence is proven complete for the declared scope;
+- invariant and relevant revisions are accepted;
+- required durable source/checkpoint/event-set evidence is proven complete for declared scope;
 - EventId/schema/hash/order/TransactionEventRef prerequisites pass;
 - detector/projection logic is reproducible/versioned;
-- no known evidence-pipeline failure explains the mismatch.
+- no known evidence-pipeline failure explains mismatch.
 
-Otherwise the result is data-quality/inconclusive, not deterministic subject attribution.
+Otherwise result is data-quality/inconclusive, not deterministic subject attribution.
 
 ### `ANOMALY_HYPOTHESIS`
 
-Statistical/rule/model/graph anomaly remains a hypothesis pending human review and corroborating evidence. A probability/score never converts directly into sanction authority.
+Statistical/rule/model/graph anomaly remains a hypothesis pending human review and corroborating evidence. Probability/score never converts directly into sanction authority.
+
+Human review may conclude that available affirmative evidence sufficiently corroborates the security concern for investigation/referral/monitoring. That conclusion is recorded as `SUPPORTED_SECURITY_FINDING`; it does **not** reclassify statistical evidence as deterministic authoritative proof and does not itself authorize sanction.
 
 ### `REPLAY_CORROBORATED_DEFECT`
 
-May be used when SIM-DETERMINISM exact provenance reproduces a product divergence/invariant failure under the relevant semantic revision set. Repair and player/account action remain foreign authority.
+May be used when SIM-DETERMINISM exact provenance reproduces a product divergence/invariant failure under relevant semantic revision set. Repair and player/account action remain foreign authority.
 
-## 11. Case/evidence lifecycle
+## 11. Signal/case evidence lifecycle
 
-The ANL-03 analytical lifecycle is:
+The ANL-03 analytical lifecycle has two explicit auditable branches after triage:
 
 ```text
 SIGNAL_EMITTED
 -> TRIAGED
--> CASE_OPENED (optional)
--> ASSIGNED / REASSIGNED (when assignment exists)
--> EVIDENCE_ASSEMBLED / UPDATED
--> HUMAN_DISPOSITION
--> CLOSED or REFERRED_TO_FOREIGN_OWNER
--> REOPENED (when later evidence or review requires it)
+   -> SIGNAL_DISPOSITION_RECORDED -> SIGNAL_CLOSED        # no case required
+   OR
+   -> CASE_OPENED
+      -> ASSIGNED / REASSIGNED (when assignment exists)
+      -> EVIDENCE_ASSEMBLED / UPDATED
+      -> HUMAN_DISPOSITION
+      -> CLOSED or REFERRED_TO_FOREIGN_OWNER
+      -> REOPENED (when later evidence/review requires it)
 ```
 
-The state sketch is illustrative rather than a storage schema. Regardless of the concrete workflow/state vocabulary, **every material lifecycle transition and reviewer/operator action MUST append an immutable audit record**. This includes at least signal triage; case open; assignment/reassignment when supported; evidence addition, removal or supersession; state transition; close; reopen; referral; and final disposition.
+`CASE_OPENED` remains optional, but **no-case triage is not allowed to disappear into mutable status**. If triage ends without opening a case, the signal MUST receive an immutable terminal analytical disposition and a `SIGNAL_CLOSED` action for that review generation. Later evidence may append a new triage/reopen/review generation; it MUST NOT overwrite the prior terminal record.
+
+Regardless of concrete workflow/state vocabulary, every material signal/case lifecycle transition and reviewer/operator action MUST append an immutable audit record. This includes signal emission/triage disposition/close/reopen; case open; assignment/reassignment; evidence addition/removal/supersession; state transition; close; reopen; referral; and final disposition.
 
 Each lifecycle audit record retains at least:
 
 ```text
-case identity and correlation identity
+signal identity
+case identity when a case exists
+correlation identity
 stable action/transition reference or ordered occurrence
-reviewer/operator actor identity, or pseudonymous privileged identity under the privacy model
-actor role/capability used for the action
+reviewer/operator actor identity, or pseudonymous privileged identity under privacy model
+actor role/capability used for action
 timestamp plus sufficient ordering information
 previous state when a state exists
 new state and/or action performed
 reason/rationale category or explanation where applicable
-linked signal/evidence references relevant to the action
-detector/rule/model/config revision where relevant to the reviewed evidence or decision
+linked signal/evidence references relevant to action
+detector/rule/model/config revision where relevant
 ```
 
 Required properties:
 
 - original signal content/revision/evidence lineage remains immutable;
-- one case may group multiple signals while preserving every source reference;
-- evidence additions, annotations, removals and supersessions are represented by immutable lifecycle actions rather than rewriting history;
-- signal triage before case creation retains correlation identity and is linked to the case if one is later opened;
+- every triaged signal has reconstructable outcome even if no case is opened;
+- no-case false-positive, duplicate, inconclusive, data-quality, supported-security or direct-referral outcomes are represented by immutable signal-level disposition/close actions rather than absence of a case record;
+- one case may group multiple signals while preserving every source reference and each source signal's prior disposition/history;
+- evidence additions, annotations, removals and supersessions are immutable lifecycle actions rather than history rewrites;
+- signal triage before case creation retains correlation identity and links to the case if later opened;
 - privileged identity resolution is separately purpose-authorized and audited;
-- human disposition records reviewer role/identity, time, rationale and evidence refs through the same immutable action history;
-- false-positive decisions and the reviewer actions leading to them remain reconstructable/auditable within the applicable retention policy;
-- a mutable `latest status` may exist only as a derived projection and MUST NOT replace, truncate or rewrite lifecycle history;
-- audit-history immutability does not authorize unlimited retention or override ANL-01/privacy deletion requirements; while retained, history is append-only and non-rewritten;
-- any enforcement/remediation result is linked only as a foreign-owner reference and is not executed by ANL-03.
+- human disposition records reviewer role/identity, time, rationale and evidence refs through same immutable history;
+- false-positive decisions and reviewer actions remain reconstructable/auditable within retention policy;
+- a mutable latest-status projection may exist only as derived state and MUST NOT replace/truncate/rewrite lifecycle history;
+- audit-history immutability does not authorize unlimited retention or override ANL-01/privacy deletion requirements;
+- enforcement/remediation result is linked only as foreign-owner reference and is not executed by ANL-03.
 
-Allowed evidence dispositions:
+Allowed analytical dispositions at signal or case level, as applicable:
 
-- `SUPPORTED_INTEGRITY_OR_DEFECT_FINDING`;
+- `SUPPORTED_INTEGRITY_OR_DEFECT_FINDING` — accepted invariant or reproducible defect evidence supports the finding under section 10;
+- `SUPPORTED_SECURITY_FINDING` — human-reviewed affirmative evidence corroborates a security concern such as bot/automation/protocol misuse sufficiently for analytical support/referral/monitoring, while remaining non-sanctioning and without pretending statistical/model evidence is deterministic invariant proof;
 - `NOT_SUPPORTED_FALSE_POSITIVE`;
 - `INCONCLUSIVE_INSUFFICIENT_EVIDENCE`;
 - `DATA_QUALITY_OR_PIPELINE_FAILURE`;
 - `DUPLICATE_OR_ALREADY_COVERED`;
 - `REFERRED_TO_SECURITY_GM_PRODUCT_OR_ENGINE_OWNER`.
 
-These are analytical dispositions, not sanctions.
+`REFERRED_TO_SECURITY_GM_PRODUCT_OR_ENGINE_OWNER` MAY accompany a preceding supported/inconclusive disposition as a routing action; referral does not erase the evidentiary conclusion that caused it.
+
+These are analytical dispositions, not sanctions. A `SUPPORTED_SECURITY_FINDING` does not authorize ban/mute/kick/confiscation/rollback/account action, does not increase evidence quality beyond the recorded source quality, and does not waive independent enforcement-owner validation.
 
 ## 12. False-positive safety
 
-To satisfy `FS-DETECTOR-FALSE-POSITIVE` at semantic level:
+To satisfy `FS-DETECTOR-FALSE-POSITIVE` semantically:
 
 1. detector output creates no automatic sanction/mutation;
-2. detector/rule/model/config revision is retained with every signal;
-3. source evidence/checkpoints are traceable within policy;
-4. human review/disposition and every material lifecycle/reviewer action remain reconstructable from immutable audit history;
-5. threshold/model changes do not rewrite historical outputs;
-6. any suppression/allow-list mechanism is separately versioned/scoped/audited and cannot be a hidden authority bypass;
-7. false-positive outcomes may be used as detector-quality evidence without deleting historical errors;
-8. incomplete data yields inconclusive/data-quality disposition where material;
-9. pipeline failures are separated from player/gameplay findings.
+2. detector/rule/model/config revision retained with every signal;
+3. source evidence/checkpoints traceable within policy;
+4. human review/disposition and every material signal/case lifecycle/reviewer action reconstructable from immutable audit history;
+5. no-case triage outcome always has an explicit audited terminal signal disposition rather than disappearing because no case exists;
+6. threshold/model changes do not rewrite historical outputs;
+7. suppression/allow-list mechanism is separately versioned/scoped/audited and not hidden authority bypass;
+8. false-positive outcomes may inform detector quality without deleting historical errors;
+9. incomplete data yields inconclusive/data-quality disposition where material;
+10. pipeline failures are separated from subject/gameplay findings;
+11. corroborated security findings remain non-sanctioning evidence and retain statistical/model caveats where applicable.
 
 Exact quality/precision/recall/calibration thresholds remain implementation/security-product decisions.
 
@@ -302,37 +318,37 @@ Subject to producer-owned typed event families, ANL-03 may analyze:
 - protocol capability/downgrade/revision anomaly evidence;
 - engine defects exposed by invariant/replay mismatch.
 
-No generalized device fingerprinting, invasive client surveillance, credential capture or secret retention is authorized. New device/network identity collection requires a separate named security/privacy purpose and owning contract.
+No generalized device fingerprinting, invasive client surveillance, credential capture or secret retention is authorized. New device/network identity collection requires separate named security/privacy purpose and owning contract.
 
 ## 14. Privacy/access/retention
 
 1. Broad detection uses `PSEUDONYMOUS_ANALYTICS` or non-personal features where feasible.
-2. Restricted item/transaction/session/player evidence uses `RESTRICTED_PLAYER_LINKED` or `SECURITY_SENSITIVE` as required by producer/purpose.
+2. Restricted item/transaction/session/player evidence uses `RESTRICTED_PLAYER_LINKED` or `SECURITY_SENSITIVE` as required.
 3. AnalyticsActorId mapping is separately protected; detector access is not implicit.
-4. Privileged identity resolution is case-purpose-authorized and access-audited.
-5. Fine location/time and any later device/network context are treated as re-identification/security-sensitive where applicable.
-6. Raw evidence, detector features, signals, case evidence, identity-resolution logs and exports have separate finite retention profiles.
-7. Legal hold is an explicit audited exception, never ordinary unlimited retention.
+4. Privileged identity resolution is case/signal-purpose-authorized and access-audited.
+5. Fine location/time and later device/network context are re-identification/security-sensitive where applicable.
+6. Raw evidence, detector features, signals, signal dispositions, case evidence, identity-resolution logs and exports have separate finite retention profiles.
+7. Legal hold is explicit audited exception, never ordinary unlimited retention.
 8. Privacy classification can be raised but never silently downgraded.
 
 ### Optional client diagnostics are non-adverse
 
-For **every** ANL-03 detector, feature, signal, triage path, case and reviewer workflow that may consume optional client-originated evidence — including client diagnostics/crash reports, an OS capsule, Launcher telemetry, Guardian telemetry, or a crash/network forensic package — the following invariant applies:
+For every detector, feature, signal, triage path, case and reviewer workflow that may consume optional client-originated evidence — client diagnostics/crash reports, OS capsule, Launcher telemetry, Guardian telemetry or crash/network forensic package — the following invariant applies:
 
 - diagnostics opt-out is not suspicious;
-- absence, opt-out, upload failure or unavailability of optional client diagnostics is not adverse evidence and MUST NOT be represented as a guilt/concealment feature;
-- disabling or withholding optional diagnostics through the supported privacy control MUST NOT increase an abuse/suspicion/risk score, detector confidence, signal severity, triage/review/enforcement priority, case escalation priority or adverse disposition;
-- missing optional diagnostics MUST NOT by itself open, escalate, refer or otherwise worsen a case;
-- evidence availability/quality may be recorded only as an availability/quality dimension and may justify lower evidentiary certainty or an inconclusive/data-quality result where material; it MUST NOT become behavioral guilt evidence;
-- enabling diagnostics does not create an innocence presumption or lower an otherwise evidence-based risk conclusion merely because diagnostics are enabled;
-- affirmative content from diagnostics that are actually present may corroborate evidence or improve diagnostic/classification confidence according to the detector contract; the mere fact that diagnostics are enabled MUST NOT do so;
-- server-generated evidence MUST remain sufficient for incident visibility and abuse/security investigation without optional client diagnostics; optional client evidence may enrich/corroborate but MUST NOT be a prerequisite for server-side investigation capability.
+- absence, opt-out, upload failure or unavailability is not adverse evidence and MUST NOT be represented as guilt/concealment feature;
+- disabling/withholding optional diagnostics MUST NOT increase abuse/suspicion/risk score, detector confidence, signal severity, triage/review/enforcement priority, escalation priority or adverse disposition;
+- missing optional diagnostics MUST NOT by itself open/escalate/refer/worsen a signal or case;
+- availability/quality may justify lower evidentiary certainty or inconclusive/data-quality result; it MUST NOT become guilt evidence;
+- enabling diagnostics creates neither innocence presumption nor automatic risk reduction;
+- affirmative content actually present may corroborate evidence according to detector contract; mere enablement cannot;
+- server-generated evidence MUST remain sufficient for investigation without optional client diagnostics.
 
-This applies equally whether the optional evidence originates from the native client, OS allowlist capsule, Launcher/Guardian extension point, or crash/network forensic packaging. ANL-03 MUST NOT implement an anti-cheat feature equivalent to “missing diagnostics = suspicious”.
+This applies equally to native client, OS allowlist capsule, Launcher/Guardian extension point or forensic package. ANL-03 MUST NOT implement “missing diagnostics = suspicious”.
 
 ## 15. Read-only credential boundary
 
-Future ANL-03 components must use least-privilege read-only credentials/views appropriate to their source and must not possess:
+Future ANL-03 components use least-privilege read-only credentials/views and must not possess:
 
 - gameplay mutation credentials;
 - production DB write authority;
@@ -340,13 +356,13 @@ Future ANL-03 components must use least-privilege read-only credentials/views ap
 - rollback/confiscation/value-repair authority;
 - deployment authority.
 
-Enforcement/remediation requires referral to a foreign owner that independently validates its authority and evidence.
+Enforcement/remediation requires referral to a foreign owner that independently validates authority and evidence.
 
 ## 16. Resource bounds
 
 ANL-03 inherits applicable ANL-01 event/replay/query/result/evidence-package limits.
 
-Before implementation acceptance, externally controlled/high-growth detector work must register hard limits for applicable:
+Before implementation acceptance, externally controlled/high-growth detector work registers hard limits for applicable:
 
 - observation-window duration/event count;
 - per-subject retained state;
@@ -354,6 +370,7 @@ Before implementation acceptance, externally controlled/high-growth detector wor
 - graph vertices/edges/depth/fan-out;
 - join expansion;
 - signals per run/window/subject;
+- signal lifecycle/audit actions per retained signal;
 - case evidence references/attachments;
 - concurrent detector/backfill/reconciliation jobs;
 - model/rule artifact size;
@@ -365,27 +382,29 @@ Exact numbers require implementation/PERF/OPS evidence and registry ownership. L
 ## 17. Failure semantics
 
 - Best-effort feature loss -> input partial; no completeness-dependent finding.
-- Optional client diagnostics absent/opted-out/unavailable -> availability/quality dimension only; no adverse score/confidence/priority/guilt inference; server-side investigation remains viable.
+- Optional client diagnostics absent/opted-out/unavailable -> availability/quality dimension only; no adverse inference.
 - Durable audit/event-set/checkpoint gap -> completeness-dependent detector stops/inconclusive; pipeline incident may be emitted.
 - EventId conflict -> evidence-integrity incident; no overwrite.
 - Unsupported durable schema -> quarantine/reject per ANL-01.
 - Duplicate event -> one projection/evaluation effect per identical EventId.
 - Out-of-order events -> bounded defer/reconcile; no fabricated provenance.
 - Detector/model unavailable -> detector unavailable; gameplay unchanged.
-- Model/threshold revision change -> new versioned evaluation; old signals preserved.
+- Model/threshold revision change -> new versioned evaluation; old signals/dispositions preserved.
 - Identity mapping unavailable -> no unauthorized fallback.
 - Missing privacy/retention/access policy -> no collection/projection/disclosure.
 - Oversized query/evidence -> page/partition/reject within registry bounds.
+- Triaged signal with no case -> explicit audited signal-level disposition and close/review-generation record; never silent disappearance.
 - Suspected violation + incomplete evidence -> `INCONCLUSIVE_INSUFFICIENT_EVIDENCE`, never automatic sanction.
+- Human-corroborated statistical security concern -> may become `SUPPORTED_SECURITY_FINDING`, but never deterministic invariant proof or enforcement authority solely by that label.
 
 ## 18. Failure-scenario status
 
 - `FS-AUDIT-OUTBOX-BACKLOG`: semantic `PASS` for consumer behavior; physical audit durability remains ANL-01/DUR.
 - `FS-EVENT-DUPLICATE-DELIVERY`: semantic `PASS`.
 - `FS-EVENT-OUT-OF-ORDER`: semantic `PASS`.
-- `FS-AUDIT-MUTATION-MISMATCH`: semantic `PASS` as explicit integrity/data-quality evidence; prevention remains DUR-02/03.
-- `FS-ANALYTICS-PRIVACY-POLICY`: semantic `PASS`, including non-adverse optional-diagnostics opt-out/absence semantics.
-- `FS-DETECTOR-FALSE-POSITIVE`: semantic `PASS` through no-auto-sanction + versioned evidence + immutable reviewer/lifecycle audit + human disposition.
+- `FS-AUDIT-MUTATION-MISMATCH`: semantic `PASS` as integrity/data-quality evidence; prevention remains DUR-02/03.
+- `FS-ANALYTICS-PRIVACY-POLICY`: semantic `PASS`, including non-adverse diagnostics semantics.
+- `FS-DETECTOR-FALSE-POSITIVE`: semantic `PASS` through no-auto-sanction + versioned evidence + immutable signal/case lifecycle + terminal no-case dispositions + human disposition.
 - `FS-INVESTIGATION-MUTATION-ATTEMPT`: `DEFERRED_BY_ACCEPTED_GATE` for executable proof to ANL-04/implementation; ANL-03 requires read-only credentials.
 
 Architecture status does not imply runtime proof.
@@ -394,24 +413,26 @@ Architecture status does not imply runtime proof.
 
 This candidate does not register concrete DUR/FND/gameplay event type IDs or payload schemas.
 
-Concrete detector/ledger coverage is implementable only after its producer owners register the required typed events under ANL-01 with sufficient provenance, revision, authority and privacy semantics.
+Concrete detector/ledger coverage is implementable only after producer owners register required typed events under ANL-01 with sufficient provenance, revision, authority and privacy semantics.
 
-The trusted-base empty `GAME_EVENT_FOUNDATION_REGISTRY.json.event_types` is therefore an explicit dependency, not permission for ANL-03 to define foreign producer schemas.
+Trusted-base empty `GAME_EVENT_FOUNDATION_REGISTRY.json.event_types` is explicit dependency, not permission for ANL-03 to define foreign producer schemas.
 
 ## 20. Required future evidence
 
 Implementation acceptance requires, proportionally to each detector family:
 
-- deterministic projection fixtures for every applicable normative catalogue invariant: single authoritative location, duplicate/idempotency safety, split/merge conservation and identity lifecycle, authorized source/sink, reward exactly-once, stale-generation fencing, transaction/outbox agreement, retry/crash/rollback no-unexplained-value and authoritative view reconciliation;
-- explicit fixtures showing incomplete/unregistered evidence yields inconclusive/data-quality classification rather than a false pass or guilt finding;
+- deterministic projection fixtures for every applicable catalogue invariant: single authoritative location, duplicate/idempotency, split/merge conservation/identity, authorized source/sink, reward exactly-once, stale-generation fencing, transaction/outbox agreement, retry/crash/rollback no-unexplained-value and authoritative view reconciliation;
+- fixtures showing incomplete/unregistered evidence yields inconclusive/data-quality rather than false pass/guilt;
 - TransactionEventRef complete/gap/duplicate/conflict cases;
 - EventId duplicate/conflict and unsupported-schema cases;
 - checkpoint loss/recovery and durable source-completeness tests;
 - stable detector/model/config/artifact revision reproduction;
 - known false-positive corpus and human-disposition workflow evidence;
-- immutable lifecycle-audit replay proving triage/open/assignment/evidence/state/close/reopen/referral/disposition actions are reconstructable with actor/capability/reason/evidence/revision linkage;
-- optional client-diagnostics tests proving opt-out/absence cannot raise abuse/risk score, confidence or review/enforcement priority and cannot become guilt evidence;
-- best-effort sampling/loss propagation tests for statistical detectors;
+- no-case triage fixtures proving false-positive/duplicate/inconclusive/data-quality/supported-security/direct-referral outcomes receive immutable signal-level disposition + close records and remain countable/reconstructable;
+- supported-security fixtures proving a corroborated bot/automation/protocol-misuse signal can retain `STATISTICAL_SECURITY_ANOMALY` evidence class while receiving `SUPPORTED_SECURITY_FINDING` without becoming sanction/deterministic proof;
+- immutable lifecycle-audit replay proving signal triage/disposition/close/reopen and case open/assignment/evidence/state/close/reopen/referral/disposition actions reconstructable with actor/capability/reason/evidence/revision linkage;
+- optional client-diagnostics tests proving opt-out/absence cannot raise risk/confidence/review/enforcement priority or become guilt evidence;
+- best-effort sampling/loss propagation tests;
 - privacy raw-ID/pseudonym mapping/access-audit tests;
 - graph/query/export/resource boundary tests;
 - SIM replay-corroboration fixtures where claimed;
@@ -419,7 +440,7 @@ Implementation acceptance requires, proportionally to each detector family:
 
 ## 21. DECISIONS_NOT_TAKEN
 
-This candidate does not select or authorize:
+This candidate does not select/authorize:
 
 - concrete producer event IDs/payload schemas;
 - database/warehouse/lake/broker/vendor topology;
@@ -430,15 +451,16 @@ This candidate does not select or authorize:
 - automatic ban/mute/kick/confiscation/rollback/value repair;
 - device fingerprinting/client surveillance/network identity collection;
 - exact retention/legal durations;
+- exact UI/case-management implementation for signal/case lifecycle;
 - market/trade/mail/depot/reward business policy;
-- economy target values or automatic tuning;
+- economy target values/automatic tuning;
 - Platform/runtime/client/DDL/production implementation;
 - ANL-04 AI implementation.
 
 ## 22. CROSS_DOMAIN_FINDINGS
 
 - `ANL03-XD-01` (`P1`, report only): concrete DUR-03 item/currency/value durable event families are not yet registered; complete provenance/invariant coverage cannot be implemented until producer owners register them.
-- `ANL03-XD-02` (`P2`, report only): enforcement/GM/account-remediation authority is intentionally outside ANL-03 and requires a separately owned accepted contract before production action.
+- `ANL03-XD-02` (`P2`, report only): enforcement/GM/account-remediation authority is intentionally outside ANL-03 and requires separately owned accepted contract before production action.
 - `ANL03-XD-03` (`P2`, report only): FND/session/admission/channel security producer event coverage is not registered; corresponding detectors cannot claim completeness.
 - `ANL03-XD-04` (`P2`, report only): market/trade/mail/depot/reward fraud/business interpretation remains dependent on owning economy/gameplay contracts.
 
@@ -448,6 +470,6 @@ Full evidence is recorded in `ANL-03_ECONOMY_INTEGRITY_SECURITY_ANALYTICS_ANALYS
 
 This worker artifact is a nonbinding candidate. It may become canonical only through Architecture Coordinator audit/acceptance/merge under repository governance.
 
-Even after architectural acceptance, implementation remains separately gated and no runtime, DDL, production or enforcement authority is granted.
+Even after architectural acceptance, implementation remains separately gated and no runtime, DDL, production or enforcement authority is granted. Every triaged signal must have an auditable terminal outcome even without a case, and supported security findings remain non-sanctioning analytical evidence.
 
 `MERGE_AUTHORITY: ARCHITECTURE_COORDINATOR_ONLY`
