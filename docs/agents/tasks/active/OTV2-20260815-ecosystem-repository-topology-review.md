@@ -4,18 +4,18 @@
 task_id: OTV2-20260815-ecosystem-repository-topology-review
 title: Review target Oteryn ecosystem repository topology
 mode: AUDIT
-status: investigating
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs-ecosystem-repository-topology-review-20260815
-pr: null
+pr: 278
 base_sha: cb98fd32a2bb71fce83234ebf8bf69bdd1a1970e
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: architecture-review-agent
 created_at: 2026-08-15T13:49:00+02:00
-updated_at: 2026-08-15T13:49:00+02:00
+updated_at: 2026-08-15T13:59:10+02:00
 execution_budget_minutes: 120
 large_budget_reason: Cross-repository topology review against accepted native client/server/protocol/world/Studio architecture and current repository governance; documentation-only, no implementation authority.
 owned_paths:
@@ -45,14 +45,14 @@ Produce one critical, evidence-backed architecture review of the proposed future
 
 ## Acceptance criteria
 
-- Verify current `main`, governance, active task ownership, open PR state and relevant accepted architecture before conclusions.
-- Evaluate the proposed `Oteryn` meta repository, future `Oteryn-Game`, `Oteryn-Platform` and proposed `Oteryn-Atlas` boundaries critically rather than assuming Platform-side acceptance is Oteryn-v2 authority.
-- Decide whether Client + Server + `protocol-oteryn` + canonical World/Content + compiler/validation + legacy import boundary + Studio should remain together.
-- Assign exact target owners for OTBM parser, legacy IR, canonical world schema, compiler, validation, Studio and Atlas export.
-- Define the required future Game-to-Atlas contract shape, compatibility/security/rollback rules and cross-repository decision needs.
-- Classify current ADRs/contracts as compatible, conflicting, or requiring later supersession/coordination.
-- Assess CI, release, compatibility, schema evolution, agent ownership, CODEOWNERS and future extraction risk.
-- Persist only the review document and this task record.
+- [x] Verify current `main`, governance, active task ownership, open PR state and relevant accepted architecture before conclusions.
+- [x] Evaluate the proposed `Oteryn` meta repository, future `Oteryn-Game`, `Oteryn-Platform` and proposed `Oteryn-Atlas` boundaries critically rather than assuming Platform-side acceptance is Oteryn-v2 authority.
+- [x] Decide whether Client + Server + `protocol-oteryn` + canonical World/Content + compiler/validation + legacy import boundary + Studio should remain together.
+- [x] Assign exact target owners for OTBM parser, legacy IR, canonical world schema, compiler, validation, Studio and Atlas export.
+- [x] Define the required future Game-to-Atlas contract shape, compatibility/security/rollback rules and cross-repository decision needs.
+- [x] Classify current ADRs/contracts as compatible, conflicting, or requiring later supersession/coordination.
+- [x] Assess CI, release, compatibility, schema evolution, agent ownership, CODEOWNERS and future extraction risk.
+- [x] Persist only the review document and this task record.
 
 ## Excluded scope
 
@@ -70,18 +70,25 @@ Produce one critical, evidence-backed architecture review of the proposed future
 - Runtime/component/E2E: `NOT_APPLICABLE` because the change is documentation-only and changes no executable contract or implementation.
 - Exact-head self-review before merge eligibility.
 
+## Validation status
+
+- Review document written at `docs/architecture/reviews/OTERYN_ECOSYSTEM_REPOSITORY_TOPOLOGY_REVIEW_2026-08-15.md`.
+- PR #278 opened as draft to establish immutable PR identity before final exact-head validation.
+- Full-diff self-review and exact-head GitHub Actions evidence are pending this final task-metadata commit.
+- Independent review is not required by default for this delivery because it is a non-authoritative architecture audit/recommendation that changes no accepted ADR/contract, governance rule, protocol, runtime, data, security control or production path. Any later ADR accepting the proposed cross-repository topology remains separately gated.
+
 ## Context checkpoint
 
 ```yaml
-last_progress: Task registered from current main after governance, main/open-PR/active-task and relevant architecture inspection began; base commit corrected after distinguishing commit SHA from tree SHA.
-status: investigating
+last_progress: Review document completed and PR #278 opened; task metadata now records the PR before final exact-head full-diff self-review and GitHub Actions validation.
+status: validating
 branch: docs-ecosystem-repository-topology-review-20260815
 head_sha: null
-pr: null
+pr: 278
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
-ci_check_generation: null
+ci_trigger_source: pull_request
+ci_check_generation: pending_final_head
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -95,5 +102,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: false
 blocker: null
-next_action: Complete the evidence-backed topology review and write the preferred architecture review document without changing canonical ADRs or executable code.
+next_action: Freeze the exact PR head, inspect the complete two-path diff, record self-review evidence, mark PR ready, then accept merge only if required exact-head checks and thread state are clean.
 ```
