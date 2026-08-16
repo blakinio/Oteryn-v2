@@ -4,34 +4,35 @@
 task_id: OTV2-20260816-architecture-wave-a-f-global-reconciliation
 title: Reconcile global programme state after the first A-F architecture wave
 mode: COORDINATE
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/architecture-wave-a-f-global-reconciliation-20260816
 issue: 302
-pr: null
+pr: 303
 base_sha: c197ba12cc1b2ebbc4b27eab5d6054037720c48a
-head_sha: null
+head_sha: f7f1ffa7c1a3121be813a65cd6a4750751d6c3f7
 final_head_sha: null
 final_head_frozen_at: null
 owner: architecture-coordinator
 created_at: 2026-08-16T16:00:00+02:00
-updated_at: 2026-08-16T16:00:00+02:00
+updated_at: 2026-08-16T16:09:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
   - docs/agents/tasks/active/OTV2-20260816-architecture-wave-a-f-global-reconciliation.md
   - docs/architecture/FOUNDATION_PROGRAMME_CURRENT_STATUS.md
   - docs/architecture/GLOBAL_ARCHITECTURE_DECISION_REGISTER.md
-  - docs/architecture/GAMEPLAY_AND_PRODUCT_ARCHITECTURE_HORIZON.md
+  - docs/architecture/OTERYN_V2_POST_WAVE_A_F_RECONCILIATION_20260816.md
   - docs/architecture/README.md
-  - docs/architecture/ARCHITECTURE_ANALYSIS_GAP_REGISTER.md
   - docs/agents/tasks/active/OTV2-20260805-foundation-preimplementation-contracts.md
 public_contracts:
   - docs/architecture/FOUNDATION_PROGRAMME_CURRENT_STATUS.md
   - docs/architecture/GLOBAL_ARCHITECTURE_DECISION_REGISTER.md
-  - docs/architecture/GAMEPLAY_AND_PRODUCT_ARCHITECTURE_HORIZON.md
+  - docs/architecture/OTERYN_V2_POST_WAVE_A_F_RECONCILIATION_20260816.md
   - docs/architecture/README.md
+preserved_historical_status_sources:
+  - docs/architecture/GAMEPLAY_AND_PRODUCT_ARCHITECTURE_HORIZON.md
   - docs/architecture/ARCHITECTURE_ANALYSIS_GAP_REGISTER.md
 depends_on:
   - main@c197ba12cc1b2ebbc4b27eab5d6054037720c48a
@@ -61,22 +62,26 @@ Make coordinator-owned programme truth match the completed first A-F architectur
 - A #271, B #268, C successor #276, D successor #277, E #273 and F #270 are merged and lifecycle-closed;
 - C predecessor #272 and D predecessor #269 are closed without merge as superseded historical evidence;
 - Agent A preserves 0/4 promoted `ABILITY_COMBAT` cases, with target `UNKNOWN`, provenance/legal `PENDING`, implementation `NOT_STARTED`, parity `PARITY_PENDING_EVIDENCE`;
-- B/E candidate headers remain `CANDIDATE`; C/D successor packages remain proposal/candidate architecture rather than owner-accepted architecture; implementation remains `NOT_STARTED`;
+- B/E/F candidate headers remain `CANDIDATE`; C/D successor packages remain `PROPOSED` architecture rather than owner-accepted architecture; implementation remains `NOT_STARTED`;
 - issue #218 describes creation of the Reference evidence/parity manifest, but the manifest and later owner acceptance were already delivered by merged PRs #220 and #252.
 
 ### DERIVED
 
-The first-wave delivery programme is complete under the allocation completion condition, but the architecture decision programme is not complete: merged candidate packages that are not already owner-accepted still require explicit later acceptance before they become binding implementation authority. GAME-ABILITY-01 is the narrowest high-leverage next owner-decision candidate because it composes already accepted partial GAME-ABILITY baselines and gates broad combat/ability implementation while leaving Reference parity separately fail-closed.
+The first-wave delivery programme is complete under the allocation completion condition, but the architecture decision programme is not complete: merged candidate packages that are not already owner-accepted still require explicit later acceptance before they become binding implementation authority. `GAME-ABILITY-01` is the narrowest high-leverage next owner-decision candidate because it composes already accepted partial GAME-ABILITY baselines and gates broad combat/ability implementation while leaving Reference parity separately fail-closed.
+
+### Preservation choice
+
+`GAMEPLAY_AND_PRODUCT_ARCHITECTURE_HORIZON.md` and `ARCHITECTURE_ANALYSIS_GAP_REGISTER.md` are broad historical inventories with substantial still-valid detail. Rewriting them wholesale merely to replace stale execution wording would create unnecessary semantic-loss risk. This task therefore preserves those files byte-for-byte and adds `OTERYN_V2_POST_WAVE_A_F_RECONCILIATION_20260816.md`, which explicitly supersedes **only** their stale execution-status/coverage/next-action wording. Their detailed inventory/risk/future-decision content remains valid unless separately superseded.
 
 ## Acceptance criteria
 
-- [ ] `FOUNDATION_PROGRAMME_CURRENT_STATUS.md` reflects post-wave A-F delivery truth and no longer selects Agent A evidence acquisition as future work.
-- [ ] global register and gameplay horizon distinguish merged/lifecycle-closed candidate delivery from architectural `ACCEPTED` status.
-- [ ] architecture index points readers to the delivered first-wave packages with truthful status wording.
-- [ ] analysis gap register no longer presents its 2026-08-06 snapshot as live execution truth and points to current overlays for post-wave status.
-- [ ] non-owning foundation checkpoint uses live post-wave state and exactly one next action.
+- [x] `FOUNDATION_PROGRAMME_CURRENT_STATUS.md` reflects post-wave A-F delivery truth and no longer selects Agent A evidence acquisition as future work.
+- [x] global register distinguishes merged/lifecycle-closed candidate delivery from architectural `ACCEPTED` status.
+- [x] a narrow reconciliation overlay supersedes only stale status/coverage/next-action wording in the broad gameplay horizon and gap register while preserving their detailed historical inventory.
+- [x] architecture index points readers to the post-wave reconciliation and delivered first-wave packages with truthful status wording.
+- [x] non-owning foundation checkpoint uses live post-wave state and exactly one next action.
 - [ ] stale issue #218 is closed as completed with exact merged evidence; issue #115 remains open and unchanged.
-- [ ] no accepted ADR/contract semantics, runtime/client/server/protocol/DDL/Platform/production behavior or external repository is changed.
+- [x] no accepted ADR/contract semantics, runtime/client/server/protocol/DDL/Platform/production behavior or external repository is changed.
 - [ ] full final diff self-review has zero material findings.
 - [ ] exact-head required repository checks pass and review threads are zero.
 
@@ -87,6 +92,8 @@ No owner acceptance of GAME-ABILITY/GAME-AI/GAME-INTERACTION/ALPHA-CLIENT/ANL-02
 ## Implementation / findings
 
 Coordinator reconciliation only. Historical worker/task evidence remains immutable. Status updates use `ARCHITECTURE_STATUS_MODEL.md`: a merged and lifecycle-closed candidate can be `CANDIDATE | LIFECYCLE_CLOSED | NOT_STARTED`; delivery completion does not imply owner acceptance.
+
+The selected next paper-only action is a bounded `GAME-ABILITY-01` owner-decision package. It is an owner-decision task, not runtime implementation and not Reference parity work.
 
 ## Validation
 
@@ -141,15 +148,15 @@ Coordinator reconciliation only. Historical worker/task evidence remains immutab
 ## Context checkpoint
 
 ```yaml
-last_progress: issue #302 and dedicated coordinator branch created from live main; reconciliation scope claimed
-status: implementing
+last_progress: current-status/register/index/non-owning checkpoint reconciled; narrow post-wave overlay preserves historical horizon/gap inventories while superseding only stale execution wording
+status: validating
 branch: docs/architecture-wave-a-f-global-reconciliation-20260816
-head_sha: null
-pr: null
+head_sha: f7f1ffa7c1a3121be813a65cd6a4750751d6c3f7
+pr: 303
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
-ci_check_generation: null
+ci_trigger_source: pull_request/push
+ci_check_generation: post-wave-reconciliation-finalization
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -163,7 +170,7 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: false
 blocker: null
-next_action: RECONCILE_GLOBAL_OVERLAYS_AND_SET_POST_WAVE_OWNER_DECISION_NEXT_ACTION
+next_action: CLOSE_STALE_ISSUE_218_THEN_FINAL_DIFF_SELF_REVIEW_AND_EXACT_HEAD_CI
 ```
 
 `MERGE_AUTHORITY: ARCHITECTURE_COORDINATOR_ONLY`
