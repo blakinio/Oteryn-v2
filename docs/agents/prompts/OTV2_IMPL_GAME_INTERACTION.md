@@ -44,6 +44,12 @@ Movement owns final same-scope position commit. DUR-03 owns durable item/value t
 
 No generic JSON/script action bag with mutation authority. No arbitrary distributed atomicity across movement/value/ability. No durable writable-text owner unless separately accepted/allocated. No client-authoritative trigger result.
 
+## Lifecycle / budget / durable handover
+
+Before the first write, create or resume the coordinator-allocated task with exact base SHA, branch/PR, owned paths/public contracts, dependencies/blockers and execution budget. Default foreground budget is **60 minutes**; **120 minutes** requires explicit declaration and justification.
+
+Maintain exactly one compact `## Context checkpoint` with one `next_action`. Persist exact head, validation/review state, blocker, pending child/reconciliation scope and ownership state before any genuine stop/rotation. Terminal completion includes post-merge verification, task archive and ownership release.
+
 ## Validation
 
 - stable child identity under retry/recovery;
