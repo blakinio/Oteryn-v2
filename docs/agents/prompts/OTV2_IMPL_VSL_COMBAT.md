@@ -16,7 +16,9 @@ No production/protected environment, Platform/external-repository write, Referen
 
 ## Mandatory sources
 
-Read live governance/allocation plus GAME-ABILITY owner acceptance, SIM, GAME-INTERACTION, GAME-ITEM, GAME-CHAR, DUR-03, FND-02/03/04, accepted `VSL-COMBAT-01`, accepted `VSL-CONTENT-01`, QA-E2E and all merged prerequisite implementation seams.
+Read live governance/allocation plus GAME-ABILITY owner acceptance, SIM, GAME-INTERACTION, GAME-ITEM, GAME-CHAR, DUR-03, FND-02/03/04, accepted `VSL-COMBAT-01`, accepted `VSL-CONTENT-01`, accepted `VSL-MOVE-01`, QA-E2E and all merged prerequisite implementation seams.
+
+Before the first write, verify the coordinator allocation names the exact **merged Movement VSL prerequisite SHA/PR** and that its integration evidence is not stale against current main. If Movement is not merged/integration-ready, remain read-only and report that dependency; do not implement movement semantics inside Combat.
 
 ## Target outcome
 
@@ -67,6 +69,12 @@ Prove at least:
 - pickup retry/timeout/ambiguous commit cannot duplicate/remove value incorrectly;
 - partial durable mutation is not externally acknowledged as success;
 - client cannot manufacture loot/XP/pickup authority.
+
+## Lifecycle / budget / durable handover
+
+Before the first write, create or resume the coordinator-allocated task with exact base SHA, branch/PR, owned paths/public registrations, all prerequisite merge SHAs including Movement, dependencies/blockers and execution budget. Default foreground budget is **60 minutes**; **120 minutes** requires explicit declaration and justification.
+
+Maintain exactly one compact `## Context checkpoint` with one `next_action`. Persist exact head, Tier-1/Tier-2 attempt state, durable transaction/crash-window evidence, independent-review state, blocker and ownership state before any genuine stop/rotation. Terminal completion includes post-merge verification, task archive and ownership release.
 
 ## Validation
 
