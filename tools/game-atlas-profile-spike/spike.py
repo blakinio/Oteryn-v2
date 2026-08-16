@@ -38,12 +38,7 @@ OBJECTS = (
 
 
 def cjson(value):
-    return json.dumps(
-        value,
-        sort_keys=True,
-        separators=(",", ":"),
-        ensure_ascii=False,
-    ).encode("utf-8")
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
 
 
 def sha(data):
@@ -70,25 +65,19 @@ def make_records(name, width=128, height=128, floors=6):
                     if selector % 3 == 0:
                         objects.append(OBJECTS[(selector + 1) % len(OBJECTS)])
                     if selector % 11 == 0:
-                        objects.append(
-                            "oteryn:item.environment.decorative_banner"
-                        )
+                        objects.append("oteryn:item.environment.decorative_banner")
                 else:
                     if selector % 7 == 0:
                         objects.append(OBJECTS[selector % len(OBJECTS)])
                     if selector % 29 == 0:
-                        objects.append(
-                            "oteryn:item.environment.decorative_banner"
-                        )
+                        objects.append("oteryn:item.environment.decorative_banner")
                 poi = None
                 if (x * 7 + y * 5 + floor * 3) % 509 == 0:
                     poi = f"synthetic:poi:{floor}:{y:03d}:{x:03d}"
                 records.append(
                     {
                         "floor": floor,
-                        "ground": GROUNDS[
-                            (x // 8 + y // 8 + floor) % len(GROUNDS)
-                        ],
+                        "ground": GROUNDS[(x // 8 + y // 8 + floor) % len(GROUNDS)],
                         "objects": objects,
                         "poi": poi,
                         "x": x,
@@ -99,14 +88,7 @@ def make_records(name, width=128, height=128, floors=6):
 
 
 def semantic_sha(records):
-    ordered = sorted(
-        records,
-        key=lambda record: (
-            record["floor"],
-            record["y"],
-            record["x"],
-        ),
-    )
+    ordered = sorted(records, key=lambda r: (r["floor"], r["y"], r["x"]))
     return sha(cjson(ordered))
 
 
@@ -120,13 +102,7 @@ def group_records(records, chunk, packing):
         )
         groups[key].append(record)
     for values in groups.values():
-        values.sort(
-            key=lambda record: (
-                record["floor"],
-                record["y"],
-                record["x"],
-            )
-        )
+        values.sort(key=lambda r: (r["floor"], r["y"], r["x"]))
     return dict(
         sorted(
             groups.items(),
@@ -153,10 +129,7 @@ def dec_string(view, offset):
     offset += 2
     if length > MAX_STRING_BYTES or offset + length > len(view):
         raise ValueError("invalid research string length")
-    return (
-        bytes(view[offset : offset + length]).decode("utf-8"),
-        offset + length,
-    )
+    return bytes(view[offset : offset + length]).decode("utf-8"), offset + length
 
 
 def enc_binary(records):
@@ -166,20 +139,11 @@ def enc_binary(records):
         objects = record["objects"]
         if len(objects) > 0xFFFF:
             raise ValueError("research object count cap exceeded")
-        out += struct.pack(
-            "<iihH",
-            record["x"],
-            record["y"],
-            record["floor"],
-            len(objects),
-        )
+        out += struct.pack("<iihH", record["x"], record["y"], record["floor"], len(objects))
         out += enc_string(record["ground"])
         for obj in objects:
             out += enc_string(obj)
-        if record["poi"] is None:
-            out += b"\x00"
-        else:
-            out += b"\x01" + enc_string(record["poi"])
+        out += b"\x00" if record["poi"] is None else b"\x01" + enc_string(record["poi"])
     if len(out) > MAX_CHUNK_BYTES:
         raise ValueError("research chunk byte cap exceeded")
     return bytes(out)
@@ -199,9 +163,7 @@ def dec_binary(raw):
     for _ in range(count):
         if offset + 12 > len(view):
             raise ValueError("truncated research binary record")
-        x, y, floor, object_count = struct.unpack_from(
-            "<iihH", view, offset
-        )
+        x, y, floor, object_count = struct.unpack_from("<iihH", view, offset)
         offset += 12
         ground, offset = dec_string(view, offset)
         objects = []
@@ -217,16 +179,7 @@ def dec_binary(raw):
         poi = None
         if flag:
             poi, offset = dec_string(view, offset)
-        out.append(
-            {
-                "floor": floor,
-                "ground": ground,
-                "objects": objects,
-                "poi": poi,
-                "x": x,
-                "y": y,
-            }
-        )
+        out.append({"floor": floor, "ground": ground, "objects": objects, "poi": poi, "x": x, "y": y})
     if offset != len(view):
         raise ValueError("trailing research binary bytes")
     return out
@@ -236,9 +189,7 @@ def encode(kind, records):
     if kind == "canonical-json-v0":
         return cjson({"records": records, "spike_schema": SCHEMA})
     if kind == "canonical-jsonl-v0":
-        lines = [
-            cjson({"spike_schema": SCHEMA, "type": "header"})
-        ]
+        lines = [cjson({"spike_schema": SCHEMA, "type": "header"})]
         lines.extend(cjson(record) for record in records)
         return b"\n".join(lines) + b"\n"
     if kind == "binary-baseline-v0":
@@ -251,18 +202,12 @@ def decode(kind, raw):
         raise ValueError("research chunk byte cap exceeded")
     if kind == "canonical-json-v0":
         value = json.loads(raw)
-        if (
-            value.get("spike_schema") != SCHEMA
-            or not isinstance(value.get("records"), list)
-        ):
+        if value.get("spike_schema") != SCHEMA or not isinstance(value.get("records"), list):
             raise ValueError("invalid research json")
         return value["records"]
     if kind == "canonical-jsonl-v0":
         lines = raw.splitlines()
-        if not lines or json.loads(lines[0]) != {
-            "spike_schema": SCHEMA,
-            "type": "header",
-        }:
+        if not lines or json.loads(lines[0]) != {"spike_schema": SCHEMA, "type": "header"}:
             raise ValueError("invalid research jsonl")
         return [json.loads(line) for line in lines[1:]]
     if kind == "binary-baseline-v0":
@@ -272,18 +217,13 @@ def decode(kind, raw):
 
 def file_name(key, kind):
     cx, cy, floor = key
-    extension = {
-        "canonical-json-v0": "json",
-        "canonical-jsonl-v0": "jsonl",
-        "binary-baseline-v0": "bin",
-    }[kind]
+    ext = {"canonical-json-v0": "json", "canonical-jsonl-v0": "jsonl", "binary-baseline-v0": "bin"}[kind]
     floor_part = "all" if floor is None else f"f{floor:02d}"
-    return f"chunks/{floor_part}/{cy:03d}/{cx:03d}.{extension}"
+    return f"chunks/{floor_part}/{cy:03d}/{cx:03d}.{ext}"
 
 
 def package(fixture, records, kind, chunk, packing):
-    chunks = []
-    files = {}
+    chunks, files = [], {}
     for key, grouped in group_records(records, chunk, packing).items():
         raw = encode(kind, grouped)
         compressed = gz(raw)
@@ -313,24 +253,13 @@ def package(fixture, records, kind, chunk, packing):
 
 
 def mutate(records, width, height, floors):
-    target = (
-        width // 2,
-        height // 2,
-        min(3, floors - 1),
-    )
-    out = []
-    seen = False
+    target = (width // 2, height // 2, min(3, floors - 1))
+    out, seen = [], False
     for record in records:
         copy = dict(record)
         copy["objects"] = list(record["objects"])
-        if (
-            record["x"],
-            record["y"],
-            record["floor"],
-        ) == target:
-            copy["objects"].append(
-                "oteryn:item.environment.spike_mutation_marker"
-            )
+        if (record["x"], record["y"], record["floor"]) == target:
+            copy["objects"].append("oteryn:item.environment.spike_mutation_marker")
             seen = True
         out.append(copy)
     if not seen:
@@ -340,60 +269,36 @@ def mutate(records, width, height, floors):
 
 def p95(values):
     ordered = sorted(values)
-    if not ordered:
-        return 0
-    return ordered[max(0, math.ceil(len(ordered) * 0.95) - 1)]
+    return 0 if not ordered else ordered[max(0, math.ceil(len(ordered) * 0.95) - 1)]
 
 
 def paths_for(manifest, x0, x1, y0, y1, floor):
-    size = manifest["chunk_size"]
-    result = []
+    size, result = manifest["chunk_size"], []
     for entry in manifest["chunks"]:
         cx, cy, packed_floor = entry["key"]
-        intersects = (
-            cx * size < x1
-            and (cx + 1) * size > x0
-            and cy * size < y1
-            and (cy + 1) * size > y0
-        )
-        if intersects and (
-            packed_floor is None or packed_floor == floor
-        ):
+        intersects = cx * size < x1 and (cx + 1) * size > x0 and cy * size < y1 and (cy + 1) * size > y0
+        if intersects and (packed_floor is None or packed_floor == floor):
             result.append(entry["path"])
     return sorted(result)
 
 
 def text_diff_lines(before, after):
-    try:
-        left = before.decode().splitlines()
-        right = after.decode().splitlines()
-    except UnicodeDecodeError:
-        return None
+    left, right = before.decode("utf-8").splitlines(), after.decode("utf-8").splitlines()
     diff = difflib.unified_diff(left, right, n=1)
     return sum(
         1
         for line in diff
-        if line[:1] in ("+", "-")
-        and not line.startswith(("+++", "---"))
+        if line[:1] in ("+", "-") and not line.startswith(("+++", "---"))
     )
 
 
-def evaluate(
-    fixture,
-    records,
-    kind,
-    chunk,
-    packing,
-    width,
-    height,
-    floors,
-):
-    files1, manifest1 = package(
-        fixture, records, kind, chunk, packing
-    )
-    files2, manifest2 = package(
-        fixture, records, kind, chunk, packing
-    )
+def max_text_line_bytes(raw):
+    return max((len(line) for line in raw.splitlines()), default=0)
+
+
+def evaluate(fixture, records, kind, chunk, packing, width, height, floors):
+    files1, manifest1 = package(fixture, records, kind, chunk, packing)
+    files2, manifest2 = package(fixture, records, kind, chunk, packing)
     deterministic = files1 == files2 and manifest1 == manifest2
 
     decoded = []
@@ -402,41 +307,29 @@ def evaluate(
     roundtrip = semantic_sha(decoded) == manifest1["semantic_sha256"]
 
     mutated = mutate(records, width, height, floors)
-    files3, _ = package(
-        fixture, mutated, kind, chunk, packing
-    )
-    changed = [
-        path
-        for path in files1
-        if path != "manifest.json" and files1[path] != files3[path]
-    ]
-    diff_counts = [
-        text_diff_lines(files1[path], files3[path])
-        for path in changed
-    ]
-    diff_lines = (
-        None
-        if any(value is None for value in diff_counts)
-        else sum(diff_counts)
-    )
+    files3, _ = package(fixture, mutated, kind, chunk, packing)
+    changed = [path for path in files1 if path != "manifest.json" and files1[path] != files3[path]]
+    if kind == "binary-baseline-v0":
+        diff_lines = None
+        text_max_line_bytes = None
+    else:
+        diff_lines = sum(text_diff_lines(files1[path], files3[path]) for path in changed)
+        text_max_line_bytes = max(max_text_line_bytes(files1[path]) for path in changed)
 
     first = manifest1["chunks"][0]
     raw = files1[first["path"]]
     corrupt = bytearray(raw)
     corrupt[len(corrupt) // 2] ^= 1
     digest_detects = sha(bytes(corrupt)) != first["raw_sha256"]
-
-    corrupted_gzip = bytearray(gz(raw))
-    corrupted_gzip[len(corrupted_gzip) // 2] ^= 1
+    corrupt_gzip = bytearray(gz(raw))
+    corrupt_gzip[len(corrupt_gzip) // 2] ^= 1
     gzip_detects = False
     try:
-        gzip.decompress(bytes(corrupted_gzip))
+        gzip.decompress(bytes(corrupt_gzip))
     except (OSError, EOFError, zlib.error):
         gzip_detects = True
 
-    by_path = {
-        entry["path"]: entry for entry in manifest1["chunks"]
-    }
+    by_path = {entry["path"]: entry for entry in manifest1["chunks"]}
     floor = min(3, floors - 1)
     viewport = paths_for(
         manifest1,
@@ -446,22 +339,9 @@ def evaluate(
         height // 8 + min(96, height // 2),
         floor,
     )
-    point = paths_for(
-        manifest1,
-        width // 2,
-        width // 2 + 1,
-        height // 2,
-        height // 2 + 1,
-        floor,
-    )
-    raw_sizes = [
-        entry["raw_bytes"] for entry in manifest1["chunks"]
-    ]
-    gzip_sizes = [
-        len(gz(files1[entry["path"]]))
-        for entry in manifest1["chunks"]
-    ]
-    manifest_gzip = len(gz(files1["manifest.json"]))
+    point = paths_for(manifest1, width // 2, width // 2 + 1, height // 2, height // 2 + 1, floor)
+    raw_sizes = [entry["raw_bytes"] for entry in manifest1["chunks"]]
+    gzip_sizes = [len(gz(files1[entry["path"]])) for entry in manifest1["chunks"]]
 
     return {
         "chunk_count": len(raw_sizes),
@@ -472,39 +352,29 @@ def evaluate(
         "fixture": fixture,
         "floor_packing": packing,
         "gzip_corruption_detected": gzip_detects,
-        "gzip_total_bytes": sum(gzip_sizes) + manifest_gzip,
+        "gzip_total_bytes": sum(gzip_sizes) + len(gz(files1["manifest.json"])),
         "local_edit_changed_data_files": len(changed),
-        "local_edit_changed_gzip_bytes": sum(
-            len(gz(files3[path])) for path in changed
-        ),
+        "local_edit_changed_gzip_bytes": sum(len(gz(files3[path])) for path in changed),
         "local_edit_text_diff_lines": diff_lines,
+        "local_edit_text_max_line_bytes": text_max_line_bytes,
         "max_chunk_gzip_bytes": max(gzip_sizes),
         "max_chunk_raw_bytes": max(raw_sizes),
         "p95_chunk_gzip_bytes": p95(gzip_sizes),
         "p95_chunk_raw_bytes": p95(raw_sizes),
         "point_access_chunk_files": len(point),
-        "point_access_gzip_bytes": sum(
-            by_path[path]["compressed_bytes"] for path in point
-        ),
-        "raw_total_bytes": sum(raw_sizes)
-        + len(files1["manifest.json"]),
+        "point_access_gzip_bytes": sum(by_path[path]["compressed_bytes"] for path in point),
+        "raw_total_bytes": sum(raw_sizes) + len(files1["manifest.json"]),
         "roundtrip_semantic_identity": roundtrip,
         "semantic_sha256": manifest1["semantic_sha256"],
         "viewport_chunk_files": len(viewport),
-        "viewport_gzip_bytes": sum(
-            by_path[path]["compressed_bytes"] for path in viewport
-        ),
+        "viewport_gzip_bytes": sum(by_path[path]["compressed_bytes"] for path in viewport),
     }
 
 
 def report():
     width, height, floors = 128, 128, 6
-    rows = []
-    fixtures = []
-    for fixture in (
-        "synthetic-sparse-v1",
-        "synthetic-dense-v1",
-    ):
+    rows, fixtures = [], []
+    for fixture in ("synthetic-sparse-v1", "synthetic-dense-v1"):
         records = make_records(fixture, width, height, floors)
         fixtures.append(
             {
@@ -519,18 +389,7 @@ def report():
         for chunk in CHUNKS:
             for packing in PACKINGS:
                 for kind in ENCODINGS:
-                    rows.append(
-                        evaluate(
-                            fixture,
-                            records,
-                            kind,
-                            chunk,
-                            packing,
-                            width,
-                            height,
-                            floors,
-                        )
-                    )
+                    rows.append(evaluate(fixture, records, kind, chunk, packing, width, height, floors))
     checks = all(
         row["deterministic_bytes"]
         and row["roundtrip_semantic_identity"]
@@ -538,15 +397,16 @@ def report():
         and row["gzip_corruption_detected"]
         and row["local_edit_changed_data_files"] == 1
         and row["point_access_chunk_files"] == 1
+        and (
+            row["encoding"] == "binary-baseline-v0"
+            or (row["local_edit_text_diff_lines"] == 2 and row["local_edit_text_max_line_bytes"] > 0)
+        )
         for row in rows
     )
     return {
         "spike_schema": SCHEMA,
         "research_only": True,
-        "fixture_policy": (
-            "project-owned deterministic synthetic data only; "
-            "no OTBM/Crystal/Canary/Tibia assets"
-        ),
+        "fixture_policy": "project-owned deterministic synthetic data only; no OTBM/Crystal/Canary/Tibia assets",
         "internal_spike_caps_not_production_limits": {
             "max_records": MAX_RECORDS,
             "max_chunk_bytes": MAX_CHUNK_BYTES,
@@ -560,53 +420,41 @@ def report():
         "fixtures": fixtures,
         "rows": rows,
         "spike_checks_pass": checks,
-        "warning": (
-            "Non-canonical evidence only. Does not define public schema, "
-            "coordinate authority, production limits, compression, chunk "
-            "geometry, or serializer."
-        ),
+        "warning": "Non-canonical evidence only. Does not define public schema, coordinate authority, production limits, compression, chunk geometry, or serializer.",
     }
 
 
 def self_test(result):
     assert result["spike_checks_pass"]
-    assert len(result["rows"]) == (
-        2 * len(ENCODINGS) * len(CHUNKS) * len(PACKINGS)
-    )
+    assert len(result["rows"]) == 2 * len(ENCODINGS) * len(CHUNKS) * len(PACKINGS)
     for row in result["rows"]:
-        assert row["chunk_count"] > 0
-        assert row["raw_total_bytes"] > 0
-        assert row["gzip_total_bytes"] > 0
-        expected = (
-            16 if row["chunk_size"] == 32 else 4
-        ) * (
-            6 if row["floor_packing"] == "per-floor" else 1
-        )
+        expected = (16 if row["chunk_size"] == 32 else 4) * (6 if row["floor_packing"] == "per-floor" else 1)
         assert row["chunk_count"] == expected
+        assert row["raw_total_bytes"] > 0 and row["gzip_total_bytes"] > 0
+        if row["encoding"] == "binary-baseline-v0":
+            assert row["local_edit_text_diff_lines"] is None
+            assert row["local_edit_text_max_line_bytes"] is None
+        else:
+            assert row["local_edit_text_diff_lines"] == 2
+            assert row["local_edit_text_max_line_bytes"] > 0
 
 
 def print_summary(result):
     print("SPIKE_SUMMARY")
     print(f"schema={result['spike_schema']}")
-    print(
-        "checks_pass="
-        f"{str(result['spike_checks_pass']).lower()}"
-    )
+    print(f"checks_pass={str(result['spike_checks_pass']).lower()}")
     print(f"rows={len(result['rows'])}")
     print(
-        "fixture|encoding|chunk|packing|raw|gzip|max_gzip|"
-        "point_gzip|viewport_gzip|edit_files|diff_lines"
+        "fixture|encoding|chunk|packing|raw|gzip|max_gzip|point_gzip|"
+        "viewport_gzip|edit_files|diff_lines|max_text_line"
     )
     for row in result["rows"]:
         print(
-            f"{row['fixture']}|{row['encoding']}|"
-            f"{row['chunk_size']}|{row['floor_packing']}|"
-            f"{row['raw_total_bytes']}|{row['gzip_total_bytes']}|"
-            f"{row['max_chunk_gzip_bytes']}|"
-            f"{row['point_access_gzip_bytes']}|"
-            f"{row['viewport_gzip_bytes']}|"
-            f"{row['local_edit_changed_data_files']}|"
-            f"{row['local_edit_text_diff_lines']}"
+            f"{row['fixture']}|{row['encoding']}|{row['chunk_size']}|{row['floor_packing']}|"
+            f"{row['raw_total_bytes']}|{row['gzip_total_bytes']}|{row['max_chunk_gzip_bytes']}|"
+            f"{row['point_access_gzip_bytes']}|{row['viewport_gzip_bytes']}|"
+            f"{row['local_edit_changed_data_files']}|{row['local_edit_text_diff_lines']}|"
+            f"{row['local_edit_text_max_line_bytes']}"
         )
     print("SPIKE_SUMMARY_END")
 
@@ -621,12 +469,7 @@ def main():
     if args.self_test:
         self_test(result)
     if args.output:
-        with open(
-            args.output,
-            "w",
-            encoding="utf-8",
-            newline="\n",
-        ) as handle:
+        with open(args.output, "w", encoding="utf-8", newline="\n") as handle:
             json.dump(result, handle, sort_keys=True, indent=2)
             handle.write("\n")
     if args.summary:
