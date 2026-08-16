@@ -4,16 +4,16 @@
 task_id: OTV2-20260816-stage-c-vsl-contracts
 title: Close Stage-C movement, combat and content vertical-slice architecture
 mode: COORDINATE
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/stage-c-vsl-contracts-20260816
 issue: 310
-pr: null
+pr: 311
 base_sha: bf2a2ae279516f62626a5d8f4dc1aeb587535c62
 owner: Architecture Coordinator
 created_at: 2026-08-16T21:16:12+02:00
-updated_at: 2026-08-16T21:16:12+02:00
+updated_at: 2026-08-16T21:23:32+02:00
 execution_budget_minutes: 120
 owned_paths:
   - docs/agents/tasks/active/OTV2-20260816-stage-c-vsl-contracts.md
@@ -40,7 +40,7 @@ depends_on:
   - docs/architecture/ADR-0005-native-world-format-and-oteryn-studio.md
   - docs/architecture/ADR-0007-native-end-to-end-test-platform.md
 blocks:
-  - owner dispositions for VSL-MOVE-01, VSL-COMBAT-01, VSL-CONTENT-01
+  - explicit owner dispositions for VSL-MOVE-01, VSL-COMBAT-01, VSL-CONTENT-01
   - final lifecycle/current-status reconciliation
   - executor-prompt handoff audit
 cross_repository_coordination_id: OTV2-NATIVE-FOUNDATION
@@ -63,8 +63,6 @@ Close only the minimum Stage-C architecture needed so implementation agents can 
 
 ## Architecture strategy
 
-Apply the vertical-slice bias:
-
 ```text
 freeze authority / identity / commit / recovery / evidence boundaries
 use explicit non-shipping fixtures where target values are unknown
@@ -72,39 +70,39 @@ measure reversible physical technology
 then refine
 ```
 
-The slice contracts MUST NOT reopen accepted foundation/gameplay architecture or absorb later alpha/expansion systems.
+The slice contracts do not reopen accepted foundation/gameplay architecture or absorb later alpha/expansion systems.
 
-## Required results
+## Candidate results
 
 ### VSL-MOVE-01
 
-Name the local movement/relocation authority within the current runtime owner, define one deterministic owner-local movement occurrence, collision/spatial legality, same-scope relocation, interaction boundaries, authoritative visibility/interest projection and FND-02 reconciliation. Cross-Channel/Instance handoff remains a separate authority transition.
+Candidate names the current ChannelRuntime/InstanceRuntime as the sole local movement/relocation authority; distinguishes local step/local relocation from scope handoff; uses source-derived revision-bound occurrence identity; composes post-movement/stateful triggers with GAME-INTERACTION; derives bounded visibility/interest as server state under FND-02 reconciliation; and leaves exact Reference movement/LOS/timing evidence-gated.
 
 ### VSL-COMBAT-01
 
-Define the minimum structural combat proof through accepted GAME-ABILITY; creature death as a stable descendant occurrence; idempotent corpse/loot materialization through DUR-03; single-principal XP settlement through Character authority; retry-safe pickup through GAME-INTERACTION + DUR-03; and explicit fixture-profile rules so no unknown Reference formula is guessed.
+Candidate keeps GAME-ABILITY as the only combat effect pipeline; defines stable creature death identity; treats corpse as runtime projection while durable loot materializes through DUR-03; gives single-principal XP settlement to GAME-CHAR progression authority; uses GAME-INTERACTION + DUR-03 for retry-safe pickup; and permits only explicit non-shipping structural fixture profiles while Reference values remain unknown.
 
 ### VSL-CONTENT-01
 
-Define the minimum typed semantic content set and compiler/loader/activation contract needed by movement/combat. Preserve DUR-04's final-encoding spike gate by using only a versioned noncanonical VSL evidence profile/fixture path until measured format evidence exists.
-
-## Hard exclusions
-
-No Rust/client/server/protocol/content implementation; no PostgreSQL DDL/migration; no final World Project/Bundle physical encoding; no concrete movement/pathfinding/renderer/database framework; no exact Global movement/combat/loot/XP formula; no PvP/party/boss/quest/NPC/market breadth; no Platform write; no production/deployment; no entitlement work; no Codex/OpenAI/paid review without exact current authorization.
+Candidate freezes the minimum semantic content/compiler/projection/loader/activation seam needed by movement/combat and permits a bounded noncanonical VSL fixture/evidence artifact profile. It explicitly preserves DUR-04's mandatory format spike and later owner format-selection decision before permanent physical encoding.
 
 ## Acceptance criteria
 
-- [ ] Each contract states exact authority and identity boundaries.
-- [ ] Each contract applies mandatory decision timing.
-- [ ] Cross-domain effects use accepted owner operations/workflows; no distributed transaction is invented.
-- [ ] All unproven Reference values remain evidence-gated.
-- [ ] Resource ceilings required before implementation acceptance are explicit dimensions, not invented numbers.
-- [ ] VSL-CONTENT preserves DUR-04 physical-format spike requirement.
-- [ ] Real-boundary Tier 1/Tier 2 proof requirements are explicit and do not allow mocks to count as terminal evidence.
-- [ ] One owner-decision package presents `ACCEPT | REWORK | DEFER` for all three gates.
-- [ ] Exact-head full-diff self-review is clean.
-- [ ] Required repository governance/semantic/merge gates pass on unchanged final head.
-- [ ] Zero unresolved review threads and `behind_by=0` before owner handoff.
+- [x] Each contract states exact authority and identity boundaries.
+- [x] Each contract applies mandatory decision timing.
+- [x] Cross-domain effects use accepted owner operations/workflows; no distributed transaction is invented.
+- [x] All unproven Reference values remain evidence-gated.
+- [x] Resource ceilings required before implementation acceptance are explicit dimensions, not invented numbers.
+- [x] VSL-CONTENT preserves DUR-04 physical-format spike requirement.
+- [x] Real-boundary Tier 1/Tier 2 proof requirements are explicit and do not allow mocks to count as terminal evidence.
+- [x] One owner-decision package presents `ACCEPT | REWORK | DEFER` for all three gates and recommends `ACCEPT` without inferring acceptance.
+- [ ] Exact-head five-path full-diff self-review is clean.
+- [ ] Agent governance / Architecture semantic audit / Merge authority audit / `Merge gate / validate` pass on one unchanged final head.
+- [ ] Zero unresolved review threads/requested changes and `behind_by=0` before owner handoff.
+
+## Hard exclusions
+
+No runtime/client/server/protocol/content implementation; no PostgreSQL DDL/migration; no final World Project/Bundle physical encoding; no concrete movement/pathfinding/renderer/database framework; no exact Global movement/combat/loot/XP formula; no PvP/party/boss/quest/NPC/market breadth; no Platform write; no production/deployment; no entitlement work; no Codex/OpenAI/paid review without exact current authorization.
 
 ## Executor state
 
@@ -116,14 +114,15 @@ IMPLEMENTATION_AUTHORITY: NONE
 ## Context checkpoint
 
 ```yaml
-last_progress: Stage-C issue #310 opened and accepted parent contracts re-read from main@bf2a2ae279516f62626a5d8f4dc1aeb587535c62
-status: implementing
+last_progress: three Stage-C candidates plus bundled owner-decision package persisted; draft PR #311 opened
+status: validating
 branch: docs/stage-c-vsl-contracts-20260816
 issue: 310
-pr: null
-owner_action_required: null until decision package is exact-head validated
+pr: 311
+base_sha: bf2a2ae279516f62626a5d8f4dc1aeb587535c62
+owner_action_required: null until exact-head validation is complete
 blocker: null
-next_action: write three bounded Stage-C contract candidates and one bundled owner-decision package, then validate as draft
+next_action: inspect full five-path diff, repair any material finding, freeze exact head, obtain required draft CI, then ask for one bundled owner disposition
 executor_prompts: HOLD
 ```
 
