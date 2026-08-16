@@ -4,18 +4,18 @@
 task_id: OTV2-20260816-game-ability-owner-decision
 title: Prepare GAME-ABILITY-01 whole-gate owner decision
 mode: COORDINATE
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/game-ability-owner-decision-20260816
-pr: null
+pr: 306
 base_sha: d2af53855046df25b4e52edbd5ec14e0513a63ec
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: OTV2-ABILITY-DECIDE / Architecture Coordinator
 created_at: 2026-08-16T19:37:00+02:00
-updated_at: 2026-08-16T19:37:00+02:00
+updated_at: 2026-08-16T19:44:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -52,16 +52,16 @@ Prepare one decision-ready, paper-only package that lets the repository owner ex
 
 ## Acceptance criteria
 
-- [ ] Create one bounded owner-decision artifact on the two declared owned paths only.
-- [ ] Separate verified facts, derivations, unknowns, conflicts and recommendation.
-- [ ] State the exact acceptance scope and preserve every accepted upstream invariant.
-- [ ] Include realistic `ACCEPT`, `REWORK` and `DEFER` outcomes and material trade-offs.
-- [ ] Apply the mandatory architecture decision-timing test.
-- [ ] Cover player-visible, producer/operational, security, determinism, resource-limit and exploitability consequences.
-- [ ] Reconcile current sibling-domain status without treating unaccepted proposals/candidates as canonical architecture.
-- [ ] Preserve Agent A 0/4 fail-closed evidence and make architecture acceptance distinct from implementation/parity.
-- [ ] Include `DECISIONS_NOT_TAKEN` and evidence-based supersession criteria.
-- [ ] End at exactly one owner decision boundary: `ACCEPT | REWORK | DEFER`.
+- [x] Create one bounded owner-decision artifact on the two declared owned paths only.
+- [x] Separate verified facts, derivations, unknowns, conflicts and recommendation.
+- [x] State the exact acceptance scope and preserve every accepted upstream invariant.
+- [x] Include realistic `ACCEPT`, `REWORK` and `DEFER` outcomes and material trade-offs.
+- [x] Apply the mandatory architecture decision-timing test.
+- [x] Cover player-visible, producer/operational, security, determinism, resource-limit and exploitability consequences.
+- [x] Reconcile current sibling-domain status without treating unaccepted proposals/candidates as canonical architecture.
+- [x] Preserve Agent A 0/4 fail-closed evidence and make architecture acceptance distinct from implementation/parity.
+- [x] Include `DECISIONS_NOT_TAKEN` and evidence-based supersession criteria.
+- [x] End at exactly one owner decision boundary: `ACCEPT | REWORK | DEFER`.
 - [ ] Inspect the final changed-file set and full diff; complete exact-head self-review, required docs/governance CI, review-thread and live-main drift checks.
 
 ## Excluded scope
@@ -70,11 +70,15 @@ No runtime/client/server/protocol/content implementation, PostgreSQL DDL/migrati
 
 ## Implementation / findings
 
-Preflight found no active task or open branch claiming either owned path. The only open PR at task start is prompt-package PR #305; it does not own or modify these decision-package paths.
+Preflight found no active task or open branch claiming either owned path. The only open PR at task start was prompt-package PR #305; it does not own or modify these decision-package paths.
+
+Draft PR #306 now owns exactly the declared task and decision-package paths. It remains draft while the owner disposition is unresolved.
 
 The source candidate has resolved historical review findings for repeated-timer catch-up, `SKIP_TO_LATEST`, structured cross-domain findings, canonical status axes and evidence locators. Final PR #268 evidence records clean exact-head self-review, green exact-head repository gates and a final owner-authorized independent review with no major issue. That evidence supports decision preparation but does not itself constitute owner acceptance.
 
 Current programme overlays supersede stale delivery-status and sibling-current-status prose embedded in the historical candidate. The semantic rule remains: unaccepted foreign-domain contracts cannot be treated as authority, while affected executable integrations fail closed until their owner contracts are accepted and implemented.
+
+The decision package recommends `ACCEPT` only for the candidate's explicit semantic architecture scope. It does not apply that choice or mutate canonical status.
 
 ## Validation
 
@@ -95,8 +99,8 @@ Current programme overlays supersede stale delivery-status and sibling-current-s
 
 ### Exact-head CI
 
-- final head: pending
-- trigger source: pending pull-request event observation
+- final head: recorded after final content commit in immutable PR/check evidence
+- trigger source: pull-request event observation
 - workflow/run/job: pending
 - runner assignment: pending
 - classification: pending
@@ -104,7 +108,7 @@ Current programme overlays supersede stale delivery-status and sibling-current-s
 
 ## Self-review
 
-- exact head: pending
+- exact head: recorded after final content commit in immutable PR review evidence
 - method/reviewer: OTV2-ABILITY-DECIDE implementing/coordinating agent; full changed-file/full-diff review
 - material findings: pending
 - verdict: pending
@@ -119,8 +123,8 @@ Current programme overlays supersede stale delivery-status and sibling-current-s
 
 ## PR and closeout
 
-- changed-file review: pending
-- unresolved review threads: pending
+- changed-file review: pending final full-diff audit
+- unresolved review threads: pending final check
 - related/superseded PRs: PR #268 is merged/lifecycle-closed source evidence; PR #305 is disjoint prompt-package work
 - protected auto-merge: `NOT_APPLICABLE` before explicit owner disposition
 - merge commit/result: pending owner disposition; this task must remain unmerged while the decision is unresolved
@@ -129,14 +133,14 @@ Current programme overlays supersede stale delivery-status and sibling-current-s
 ## Context checkpoint
 
 ```yaml
-last_progress: preflight reconstructed live main, governance, whole-gate candidate, accepted partial baselines, Agent-A evidence and current sibling-domain packages; no material accepted-source conflict found
-status: implementing
+last_progress: decision package persisted and draft PR #306 opened on the bounded two-path scope
+status: validating
 branch: docs/game-ability-owner-decision-20260816
 head_sha: null
-pr: null
+pr: 306
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
+ci_trigger_source: pull_request
 ci_check_generation: null
 ci_checks_for_current_head: 0
 ci_run_ids: []
@@ -151,5 +155,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: ACCEPT | REWORK | DEFER after verified decision package handoff
 blocker: null
-next_action: create and validate the bounded GAME-ABILITY-01 owner-decision package
+next_action: freeze PR #306 exact head and complete full-diff, CI, thread and live-main drift validation
 ```
