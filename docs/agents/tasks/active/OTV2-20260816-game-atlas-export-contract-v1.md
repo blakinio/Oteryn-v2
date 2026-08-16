@@ -4,19 +4,20 @@
 task_id: OTV2-20260816-game-atlas-export-contract-v1
 title: Define Game -> Atlas immutable export v1 semantic contract
 mode: CONTRACT
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/game-atlas-export-contract-v1
-pr: null
+pr: 287
 issue: 286
 base_sha: afcbf8585ba23c506242978c38b2b51f9ea6f1b6
-head_sha: null
+reconciled_main_sha: 005e31d7ddb137e77bc6825c248ec4b78e55b9cc
+head_sha: 259a975b589128bfb60461a5f9fa7dc96f936250
 final_head_sha: null
 final_head_frozen_at: null
 owner: SENIOR OTERYN ECOSYSTEM ARCHITECT / MIGRATION COORDINATOR
 created_at: 2026-08-16T09:30:43+02:00
-updated_at: 2026-08-16T09:30:43+02:00
+updated_at: 2026-08-16T09:36:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -63,12 +64,12 @@ Create the first formal Game-owned semantic contract for the immutable public-sa
 
 ## Acceptance criteria
 
-- [ ] One Game-owned semantic v1 contract exists under `docs/contracts/` and cites the exact external authority/evidence revisions used.
-- [ ] Producer/consumer ownership is explicit and does not make Platform a transit owner or Atlas a world authority.
-- [ ] Full-snapshot determinism, immutable identity, provenance, stable identities, coordinate/floor/order semantics, public allowlist, ambiguity handling, compatibility, limits and rollback are specified.
-- [ ] OTBM, Legacy IR, canonical World Project, live GameNode memory/state and undocumented Game DB tables are explicitly forbidden as Atlas contract inputs.
-- [ ] Physical encoding/compression/chunk dimensions/storage/delta/repository migration remain explicitly deferred.
-- [ ] Runtime/component/E2E is classified `NOT_APPLICABLE` because this task changes documentation/contract semantics only and performs no executable producer/consumer change.
+- [x] One Game-owned semantic v1 contract exists under `docs/contracts/` and cites the exact external authority/evidence revisions used.
+- [x] Producer/consumer ownership is explicit and does not make Platform a transit owner or Atlas a world authority.
+- [x] Full-snapshot determinism, immutable identity, provenance, stable identities, coordinate/floor/order semantics, public allowlist, ambiguity handling, compatibility, limits and rollback are specified.
+- [x] OTBM, Legacy IR, canonical World Project, live GameNode memory/state and undocumented Game DB tables are explicitly forbidden as Atlas contract inputs.
+- [x] Physical encoding/compression/chunk dimensions/storage/delta/repository migration remain explicitly deferred.
+- [x] Runtime/component/E2E is classified `NOT_APPLICABLE` because this task changes documentation/contract semantics only and performs no executable producer/consumer change.
 - [ ] Full exact-head diff self-review is clean and `Merge gate / validate` passes on the unchanged final head before merge.
 - [ ] Issue #286, task lifecycle and source branch are reconciled after merge.
 
@@ -85,16 +86,18 @@ Create the first formal Game-owned semantic contract for the immutable public-sa
 
 ## Implementation / findings
 
-Issue #286 claims this bounded contract package. Preflight found no existing open Atlas-export issue, no existing `game-atlas` branch and no active task record owning the two declared paths. Existing open architecture/runtime PRs use disjoint paths; legacy Otheryn PR #417 touches Atlas CI and remains outside this task.
+Issue #286 claims this bounded contract package and draft PR #287 is the delivery path. Preflight found no existing open Atlas-export issue, no existing `game-atlas` branch and no active task record owning the two declared paths. Existing open architecture/runtime PRs use disjoint paths; legacy Otheryn PR #417 touches Atlas CI and remains outside this task.
 
-The cross-repository contract lock is intentionally not edited in the delivery commit: its policy permits canonical revisions only after merge. If this contract merges, a bounded lifecycle closeout may add the immutable merged Game revision to `docs/contracts/CROSS_REPOSITORY_CONTRACT_LOCK.json` without changing contract semantics.
+The cross-repository contract lock is intentionally not edited in the delivery commit: its policy permits canonical revisions only after merge. If this contract merges, bounded lifecycle closeout may add the immutable merged Game revision to `docs/contracts/CROSS_REPOSITORY_CONTRACT_LOCK.json` without changing contract semantics.
+
+**PROVEN** — while this task was being created, protected `main` advanced from trusted start `afcbf8585ba23c506242978c38b2b51f9ea6f1b6` to `005e31d7ddb137e77bc6825c248ec4b78e55b9cc` through merged PR #285. The new paths concern C/D architecture successor delegation and do not overlap this task. The feature branch was reconciled with a non-forced two-parent merge commit `259a975b589128bfb60461a5f9fa7dc96f936250`; comparison against `005e31d7...` then showed `behind_by=0` and exactly the two declared task/contract paths changed.
 
 ## Validation
 
 ### Focused
 
-- command/run: pending — repository governance/contract validation selected by current workflows
-- result: pending
+- command/run: GitHub compare `005e31d7ddb137e77bc6825c248ec4b78e55b9cc...259a975b589128bfb60461a5f9fa7dc96f936250`
+- result: PASS at checkpoint — `behind_by=0`; exactly two declared added paths; no unrelated main changes in the PR diff
 
 ### Component/integration
 
@@ -108,8 +111,8 @@ The cross-repository contract lock is intentionally not edited in the delivery c
 
 ### Exact-head CI
 
-- final head: pending
-- trigger source: pending
+- final head: pending freeze after this checkpoint commit
+- trigger source: PR #287
 - workflow/run/job: pending
 - runner assignment: pending
 - classification: pending
@@ -117,24 +120,25 @@ The cross-repository contract lock is intentionally not edited in the delivery c
 
 ## Self-review
 
-- exact head: pending
+- exact head: pending freeze after this checkpoint commit
 - method/reviewer: SENIOR OTERYN ECOSYSTEM ARCHITECT / MIGRATION COORDINATOR (implementing/coordinating agent)
-- material findings: pending
+- material findings: pending final exact-head diff review
 - verdict: pending
 
 ## Independent review
 
-- required: pending
-- exact head: pending or `NOT_APPLICABLE`
-- method/auditor: pending or `NOT_APPLICABLE`
-- material findings: pending or `NOT_APPLICABLE`
-- verdict: pending or `NOT_APPLICABLE`
+- required: `NO`
+- reason: this is documentation-only contract formalization of already accepted ADR 0041/ADR-0005 ownership and migration invariants; it changes no runtime protocol/wire behavior, authentication/session semantics, durable data, production behavior, repository authority or governance safety gate, and no material uncertainty is being promoted to fact because unresolved physical choices remain explicitly deferred
+- exact head: `NOT_APPLICABLE`
+- method/auditor: `NOT_APPLICABLE`
+- material findings: `NOT_APPLICABLE`
+- verdict: `NOT_APPLICABLE`
 
 ## PR and closeout
 
-- changed-file review: pending
-- unresolved review threads: pending
-- related/superseded PRs: issue #286; no duplicate Atlas-export PR found at task start
+- changed-file review: final exact-head review pending after this checkpoint commit
+- unresolved review threads: pending query
+- related/superseded PRs: issue #286; no duplicate Atlas-export PR found at task start; current unrelated architecture PRs have disjoint owned paths
 - protected auto-merge: pending
 - merge commit/result: pending
 - ownership release: pending
@@ -142,15 +146,15 @@ The cross-repository contract lock is intentionally not edited in the delivery c
 ## Context checkpoint
 
 ```yaml
-last_progress: issue #286 created and bounded task claimed from main afcbf8585ba23c506242978c38b2b51f9ea6f1b6
-status: implementing
+last_progress: semantic contract complete; branch reconciled with current main and PR #287 opened
+status: validating
 branch: docs/game-atlas-export-contract-v1
-head_sha: null
-pr: null
+head_sha: 259a975b589128bfb60461a5f9fa7dc96f936250
+pr: 287
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
-ci_check_generation: null
+ci_trigger_source: pull_request
+ci_check_generation: pending-final
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -164,5 +168,5 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: create the Game -> Atlas v1 semantic contract within the declared owned path
+next_action: freeze the new exact head, perform full-diff self-review, then transition PR #287 to ready and evaluate exact-head required CI
 ```
