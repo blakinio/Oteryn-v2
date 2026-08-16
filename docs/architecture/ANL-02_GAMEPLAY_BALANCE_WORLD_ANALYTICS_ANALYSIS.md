@@ -321,6 +321,10 @@ If more than one material semantic dimension changed, the observation must remai
 
 A time-series discontinuity alone is not proof of engine regression.
 
+Regression acceptance is fail closed. `REGRESSION_NOT_EVALUATED` is only a pre-evaluation state. Once a material regression evaluation is attempted, every applicable prerequisite used by the candidate contract must be positively satisfied: required source completeness/schema quality; versioned minimum sample/exposure and unsuppressed required evidence; baseline/current metric, cohort, denominator and material semantic-revision comparability or explicit stratification; duplicate/order/late-event/source-checkpoint reconciliation and required backfill/recompute finality; privacy/suppression sufficiency; and exact method/provenance for the declared conclusion.
+
+If any applicable prerequisite is not affirmatively satisfied after evaluation begins, the mandatory disposition is `REGRESSION_EVIDENCE_INSUFFICIENT`. A warning, caveat or degraded dashboard presentation may accompany that disposition, but it cannot coexist with a green `NO_MATERIAL_REGRESSION_SUPPORTED` conclusion for the same insufficient evidence. `NO_MATERIAL_REGRESSION_SUPPORTED` is permitted only when all applicable prerequisites are positively satisfied and the retained evidence names the exact baseline, method/threshold revision, windows, cohorts, checkpoints and material confounders.
+
 ## 14. Deterministic replay integration
 
 SIM-DETERMINISM-01 may provide exact replay provenance, normalized input order and state/result hashes.
