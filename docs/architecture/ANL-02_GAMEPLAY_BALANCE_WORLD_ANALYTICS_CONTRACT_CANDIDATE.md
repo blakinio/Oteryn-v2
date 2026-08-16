@@ -310,6 +310,17 @@ Allowed analytical regression dispositions are:
 - `KNOWN_CHANGE_ACCEPTED_BY_OWNER` — a measured change is acknowledged/accepted by the appropriate owner for its declared purpose;
 - `REGRESSION_EVIDENCE_INSUFFICIENT` — quality/sample/comparability/reconciliation state is insufficient for a valid acceptance decision.
 
+`NO_MATERIAL_REGRESSION_SUPPORTED` is a **fail-closed disposition**. It MUST NOT be recorded unless every applicable acceptance precondition below is affirmatively satisfied for the exact compared evidence set:
+
+1. **quality/completeness** — required source completeness and schema compatibility meet the metric/decision contract; `PARTIAL`, `UNKNOWN` or `PARTIAL_UNSUPPORTED` evidence cannot support the disposition, and mixed supported revisions are permitted only when the named comparison method explicitly stratifies or proves them comparable;
+2. **sample/exposure** — every applicable versioned minimum-sample/exposure rule is satisfied and the evidence needed for the decision is not suppressed; when a sample-sensitive acceptance requires a threshold but no accepted threshold exists, the precondition is not satisfied;
+3. **comparability** — baseline and current metric/cohort/denominator plus all material ruleset, content/World Bundle, world-policy, server-build and sampling/collection revisions are compatible under the named method or are explicitly stratified so the acceptance does not pool incompatible semantics;
+4. **reconciliation/finality** — duplicate/order/late-event reconciliation, source checkpoint/as-of state and required backfill/recompute state are sufficiently terminal for the declared acceptance window; unresolved reconciliation or a known material source gap fails the precondition;
+5. **privacy/suppression sufficiency** — privacy suppression/redaction does not remove evidence required to support the declared no-regression conclusion;
+6. **method/provenance** — the exact baseline, method/threshold revision, compared windows/cohorts, checkpoint/as-of identity and material confounders are bound in the acceptance record.
+
+If a material regression evaluation is attempted and **any applicable precondition above is not affirmatively satisfied**, the analytical disposition MUST be `REGRESSION_EVIDENCE_INSUFFICIENT`; a dashboard warning, visual caveat or local analyst note is not an alternative to that disposition. `REGRESSION_NOT_EVALUATED` is reserved for the state before a material evaluation/disposition is attempted. A green `NO_MATERIAL_REGRESSION_SUPPORTED` result MUST therefore be impossible while the same evidence is sample-insufficient, materially partial/unsupported, semantically incomparable, materially suppressed or reconciliation-pending.
+
 These are analytical/release-evidence dispositions only. `KNOWN_CHANGE_ACCEPTED_BY_OWNER` does not authorize a code/content deploy, gameplay mutation or waiver of another gate. Numeric regression thresholds, confidence methodology and release policy remain versioned owner decisions rather than universal ANL-02 constants.
 
 ## 12. SIM integration
@@ -364,7 +375,8 @@ Large work is paged/partitioned/resumable. Analytical storage/dashboard failure 
 - Missing explicit session/hunt grouping evidence -> session/hunt result partial/unavailable; no heuristic stitch.
 - Unsupported schema -> ANL-01 class-specific behavior; no reinterpretation.
 - Missing denominator/revision -> observation invalid/unknown for that use.
-- Insufficient sample/exposure for an applicable metric rule -> warning/suppression or `REGRESSION_EVIDENCE_INSUFFICIENT`; never silent confidence.
+- Insufficient sample/exposure for an applicable metric rule -> visible warning/suppression as presentation state; if a material regression evaluation is attempted, the disposition MUST be `REGRESSION_EVIDENCE_INSUFFICIENT` and MUST NOT remain/become `NO_MATERIAL_REGRESSION_SUPPORTED`.
+- Any failed quality/completeness, comparability, reconciliation/finality or required privacy-sufficiency precondition for a material regression evaluation -> `REGRESSION_EVIDENCE_INSUFFICIENT`; warning-only green acceptance is forbidden.
 - Privacy/retention/access policy absent -> collection/projection/disclosure fails closed.
 - Dashboard/presentation dependency unavailable -> evidence remains read-only; gameplay unchanged and no fabricated green/zero state.
 - Analytical dependency unavailable -> gameplay unchanged.
@@ -393,6 +405,7 @@ Implementation acceptance requires, proportionally to each metric family:
 - dashboard fixtures proving metric revision, sample/exposure, quality/completeness/schema/reconciliation/suppression/as-of state cannot be silently hidden for material panels;
 - minimum-sample warning/suppression tests proving insufficient or suppressed data is never rendered as zero/normal confidence;
 - regression-acceptance fixtures proving compatible baseline/method/revisions and evidence quality are retained and insufficient evidence cannot become a green acceptance;
+- negative regression-disposition fixtures proving each failed acceptance precondition (partial/unknown/unsupported quality, insufficient sample/exposure, incompatible unstratified revisions, unresolved reconciliation/material gap, required-evidence privacy suppression or unbound method/provenance) forces `REGRESSION_EVIDENCE_INSUFFICIENT` once evaluation is attempted;
 - replay-recompute determinism for analytical transforms where applicable;
 - privacy raw-ID rejection and cross-epoch mapping separation;
 - geography suppression/redaction tests;
