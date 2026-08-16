@@ -51,6 +51,12 @@ As prerequisites become real, support bounded journeys such as:
 
 Do not invent missing domain behavior just to make a scenario green.
 
+## Lifecycle / budget / durable handover
+
+Before the first write, create or resume the coordinator-allocated task with exact base SHA, branch/PR, owned paths/public evidence contracts, dependencies/blockers and execution budget. Default foreground budget is **60 minutes**; **120 minutes** requires explicit declaration and justification.
+
+Maintain exactly one compact `## Context checkpoint` with one `next_action`. Before any genuine stop/rotation persist exact head, validation/review state, blocker, latest counted E2E attempt IDs/outcomes, cleanup status and ownership state. Never collapse failed historical attempts into a later repaired run. Terminal completion includes post-merge verification, task archive and ownership release.
+
 ## Validation
 
 - harness unit tests for evidence/failure classification;
