@@ -225,17 +225,18 @@ The ANL-03 analytical lifecycle has two explicit auditable branches after triage
 ```text
 SIGNAL_EMITTED
 -> TRIAGED
-   -> SIGNAL_DISPOSITION_RECORDED -> SIGNAL_CLOSED        # no case required
+   -> SIGNAL_DISPOSITION_RECORDED -> [ROUTING_REFERRAL_RECORDED] -> SIGNAL_CLOSED   # no case required
    OR
    -> CASE_OPENED
       -> ASSIGNED / REASSIGNED (when assignment exists)
       -> EVIDENCE_ASSEMBLED / UPDATED
-      -> HUMAN_DISPOSITION
-      -> CLOSED or REFERRED_TO_FOREIGN_OWNER
+      -> HUMAN_EVIDENTIARY_DISPOSITION
+      -> [ROUTING_REFERRAL_RECORDED]
+      -> CLOSED
       -> REOPENED (when later evidence/review requires it)
 ```
 
-`CASE_OPENED` remains optional, but **no-case triage is not allowed to disappear into mutable status**. If triage ends without opening a case, the signal MUST receive an immutable terminal analytical disposition and a `SIGNAL_CLOSED` action for that review generation. Later evidence may append a new triage/reopen/review generation; it MUST NOT overwrite the prior terminal record.
+`CASE_OPENED` remains optional, but **no-case triage is not allowed to disappear into mutable status**. If triage ends without opening a case, the signal MUST receive an immutable terminal substantive analytical disposition before `SIGNAL_CLOSED`. If it is routed to another owner, the referral is a separate immutable routing action recorded **after** that substantive disposition. Later evidence may append a new triage/reopen/review generation; it MUST NOT overwrite the prior terminal record.
 
 Regardless of concrete workflow/state vocabulary, every material signal/case lifecycle transition and reviewer/operator action MUST append an immutable audit record. This includes signal emission/triage disposition/close/reopen; case open; assignment/reassignment; evidence addition/removal/supersession; state transition; close; reopen; referral; and final disposition.
 
@@ -254,13 +255,16 @@ new state and/or action performed
 reason/rationale category or explanation where applicable
 linked signal/evidence references relevant to action
 detector/rule/model/config revision where relevant
+substantive evidentiary disposition reference for any referral action
+foreign target owner/type when a referral action exists
 ```
 
 Required properties:
 
 - original signal content/revision/evidence lineage remains immutable;
 - every triaged signal has reconstructable outcome even if no case is opened;
-- no-case false-positive, duplicate, inconclusive, data-quality, supported-security or direct-referral outcomes are represented by immutable signal-level disposition/close actions rather than absence of a case record;
+- no-case false-positive, duplicate, inconclusive, data-quality or supported findings are represented by immutable signal-level disposition/close actions rather than absence of a case record;
+- referral is never a substitute for evidentiary classification: a direct no-case referral and a case referral both require a preceding substantive disposition for the same review generation;
 - one case may group multiple signals while preserving every source reference and each source signal's prior disposition/history;
 - evidence additions, annotations, removals and supersessions are immutable lifecycle actions rather than history rewrites;
 - signal triage before case creation retains correlation identity and links to the case if later opened;
@@ -271,19 +275,20 @@ Required properties:
 - audit-history immutability does not authorize unlimited retention or override ANL-01/privacy deletion requirements;
 - enforcement/remediation result is linked only as foreign-owner reference and is not executed by ANL-03.
 
-Allowed analytical dispositions at signal or case level, as applicable:
+Allowed **substantive evidentiary dispositions** at signal or case level, as applicable, are:
 
 - `SUPPORTED_INTEGRITY_OR_DEFECT_FINDING` — accepted invariant or reproducible defect evidence supports the finding under section 10;
 - `SUPPORTED_SECURITY_FINDING` — human-reviewed affirmative evidence corroborates a security concern such as bot/automation/protocol misuse sufficiently for analytical support/referral/monitoring, while remaining non-sanctioning and without pretending statistical/model evidence is deterministic invariant proof;
 - `NOT_SUPPORTED_FALSE_POSITIVE`;
 - `INCONCLUSIVE_INSUFFICIENT_EVIDENCE`;
 - `DATA_QUALITY_OR_PIPELINE_FAILURE`;
-- `DUPLICATE_OR_ALREADY_COVERED`;
-- `REFERRED_TO_SECURITY_GM_PRODUCT_OR_ENGINE_OWNER`.
+- `DUPLICATE_OR_ALREADY_COVERED`.
 
-`REFERRED_TO_SECURITY_GM_PRODUCT_OR_ENGINE_OWNER` MAY accompany a preceding supported/inconclusive disposition as a routing action; referral does not erase the evidentiary conclusion that caused it.
+`REFERRED_TO_SECURITY_GM_PRODUCT_OR_ENGINE_OWNER` is **not an evidentiary disposition**. It is an optional routing action only. It MUST NOT be the sole terminal analytical classification of a signal or case and MUST NOT be recorded until one of the substantive evidentiary dispositions above has been immutably recorded for the same review generation. This rule applies equally to no-case direct routing and case-based routing. If the reviewer cannot support a positive finding, the evidence still receives the truthful substantive outcome (`INCONCLUSIVE_INSUFFICIENT_EVIDENCE`, `DATA_QUALITY_OR_PIPELINE_FAILURE`, `NOT_SUPPORTED_FALSE_POSITIVE` or `DUPLICATE_OR_ALREADY_COVERED` as applicable) before any referral.
 
-These are analytical dispositions, not sanctions. A `SUPPORTED_SECURITY_FINDING` does not authorize ban/mute/kick/confiscation/rollback/account action, does not increase evidence quality beyond the recorded source quality, and does not waive independent enforcement-owner validation.
+A referral record MUST reference the substantive disposition that caused/qualified the routing, the target foreign owner, actor/capability, rationale, evidence refs and ordering/time. Referral does not erase, upgrade or downgrade the evidentiary conclusion and does not imply the target owner accepted the referral, finding or enforcement action.
+
+These are analytical dispositions/routing actions, not sanctions. A `SUPPORTED_SECURITY_FINDING` does not authorize ban/mute/kick/confiscation/rollback/account action, does not increase evidence quality beyond the recorded source quality, and does not waive independent enforcement-owner validation.
 
 ## 12. False-positive safety
 
@@ -293,13 +298,14 @@ To satisfy `FS-DETECTOR-FALSE-POSITIVE` semantically:
 2. detector/rule/model/config revision retained with every signal;
 3. source evidence/checkpoints traceable within policy;
 4. human review/disposition and every material signal/case lifecycle/reviewer action reconstructable from immutable audit history;
-5. no-case triage outcome always has an explicit audited terminal signal disposition rather than disappearing because no case exists;
-6. threshold/model changes do not rewrite historical outputs;
-7. suppression/allow-list mechanism is separately versioned/scoped/audited and not hidden authority bypass;
-8. false-positive outcomes may inform detector quality without deleting historical errors;
-9. incomplete data yields inconclusive/data-quality disposition where material;
-10. pipeline failures are separated from subject/gameplay findings;
-11. corroborated security findings remain non-sanctioning evidence and retain statistical/model caveats where applicable.
+5. no-case triage outcome always has an explicit audited terminal substantive signal disposition rather than disappearing because no case exists;
+6. any referral is an auditable routing action attached to a substantive disposition and can never replace that disposition;
+7. threshold/model changes do not rewrite historical outputs;
+8. suppression/allow-list mechanism is separately versioned/scoped/audited and not hidden authority bypass;
+9. false-positive outcomes may inform detector quality without deleting historical errors;
+10. incomplete data yields inconclusive/data-quality disposition where material;
+11. pipeline failures are separated from subject/gameplay findings;
+12. corroborated security findings remain non-sanctioning evidence and retain statistical/model caveats where applicable.
 
 Exact quality/precision/recall/calibration thresholds remain implementation/security-product decisions.
 
@@ -393,7 +399,8 @@ Exact numbers require implementation/PERF/OPS evidence and registry ownership. L
 - Identity mapping unavailable -> no unauthorized fallback.
 - Missing privacy/retention/access policy -> no collection/projection/disclosure.
 - Oversized query/evidence -> page/partition/reject within registry bounds.
-- Triaged signal with no case -> explicit audited signal-level disposition and close/review-generation record; never silent disappearance.
+- Triaged signal with no case -> explicit audited substantive signal-level disposition and close/review-generation record; never silent disappearance.
+- Referral requested with no substantive disposition -> referral is rejected/deferred until a truthful substantive evidentiary disposition is recorded; naked referral is not a terminal outcome.
 - Suspected violation + incomplete evidence -> `INCONCLUSIVE_INSUFFICIENT_EVIDENCE`, never automatic sanction.
 - Human-corroborated statistical security concern -> may become `SUPPORTED_SECURITY_FINDING`, but never deterministic invariant proof or enforcement authority solely by that label.
 
@@ -404,7 +411,7 @@ Exact numbers require implementation/PERF/OPS evidence and registry ownership. L
 - `FS-EVENT-OUT-OF-ORDER`: semantic `PASS`.
 - `FS-AUDIT-MUTATION-MISMATCH`: semantic `PASS` as integrity/data-quality evidence; prevention remains DUR-02/03.
 - `FS-ANALYTICS-PRIVACY-POLICY`: semantic `PASS`, including non-adverse diagnostics semantics.
-- `FS-DETECTOR-FALSE-POSITIVE`: semantic `PASS` through no-auto-sanction + versioned evidence + immutable signal/case lifecycle + terminal no-case dispositions + human disposition.
+- `FS-DETECTOR-FALSE-POSITIVE`: semantic `PASS` through no-auto-sanction + versioned evidence + immutable signal/case lifecycle + terminal no-case substantive dispositions + referral-as-routing + human disposition.
 - `FS-INVESTIGATION-MUTATION-ATTEMPT`: `DEFERRED_BY_ACCEPTED_GATE` for executable proof to ANL-04/implementation; ANL-03 requires read-only credentials.
 
 Architecture status does not imply runtime proof.
@@ -428,7 +435,8 @@ Implementation acceptance requires, proportionally to each detector family:
 - checkpoint loss/recovery and durable source-completeness tests;
 - stable detector/model/config/artifact revision reproduction;
 - known false-positive corpus and human-disposition workflow evidence;
-- no-case triage fixtures proving false-positive/duplicate/inconclusive/data-quality/supported-security/direct-referral outcomes receive immutable signal-level disposition + close records and remain countable/reconstructable;
+- no-case triage fixtures proving false-positive/duplicate/inconclusive/data-quality/supported-security outcomes receive immutable substantive signal-level disposition + close records and remain countable/reconstructable;
+- referral fixtures proving both no-case and case routing are rejected/deferred without a preceding substantive evidentiary disposition, and proving accepted routing retains both the substantive disposition and separate target-owner referral action;
 - supported-security fixtures proving a corroborated bot/automation/protocol-misuse signal can retain `STATISTICAL_SECURITY_ANOMALY` evidence class while receiving `SUPPORTED_SECURITY_FINDING` without becoming sanction/deterministic proof;
 - immutable lifecycle-audit replay proving signal triage/disposition/close/reopen and case open/assignment/evidence/state/close/reopen/referral/disposition actions reconstructable with actor/capability/reason/evidence/revision linkage;
 - optional client-diagnostics tests proving opt-out/absence cannot raise risk/confidence/review/enforcement priority or become guilt evidence;
@@ -470,6 +478,6 @@ Full evidence is recorded in `ANL-03_ECONOMY_INTEGRITY_SECURITY_ANALYTICS_ANALYS
 
 This worker artifact is a nonbinding candidate. It may become canonical only through Architecture Coordinator audit/acceptance/merge under repository governance.
 
-Even after architectural acceptance, implementation remains separately gated and no runtime, DDL, production or enforcement authority is granted. Every triaged signal must have an auditable terminal outcome even without a case, and supported security findings remain non-sanctioning analytical evidence.
+Even after architectural acceptance, implementation remains separately gated and no runtime, DDL, production or enforcement authority is granted. Every triaged signal must have an auditable terminal substantive outcome even without a case; referral is only routing after that outcome, and supported security findings remain non-sanctioning analytical evidence.
 
 `MERGE_AUTHORITY: ARCHITECTURE_COORDINATOR_ONLY`
