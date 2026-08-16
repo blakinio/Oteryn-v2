@@ -14,11 +14,11 @@ base_sha: c197ba12cc1b2ebbc4b27eab5d6054037720c48a
 final_delivery_head: 838b3a90a1819e63b811e7551f7e3cbca970f5f9
 delivery_merge_sha: ab527ef8c3c77ef237973a005fdc36abbee85286
 closeout_branch: docs/closeout-architecture-wave-a-f-reconciliation-20260816
-closeout_pr: null
+closeout_pr: 304
 owner: architecture-coordinator
 owner_state: release_pending_closeout_merge
 created_at: 2026-08-16T16:00:00+02:00
-updated_at: 2026-08-16T16:30:00+02:00
+updated_at: 2026-08-16T16:32:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths: []
@@ -108,32 +108,32 @@ The delivery was originally kept draft because draft -> ready was known to be ab
 
 After the authorized ready transition, `chatgpt-codex-connector[bot]` reported that Codex code-review usage limits were still reached. No Codex review result was produced. This optional review was not a required gate for this low-risk reconciliation, and all repository-required exact-head gates independently passed. The protected squash merge then succeeded.
 
-This authorization was specific to PR #303 and is not standing authorization for the lifecycle-closeout PR.
+This authorization was specific to PR #303 and is not standing authorization for lifecycle-closeout PR #304.
 
 ## Lifecycle closeout
 
-This closeout is bookkeeping-only:
+Closeout PR #304 is bookkeeping-only:
 
 - archive this completed task;
 - remove its active task copy;
 - release the coordinator-owned task path set;
 - update the non-owning programme checkpoint from delivery-in-progress wording to merged/closeout truth;
 - keep the canonical next action unchanged: bounded `GAME-ABILITY-01` owner-decision package;
-- close issue #302 only after this closeout PR itself merges.
+- close issue #302 only after closeout PR #304 itself merges.
 
 No worker candidate, accepted contract, runtime, client/server/protocol/content, DDL, Platform, production or external repository is changed by closeout.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: PR #303 exact head 838b3a90a1819e63b811e7551f7e3cbca970f5f9 passed all required exact-head gates and squash-merged as ab527ef8c3c77ef237973a005fdc36abbee85286; lifecycle archive/release closeout is in progress
+last_progress: PR #303 exact head 838b3a90a1819e63b811e7551f7e3cbca970f5f9 passed all required exact-head gates and squash-merged as ab527ef8c3c77ef237973a005fdc36abbee85286; lifecycle archive/release closeout is PR #304
 status: completed
 branch: docs/closeout-architecture-wave-a-f-reconciliation-20260816
-head_sha: null
-pr: null
+head_sha: c1317a305326ce05313d6bbe004147bc990f11bd
+pr: 304
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
+ci_trigger_source: pull_request/push
 ci_check_generation: closeout
 ci_checks_for_current_head: 0
 ci_run_ids: []
