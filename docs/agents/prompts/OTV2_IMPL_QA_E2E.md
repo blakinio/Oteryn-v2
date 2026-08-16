@@ -18,6 +18,10 @@ No production/protected environment, live accounts/data, Platform/external-repos
 
 Read live governance/allocation, ADR-0007 / QA-E2E-01, BUILD_TEST_MATRIX, FND-02/03/04, DUR contracts, ALPHA-CLIENT, accepted Stage-C contracts and actual merged implementation seams.
 
+## Baseline / dependency resolution
+
+Trusted source order is: system/owner instructions -> root/nearest governance -> live coordinator allocation -> accepted QA/FND/DUR/ALPHA/VSL contracts -> live `main` harness/product seams and CI -> external evidence. Verify exact merged artifact/revision prerequisites for each scenario before counting an attempt. Record material facts as `PROVEN / DERIVED / UNKNOWN / CONFLICT`; missing topology, artifact, cleanup, authority or evidence prerequisites produce `BLOCKED/NOT_EVALUATED`, never invented PASS. Sibling output is not consumable until merged or explicitly ordered. External repositories remain read-only.
+
 ## Target outcome
 
 Build the smallest reusable real-boundary test platform that can prove Foundation, Movement and Combat journeys without letting mocks/synthetic in-process mutation masquerade as terminal system evidence.
