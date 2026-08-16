@@ -23,6 +23,8 @@ PACKINGS = ("per-floor", "packed-floors")
 MAX_RECORDS = 200_000
 MAX_CHUNK_BYTES = 64 * 1024 * 1024
 MAX_STRING_BYTES = 1024
+MAX_OBJECTS_PER_RECORD = 256
+RECORD_KEYS = {"floor", "ground", "objects", "poi", "x", "y"}
 GROUNDS = (
     "oteryn:item.terrain.grass",
     "oteryn:item.terrain.stone",
@@ -60,6 +62,37 @@ def require_record_count(count):
         raise ValueError("research record count cap exceeded")
 
 
+def require_string(value, label):
+    if not isinstance(value, str):
+        raise ValueError(f"{label} must be a string")
+    if len(value.encode("utf-8")) > MAX_STRING_BYTES:
+        raise ValueError(f"{label} exceeds research string cap")
+
+
+def validate_record(record):
+    if not isinstance(record, dict) or set(record) != RECORD_KEYS:
+        raise ValueError("invalid research record shape")
+    for field in ("x", "y", "floor"):
+        if type(record[field]) is not int:
+            raise ValueError(f"{field} must be an integer")
+    require_string(record["ground"], "ground")
+    objects = record["objects"]
+    if not isinstance(objects, list) or len(objects) > MAX_OBJECTS_PER_RECORD:
+        raise ValueError("objects exceed research object-count cap or are not a list")
+    for obj in objects:
+        require_string(obj, "object")
+    if record["poi"] is not None:
+        require_string(record["poi"], "poi")
+
+
+def validate_records(records):
+    if not isinstance(records, list):
+        raise ValueError("research records must be a list")
+    require_record_count(len(records))
+    for record in records:
+        validate_record(record)
+
+
 def make_records(name, width=128, height=128, floors=6):
     total = width * height * floors
     require_record_count(total)
@@ -94,10 +127,12 @@ def make_records(name, width=128, height=128, floors=6):
                         "y": y,
                     }
                 )
+    validate_records(records)
     return records
 
 
 def semantic_sha(records):
+    validate_records(records)
     ordered = sorted(records, key=lambda r: (r["floor"], r["y"], r["x"]))
     return sha(cjson(ordered))
 
@@ -126,9 +161,10 @@ def group_records(records, chunk, packing):
 
 
 def enc_string(value):
+    require_string(value, "binary string")
     raw = value.encode("utf-8")
-    if len(raw) > MAX_STRING_BYTES or len(raw) > 0xFFFF:
-        raise ValueError("research string cap exceeded")
+    if len(raw) > 0xFFFF:
+        raise ValueError("binary string exceeds uint16 length")
     return struct.pack("<H", len(raw)) + raw
 
 
@@ -143,13 +179,11 @@ def dec_string(view, offset):
 
 
 def enc_binary(records):
-    require_record_count(len(records))
+    validate_records(records)
     out = bytearray(b"GASB1\0")
     out += struct.pack("<I", len(records))
     for record in records:
         objects = record["objects"]
-        if len(objects) > 0xFFFF:
-            raise ValueError("research object count cap exceeded")
         out += struct.pack("<iihH", record["x"], record["y"], record["floor"], len(objects))
         out += enc_string(record["ground"])
         for obj in objects:
@@ -171,6 +205,8 @@ def dec_binary(raw):
             raise ValueError("truncated research binary record")
         x, y, floor, object_count = struct.unpack_from("<iihH", view, offset)
         offset += 12
+        if object_count > MAX_OBJECTS_PER_RECORD:
+            raise ValueError("binary object count exceeds research cap")
         ground, offset = dec_string(view, offset)
         objects = []
         for _ in range(object_count):
@@ -188,11 +224,12 @@ def dec_binary(raw):
         out.append({"floor": floor, "ground": ground, "objects": objects, "poi": poi, "x": x, "y": y})
     if offset != len(view):
         raise ValueError("trailing research binary bytes")
+    validate_records(out)
     return out
 
 
 def encode(kind, records):
-    require_record_count(len(records))
+    validate_records(records)
     if kind == "canonical-json-v0":
         return bounded_chunk(cjson({"records": records, "spike_schema": SCHEMA}))
     if kind == "canonical-jsonl-v0":
@@ -210,14 +247,15 @@ def decode(kind, raw):
         value = json.loads(raw)
         if value.get("spike_schema") != SCHEMA or not isinstance(value.get("records"), list):
             raise ValueError("invalid research json")
-        require_record_count(len(value["records"]))
+        validate_records(value["records"])
         return value["records"]
     if kind == "canonical-jsonl-v0":
         lines = raw.splitlines()
         if not lines or json.loads(lines[0]) != {"spike_schema": SCHEMA, "type": "header"}:
             raise ValueError("invalid research jsonl")
-        require_record_count(max(0, len(lines) - 1))
-        return [json.loads(line) for line in lines[1:]]
+        records = [json.loads(line) for line in lines[1:]]
+        validate_records(records)
+        return records
     if kind == "binary-baseline-v0":
         return dec_binary(raw)
     raise ValueError(kind)
@@ -272,6 +310,7 @@ def mutate(records, width, height, floors):
         out.append(copy)
     if not seen:
         raise AssertionError("mutation target missing")
+    validate_records(out)
     return out
 
 
@@ -316,13 +355,14 @@ def evaluate(fixture, records, kind, chunk, packing, width, height, floors):
 
     mutated = mutate(records, width, height, floors)
     files3, _ = package(fixture, mutated, kind, chunk, packing)
-    changed = [path for path in files1 if path != "manifest.json" and files1[path] != files3[path]]
+    changed_package = [path for path in files1 if files1[path] != files3[path]]
+    changed_data = [path for path in changed_package if path != "manifest.json"]
     if kind == "binary-baseline-v0":
         diff_lines = None
         text_max_line_bytes = None
     else:
-        diff_lines = sum(text_diff_lines(files1[path], files3[path]) for path in changed)
-        text_max_line_bytes = max(max_text_line_bytes(files1[path]) for path in changed)
+        diff_lines = sum(text_diff_lines(files1[path], files3[path]) for path in changed_data)
+        text_max_line_bytes = max(max_text_line_bytes(files1[path]) for path in changed_data)
 
     first = manifest1["chunks"][0]
     raw = files1[first["path"]]
@@ -361,8 +401,9 @@ def evaluate(fixture, records, kind, chunk, packing, width, height, floors):
         "floor_packing": packing,
         "gzip_corruption_detected": gzip_detects,
         "gzip_total_bytes": sum(gzip_sizes) + len(gz(files1["manifest.json"])),
-        "local_edit_changed_data_files": len(changed),
-        "local_edit_changed_gzip_bytes": sum(len(gz(files3[path])) for path in changed),
+        "local_edit_changed_data_files": len(changed_data),
+        "local_edit_changed_package_files": len(changed_package),
+        "local_edit_changed_gzip_bytes": sum(len(gz(files3[path])) for path in changed_data),
         "local_edit_text_diff_lines": diff_lines,
         "local_edit_text_max_line_bytes": text_max_line_bytes,
         "max_chunk_gzip_bytes": max(gzip_sizes),
@@ -377,6 +418,35 @@ def evaluate(fixture, records, kind, chunk, packing, width, height, floors):
         "viewport_chunk_files": len(viewport),
         "viewport_gzip_bytes": sum(by_path[path]["compressed_bytes"] for path in viewport),
     }
+
+
+def raises_value_error(call):
+    try:
+        call()
+    except ValueError:
+        return True
+    return False
+
+
+def cap_negative_checks():
+    base = make_records("synthetic-sparse-v1", 1, 1, 1)[0]
+    long_record = dict(base)
+    long_record["objects"] = list(base["objects"])
+    long_record["ground"] = "x" * (MAX_STRING_BYTES + 1)
+    many_objects = dict(base)
+    many_objects["objects"] = ["x"] * (MAX_OBJECTS_PER_RECORD + 1)
+    checks = []
+    for kind in ENCODINGS:
+        checks.append(raises_value_error(lambda kind=kind: encode(kind, [long_record])))
+        checks.append(raises_value_error(lambda kind=kind: encode(kind, [many_objects])))
+    bad_json = cjson({"records": [long_record], "spike_schema": SCHEMA})
+    bad_jsonl = cjson({"spike_schema": SCHEMA, "type": "header"}) + b"\n" + cjson(long_record) + b"\n"
+    checks.append(raises_value_error(lambda: decode("canonical-json-v0", bad_json)))
+    checks.append(raises_value_error(lambda: decode("canonical-jsonl-v0", bad_jsonl)))
+    excessive_count = b"GASB1\0" + struct.pack("<I", MAX_RECORDS + 1)
+    checks.append(raises_value_error(lambda: decode("binary-baseline-v0", excessive_count)))
+    checks.append(raises_value_error(lambda: bounded_chunk(b"x" * (MAX_CHUNK_BYTES + 1))))
+    return all(checks)
 
 
 def report():
@@ -398,12 +468,14 @@ def report():
             for packing in PACKINGS:
                 for kind in ENCODINGS:
                     rows.append(evaluate(fixture, records, kind, chunk, packing, width, height, floors))
-    checks = all(
+    cap_checks = cap_negative_checks()
+    matrix_checks = all(
         row["deterministic_bytes"]
         and row["roundtrip_semantic_identity"]
         and row["corruption_digest_detected"]
         and row["gzip_corruption_detected"]
         and row["local_edit_changed_data_files"] == 1
+        and row["local_edit_changed_package_files"] == 2
         and row["point_access_chunk_files"] == 1
         and (
             row["encoding"] == "binary-baseline-v0"
@@ -419,7 +491,9 @@ def report():
             "max_records": MAX_RECORDS,
             "max_chunk_bytes": MAX_CHUNK_BYTES,
             "max_string_bytes": MAX_STRING_BYTES,
+            "max_objects_per_record": MAX_OBJECTS_PER_RECORD,
         },
+        "cap_negative_checks_pass": cap_checks,
         "candidates": {
             "encodings": list(ENCODINGS),
             "chunk_sizes": list(CHUNKS),
@@ -427,18 +501,21 @@ def report():
         },
         "fixtures": fixtures,
         "rows": rows,
-        "spike_checks_pass": checks,
+        "spike_checks_pass": matrix_checks and cap_checks,
         "warning": "Non-canonical evidence only. Does not define public schema, coordinate authority, production limits, compression, chunk geometry, or serializer.",
     }
 
 
 def self_test(result):
     assert result["spike_checks_pass"]
+    assert result["cap_negative_checks_pass"]
     assert len(result["rows"]) == 2 * len(ENCODINGS) * len(CHUNKS) * len(PACKINGS)
     for row in result["rows"]:
         expected = (16 if row["chunk_size"] == 32 else 4) * (6 if row["floor_packing"] == "per-floor" else 1)
         assert row["chunk_count"] == expected
         assert row["raw_total_bytes"] > 0 and row["gzip_total_bytes"] > 0
+        assert row["local_edit_changed_data_files"] == 1
+        assert row["local_edit_changed_package_files"] == 2
         if row["encoding"] == "binary-baseline-v0":
             assert row["local_edit_text_diff_lines"] is None
             assert row["local_edit_text_max_line_bytes"] is None
@@ -451,18 +528,19 @@ def print_summary(result):
     print("SPIKE_SUMMARY")
     print(f"schema={result['spike_schema']}")
     print(f"checks_pass={str(result['spike_checks_pass']).lower()}")
+    print(f"cap_negative_checks_pass={str(result['cap_negative_checks_pass']).lower()}")
     print(f"rows={len(result['rows'])}")
     print(
         "fixture|encoding|chunk|packing|raw|gzip|max_gzip|point_gzip|"
-        "viewport_gzip|edit_files|diff_lines|max_text_line"
+        "viewport_gzip|edit_data|edit_package|diff_lines|max_text_line"
     )
     for row in result["rows"]:
         print(
             f"{row['fixture']}|{row['encoding']}|{row['chunk_size']}|{row['floor_packing']}|"
             f"{row['raw_total_bytes']}|{row['gzip_total_bytes']}|{row['max_chunk_gzip_bytes']}|"
             f"{row['point_access_gzip_bytes']}|{row['viewport_gzip_bytes']}|"
-            f"{row['local_edit_changed_data_files']}|{row['local_edit_text_diff_lines']}|"
-            f"{row['local_edit_text_max_line_bytes']}"
+            f"{row['local_edit_changed_data_files']}|{row['local_edit_changed_package_files']}|"
+            f"{row['local_edit_text_diff_lines']}|{row['local_edit_text_max_line_bytes']}"
         )
     print("SPIKE_SUMMARY_END")
 
