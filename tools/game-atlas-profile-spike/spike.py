@@ -49,10 +49,20 @@ def gz(data):
     return gzip.compress(data, compresslevel=6, mtime=0)
 
 
+def bounded_chunk(raw):
+    if len(raw) > MAX_CHUNK_BYTES:
+        raise ValueError("research chunk byte cap exceeded")
+    return raw
+
+
+def require_record_count(count):
+    if count > MAX_RECORDS:
+        raise ValueError("research record count cap exceeded")
+
+
 def make_records(name, width=128, height=128, floors=6):
     total = width * height * floors
-    if total > MAX_RECORDS:
-        raise ValueError("synthetic record cap exceeded")
+    require_record_count(total)
     dense = name.endswith("dense-v1")
     records = []
     for floor in range(floors):
@@ -133,6 +143,7 @@ def dec_string(view, offset):
 
 
 def enc_binary(records):
+    require_record_count(len(records))
     out = bytearray(b"GASB1\0")
     out += struct.pack("<I", len(records))
     for record in records:
@@ -144,20 +155,15 @@ def enc_binary(records):
         for obj in objects:
             out += enc_string(obj)
         out += b"\x00" if record["poi"] is None else b"\x01" + enc_string(record["poi"])
-    if len(out) > MAX_CHUNK_BYTES:
-        raise ValueError("research chunk byte cap exceeded")
-    return bytes(out)
+    return bounded_chunk(bytes(out))
 
 
 def dec_binary(raw):
-    if len(raw) > MAX_CHUNK_BYTES:
-        raise ValueError("research chunk byte cap exceeded")
-    view = memoryview(raw)
+    view = memoryview(bounded_chunk(raw))
     if len(view) < 10 or bytes(view[:6]) != b"GASB1\0":
         raise ValueError("bad research binary header")
     (count,) = struct.unpack_from("<I", view, 6)
-    if count > MAX_RECORDS:
-        raise ValueError("research record count cap exceeded")
+    require_record_count(count)
     offset = 10
     out = []
     for _ in range(count):
@@ -186,29 +192,31 @@ def dec_binary(raw):
 
 
 def encode(kind, records):
+    require_record_count(len(records))
     if kind == "canonical-json-v0":
-        return cjson({"records": records, "spike_schema": SCHEMA})
+        return bounded_chunk(cjson({"records": records, "spike_schema": SCHEMA}))
     if kind == "canonical-jsonl-v0":
         lines = [cjson({"spike_schema": SCHEMA, "type": "header"})]
         lines.extend(cjson(record) for record in records)
-        return b"\n".join(lines) + b"\n"
+        return bounded_chunk(b"\n".join(lines) + b"\n")
     if kind == "binary-baseline-v0":
         return enc_binary(records)
     raise ValueError(kind)
 
 
 def decode(kind, raw):
-    if len(raw) > MAX_CHUNK_BYTES:
-        raise ValueError("research chunk byte cap exceeded")
+    raw = bounded_chunk(raw)
     if kind == "canonical-json-v0":
         value = json.loads(raw)
         if value.get("spike_schema") != SCHEMA or not isinstance(value.get("records"), list):
             raise ValueError("invalid research json")
+        require_record_count(len(value["records"]))
         return value["records"]
     if kind == "canonical-jsonl-v0":
         lines = raw.splitlines()
         if not lines or json.loads(lines[0]) != {"spike_schema": SCHEMA, "type": "header"}:
             raise ValueError("invalid research jsonl")
+        require_record_count(max(0, len(lines) - 1))
         return [json.loads(line) for line in lines[1:]]
     if kind == "binary-baseline-v0":
         return dec_binary(raw)
@@ -248,7 +256,7 @@ def package(fixture, records, kind, chunk, packing):
         "semantic_sha256": semantic_sha(records),
         "spike_schema": SCHEMA,
     }
-    files["manifest.json"] = cjson(manifest)
+    files["manifest.json"] = bounded_chunk(cjson(manifest))
     return files, manifest
 
 
