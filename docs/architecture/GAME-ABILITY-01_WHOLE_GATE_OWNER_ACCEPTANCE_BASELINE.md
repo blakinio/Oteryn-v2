@@ -23,7 +23,7 @@ ACCEPT
 
 for the bounded `GAME-ABILITY-01` whole-gate owner decision presented in `GAME-ABILITY-01_OWNER_DECISION_PACKAGE.md`.
 
-This later baseline preserves the historical decision package and candidate unchanged. It supersedes only their unresolved/candidate **decision status** for the declared whole-gate scope.
+This later baseline preserves the merged whole-gate candidate unchanged and keeps the decision package as a separate non-normative historical decision record. It supersedes only the unresolved/candidate **decision status** for the candidate's declared whole-gate scope.
 
 The current three-axis status during this acceptance delivery is:
 
