@@ -4,7 +4,7 @@
 task_id: OTV2-20260816-architecture-semantic-audit
 title: Deterministic independent semantic-contract audit workflow
 mode: TOOLING_GOVERNANCE
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/architecture-semantic-audit
@@ -30,24 +30,41 @@ It is reusable repository tooling, not a one-off PASS record. It grants no merge
 
 ## Acceptance criteria
 
-- [ ] exact open same-repository PR head is resolved through GitHub API and head movement fails closed;
-- [ ] exact-SHA checkout uses no persisted credentials;
-- [ ] only exact known E/F architecture path sets activate semantic profiles; unrelated PRs are explicit `NOT_APPLICABLE`;
-- [ ] ALPHA-CLIENT profile checks admission/Gateway/FND authority, fail-closed readiness, production codec plus independent wire evidence, scene/audio non-authority, settings scopes/precedence/privacy migration and Studio sharing/export/dependency boundaries;
-- [ ] ANL-02/03 profile checks read-only authority, fail-closed no-regression prerequisites, insufficient-evidence disposition, immutable evidence lifecycle, referral-after-substantive-disposition semantics, false-positive safety and absence of enforcement authority;
-- [ ] logs/job summary identify audit method/profile/exact SHA/verdict;
-- [ ] no Codex/OpenAI API/paid AI/owner credential is used;
-- [ ] full-diff self-review and normal repository CI pass before merge.
+- [x] exact open same-repository PR head is resolved through GitHub API and head movement fails closed;
+- [x] exact-SHA checkout uses no persisted credentials;
+- [x] only exact known E/F architecture path sets activate semantic profiles; unrelated PRs are explicit `NOT_APPLICABLE`;
+- [x] ALPHA-CLIENT profile checks admission/Gateway/FND authority, fail-closed readiness, production codec plus independent wire evidence, scene/audio non-authority, settings scopes/precedence/privacy migration and Studio sharing/export/dependency boundaries;
+- [x] ANL-02/03 profile checks read-only authority, fail-closed no-regression prerequisites, insufficient-evidence disposition, immutable evidence lifecycle, referral-after-substantive-disposition semantics, false-positive safety and absence of enforcement authority;
+- [x] logs/job summary identify audit method/profile/exact SHA/verdict;
+- [x] no Codex/OpenAI API/paid AI/owner credential is used;
+- [x] full-diff self-review is clean on the implementation content before final exact-head validation;
+- [ ] final exact-head repository CI is green on the task-containing head;
+- [ ] coordinator squash-merges the unchanged exact head and archives this task in a bounded lifecycle closeout.
 
 ## Validation
 
-Runtime/gameplay E2E: `NOT_APPLICABLE` — repository audit tooling only. After merge the workflow must execute on fresh E/F synchronize events and produce exact-head PASS evidence before those architecture PRs can merge.
+Runtime/gameplay E2E: `NOT_APPLICABLE` — repository audit tooling only. The workflow has already executed successfully on its own PR as `NOT_APPLICABLE`, proving exact-head resolution/checkout and tool invocation. Final merge readiness still requires normal exact-head Agent governance / Merge authority / Merge gate on this task-containing head.
+
+After merge the workflow must execute on fresh E/F synchronize events and produce exact-head profile PASS evidence before those architecture PRs can merge.
+
+## Self-review
+
+Full-diff coordinator self-review found and repaired three issues before this validation checkpoint: an over-broad ANL-03 negative regex, unsafe empty job-summary handling outside Actions, and an over-literal ANL-03 analysis phrase check. Current tooling self-review has zero material findings.
 
 ## Context checkpoint
 
 ```yaml
-status: implementing
-next_action: ADD_WORKFLOW_AND_AUDITOR_THEN_SELF_REVIEW_CI_MERGE
+status: validating
+completed:
+  - exact-head workflow resolution and checkout
+  - deterministic E/F profile implementation
+  - NOT_APPLICABLE self-execution on tooling PR
+  - full-diff self-review and repairs
+validation_pending:
+  - exact-head Agent governance
+  - exact-head Merge authority audit
+  - exact-head Merge gate
+next_action: VALIDATE_FINAL_TASK_HEAD_THEN_SQUASH_MERGE_AND_ARCHIVE
 ```
 
 `MERGE_AUTHORITY: ARCHITECTURE_COORDINATOR_ONLY`
