@@ -9,8 +9,8 @@ repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/OTV2-20260811-game-char-delta-02-provenance-correction
 pr: 191
-base_sha: 4dce1e4da5c7c9e442abe99975aac3e7913b46b4
-head_sha: 0dcfb39bc6a907be202544af2eb0a470eafacfc0
+base_sha: 5d14fbaace55a8e1789cb9b9194830b358bed827
+head_sha: 489a9adc115a6fedc281594b54f6b4186b2462a9
 final_head_sha: null
 owner: ChatGPT architecture coordinator
 created_at: 2026-08-11T23:59:00+02:00
@@ -25,12 +25,14 @@ depends_on:
   - docs/architecture/GAME-CHAR-01_STAGE_B_REFERENCE_EVIDENCE_DELTA_02.md
   - docs/agents/tasks/archive/OTV2-20260811-game-char-stage-b-evidence-delta-02.md
 blocks:
-  - final current-main synchronization and exact-head documentation validation
+  - exact-head documentation/governance validation on the final task-containing head
 cross_repository_coordination_id: OTV2-GLOBAL-ARCHITECTURE
 external_repositories: []
 merge_authority: ARCHITECTURE_COORDINATOR_ONLY
 implementation_authority: NONE
 ```
+
+`head_sha` records the immediately preceding ancestry-synchronized checkpoint. The exact final task-containing head after this truth update is recorded externally in PR/review/check evidence rather than by creating a self-referential follow-up commit.
 
 ## Outcome
 
@@ -64,8 +66,8 @@ No original task is reactivated and no GAME-CHAR decision/status/runtime/schema/
 - [x] Do not re-create or mutate the archived original task as active.
 - [x] Do not change GAME-CHAR status, current status/register/horizon, runtime/schema/content/protocol/Platform/production semantics.
 - [x] Keep external repositories and PR #162 untouched.
-- [ ] Reconcile the three correction-owned paths to current `main` without semantic loss.
-- [ ] Perform full exact-head self-review and fresh repository documentation/governance CI before merge.
+- [x] Reconcile the three correction-owned paths to `main@5d14fbaace55a8e1789cb9b9194830b358bed827` without semantic loss; synchronized checkpoint `489a9adc115a6fedc281594b54f6b4186b2462a9` had `behind_by=0` and exactly three paths.
+- [ ] Perform full exact-head self-review and fresh repository documentation/governance CI on the final task-containing head.
 - [ ] Require zero unresolved material threads and `behind_by=0` immediately before merge.
 - [ ] Squash-merge PR #191 on the unchanged exact head.
 - [ ] Archive this correction task after terminal completion.
@@ -74,7 +76,7 @@ No original task is reactivated and no GAME-CHAR decision/status/runtime/schema/
 
 ### Canonical report
 
-E1 now reads `Official **2002** release material`. No other intended report meaning changes. In particular, the following remain unchanged:
+E1 now reads `Official **2002** release material`. The final `main...head` report patch is exactly one replacement line. No other report meaning changes. In particular, the following remain unchanged:
 
 - level >=20 + Premium core eligibility: `DERIVED / very strong primary continuity`;
 - exact 20,000 gp July-28 continuity: `UNKNOWN`;
@@ -86,7 +88,7 @@ E1 now reads `Official **2002** release material`. No other intended report mean
 
 `docs/agents/tasks/archive/OTV2-20260811-game-char-stage-b-evidence-delta-02.md` remains `status: completed` and owner released. A new `Post-closeout provenance erratum — 2026-08-16` section points to correction task/PR #191, records the exact year correction and explicitly preserves the substantive classifications and original delivery/closeout evidence.
 
-The original active task is not recreated.
+The final archive patch adds the erratum and updates only the archive's `last_progress` checkpoint to acknowledge that post-closeout audit trail. The original active task is not recreated.
 
 ## Excluded scope
 
@@ -96,38 +98,40 @@ This task does not re-review or accept the B4-B8 evidence package, change promot
 
 ### Focused
 
-- report semantic delta: factual source-year provenance only;
-- original archive semantic delta: post-closeout erratum/audit note only;
+- final report semantic delta: factual source-year provenance only (`2001 -> 2002`);
+- original archive semantic delta: post-closeout erratum/audit note plus `last_progress` acknowledgement only;
 - correction task: bookkeeping/validation truth only;
+- final synchronized diff: exactly the three declared owned paths;
 - runtime/component/integration E2E: `NOT_APPLICABLE` — factual paper-only provenance correction.
 
 ### Current-main synchronization
 
-Pending final ancestry-only synchronization after all correction content is frozen. The final PR diff must be exactly the three correction-owned paths.
+Completed at checkpoint `489a9adc115a6fedc281594b54f6b4186b2462a9` against `main@5d14fbaace55a8e1789cb9b9194830b358bed827`: `behind_by=0`, exactly three correction-owned paths. This task-truth update is the only later head movement and changes no report/archive semantics.
 
 ### Exact-head CI
 
-Pending on final synchronized head.
+Pending on the exact final task-containing head produced by this checkpoint update.
 
 ## Self-review
 
-Pending on final synchronized head. Independent review is not required for this factual nonbinding documentation correction unless final scope or semantics widen beyond the three declared paths.
+Pending on the exact final task-containing head. Independent review is `NOT_REQUIRED` because the final scope is a factual nonbinding provenance correction plus archive/task bookkeeping, with no security/protocol/persistence/production/authority change.
 
 ## PR and closeout
 
-PR #191 remains draft until final current-main reconciliation, exact-head CI, self-review, zero material threads and drift verification are clean. After delivery merge, this correction task will be lifecycle-archived in its own bounded closeout PR.
+PR #191 remains draft until exact-head CI, self-review, zero material threads and final drift verification are clean. After delivery merge, this correction task will be lifecycle-archived in its own bounded closeout PR.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: source-year correction and original-archive erratum are complete; all three owned contents are frozen pending one final ancestry-only synchronization to current main
+last_progress: three correction-owned paths were synchronized to final current main; report/year and archived erratum are frozen; this task-truth checkpoint is the final content commit before exact-head validation
 status: validating
 branch: docs/OTV2-20260811-game-char-delta-02-provenance-correction
 pr: 191
+head_sha: 489a9adc115a6fedc281594b54f6b4186b2462a9
 final_head_sha: null
 owner_action_required: null
-blocker: final current-main synchronization plus exact-head validation
-next_action: SYNC_THREE_OWNED_PATHS_TO_CURRENT_MAIN_THEN_VALIDATE
+blocker: exact-head self-review and repository CI
+next_action: VALIDATE_FINAL_TASK_CONTAINING_HEAD_THEN_MERGE
 ```
 
 `MERGE_AUTHORITY: ARCHITECTURE_COORDINATOR_ONLY`
