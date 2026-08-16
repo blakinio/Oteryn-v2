@@ -18,6 +18,10 @@ No Reference formula invention, production/protected environment, Platform/exter
 
 Read live governance/allocation plus GAME-ABILITY whole-gate owner acceptance and all accepted partial baselines, SIM, FND-03, GAME-ITEM, GAME-CHAR, DUR-03 boundaries, Stage-C combat contract and current merged Simulation/Domain/Content seams.
 
+## Baseline / dependency resolution
+
+Trusted source order is: system/owner instructions -> root/nearest governance -> live coordinator allocation -> accepted GAME-ABILITY/SIM/FND/GAME/DUR/VSL contracts -> live `main` code/registries/CI -> external evidence. Verify merged Simulation/Domain/Content prerequisite SHAs before writes. Record material facts as `PROVEN / DERIVED / UNKNOWN / CONFLICT`; unresolved authority, revision, resource or Reference prerequisites fail closed. Sibling output is not consumable until merged or explicitly ordered. External repositories remain read-only.
+
 ## Target outcome
 
 Implement one data-first server-authoritative typed ability/effect pipeline that later player, AI, script and content callers can use without introducing a second combat mutation engine.
