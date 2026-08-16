@@ -42,6 +42,12 @@ FND-04 owns final admission/GameSession/CharacterLease authority. Runtime placem
 
 Exact anti-hopping duration/capacity thresholds remain unimplemented until accepted evidence/product decisions exist. Missing values fail the affected feature closed.
 
+## Lifecycle / budget / durable handover
+
+Before the first write, create or resume the coordinator-allocated task with exact base SHA, branch/PR, owned paths/public contracts, Foundation/Domain/Durability prerequisite SHAs, dependencies/blockers and execution budget. Default foreground budget is **60 minutes**; **120 minutes** requires explicit declaration and justification.
+
+Maintain exactly one compact `## Context checkpoint` with one `next_action`. Persist exact head, validation/review state, blocker, tested Channel/session/fencing policy revision state and ownership state before any genuine stop/rotation. Terminal completion includes post-merge verification, task archive and ownership release.
+
 ## Validation
 
 - first/same/different Channel classification tests;
