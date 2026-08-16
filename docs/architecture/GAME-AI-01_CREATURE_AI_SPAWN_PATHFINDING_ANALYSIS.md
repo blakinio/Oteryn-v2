@@ -407,11 +407,65 @@ No omission here authorizes a permissive implementation default.
 
 ## 16. Cross-domain findings — report only
 
-1. `CROSS_DOMAIN_FINDING / REPORT_ONLY — GAME-ABILITY`: keep a stable typed AI intent/result boundary, including temporary ineligibility such as accepted re-entry suppression, without moving combat authority into AI.
-2. `CROSS_DOMAIN_FINDING / REPORT_ONLY — GAME-INTERACTION`: route invalidation and environmental interaction facts require a normalized owner boundary; AI must not define door/teleport semantics.
-3. `CROSS_DOMAIN_FINDING / REPORT_ONLY — GAME-ITEM/DUR-03/REWARD`: controlled-actor contribution and one-occurrence value settlement remain downstream.
-4. `CROSS_DOMAIN_FINDING / REPORT_ONLY — RESOURCE LIMITS`: executable acceptance requires concrete hard maxima including finite spawn retry ceilings.
-5. `CROSS_DOMAIN_FINDING / REPORT_ONLY — EVENT/ENCOUNTER`: world-shared durable occurrence/eligibility needs a named owner where applicable.
+```yaml
+cross_domain_finding:
+  id: GAME-AI-XD-01
+  observed_in_domain: GAME-AI-01
+  target_owner: GAME-ABILITY
+  severity: P1
+  evidence: docs/architecture/GAME-AI-01_CREATURE_AI_SPAWN_PATHFINDING_ANALYSIS.md §3.2/§12 and accepted GAME-ABILITY owner contracts
+  conflict_or_gap: GAME-AI requires a stable typed action-intent/result and temporary-legality input boundary, including accepted re-entry suppression, but must not own combat legality or mutation
+  required_before: executable GAME-AI action integration and Reference/Evolved combat-intent conformance
+  worker_action: REPORT_ONLY
+```
+
+```yaml
+cross_domain_finding:
+  id: GAME-AI-XD-02
+  observed_in_domain: GAME-AI-01
+  target_owner: GAME-INTERACTION
+  severity: P1
+  evidence: docs/architecture/GAME-AI-01_CREATURE_AI_SPAWN_PATHFINDING_ANALYSIS.md §3.2 and pathfinding owner-revalidation boundary
+  conflict_or_gap: route invalidation and environmental interaction facts need a normalized owner boundary; GAME-AI must not define door, teleport or world-interaction semantics
+  required_before: executable path adoption/revalidation against dynamic interaction state
+  worker_action: REPORT_ONLY
+```
+
+```yaml
+cross_domain_finding:
+  id: GAME-AI-XD-03
+  observed_in_domain: GAME-AI-01
+  target_owner: GAME-ITEM/DUR-03/REWARD
+  severity: P1
+  evidence: docs/architecture/GAME-AI-01_CREATURE_AI_SPAWN_PATHFINDING_ANALYSIS.md §9-§11
+  conflict_or_gap: controlled-actor contribution and one-semantic-occurrence value settlement remain foreign authority and need explicit downstream deduplication/attribution semantics
+  required_before: any AI/spawn-controlled actor can participate in durable loot, XP, currency or reward settlement
+  worker_action: REPORT_ONLY
+```
+
+```yaml
+cross_domain_finding:
+  id: GAME-AI-XD-04
+  observed_in_domain: GAME-AI-01
+  target_owner: ARCHITECTURE-COORDINATOR/RESOURCE-LIMITS
+  severity: P1
+  evidence: docs/architecture/GAME-AI-01_CREATURE_AI_SPAWN_PATHFINDING_ANALYSIS.md §13
+  conflict_or_gap: executable acceptance still lacks concrete hard maxima and boundary tests for AI/path/spawn/retry amplification dimensions, including a finite postponed-spawn retry ceiling
+  required_before: executable GAME-AI-01 implementation acceptance
+  worker_action: REPORT_ONLY
+```
+
+```yaml
+cross_domain_finding:
+  id: GAME-AI-XD-05
+  observed_in_domain: GAME-AI-01
+  target_owner: EVENT/ENCOUNTER
+  severity: P2
+  evidence: docs/architecture/GAME-AI-01_CREATURE_AI_SPAWN_PATHFINDING_ANALYSIS.md §9 plus preserved boss/encounter ownership boundary
+  conflict_or_gap: world-shared durable occurrence and eligibility require a named event/encounter owner where the semantic event spans multiple actors/scopes; GAME-AI cannot invent that durable owner
+  required_before: durable multi-actor encounter occurrence, shared eligibility or reward semantics are implemented
+  worker_action: REPORT_ONLY
+```
 
 These are reports only; this successor does not edit foreign or coordinator-owned surfaces.
 
