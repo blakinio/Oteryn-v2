@@ -18,6 +18,10 @@ No Platform/external-repository write, live credentials/accounts, production dep
 
 Read live governance/allocation plus ALPHA-CLIENT-01 acceptance, ADR-0011/0016, FND-02/FND-04, accepted Stage-C contracts relevant to the allocated journey, current client crates, protocol registries, client settings/privacy baselines and QA-E2E contract.
 
+## Baseline / dependency resolution
+
+Trusted source order is: system/owner instructions -> root/nearest governance -> live coordinator allocation -> accepted ALPHA-CLIENT/FND/VSL/QA contracts -> live `main` client/protocol/content code and registries -> external evidence. Verify compatible merged Foundation plus any allocated domain/content prerequisites by exact SHA before writes. Record material facts as `PROVEN / DERIVED / UNKNOWN / CONFLICT`; authority, credential, protocol, compatibility or privacy prerequisites that remain `UNKNOWN/CONFLICT` fail closed. Sibling output is not consumable until merged or explicitly ordered. External repositories remain read-only.
+
 ## Target outcome
 
 Move the production client from truthful `pre-native-protocol` fail-closed behavior to the minimum real native gameplay integration supported by merged Foundation and VSL seams, without making the client authoritative.
