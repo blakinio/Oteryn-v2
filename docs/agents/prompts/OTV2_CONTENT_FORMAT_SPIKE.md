@@ -62,6 +62,12 @@ SPIKE_RESULT != OWNER_FORMAT_DECISION
 
 Do not rename the VSL evidence artifact to a permanent `.omap/.owb`, update ADR-0005 to a final encoding, or make a prototype mandatory in production loaders. A later owner decision is required.
 
+## Lifecycle / budget / durable handover
+
+Before the first write, create or resume the coordinator-allocated spike task with exact base SHA, branch/PR, owned prototype/evidence paths, candidate set, dependencies/blockers and execution budget. Default foreground budget is **60 minutes**; **120 minutes** requires explicit task declaration and justification.
+
+Maintain exactly one compact `## Context checkpoint` with one `next_action`. Persist exact head, candidate/tool versions, completed benchmark cells, retained evidence hashes, validation/review state, blocker and ownership state before any genuine stop/rotation. Terminal completion includes post-merge verification, task archive and ownership release, plus exactly one owner next action: select/rework/defer the permanent format.
+
 ## Validation
 
 - reproducible benchmark commands/fixtures;
