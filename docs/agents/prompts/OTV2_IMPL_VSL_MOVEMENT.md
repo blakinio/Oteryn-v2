@@ -48,6 +48,12 @@ Before implementation acceptance, register/own finite limits for affected view/i
 
 Reject stale generation/revision/duplicate/replayed/illegal movement deterministically without partial position mutation. Resync repairs client observation from server authority.
 
+## Lifecycle / budget / durable handover
+
+Before the first write, create or resume the coordinator-allocated task with exact base SHA, branch/PR, owned paths/public registrations, prerequisite merge SHAs, dependencies/blockers and execution budget. Default foreground budget is **60 minutes**; **120 minutes** requires explicit declaration and justification.
+
+Maintain exactly one compact `## Context checkpoint` with one `next_action`. Persist exact head, validation/E2E/review state, blocker, active content/protocol revision evidence and ownership state before any genuine stop/rotation. Terminal completion includes post-merge verification, task archive and ownership release.
+
 ## Validation
 
 - deterministic legality/occupancy/order unit tests;
