@@ -18,6 +18,10 @@ No production/protected environment, Platform/external-repository write, Referen
 
 Read live governance/allocation plus GAME-AI owner acceptance, FND-03, SIM, GAME-ABILITY, VSL-MOVE, Content, Resource Limits Registry and current merged Simulation/Domain/Content/Foundation seams.
 
+## Baseline / dependency resolution
+
+Trusted source order is: system/owner instructions -> root/nearest governance -> live coordinator allocation -> accepted GAME-AI/FND/SIM/ABILITY/VSL contracts -> live `main` code/content/registries/CI -> external evidence. Verify prerequisite Foundation/SIM/Domain/Content merge SHAs before writes. Record material facts as `PROVEN / DERIVED / UNKNOWN / CONFLICT`; unresolved authority, resource, revision or target-behavior prerequisites fail closed. Sibling branch output is not consumable until merged or explicitly ordered. External repositories remain read-only.
+
 ## Target outcome
 
 Implement bounded deterministic creature decision/spawn/path **proposal** systems that remain subordinate to the current authoritative runtime owner and use the same Movement/Ability authority paths as players.
