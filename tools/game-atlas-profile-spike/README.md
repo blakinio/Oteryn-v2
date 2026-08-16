@@ -25,8 +25,11 @@ For each matrix cell it checks/measures:
 - raw and deterministic-gzip size;
 - file/chunk count and p95/max chunk size;
 - one-point and representative viewport compressed bytes;
-- local single-record edit changed-file and textual diff granularity;
+- local single-record edit changed-file granularity;
+- textual diff line count **and maximum line byte length for textual encodings**, so compact one-line JSON is not falsely treated as equally reviewable as record-oriented JSONL;
 - SHA-256 corruption detection and gzip corruption detection.
+
+Text-diff metrics are deliberately `null` for `binary-baseline-v0`. Binary bytes can accidentally form valid UTF-8 and must not be interpreted as meaningful source-control text simply because decoding happens to succeed.
 
 The script's internal record/string/chunk caps protect the research harness itself. They are **not production limits** and must never be copied into `RESOURCE_LIMITS_REGISTRY.json` without independent owning evidence.
 
@@ -44,5 +47,7 @@ The dedicated GitHub Actions workflow runs the same command on the exact PR head
 ## Interpretation guardrail
 
 A smaller artifact is not automatically the preferred production format. The later profile decision must also account for canonical World coordinate authority, consumer/browser implementation cost, parser safety, compatibility, evolution, observability and exact production resource ceilings.
+
+Likewise, source-control text-review quality is only one axis. A published Atlas artifact may not be reviewed as ordinary source files, so JSONL's record-oriented diff advantage cannot by itself select the public distribution format.
 
 The binary baseline is intentionally hand-bounded and deterministic solely so it can show a rough binary-size/locality lower bound without adding a new dependency or silently selecting a public encoding.
