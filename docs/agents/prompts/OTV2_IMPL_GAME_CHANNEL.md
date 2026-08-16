@@ -18,6 +18,10 @@ No production orchestration, protected environment, Platform/external-repository
 
 Read live governance/allocation plus GAME-CHANNEL owner contract/baselines, FND-ID, FND-03/04, DUR-03, GAME-CHAR, PERF-01/OPS-CHANNEL ownership boundaries and current merged Foundation/Durability implementation.
 
+## Baseline / dependency resolution
+
+Trusted source order is: system/owner instructions -> root/nearest governance -> live coordinator allocation -> accepted GAME-CHANNEL/FND/DUR/GAME/PERF/OPS contracts -> live `main` implementation/registries/CI -> external evidence. Verify Foundation/Domain/Durability prerequisite SHAs and current policy revisions before writes. Record material facts as `PROVEN / DERIVED / UNKNOWN / CONFLICT`; unresolved session/fencing/guard/numeric-policy prerequisites fail closed. Sibling output is not consumable until merged or explicitly ordered. External repositories remain read-only.
+
 ## Target outcome
 
 Implement the accepted game-domain Channel product semantics needed by later multichannel journeys without absorbing control-plane orchestration or inventing numeric capacity/cooldown policy.
