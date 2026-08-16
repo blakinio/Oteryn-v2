@@ -53,6 +53,12 @@ Use legally safe synthetic/project-owned assets only.
 
 Do not choose permanent `.omap`/`.owb` serialization/container/compression/chunk packing or Studio authoring representation. The evidence artifact is disposable and must be unmistakably non-shipping. DUR-04 format spike and later owner format decision remain mandatory.
 
+## Lifecycle / budget / durable handover
+
+Before the first write, create or resume the coordinator-allocated task with exact base SHA, branch/PR, owned paths/public contracts, dependencies/blockers and execution budget. Default foreground budget is **60 minutes**; **120 minutes** requires explicit declaration and justification.
+
+Maintain exactly one compact `## Context checkpoint` with one `next_action`. Persist exact head, validation/review state, blocker, active fixture/artifact revision and ownership state before any genuine stop/rotation. Terminal completion includes post-merge verification, task archive and ownership release.
+
 ## Validation
 
 - deterministic compile/golden evidence;
