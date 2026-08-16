@@ -20,7 +20,7 @@ closeout_pr: 282
 owner: domain-architecture-agent-b
 owner_state: released_after_closeout
 created_at: 2026-08-15T00:17:00+02:00
-updated_at: 2026-08-15T23:20:00+02:00
+updated_at: 2026-08-16T08:36:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: whole-gate architecture reconciliation across accepted partial baselines and multiple read-only dependency contracts
 owned_paths: []
@@ -192,6 +192,20 @@ next_action: EXACT_HEAD_FULL_DIFF_SELF_REVIEW_AND_CI_THEN_INDEPENDENT_REVIEW
 ## Post-merge lifecycle closeout
 
 Delivery PR #268 completed exact-head repository checks and coordinator full-diff self-review on final head `a65680d9504b3a4e6394ad3bb3dc25c6630cd098`, received a clean owner-authorized independent Codex review with zero new material threads, and was squash-merged as `0cfd8d8ee3ecf4fbb1cb76cbc9680b53a152e3c1`.
+
+### Exact delivery validation snapshot
+
+The merge decision used the following immutable delivery evidence on unchanged final head `a65680d9504b3a4e6394ad3bb3dc25c6630cd098` against then-live `main@dc1eecae7952902bee3fb1e2d88aefc2be792cae`:
+
+- drift: `behind_by=0`;
+- changed-file scope: exactly the three Agent-B allocated paths;
+- Agent governance run `31908192483`: **PASS**;
+- Merge authority audit run `31908192475`: **PASS**;
+- Merge gate run `31908192473`, including final `Merge gate / validate`: **PASS**;
+- coordinator exact-head full-diff self-review: **PASS**, zero open material findings;
+- owner-authorized independent Codex review on the exact final head: **clean**;
+- unresolved review threads immediately before merge: **0**;
+- runtime/component/E2E: `NOT_APPLICABLE` — paper-only architecture delivery.
 
 Closeout PR #282 changes bookkeeping only:
 
