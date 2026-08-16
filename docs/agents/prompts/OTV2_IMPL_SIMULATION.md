@@ -41,6 +41,12 @@ As allocated:
 
 No gameplay formula values, drop rates, XP curves or Reference rules. No process-global mutable gameplay RNG. No direct system-clock reads inside authoritative formula helpers. No gameplay domain ownership or transport/persistence dependencies in the core simulation crate.
 
+## Lifecycle / budget / durable handover
+
+Before the first write, create or resume the coordinator-allocated task record with exact base SHA, branch/PR, owned paths, dependencies/blockers and execution budget. Default foreground budget is **60 minutes**; **120 minutes** requires an explicit task declaration and justification.
+
+Maintain exactly one compact `## Context checkpoint` with one `next_action`. Persist exact head, validation/review state, blocker and ownership state before any genuine stop/rotation. Terminal completion includes post-merge verification, task archive and ownership release.
+
 ## Validation
 
 - deterministic golden RNG decisions and purpose-isolation tests;
