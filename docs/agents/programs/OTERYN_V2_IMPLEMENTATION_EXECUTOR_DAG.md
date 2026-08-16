@@ -77,7 +77,7 @@ FOUNDATION + compatible client protocol seam
 FOUNDATION + SIM + DOMAIN + CONTENT + INTERACTION + CLIENT + QA
   +--> OTV2-IMPL-MOVE                                  first authoritative movement slice
 
-FOUNDATION + SIM + DOMAIN + CONTENT + ABILITY + INTERACTION + DURABILITY + CLIENT + QA
+MOVE + FOUNDATION + SIM + DOMAIN + CONTENT + ABILITY + INTERACTION + DURABILITY + CLIENT + QA
   +--> OTV2-IMPL-COMBAT                                death/loot/XP/pickup slice
 
 FOUNDATION + DOMAIN + DURABILITY
@@ -92,7 +92,7 @@ concrete producer event registrations exist
 
 The coordinator MAY overlap lanes only after bootstrap has merged and an exact path/allocation record proves their owned paths do not overlap. Public registry/workspace-policy/stable-ID mutations are serialized even when code workers otherwise run in parallel.
 
-Movement and Combat are integration gates. Their worker must consume already-merged generic engines rather than implementing SIM/Ability/Interaction/AI/Domain/DUR architecture incidentally inside the VSL.
+Movement and Combat are serial integration gates for the first vertical-slice proof. Combat MUST consume a merged, integration-ready Movement slice plus already-merged generic engines rather than implementing SIM/Ability/Interaction/AI/Domain/DUR/Movement architecture incidentally inside the Combat VSL.
 
 ## 5. `OTV2-IMPL-BOOTSTRAP`
 
@@ -264,9 +264,10 @@ Cross-scope handoff remains separate.
 
 ## 17. `OTV2-IMPL-COMBAT`
 
-Implement the accepted first creature combat/death/value slice by consuming merged generic engines:
+Implement the accepted first creature combat/death/value slice by consuming merged Movement and generic engines:
 
-- GAME-ABILITY as the only effect pipeline;
+- merged `OTV2-IMPL-MOVE` is a hard first-slice prerequisite;
+- GAME-ABILITY is the only effect pipeline;
 - one stable death occurrence per creature lifecycle generation;
 - deterministic SIM loot selection with exact content revisions;
 - DUR-03 durable loot materialization/reconciliation;
@@ -334,8 +335,8 @@ Coordinator sequence:
 3. Allocate Durability after Foundation/Domain seams are stable enough.
 4. Allocate Ability + Interaction + AI after Foundation/SIM/Domain/Content.
 5. Allocate Client after compatible production Foundation seam exists.
-6. Allocate Movement after its prerequisites are integration-ready.
-7. Allocate Combat after Ability/Interaction/Durability and other prerequisites are integration-ready.
+6. Allocate Movement after its prerequisites are integration-ready and merge it as the first gameplay integration gate.
+7. Allocate Combat only after Movement plus Ability/Interaction/Durability and its other prerequisites are integration-ready.
 8. Allocate Channel later when multichannel product implementation is needed and numeric prerequisites permit.
 9. Run Content Format Spike as evidence; run Analytics only after producer events exist.
 ```
