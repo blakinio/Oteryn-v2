@@ -10,7 +10,7 @@ base_branch: main
 branch: docs/arch-f-analytics-integrity
 pr: 270
 base_sha: 088b46638ac014cd7928d6b0b75cee44902fe22c
-head_sha: f08ef9a3c7f9b1305962f797a0d7400073dfb3ec
+head_sha: 4c5ed4a9e1d0453639375b5f499aa233786a1c43
 final_head_sha: null
 final_head_frozen_at: null
 owner: DOMAIN ARCHITECTURE DESIGN AGENT F
@@ -35,98 +35,88 @@ depends_on:
   - GAME-CHANNEL-01_CHANNEL_PRODUCT_POLICY_CONTRACT.md
   - SIM-DETERMINISM-01_AUTHORITATIVE_SIMULATION_CONTRACT.md
 blocks:
-  - fresh exact-head repository validation after final task-truth checkpoint
-  - genuinely independent non-Codex semantic review because cycle 4 changes security-analytics/evidentiary policy and the Architecture Coordinator materially authored the repair
+  - fresh exact-head repository validation after cycle-5 repair and final current-main synchronization
+  - dedicated independent non-AI semantic audit PASS for the unchanged final head
   - later authorized analytics/integrity implementation contracts
 cross_repository_coordination_id: null
 external_repositories: []
-repair_cycles_for_current_gate: 4
-repair_cycle_4_owner_override: explicit owner instruction on 2026-08-16 authorizing C/D/E/F continuation beyond the three-cycle stop
+repair_cycles_for_current_gate: 5
+repair_cycle_4_owner_override: explicit owner instruction on 2026-08-16 authorizing C/D/E/F continuation beyond the three-cycle stop; this authorization remains the basis for truthful cycle 5 rather than resetting the stable gate
 owner_review_constraint: no Codex for this continuation
 ```
 
-`head_sha` records the immediately preceding fully synchronized/self-reviewed checkpoint (`f08ef9a3...`). The exact final task-containing head is recorded externally on PR/check/review evidence after this truth-correction commit; no self-referential follow-up commit is created merely to record its own SHA.
+`head_sha` records the independently audited cycle-4/current-main checkpoint that exposed the cycle-5 consistency defect. The exact final task-containing cycle-5 head is recorded externally on PR/check/audit evidence after final synchronization; no self-referential commit is created merely to record its own SHA.
 
 ## Outcome
 
-ANL-02/ANL-03 remain paper-only, read-only analytics/integrity architecture. The stable gate completed **owner-authorized material repair cycle 4** after the owner explicitly overrode the ordinary three-cycle ceiling for C, D, E and F and instructed continuation without Codex.
+ANL-02/ANL-03 remain paper-only, read-only analytics/integrity architecture. The stable gate is now in **owner-authorized repair cycle 5**. The project owner explicitly authorized continued C/D/E/F repair beyond the ordinary three-cycle ceiling and required continuation without Codex; that authorization does not reset repair history, waive exact-head validation or widen implementation authority.
 
-All prior repairs remain preserved:
+All material cycle-1 through cycle-4 repairs remain preserved:
 
 - optional client diagnostics are non-adverse;
 - every material security-case lifecycle/reviewer action is append-only/auditable;
 - deterministic session/hunt grouping and UTC-day reporting windows are explicit;
 - ANL-03 normative deterministic invariant catalogue is explicit;
-- DUR-03 remains authoritative prevention/conservation/mutation owner and ANL-03 remains read-only evidence;
+- DUR-03 remains prevention/conservation/mutation authority and ANL-03 remains read-only evidence;
 - dashboard evidence truth/warning semantics are explicit;
-- every triaged signal has an audited no-case terminal disposition path;
-- `SUPPORTED_SECURITY_FINDING` remains non-sanctioning evidence.
+- every triaged signal has an audited substantive terminal disposition path;
+- `SUPPORTED_SECURITY_FINDING` remains non-sanctioning evidence;
+- ANL-02 `NO_MATERIAL_REGRESSION_SUPPORTED` is fail closed on quality/completeness, sample/exposure, comparability, reconciliation/finality, privacy/suppression sufficiency and method/provenance;
+- ANL-03 referral is routing only after a substantive evidentiary disposition for the same review generation.
 
-Repair cycle 4 closes the two material findings from the final review of `49e1fe0b909d2d5b4a213435d3581235235b3288`.
+## Repair cycle 5 — ANL-02 analysis/candidate consistency
 
-The repaired worker-F blobs were reconciled to current `main@8722e565c6a0556934209820e3c14ee4f2dc6093` without semantic modification. Exact-head self-review on pre-checkpoint head `f08ef9a3c7f9b1305962f797a0d7400073dfb3ec` passed with zero material findings and confirmed the final scope remained exactly the five worker-F paths. The only post-repair main ancestry addition was unrelated Atlas lifecycle closeout #289.
+### Finding
 
-## Repair cycle 4
+Dedicated independent semantic audit run `31948702885`, job `95168701161`, targeted exact head `4c5ed4a9e1d0453639375b5f499aa233786a1c43` and correctly failed with:
 
-### ANL-02 — fail-closed no-regression acceptance
+`SEMANTIC_AUDIT_FAIL: ANL-02 analysis consistency: missing 'REGRESSION_EVIDENCE_INSUFFICIENT'`.
 
-The candidate makes `NO_MATERIAL_REGRESSION_SUPPORTED` impossible unless all applicable preconditions are positively satisfied:
+The candidate contract already contained the required fail-closed terminal disposition. The companion ANL-02 analysis described comparison ambiguity and evidence quality but did not durably state the candidate's post-evaluation lifecycle disposition. That was a real analysis↔candidate consistency gap, not a reason to weaken the audit.
 
-1. required source completeness/schema quality is sufficient;
-2. every applicable versioned minimum sample/exposure requirement is met and required evidence is unsuppressed;
-3. baseline/current metric, cohort, denominator and material semantic revisions are compatible or explicitly stratified under the named method;
-4. duplicate/order/late-event/source-checkpoint reconciliation and required backfill/recompute state are sufficiently terminal for the declared acceptance window;
-5. privacy suppression does not remove evidence required for the declared conclusion;
-6. exact baseline/method/threshold/windows/cohorts/checkpoint and confounders are retained.
+### Repair
 
-If an evaluation is attempted and any applicable precondition fails, the mandatory disposition is `REGRESSION_EVIDENCE_INSUFFICIENT`. A dashboard warning or visual caveat may accompany that state but can never coexist with a green `NO_MATERIAL_REGRESSION_SUPPORTED` disposition on the same insufficient evidence. `REGRESSION_NOT_EVALUATED` remains only the pre-evaluation state.
+Cycle 5 changes only:
 
-### ANL-03 — evidentiary disposition before referral
+1. `ANL-02_GAMEPLAY_BALANCE_WORLD_ANALYTICS_ANALYSIS.md` — section `Regression semantics` now states the same fail-closed lifecycle as the candidate:
+   - `REGRESSION_NOT_EVALUATED` is pre-evaluation only;
+   - once evaluation is attempted, every applicable source-quality, sample/exposure, comparability, reconciliation/finality, privacy/suppression and method/provenance prerequisite must be positively satisfied;
+   - otherwise the mandatory disposition is `REGRESSION_EVIDENCE_INSUFFICIENT`;
+   - warning/caveat presentation cannot coexist with green `NO_MATERIAL_REGRESSION_SUPPORTED` for the same insufficient evidence;
+   - green no-regression support is allowed only with all applicable prerequisites satisfied and exact retained provenance.
+2. this task record — truthful repair count/history and audit evidence.
 
-The candidate separates **substantive evidentiary dispositions** from **routing actions**.
-
-Allowed substantive dispositions remain:
-
-- `SUPPORTED_INTEGRITY_OR_DEFECT_FINDING`;
-- `SUPPORTED_SECURITY_FINDING`;
-- `NOT_SUPPORTED_FALSE_POSITIVE`;
-- `INCONCLUSIVE_INSUFFICIENT_EVIDENCE`;
-- `DATA_QUALITY_OR_PIPELINE_FAILURE`;
-- `DUPLICATE_OR_ALREADY_COVERED`.
-
-`REFERRED_TO_SECURITY_GM_PRODUCT_OR_ENGINE_OWNER` is no longer an evidence disposition. It is an optional append-only routing action that MUST reference a preceding substantive disposition for the same review generation. This applies to both no-case and case workflows. A naked direct referral is invalid; if evidence is not positively supported, the reviewer still records the truthful inconclusive/data-quality/false-positive/duplicate disposition before routing.
-
-Referral does not alter evidence quality, does not imply target-owner acceptance, and grants no enforcement authority. The ANL-03 companion analysis was reconciled to the same rule and no longer describes referral as a standalone evidence disposition.
+Both ANL-02/ANL-03 candidate contracts and the ANL-03 analysis are unchanged by cycle 5.
 
 ## Acceptance criteria
 
 - [x] ANL-02 metric/evidence/session/reporting semantics remain versioned and deterministic.
 - [x] ANL-02 dashboards cannot hide metric revision, sample/exposure, quality, suppression or reconciliation state for material decision surfaces.
-- [x] Minimum-sample warnings and suppression semantics remain explicit without speculative universal numeric thresholds.
-- [x] Regression acceptance is a named auditable evidence record.
-- [x] `NO_MATERIAL_REGRESSION_SUPPORTED` is normatively gated by quality/completeness, sample/exposure, comparability, reconciliation/finality, privacy sufficiency and method/provenance preconditions.
-- [x] Any failed applicable precondition after evaluation mandates `REGRESSION_EVIDENCE_INSUFFICIENT`; warning-only green acceptance is forbidden.
+- [x] Regression acceptance remains a named auditable evidence record.
+- [x] `NO_MATERIAL_REGRESSION_SUPPORTED` is gated by quality/completeness, sample/exposure, comparability, reconciliation/finality, privacy/suppression sufficiency and method/provenance preconditions.
+- [x] Any failed applicable prerequisite after evaluation mandates `REGRESSION_EVIDENCE_INSUFFICIENT`; warning-only green acceptance is forbidden.
+- [x] ANL-02 companion analysis now records that same terminal fail-closed lifecycle and no longer leaves the candidate rule implicit.
 - [x] ANL-03 deterministic invariant catalogue remains normative and read-only.
-- [x] Optional diagnostics remain non-adverse.
 - [x] Every material case lifecycle/reviewer action remains immutable/auditable.
 - [x] Every triaged signal has a terminal audited substantive disposition even when no case is opened.
-- [x] Corroborated security concerns can be represented as `SUPPORTED_SECURITY_FINDING` without becoming deterministic proof or sanction authority.
 - [x] Referral is routing only and cannot stand alone; both no-case and case referral require a preceding substantive evidentiary disposition.
 - [x] DUR-03 remains prevention/conservation/mutation authority; ANL-03 remains observation/evidence.
-- [x] Changed paths remain within the five worker-F allocations; cycle 4 changes only task + two candidate contracts plus the necessary ANL-03 analysis consistency repair.
-- [x] Branch was reconciled to current `main@8722e565c6a0556934209820e3c14ee4f2dc6093` without semantic loss before this task-truth checkpoint.
-- [x] Full-diff self-review on synchronized pre-checkpoint head `f08ef9a3c7f9b1305962f797a0d7400073dfb3ec` was clean with zero material findings.
-- [ ] Required repository checks pass on the final task-containing exact head after this checkpoint correction.
-- [ ] Required genuinely independent non-Codex review on that unchanged final exact head is clean.
+- [x] Runtime detector/collector/warehouse/dashboard implementation, DDL, sanction/enforcement and Platform/production authority remain NONE.
+- [x] Repair history truthfully records stable-gate cycle 5 under the existing owner override.
+- [ ] Final branch is synchronized to the current `main` with only the five worker-F paths differing.
+- [ ] Full exact-head self-review is clean after final synchronization.
+- [ ] Agent governance, Merge authority audit and Merge gate pass on the unchanged final head.
+- [ ] Dedicated deterministic independent semantic audit reports profile `ANL_02_ANL_03`, the exact final SHA and `PASS`.
+- [ ] Zero unresolved material review threads and `behind_by=0` immediately before merge.
 
 ## Excluded scope
 
-No runtime detector/collector/warehouse/dashboard implementation, no PostgreSQL DDL/migrations, no broker/lake/vendor selection, no gameplay/economy mutation, sanctions/GM policy, automatic balance/economy control, device fingerprinting/invasive surveillance, Platform/production, ANL-01 registry mutation, DUR-03 prevention changes, coordinator-overlay mutation or cross-repository write.
+No runtime detector/collector/warehouse/dashboard implementation; no PostgreSQL DDL/migrations; no broker/lake/vendor selection; no gameplay/economy mutation; no sanctions/GM policy; no automatic balance/economy control; no device fingerprinting/invasive surveillance; no Platform/production; no ANL-01 registry mutation; no DUR-03 prevention changes; no coordinator-overlay mutation; no cross-repository write.
 
 ## Repair budget and history
 
 ```yaml
-repair_cycles_for_current_gate: 4
+repair_cycles_for_current_gate: 5
 ordinary_repair_ceiling: 3
 override_status: OWNER_AUTHORIZED_2026_08_16
 ```
@@ -136,18 +126,21 @@ Repair history for this stable gate:
 1. optional-diagnostics non-adverse + immutable security-case lifecycle audit;
 2. deterministic ANL-02 session/UTC reporting + normative ANL-03 invariant catalogue;
 3. dashboard/regression-acceptance truth + no-case terminal disposition + supported-security disposition;
-4. owner-authorized strict no-regression evidence preconditions + substantive-evidence-before-referral rule.
+4. owner-authorized strict no-regression evidence preconditions + substantive-evidence-before-referral rule;
+5. independent-audit-driven ANL-02 analysis/candidate consistency repair for `REGRESSION_EVIDENCE_INSUFFICIENT`.
 
-The owner override permits bounded continuation beyond cycle 3; it does not reset history, waive exact-head validation, widen worker ownership or authorize runtime/production work.
+The owner override permits bounded continuation beyond cycle 3. It does not reset history, waive required review/CI, create runtime authority or authorize owner-funded AI.
 
 ## Validation
 
-### Source reconciliation
+### Independent audit finding that triggered cycle 5
 
-- final P2 `PRRT_kwDOTuGrds6ZivQ0` established that warning-only sample/quality handling still allowed a green no-regression disposition; cycle 4 makes the disposition fail closed;
-- final P2 `PRRT_kwDOTuGrds6ZivQ2` established that referral could still stand alone; cycle 4 removes referral from evidence dispositions and requires a preceding substantive disposition;
-- earlier ADR-0006 dashboard/regression semantics, ANL-01 lifecycle evidence and DUR-03 authority remain preserved;
-- historical material threads were resolved only after the semantic repairs and companion-analysis consistency repair were verified.
+- run: `31948702885`;
+- job: `95168701161`;
+- audited head: `4c5ed4a9e1d0453639375b5f499aa233786a1c43`;
+- profile path set: exact five worker-F paths;
+- result: FAIL as designed because ANL-02 analysis omitted the candidate's named insufficient-evidence disposition;
+- disposition: repair analysis consistency; do not weaken the auditor.
 
 ### Runtime/component/E2E
 
@@ -155,55 +148,42 @@ The owner override permits bounded continuation beyond cycle 3; it does not rese
 
 ### Exact-head
 
-The exact final task-containing head, changed-file review, full-diff self-review and repository CI are recorded externally after this checkpoint commit. Required scope remains exactly the five worker-F paths and current-main ancestry must remain `behind_by=0`.
+Fresh exact-head evidence is required after final synchronization to current `main`. The target must remain exactly the five allocated worker-F paths. The dedicated audit must evaluate, rather than self-declare, the final `ANL_02_ANL_03` profile.
 
 ## Self-review
 
-- required: YES
-- pre-checkpoint synchronized head: `f08ef9a3c7f9b1305962f797a0d7400073dfb3ec`
-- result: PASS, zero material findings; final task-containing head requires focused truth-check/self-review after this checkpoint commit
+- required: YES;
+- current cycle-5 semantic repair is intentionally minimal: ANL-02 analysis + task truth only;
+- final verdict is recorded externally after final current-main synchronization and full-diff review.
 
 ## Independent review
 
-- required: YES
-- exact head: must be the unchanged final task-containing repair head
-- allowed method: genuinely independent fresh separate non-authoring agent/session, qualified human reviewer or a dedicated independent audit mechanism that actually evaluates the semantic architecture diff
-- Codex: **NOT TO BE USED** for this continuation per explicit owner instruction
-- verdict: pending
+- required: YES;
+- method: canonical dedicated deterministic independent semantic audit workflow already merged on `main`;
+- required final profile: `ANL_02_ANL_03`;
+- AI service: none;
+- Codex/owner-funded AI: **NOT TO BE USED**;
+- any material repair/head move invalidates prior PASS evidence and requires a fresh audit.
 
 ## PR and closeout
 
-- PR #270 remains open and unmerged during repair validation.
-- Historical material review threads are repaired and resolved after semantic repair verification.
-- No archive or ownership release before merge.
-- Pre-merge current-main ancestry, exact-head CI, mandatory self-review, required independent review and zero unresolved material threads remain mandatory.
+- PR #270 remains draft until final exact-head CI and independent audit are clean.
+- No archive or ownership release before lawful merge.
+- After delivery merge, coordinator performs bounded active→archive lifecycle closeout and closes issue #264 as completed.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: cycle-4 ANL-02/ANL-03 repairs were reconciled to current main and self-reviewed clean; this commit corrects the durable task checkpoint to the real remaining gates
+last_progress: dedicated independent audit found a real ANL-02 analysis/candidate disposition mismatch; cycle 5 repairs that mismatch and preserves all candidate authority boundaries
 status: validating
 branch: docs/arch-f-analytics-integrity
-head_sha: f08ef9a3c7f9b1305962f797a0d7400073dfb3ec
+head_sha: 4c5ed4a9e1d0453639375b5f499aa233786a1c43
 pr: 270
 final_head_sha: null
-final_head_frozen_at: null
-ci_trigger_source: push/pull_request
-ci_check_generation: final-task-truth-checkpoint
-ci_checks_for_current_head: 0
-ci_run_ids: []
-ci_job_ids: []
-runner_assignment_state: unknown
-terminal_ci_wait_started_at: null
-terminal_ci_checks_for_current_generation: 0
-unchanged_state_checks: 0
-identical_failure_retries: 0
-repair_cycles_for_current_gate: 4
-ci_recovery_actions_for_current_head: 0
-stall_warnings: 0
+repair_cycles_for_current_gate: 5
 owner_action_required: null
-blocker: independent non-Codex semantic review after exact-head repository validation
-next_action: VALIDATE_FINAL_TASK_HEAD_THEN_INDEPENDENT_NON_CODEX_REVIEW
+blocker: final current-main synchronization plus fresh exact-head CI and independent semantic audit
+next_action: SYNC_CYCLE5_TO_CURRENT_MAIN_THEN_VALIDATE_EXACT_HEAD
 ```
 
 `MERGE_AUTHORITY: ARCHITECTURE_COORDINATOR_ONLY`
