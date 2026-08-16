@@ -9,14 +9,15 @@ repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/final-executor-prompt-dag-20260816
 issue: 313
-pr: null
+pr: 314
 base_sha: bf2a2ae279516f62626a5d8f4dc1aeb587535c62
 owner: Architecture Coordinator
 created_at: 2026-08-16T21:35:59+02:00
-updated_at: 2026-08-16T22:16:00+02:00
+updated_at: 2026-08-16T22:28:00+02:00
 execution_budget_minutes: 120
 owned_paths:
   - docs/agents/tasks/active/OTV2-20260816-final-executor-prompt-dag.md
+  - docs/agents/evidence/OTV2-20260816-final-executor-prompt-evaluation.md
   - docs/agents/programs/OTERYN_V2_IMPLEMENTATION_EXECUTOR_DAG.md
   - docs/agents/prompts/OTV2_IMPLEMENTATION_COORDINATOR.md
   - docs/agents/prompts/OTV2_IMPL_WORKSPACE_BOOTSTRAP.md
@@ -76,7 +77,7 @@ OTV2-IMPL-COORD
       -> ABILITY + INTERACTION + AI after Foundation/SIM/Domain/Content
       -> CLIENT after compatible production Foundation seam
       -> MOVE after Foundation/SIM/Domain/Content/Interaction/Client/QA
-      -> COMBAT after Foundation/SIM/Domain/Content/Ability/Interaction/Durability/Client/QA
+      -> COMBAT after MOVE + Foundation/SIM/Domain/Content/Ability/Interaction/Durability/Client/QA
 
 CHANNEL = later after Foundation/Domain/Durability
 CONTENT-FORMAT-SPIKE = evidence-only after Content seam
@@ -96,7 +97,7 @@ The prompt package remains `HOLD` until:
 5. old prompt PR #305 is terminally superseded without losing useful maintenance history;
 6. no prompt grants entitlement, production, external-repository or Reference-parity authority;
 7. prompt README clearly distinguishes implementation aliases from architecture aliases;
-8. the final exact-head prompt-package PR passes governance/merge gates and self-review.
+8. final exact-head PR #314 passes governance/merge gates and self-review.
 
 ## Safety invariants
 
@@ -127,23 +128,29 @@ The prompt package remains `HOLD` until:
 - [x] later GAME-CHANNEL executor prompt written;
 - [x] content-format evidence spike prompt written;
 - [x] later Analytics executor prompt written;
-- [ ] prompt README/aliases updated;
-- [ ] draft PR opened and full-diff prompt evaluation recorded;
+- [x] prompt README/aliases updated;
+- [x] draft PR #314 opened;
+- [ ] full-diff prompt evaluation and repairs completed;
 - [ ] post-Stage-C reconciliation performed;
 - [ ] stale #305 terminally superseded;
 - [ ] final exact-head validation/merge/closeout completed.
 
+## Prompt-eval findings in repair
+
+1. `MATERIAL` — direct worker prompts did not all state durable task checkpoint/handover and execution-budget requirements explicitly enough for `PROMPTING_STANDARD.md` section 10. Repair all direct worker prompts before PASS.
+2. `MATERIAL` — corrected DAG initially omitted Movement as a prerequisite to Combat in the intended first vertical-slice integration order. Repair DAG/coordinator/task to retain Movement -> Combat serial integration.
+
 ## Context checkpoint
 
 ```yaml
-last_progress: corrected executor DAG now explicitly includes SIM, Domain Core, Ability, Interaction, AI and later Channel lanes; all worker prompts drafted
+last_progress: draft PR #314 opened; prompt-eval found handover/budget omission and Movement->Combat dependency regression, both under repair
 status: validating
 branch: docs/final-executor-prompt-dag-20260816
 issue: 313
-pr: null
+pr: 314
 owner_action_required: false for prompt preparation
 blocker: Stage-C #311 cannot merge until a genuinely independent exact-head review is obtained; Codex attempt returned usage-limit and deterministic semantic workflow was NOT_APPLICABLE
-next_action: update prompt README, open draft prompt-package PR, perform full-diff PROMPT_EVAL while HOLD, and reconcile stale #305 without releasing executors
+next_action: repair lifecycle/budget clauses and Movement->Combat dependency, then record full prompt evaluation and validate exact head while HOLD
 executor_prompts: HOLD
 ```
 
