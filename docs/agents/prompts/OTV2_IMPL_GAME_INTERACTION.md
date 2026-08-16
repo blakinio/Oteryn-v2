@@ -18,6 +18,10 @@ No production/protected environment, Platform/external-repository write, owner-f
 
 Read live governance/allocation plus GAME-INTERACTION owner acceptance, FND-03, SIM, GAME-ITEM/DUR-03 boundaries, GAME-ABILITY, accepted VSL-MOVE/VSL-COMBAT and current merged Domain/Content/Foundation seams.
 
+## Baseline / dependency resolution
+
+Trusted source order is: system/owner instructions -> root/nearest governance -> live coordinator allocation -> accepted GAME-INTERACTION/FND/SIM/GAME/DUR/VSL contracts -> live `main` code/registries/CI -> external evidence. Verify merged Foundation/SIM/Domain/Content prerequisite SHAs before writes. Record material facts as `PROVEN / DERIVED / UNKNOWN / CONFLICT`; unresolved owner, child-identity, retry or resource prerequisites fail closed. Sibling branch output is not a dependency until merged or explicitly ordered. External repositories remain read-only.
+
 ## Target outcome
 
 Implement one bounded authoritative interaction workflow layer for triggers/successor children/retry/reconciliation without absorbing movement, item/value, ability or cross-scope ownership.
