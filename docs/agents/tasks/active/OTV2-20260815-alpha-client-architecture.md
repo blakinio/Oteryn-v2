@@ -10,12 +10,12 @@ base_branch: main
 branch: docs/arch-e-alpha-client
 pr: 273
 base_sha: 088b46638ac014cd7928d6b0b75cee44902fe22c
-head_sha: aba4f9ed3d64f42d605d9ea63243e160651aa0f0
+head_sha: 7855d55abf964f527d46aec0f921ef0f2b0a1767
 final_head_sha: null
 final_head_frozen_at: null
 owner: DOMAIN ARCHITECTURE DESIGN AGENT / worker E
 created_at: 2026-08-15T00:19:00+02:00
-updated_at: 2026-08-16T09:21:00+02:00
+updated_at: 2026-08-16
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -37,7 +37,9 @@ depends_on:
   - docs/architecture/CLIENT_CRASH_DIAGNOSTICS_PRIVACY_OWNER_BASELINE.md
   - docs/architecture/ARCHITECTURE_ANALYSIS_GAP_REGISTER.md
   - docs/migration/VSL-02_RUST_CLIENT_MIGRATION_AND_CUTOVER_CONTRACT.md
-blocks: []
+blocks:
+  - fresh exact-head repository validation after final task-truth checkpoint
+  - genuinely independent non-Codex semantic review because cycle 4 changes privacy/security-relevant settings semantics and the Architecture Coordinator materially authored the repair
 cross_repository_coordination_id: null
 external_repositories: []
 repair_cycles_for_current_gate: 4
@@ -45,7 +47,7 @@ repair_cycle_4_owner_override: explicit owner instruction on 2026-08-16 authoriz
 owner_review_constraint: no Codex for this continuation
 ```
 
-`head_sha` is the immediately preceding repaired candidate revision. The exact final self-referential SHA is recorded externally on the PR/check/review evidence after this task commit exists.
+`head_sha` records the immediately preceding fully synchronized/self-reviewed checkpoint (`7855d55a...`). The exact final task-containing head is recorded externally on PR/check/review evidence after this truth-correction commit; no self-referential follow-up commit is created merely to record its own SHA.
 
 ## Outcome
 
@@ -57,6 +59,8 @@ This repair closes the two material findings from the final review of `e2eb37e1d
 2. the candidate now defines the reusable low-level Oteryn Studio sharing boundary, dependency direction, product-specific exclusions, content export/runtime projection seam and required conformance evidence.
 
 All earlier repaired admission, wire-oracle, audio, directory-precision, production-codec and visual-scene boundaries remain preserved. Runtime/client/Platform implementation remains `NOT_STARTED`; no executable code, DDL or production state was modified.
+
+The repaired semantic blobs were reconciled to current `main@8722e565c6a0556934209820e3c14ee4f2dc6093` without semantic modification. Exact-head self-review on pre-checkpoint head `7855d55abf964f527d46aec0f921ef0f2b0a1767` passed with zero material findings and confirmed the final scope remained exactly the three worker-E paths. The only post-repair main ancestry addition was unrelated Atlas lifecycle closeout #289.
 
 PR: `#273`.
 
@@ -91,8 +95,10 @@ PR: `#273`.
 - [x] `DECISIONS_NOT_TAKEN` records deferred concrete libraries, shared-package naming/publication and settings synchronization implementation.
 - [x] Foreign-domain findings remain report-only; no runtime/client/server/protocol/DDL/Platform/production or coordinator-overlay path is intentionally modified.
 - [x] Changed paths remain within worker-E ownership.
-- [ ] Exact-final-head full-diff self-review and exact-head CI are recorded externally after this task commit.
-- [ ] Required genuinely independent non-Codex review on the unchanged exact head is clean.
+- [x] Branch was reconciled to current `main@8722e565c6a0556934209820e3c14ee4f2dc6093` without semantic loss before this task-truth checkpoint.
+- [x] Full-diff self-review on synchronized pre-checkpoint head `7855d55abf964f527d46aec0f921ef0f2b0a1767` was clean with zero material findings.
+- [ ] Required repository checks pass on the final task-containing exact head after this checkpoint correction.
+- [ ] Required genuinely independent non-Codex review on that unchanged final exact head is clean.
 
 ## Excluded scope
 
@@ -208,9 +214,11 @@ review_finding:
 
 ### Focused
 
-- final changed-file/full-diff review: pending exact-final-head inspection after current-main reconciliation
-- settings-scope review: candidate contains explicit ACCOUNT/OS_USER/INSTALLATION/DEVICE rules, default precedence, privacy restrictive-wins and migration requirements
-- Studio-boundary review: candidate contains explicit shared/non-shared responsibilities, dependency direction and content projection/evidence rules
+- verify the task-truth correction is the only semantic delta after `7855d55a...` and the analysis/candidate blobs remain unchanged;
+- verify final compare remains exactly the three worker-E paths and `behind_by=0`;
+- verify settings-scope rules still provide explicit ACCOUNT/OS_USER/INSTALLATION/DEVICE ownership, deterministic precedence, privacy restrictive-wins and migration requirements;
+- verify Studio-sharing rules still preserve explicit shared/non-shared responsibilities, acyclic dependency direction and revisioned content projection/evidence;
+- verify no runtime/client/server/protocol/DDL/Platform/production or cross-repository path changes.
 
 ### Component/integration
 
@@ -222,20 +230,19 @@ review_finding:
 
 ### Exact-head CI
 
-- current final head: recorded externally on PR #273 after current-main reconciliation
-- required Agent governance / Merge authority / Merge gate: pending exact final head
+- current final task-containing head: recorded externally on PR #273 after this checkpoint commit
+- required Agent governance / Merge authority / Merge gate: pending on that exact head
 
 ## Self-review
 
 - required: YES
-- exact head: external PR evidence after current-main reconciliation
-- method: full changed-file, full-diff, authority/dependency, regression and owner-override review
-- verdict: pending exact-final-head pass
+- pre-checkpoint synchronized head: `7855d55abf964f527d46aec0f921ef0f2b0a1767`
+- result: PASS, zero material findings; final task-containing head requires focused truth-check/self-review after this checkpoint commit
 
 ## Independent review
 
 - required: YES
-- exact head: must be the unchanged final repair head
+- exact head: must be the unchanged final task-containing repair head
 - allowed method: genuinely independent fresh separate agent/session, qualified human reviewer or dedicated audit mechanism that actually evaluates the architecture diff
 - Codex: **NOT TO BE USED** for this continuation per explicit owner instruction
 - verdict: pending
@@ -243,22 +250,22 @@ review_finding:
 ## PR and closeout
 
 - PR #273 remains open and unmerged during repair validation.
-- Prior historical review threads remain resolved; the two current P2 threads may be resolved only after exact-head repair proof.
+- Historical material review threads are repaired and resolved after exact semantic repair proof.
 - No archive or ownership release before merge.
 - **Stable-gate repair budget:** historical ordinary ceiling was 3; current count is `repair_cycles_for_current_gate: 4` under the explicit 2026-08-16 owner override. The override permits continued bounded repair; it does not reset history or weaken any other gate.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: owner-authorized ALPHA-CLIENT-01 repair cycle 4 defined settings scope/precedence and Oteryn Studio low-level sharing boundaries
+last_progress: cycle-4 settings/Studio repairs were reconciled to current main and self-reviewed clean; this commit corrects the durable task checkpoint to the real remaining gates
 status: validating
 branch: docs/arch-e-alpha-client
-head_sha: aba4f9ed3d64f42d605d9ea63243e160651aa0f0
+head_sha: 7855d55abf964f527d46aec0f921ef0f2b0a1767
 pr: 273
 final_head_sha: null
 final_head_frozen_at: null
 ci_trigger_source: push/pull_request
-ci_check_generation: cycle-4-current-main-reconcile-pending
+ci_check_generation: final-task-truth-checkpoint
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -271,8 +278,8 @@ repair_cycles_for_current_gate: 4
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
-blocker: null
-next_action: RECONCILE_CURRENT_MAIN_THEN_EXACT_HEAD_SELF_REVIEW_CI_AND_INDEPENDENT_NON_CODEX_REVIEW
+blocker: independent non-Codex semantic review after exact-head repository validation
+next_action: VALIDATE_FINAL_TASK_HEAD_THEN_INDEPENDENT_NON_CODEX_REVIEW
 ```
 
 `MERGE_AUTHORITY: ARCHITECTURE_COORDINATOR_ONLY`
