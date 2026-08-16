@@ -40,6 +40,12 @@ As allocated, implement:
 
 Do not encode unresolved Reference formulas, naming rules or product policy as SQL constraints. Do not create generic JSON/EAV `misc state` or arbitrary owner/location strings to avoid typed ownership. Do not implement market/bank/depot/mail/entitlement breadth unless separately allocated. Do not let database state become a second live runtime simulation writer.
 
+## Lifecycle / budget / durable handover
+
+Before the first write, create or resume the coordinator-allocated task record with exact base SHA, branch/PR, owned paths/public contracts, migration dependencies, blockers and execution budget. Default foreground budget is **60 minutes**; **120 minutes** requires explicit declaration and justification in the task.
+
+Maintain exactly one compact `## Context checkpoint` with one `next_action`. Before any genuine stop/rotation/blocker response persist exact head, migration/test state, CI/review state, blocker and ownership state. Terminal completion includes post-merge verification, task archive and ownership release.
+
 ## Required tests
 
 - migration up/down/compatibility and interrupted migration cases;
