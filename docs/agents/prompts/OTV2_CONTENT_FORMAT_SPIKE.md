@@ -18,6 +18,10 @@ No production format adoption, protected deployment, Platform/external-repositor
 
 Read live governance/allocation plus ADR-0005, DUR-04, accepted `VSL-CONTENT-01`, SIM, Resource Limits Registry, existing VSL semantic graph/compiler/evidence artifact implementation and legal/asset policies.
 
+## Baseline / dependency resolution
+
+Trusted source order is: system/owner instructions -> root/nearest governance -> live coordinator allocation -> accepted ADR/DUR/VSL/SIM contracts -> live `main` semantic/compiler implementation and measured evidence -> legally permitted external technical evidence. Verify the merged Content seam SHA before writes. Record candidate claims as `PROVEN / DERIVED / UNKNOWN / CONFLICT`; missing benchmark, security, provenance or compatibility evidence remains non-decisive rather than guessed. Sibling output is not consumable until merged or explicitly ordered. External repositories remain read-only.
+
 ## Target outcome
 
 Produce reproducible evidence comparing bounded physical representation candidates for editable World Project and compiled World Bundle concerns. Deliver a decision dossier that allows a later owner decision; do **not** turn any prototype into the canonical permanent format by inertia.
