@@ -2,7 +2,7 @@
 
 ```yaml
 task_id: OTV2-20260816-game-ability-owner-decision
-title: Prepare GAME-ABILITY-01 whole-gate owner decision
+title: Apply GAME-ABILITY-01 whole-gate owner decision
 mode: COORDINATE
 status: validating
 repository: blakinio/Oteryn-v2
@@ -15,92 +15,89 @@ final_head_sha: null
 final_head_frozen_at: null
 owner: OTV2-ABILITY-DECIDE / Architecture Coordinator
 created_at: 2026-08-16T19:37:00+02:00
-updated_at: 2026-08-16T19:44:00+02:00
+updated_at: 2026-08-16T20:23:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
   - docs/agents/tasks/active/OTV2-20260816-game-ability-owner-decision.md
   - docs/architecture/GAME-ABILITY-01_OWNER_DECISION_PACKAGE.md
+  - docs/architecture/GAME-ABILITY-01_WHOLE_GATE_OWNER_ACCEPTANCE_BASELINE.md
 public_contracts:
   - docs/architecture/GAME-ABILITY-01_OWNER_DECISION_PACKAGE.md
+  - docs/architecture/GAME-ABILITY-01_WHOLE_GATE_OWNER_ACCEPTANCE_BASELINE.md
 depends_on:
   - docs/architecture/FOUNDATION_PROGRAMME_CURRENT_STATUS.md
   - docs/architecture/GAME-ABILITY-01_WHOLE_GATE_GAP_ANALYSIS.md
   - docs/architecture/GAME-ABILITY-01_WHOLE_GATE_CONTRACT_CANDIDATE.md
   - docs/agents/evidence/OTV2-20260815-ability-combat-reference-continuity.md
-blocks:
-  - GAME-ABILITY-01 whole-gate owner disposition
+blocks: []
 cross_repository_coordination_id: null
 external_repositories: []
 ```
 
 ## Outcome
 
-Prepare one decision-ready, paper-only package that lets the repository owner explicitly choose `ACCEPT`, `REWORK` or `DEFER` for the merged `GAME-ABILITY-01` whole-gate candidate without silently changing architecture status, Reference parity, implementation status or foreign-domain ownership.
+Apply the owner's explicit `ACCEPT` disposition to the merged `GAME-ABILITY-01` whole-gate candidate through repository governance while preserving `ImplementationStatus=NOT_STARTED`, Agent-A `0/4` fail-closed Reference evidence, foreign-domain ownership and all runtime/production authority exclusions.
 
 ## Architecture and source of truth
 
-- `PROVEN` — trusted task base is `main@d2af53855046df25b4e52edbd5ec14e0513a63ec`.
-- `PROVEN` — canonical current status selects this owner-decision package as the next bounded paper-only programme action and records `GAME-ABILITY-01` whole-gate as `CANDIDATE / LIFECYCLE_CLOSED / NOT_STARTED`.
-- `PROVEN` — PR #268 delivered the merged whole-gate analysis/candidate; its final head was `a65680d9504b3a4e6394ad3bb3dc25c6630cd098` and its lifecycle is closed.
-- `PROVEN` — the accepted GAME-ABILITY partial baselines remain binding for typed effects, targeting/legality, cast/channel/commit, cooldown/charge/conditions, damage/heal composition and effect-family/catalogue boundaries.
-- `PROVEN` — Agent A preserved all four registered `ABILITY_COMBAT` cases fail-closed: target evidence `UNKNOWN`, source/case provenance and legal review `PENDING`, implementation `NOT_STARTED`, parity `PARITY_PENDING_EVIDENCE`.
-- `PROVEN` — current sibling GAME-AI, GAME-INTERACTION and ALPHA-CLIENT packages are merged/lifecycle-closed but remain `PROPOSED`/`CANDIDATE`, not owner-accepted whole gates.
-- `DERIVED` — their newer merged packages preserve the authority/determinism boundaries consumed by GAME-ABILITY and do not create a material contradiction requiring GAME-ABILITY rework.
-- `CONFLICT` — no material accepted-source conflict found during preflight.
-- `UNKNOWN` — exact Reference mechanic facts/formulas/timing, provenance clearance, numeric resource ceilings, concrete continuation policies and executable foreign-domain APIs remain intentionally unresolved and must not be invented by this task.
+- `PROVEN` — task trusted base is `main@d2af53855046df25b4e52edbd5ec14e0513a63ec`.
+- `PROVEN` — PR #268 delivered the reviewed whole-gate candidate at exact head `a65680d9504b3a4e6394ad3bb3dc25c6630cd098`; its candidate lifecycle is closed.
+- `PROVEN` — the decision package on PR #306 completed exact-head preparation validation on pre-decision head `45ce1040bdd8a6938ad28b0f0c305676e50ca33a` with clean self-review, Agent governance PASS, Architecture semantic audit PASS, Merge authority audit PASS, aggregate Merge gate PASS, zero threads and `behind_by=0`.
+- `PROVEN` — on 2026-08-16 the repository owner explicitly selected `ACCEPT` for the bounded owner decision.
+- `PROVEN` — accepted partial GAME-ABILITY baselines remain binding and are not rewritten.
+- `PROVEN` — Agent A remains `0/4` promoted with target `UNKNOWN`, provenance/legal `PENDING`, implementation `NOT_STARTED` and parity `PARITY_PENDING_EVIDENCE`.
+- `PROVEN` — GAME-AI and GAME-INTERACTION remain merged `PROPOSED`; ALPHA-CLIENT remains merged `CANDIDATE`; none is promoted by this acceptance.
+- `DERIVED` — the owner acceptance can be recorded as a later baseline without editing the historical candidate or decision-preparation package, preserving audit history and avoiding retroactive status rewriting.
+- `CONFLICT` — no material accepted-source conflict is open.
+- `UNKNOWN` — exact Reference behavior, numeric limits, concrete continuation policies, foreign-domain APIs and executable proof remain unresolved and block only the affected later implementation/parity claim.
 
 ## Acceptance criteria
 
-- [x] Create one bounded owner-decision artifact on the two declared owned paths only.
-- [x] Separate verified facts, derivations, unknowns, conflicts and recommendation.
-- [x] State the exact acceptance scope and preserve every accepted upstream invariant.
-- [x] Include realistic `ACCEPT`, `REWORK` and `DEFER` outcomes and material trade-offs.
-- [x] Apply the mandatory architecture decision-timing test.
-- [x] Cover player-visible, producer/operational, security, determinism, resource-limit and exploitability consequences.
-- [x] Reconcile current sibling-domain status without treating unaccepted proposals/candidates as canonical architecture.
-- [x] Preserve Agent A 0/4 fail-closed evidence and make architecture acceptance distinct from implementation/parity.
-- [x] Include `DECISIONS_NOT_TAKEN` and evidence-based supersession criteria.
-- [x] End at exactly one owner decision boundary: `ACCEPT | REWORK | DEFER`.
-- [ ] Inspect the final changed-file set and full diff; complete exact-head self-review, required docs/governance CI, review-thread and live-main drift checks.
+- [x] Prepare a decision-ready package with `ACCEPT | REWORK | DEFER` and clean exact-head validation.
+- [x] Receive one explicit owner disposition.
+- [x] Record the owner disposition durably without rewriting historical candidate evidence.
+- [x] Set whole-gate `DecisionStatus=ACCEPTED` only for the candidate's declared semantic architecture scope.
+- [x] Preserve `ImplementationStatus=NOT_STARTED` and zero runtime/client/server/protocol/content/DDL/Platform/production authority.
+- [x] Preserve Agent-A `0/4` fail-closed Reference state and parity separation.
+- [x] Preserve GAME-ITEM/DUR, FND/SIM, GAME-AI, GAME-INTERACTION, ALPHA-CLIENT and ANL ownership boundaries.
+- [x] Declare that the later owner-acceptance baseline supersedes stale `CANDIDATE` wording only for the GAME-ABILITY decision-status axis until global coordinator overlays are reconciled.
+- [ ] Complete full final-diff self-review, exact-head docs/governance CI, review-thread and live-main drift checks after the owner-acceptance commit.
+- [ ] Integrate the acceptance through lawful squash merge if repository gates permit it without unauthorized owner-funded AI.
 
 ## Excluded scope
 
-No runtime/client/server/protocol/content implementation, PostgreSQL DDL/migration, Platform mutation, production/protected-environment action, live data/session/account mutation, proprietary asset import, Reference evidence promotion, parity claim, numeric formula/value freeze, foreign-domain API freeze, coordinator-only global-overlay edit, Codex/OpenAI/owner-funded review invocation, owner disposition inference, merge or lifecycle closeout.
+No runtime/client/server/protocol/content implementation; no PostgreSQL DDL/migration; no Platform or external-repository mutation; no production/protected-environment action; no live data/session/account mutation; no proprietary asset import; no Reference evidence/provenance/parity promotion; no formula/value/resource ceiling freeze; no acceptance of sibling whole gates; no Codex/OpenAI/owner-funded AI invocation; no lifecycle archive before the acceptance delivery is merged.
 
 ## Implementation / findings
 
-Preflight found no active task or open branch claiming either owned path. The only open PR at task start was prompt-package PR #305; it does not own or modify these decision-package paths.
+The pre-decision package remains preserved as historical decision-preparation evidence.
 
-Draft PR #306 now owns exactly the declared task and decision-package paths. It remains draft while the owner disposition is unresolved.
+After the owner selected `ACCEPT`, this task added `GAME-ABILITY-01_WHOLE_GATE_OWNER_ACCEPTANCE_BASELINE.md`. That later baseline is the authoritative decision-status source for GAME-ABILITY until coordinator-owned global status/register surfaces are reconciled after delivery merge.
 
-The source candidate has resolved historical review findings for repeated-timer catch-up, `SKIP_TO_LATEST`, structured cross-domain findings, canonical status axes and evidence locators. Final PR #268 evidence records clean exact-head self-review, green exact-head repository gates and a final owner-authorized independent review with no major issue. That evidence supports decision preparation but does not itself constitute owner acceptance.
-
-Current programme overlays supersede stale delivery-status and sibling-current-status prose embedded in the historical candidate. The semantic rule remains: unaccepted foreign-domain contracts cannot be treated as authority, while affected executable integrations fail closed until their owner contracts are accepted and implemented.
-
-The decision package recommends `ACCEPT` only for the candidate's explicit semantic architecture scope. It does not apply that choice or mutate canonical status.
+The acceptance baseline intentionally does not modify the merged whole-gate candidate. It binds the candidate's declared seam rules, keeps all `DECISIONS_NOT_TAKEN` deferred and preserves every implementation/parity blocker.
 
 ## Validation
 
 ### Focused
 
-- command/run: repository governance/link/schema validation through the existing docs/architecture merge-gate path
-- result: pending final PR head
+- command/run: existing architecture/docs governance and semantic audit workflows
+- result: pending on the post-acceptance final head
 
 ### Component/integration
 
-- command/run: `NOT_APPLICABLE` — this task changes only architecture decision-preparation documentation and grants no executable authority
+- command/run: `NOT_APPLICABLE` — architecture acceptance documentation only; no executable component changed
 - result: `NOT_APPLICABLE`
 
 ### E2E
 
-- scenario: `NOT_APPLICABLE` — there is no runtime/user-executable behavior change to exercise
+- scenario: `NOT_APPLICABLE` — no executable user/runtime outcome changed
 - result: `NOT_APPLICABLE`
 
 ### Exact-head CI
 
-- final head: recorded after final content commit in immutable PR/check evidence
-- trigger source: pull-request event observation
+- final head: pending freeze after this acceptance-state commit
+- trigger source: pull_request event observation
 - workflow/run/job: pending
 - runner assignment: pending
 - classification: pending
@@ -108,14 +105,14 @@ The decision package recommends `ACCEPT` only for the candidate's explicit seman
 
 ## Self-review
 
-- exact head: recorded after final content commit in immutable PR review evidence
+- exact head: pending freeze
 - method/reviewer: OTV2-ABILITY-DECIDE implementing/coordinating agent; full changed-file/full-diff review
 - material findings: pending
 - verdict: pending
 
 ## Independent review
 
-- required: `NO` — this delivery prepares an owner decision but does not itself accept/supersede architecture, reduce a safety gate, expand authority or change executable behavior; the underlying whole-gate candidate already carries its historical exact-head review evidence
+- required: `NO` for the acceptance-record delivery itself — the owner is the decision authority; this PR records the explicit owner disposition and changes no candidate semantics, safety gate, repository authority or executable behavior. The underlying whole-gate candidate retains its independently reviewed exact-head evidence.
 - exact head: `NOT_APPLICABLE`
 - method/auditor: `NOT_APPLICABLE`
 - material findings: `NOT_APPLICABLE`
@@ -123,17 +120,17 @@ The decision package recommends `ACCEPT` only for the candidate's explicit seman
 
 ## PR and closeout
 
-- changed-file review: pending final full-diff audit
+- changed-file review: pending final exact-head audit
 - unresolved review threads: pending final check
-- related/superseded PRs: PR #268 is merged/lifecycle-closed source evidence; PR #305 is disjoint prompt-package work
-- protected auto-merge: `NOT_APPLICABLE` before explicit owner disposition
-- merge commit/result: pending owner disposition; this task must remain unmerged while the decision is unresolved
-- ownership release: pending terminal owner disposition and normal lifecycle closeout
+- related/superseded PRs: PR #268 is merged/lifecycle-closed candidate evidence; PR #305 remains disjoint prompt-package work
+- protected auto-merge: not configured
+- merge commit/result: pending final exact-head gates
+- ownership release: only after merge plus separate bounded lifecycle closeout
 
 ## Context checkpoint
 
 ```yaml
-last_progress: decision package persisted and draft PR #306 opened on the bounded two-path scope
+last_progress: owner explicitly selected ACCEPT; durable whole-gate owner-acceptance baseline added to PR #306
 status: validating
 branch: docs/game-ability-owner-decision-20260816
 head_sha: null
@@ -141,7 +138,7 @@ pr: 306
 final_head_sha: null
 final_head_frozen_at: null
 ci_trigger_source: pull_request
-ci_check_generation: null
+ci_check_generation: owner-acceptance
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -153,7 +150,7 @@ identical_failure_retries: 0
 repair_cycles_for_current_gate: 0
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
-owner_action_required: ACCEPT | REWORK | DEFER after verified decision package handoff
+owner_action_required: null
 blocker: null
-next_action: freeze PR #306 exact head and complete full-diff, CI, thread and live-main drift validation
+next_action: freeze the post-acceptance PR #306 head, run final full-diff/self-review/CI/thread/drift validation, then squash-merge if lawful without unauthorized owner-funded AI
 ```
