@@ -40,7 +40,7 @@ BOOTSTRAP [serial]
   -> ABILITY + INTERACTION + AI after Foundation/SIM/Domain/Content
   -> CLIENT after compatible production Foundation seam exists
   -> MOVEMENT after Foundation/SIM/Domain/Content/Interaction/Client/QA
-  -> COMBAT after Foundation/SIM/Domain/Content/Ability/Interaction/Durability/Client/QA
+  -> COMBAT only after MOVEMENT + Foundation/SIM/Domain/Content/Ability/Interaction/Durability/Client/QA
 
 CHANNEL = later after Foundation/Domain/Durability
 CONTENT FORMAT SPIKE = evidence lane after Content seam
@@ -97,14 +97,24 @@ These may overlap only when exact allocations prove no path/registry ownership c
 
 ### Integration gates
 
-- **Movement** after Foundation + SIM + Domain + Content + Interaction + Client + QA are integration-ready.
-- **Combat** after Foundation + SIM + Domain + Content + Ability + Interaction + Durability + Client + QA are integration-ready. AI may be integrated when ready but cannot become direct commit authority.
+- **Movement** after Foundation + SIM + Domain + Content + Interaction + Client + QA are integration-ready. Merge Movement as the first gameplay integration gate.
+- **Combat** only after merged Movement plus Foundation + SIM + Domain + Content + Ability + Interaction + Durability + Client + QA are integration-ready. AI may be integrated when ready but cannot become direct commit authority.
 
 ### Later lanes
 
 - **Channel** after Foundation/Domain/Durability when multichannel product switching is scheduled; numeric PERF/OPS values remain separately gated.
 - **Analytics** only after concrete producer event families exist.
 - **Content Format Spike** produces evidence/dossier only and cannot select the permanent format without later owner acceptance.
+
+## Lifecycle / budget / durable handover
+
+Before the first programme write, create or resume a coordinator task record with exact base SHA, branch/PR, owned coordinator paths, dependencies, blockers and execution budget. For every worker allocation require the same bounded task visibility.
+
+Default foreground execution budget is **60 minutes**. A **120-minute** worker/coordinator budget is allowed only when its task explicitly declares and justifies it under repository policy. Never invent an unbounded run.
+
+Keep one compact `## Context checkpoint` in every active task with exactly one `next_action`. Before any genuine stop/rotation/blocker response, persist at least the exact head, PR, validation/review state, blocker, ownership state and one next action so another session can resume from Git rather than chat.
+
+Terminal completion of each task requires task archive plus ownership release. Do not leave active-task locks behind after merge/closeout.
 
 ## Review and safety gates
 
