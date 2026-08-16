@@ -18,6 +18,10 @@ No production/protected environment, external-repository/Platform write, Referen
 
 Read live governance/allocation plus `SIM-DETERMINISM-01`, FND-03, DUR-03/04, GAME-ABILITY, GAME-AI, Resource Limits Registry and all current runtime/domain crate boundaries.
 
+## Baseline / dependency resolution
+
+Trusted source order is: system/owner instructions -> root/nearest governance -> live coordinator allocation -> accepted SIM/FND/DUR/gameplay contracts -> live `main` code/registries/CI -> external evidence. Verify every prerequisite merge SHA from the allocation. Record material facts as `PROVEN / DERIVED / UNKNOWN / CONFLICT`; unresolved deterministic or authority prerequisites fail closed. Sibling branch output is not a dependency until merged or explicitly ordered. External repositories remain read-only.
+
 ## Target outcome
 
 Implement reusable protocol/persistence/UI-neutral deterministic simulation primitives so gameplay workers do not each invent arithmetic, RNG, time, canonical ordering or replay semantics.
