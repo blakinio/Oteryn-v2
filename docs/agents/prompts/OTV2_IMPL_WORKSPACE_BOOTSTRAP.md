@@ -18,6 +18,10 @@ No Codex/owner-funded AI, production/protected environment, Platform write, exte
 
 Read live root governance, `OTERYN_V2_IMPLEMENTATION_EXECUTOR_DAG.md`, FND-01, ADR-0001/0002/0008/0011/0015, current status/register, Cargo workspace, `workspace-boundaries.toml`, `tools/architecture-check`, Rust/merge CI and the exact coordinator allocation.
 
+## Baseline / dependency resolution
+
+Trusted source order is: system/owner instructions -> root/nearest repository governance -> live coordinator allocation -> accepted architecture/contracts -> live `main` code/registries/CI -> external evidence. Verify every prerequisite SHA and path claim from live GitHub before planning writes. Record material facts in the task as `PROVEN / DERIVED / UNKNOWN / CONFLICT`; `UNKNOWN` or `CONFLICT` at an authority/safety prerequisite fails closed. Sibling-branch output is not a dependency until merged or explicitly ordered by the coordinator. External repositories remain read-only.
+
 ## Current baseline to verify
 
 Expected pre-bootstrap facts, which must be rechecked live:
