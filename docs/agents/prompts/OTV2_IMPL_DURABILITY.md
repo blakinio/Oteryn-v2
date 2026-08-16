@@ -18,6 +18,10 @@ No production database migration, protected environment, Platform/external-repos
 
 Read live governance/allocation plus ADR-0004, DUR-01, DUR-02, DUR-03, FND-ID/FND-03/FND-04, GAME-CHAR, GAME-ITEM, ANL-01, SIM, failure scenarios, Resource Limits Registry and current bootstrap/foundation implementation seams.
 
+## Baseline / dependency resolution
+
+Trusted source order is: system/owner instructions -> root/nearest governance -> live coordinator allocation -> accepted DUR/FND/GAME/SIM/ANL contracts -> live `main` migrations/code/registries/CI -> external evidence. Verify prerequisite Foundation/Domain merge SHAs and exact migration baseline before writes. Record material facts as `PROVEN / DERIVED / UNKNOWN / CONFLICT`; authority, fence, value or migration prerequisites that remain `UNKNOWN/CONFLICT` fail closed. Sibling branch output is not a dependency until merged or explicitly ordered. External repositories remain read-only.
+
 ## Target outcome
 
 Implement the minimum profile-neutral durable substrate required by first native runtime/VSL work while preserving exact idempotency, fencing, crash recovery and item/value conservation.
