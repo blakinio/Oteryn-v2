@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import subprocess
 from pathlib import Path
@@ -71,7 +72,7 @@ def audit_alpha_client() -> list[str]:
     candidate = read("docs/architecture/ALPHA-CLIENT-01_NATIVE_CLIENT_ARCHITECTURE_CONTRACT_CANDIDATE.md")
     audit_common(task, 4)
 
-    checks: list[tuple[str, str]] = [
+    for fragment, label in (
         ("ImplementationStatus: `NOT_STARTED`", "implementation truth"),
         ("Runtime authorization: **NONE**", "runtime authority"),
         ("one-time Game Login Ticket", "admission chain"),
@@ -91,7 +92,7 @@ def audit_alpha_client() -> list[str]:
         ("negative tests proving authoring-only/server-only fields cannot enter the runtime client-safe projection", "Studio negative evidence"),
         ("Every durable setting MUST declare a semantic scope", "settings declared scope"),
         ("`ACCOUNT`", "account scope"),
-        ("`OS_USER`", "OS user scope"),
+        ("`OS_USER`", "OS-user scope"),
         ("`INSTALLATION`", "installation scope"),
         ("`DEVICE`", "device scope"),
         ("the client MUST treat the account layer as absent rather than inventing local account authority", "account authority fail closed"),
@@ -101,8 +102,7 @@ def audit_alpha_client() -> list[str]:
         ("requires an explicit versioned migration", "settings migration"),
         ("source scope, destination scope, conflict resolution and rollback/recovery", "migration completeness"),
         ("MUST NOT silently re-enable diagnostics", "diagnostics persistence"),
-    ]
-    for fragment, label in checks:
+    ):
         require(candidate, fragment, label)
 
     for fragment in (
@@ -150,12 +150,12 @@ def audit_analytics_integrity() -> list[str]:
         ("Runtime/client/Platform/PostgreSQL/production authority: **NONE**", "ANL-02 authority"),
         ("NO_MATERIAL_REGRESSION_SUPPORTED` is a **fail-closed disposition**", "fail-closed no-regression"),
         ("REGRESSION_EVIDENCE_INSUFFICIENT", "insufficient-evidence disposition"),
-        ("quality/completeness", "quality prerequisite"),
-        ("sample/exposure", "sample prerequisite"),
-        ("comparability", "comparability prerequisite"),
-        ("reconciliation", "reconciliation prerequisite"),
-        ("privacy", "privacy prerequisite"),
-        ("baseline/method/threshold", "method/provenance prerequisite"),
+        ("**quality/completeness**", "quality prerequisite"),
+        ("**sample/exposure**", "sample prerequisite"),
+        ("**comparability**", "comparability prerequisite"),
+        ("**reconciliation/finality**", "reconciliation prerequisite"),
+        ("**privacy/suppression sufficiency**", "privacy prerequisite"),
+        ("**method/provenance**", "method/provenance prerequisite"),
         ("warning-only green acceptance is forbidden", "warning cannot stay green"),
         ("proof no analytical/dashboard path can mutate gameplay", "read-only negative evidence"),
     ):
@@ -163,12 +163,12 @@ def audit_analytics_integrity() -> list[str]:
 
     require_regex(
         c2,
-        r"If an evaluation is attempted.*?(?:fails|failed).*?REGRESSION_EVIDENCE_INSUFFICIENT",
+        r"If a material regression evaluation is attempted.*?any applicable precondition.*?not affirmatively satisfied.*?REGRESSION_EVIDENCE_INSUFFICIENT",
         "attempted evaluation failure disposition",
     )
     forbid_regex(
         c2,
-        r"PARTIAL.*?NO_MATERIAL_REGRESSION_SUPPORTED.*?(?:allowed|permitted|may)",
+        r"PARTIAL[^\n]{0,180}NO_MATERIAL_REGRESSION_SUPPORTED[^\n]{0,120}(?:allowed|permitted|may)",
         "partial evidence green acceptance",
     )
 
@@ -200,11 +200,17 @@ def audit_analytics_integrity() -> list[str]:
         r"referral.*?require.*?preceding substantive disposition.*?same review generation",
         "same-generation referral ordering",
     )
-    forbid_regex(
+
+    list_match = re.search(
+        r"Allowed \*\*substantive evidentiary dispositions\*\*.*?(?=\n`REFERRED_TO_SECURITY_GM_PRODUCT_OR_ENGINE_OWNER` is)",
         c3,
-        r"Allowed \*\*substantive evidentiary dispositions\*\*.*?REFERRED_TO_SECURITY_GM_PRODUCT_OR_ENGINE_OWNER\s*—",
-        "referral inside substantive disposition list",
+        re.IGNORECASE | re.DOTALL,
     )
+    if list_match is None:
+        die("substantive disposition list boundary could not be isolated")
+    if "REFERRED_TO_SECURITY_GM_PRODUCT_OR_ENGINE_OWNER" in list_match.group(0):
+        die("referral appears inside the substantive evidentiary disposition list")
+
     return [
         "ANL-02 read-only evidence authority",
         "fail-closed no-regression prerequisites and insufficient-evidence disposition",
@@ -251,19 +257,18 @@ def main() -> None:
         "ai_service_used": False,
         "owner_funded_ai_used": False,
     }
-    rendered = json.dumps(result, indent=2, sort_keys=True)
-    print(rendered)
+    print(json.dumps(result, indent=2, sort_keys=True))
     print(f"SEMANTIC_AUDIT_{verdict}: profile={profile} exact_head={args.head_sha}")
 
-    summary = Path(__import__("os").environ.get("GITHUB_STEP_SUMMARY", ""))
-    if str(summary):
-        summary.write_text(
+    summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+    if summary_path:
+        Path(summary_path).write_text(
             "## Architecture semantic audit\n\n"
-            f"- method: dedicated deterministic independent semantic audit workflow\n"
+            "- method: dedicated deterministic independent semantic audit workflow\n"
             f"- profile: `{profile}`\n"
             f"- exact head: `{args.head_sha}`\n"
             f"- verdict: **{verdict}**\n"
-            f"- owner-funded AI: `false`\n\n"
+            "- owner-funded AI: `false`\n\n"
             + "\n".join(f"- PASS: {item}" for item in checks)
             + "\n",
             encoding="utf-8",
