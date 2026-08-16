@@ -48,6 +48,14 @@ Fail closed on invalid TLS identity, framing, revision, ticket/admission/reconne
 
 Bound all peer-controlled lengths/counts/depths before allocation using the accepted registry. Fuzz/property/negative coverage is required for exposed parser/codec boundaries where practical.
 
+## Lifecycle / budget / durable handover
+
+Before the first write, create or resume the lane task record named by the coordinator allocation with exact base SHA, branch/PR, `owned_paths`, public contracts/registries, dependencies, blockers and execution budget.
+
+Default foreground budget is **60 minutes**; use **120 minutes** only when the task explicitly declares and justifies it. Maintain one compact `## Context checkpoint` with exactly one `next_action`. Before any real stop/rotation/blocker response persist exact head, CI/review state, blocker and ownership state.
+
+Terminal completion requires post-merge verification, task archive and ownership release.
+
 ## Validation
 
 Required final evidence includes:
