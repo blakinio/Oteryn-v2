@@ -298,41 +298,49 @@ SIM evidence may support `REPLAY_CORROBORATED_DEFECT` when exact replay provenan
 
 ## 12. Case/evidence lifecycle
 
-ANL-03 defines a read-only analytical lifecycle, not enforcement workflow:
+ANL-03 defines a read-only analytical lifecycle, not enforcement workflow. Signal-level disposition is mandatory even when a case is not opened, and referral is a separate routing action rather than an evidence conclusion:
 
 ```text
 SIGNAL_EMITTED
 -> TRIAGED
--> CASE_OPENED (optional; one case may group multiple signals)
--> EVIDENCE_ASSEMBLED
--> HUMAN_DISPOSITION
--> CLOSED or REFERRED_TO_FOREIGN_OWNER
+   -> SIGNAL_DISPOSITION_RECORDED -> [ROUTING_REFERRAL_RECORDED] -> SIGNAL_CLOSED
+   OR
+   -> CASE_OPENED
+      -> EVIDENCE_ASSEMBLED / UPDATED
+      -> HUMAN_EVIDENTIARY_DISPOSITION
+      -> [ROUTING_REFERRAL_RECORDED]
+      -> CLOSED
+      -> REOPENED (when later evidence/review requires it)
 ```
 
 ### Required lifecycle properties
 
-- original signals are immutable historical evidence except for separately versioned annotation/status fields;
-- grouping signals into a case preserves every source signal reference;
+- original signals are immutable historical evidence except for separately versioned annotation/status projections; the immutable analytical history is never replaced by a mutable latest status;
+- every triaged signal receives a substantive evidentiary disposition for that review generation, including when no case is opened;
+- grouping signals into a case preserves every source signal reference and prior signal-level disposition/history;
 - every material lifecycle transition and reviewer/operator action appends an immutable ordered audit record; a mutable latest-status projection may exist for convenience but cannot be the only history;
-- audited actions include at minimum signal triage, case open, assignment/reassignment when assignment exists, evidence addition/removal/supersession, state transition, close, reopen, referral and final disposition;
-- each audit record carries the privacy-appropriate reviewer/operator identity or pseudonymous privileged identity, role/capability, timestamp and ordered occurrence, previous state where applicable, new state/action, reason/rationale where applicable, linked evidence references, detector/rule/model/config revision where relevant, and case/correlation identity;
+- audited actions include at minimum signal triage, signal disposition/close/reopen, case open, assignment/reassignment when assignment exists, evidence addition/removal/supersession, state transition, close, reopen, referral and final disposition;
+- each audit record carries the privacy-appropriate reviewer/operator identity or pseudonymous privileged identity, role/capability, timestamp and ordered occurrence, previous state where applicable, new state/action, reason/rationale where applicable, linked evidence references, detector/rule/model/config revision where relevant, and signal/case/correlation identity;
+- a referral audit record additionally references the preceding substantive evidentiary disposition for the same review generation and the target foreign owner;
 - evidence removal or supersession changes the active evidence set without erasing the historical audit event or original evidence reference; underlying evidence retention/deletion remains governed by its owning privacy/retention/legal-hold policy;
 - false-positive dispositions and reviewer actions remain reconstructible and auditable from the immutable history;
 - privileged identity resolution is separately authorized and access-audited;
 - enforcement/remediation outcome may be linked by foreign reference but is not executed by ANL-03.
 
-### Analytical disposition vocabulary
+### Substantive evidentiary disposition vocabulary
 
-A case may close as:
+A signal or case, as applicable, records one truthful substantive evidentiary disposition from:
 
 - `SUPPORTED_INTEGRITY_OR_DEFECT_FINDING`;
+- `SUPPORTED_SECURITY_FINDING`;
 - `NOT_SUPPORTED_FALSE_POSITIVE`;
 - `INCONCLUSIVE_INSUFFICIENT_EVIDENCE`;
 - `DATA_QUALITY_OR_PIPELINE_FAILURE`;
-- `DUPLICATE_OR_ALREADY_COVERED`;
-- `REFERRED_TO_SECURITY_GM_PRODUCT_OR_ENGINE_OWNER`.
+- `DUPLICATE_OR_ALREADY_COVERED`.
 
-These are evidence dispositions, not sanctions.
+`REFERRED_TO_SECURITY_GM_PRODUCT_OR_ENGINE_OWNER` is **not** an evidence disposition. It is an optional routing action only and cannot stand alone as the terminal analytical classification. Both no-case and case-based referral require a preceding substantive disposition for the same review generation. If positive support is unavailable, referral—when still appropriate for foreign-owner context—follows the truthful inconclusive/data-quality/false-positive/duplicate disposition rather than replacing it.
+
+Referral does not strengthen evidence quality, turn a statistical anomaly into deterministic proof, imply target-owner acceptance or authorize sanction. `SUPPORTED_SECURITY_FINDING` is likewise non-sanctioning human-reviewed analytical support; it preserves the underlying statistical/model caveats unless a separate accepted deterministic invariant is proven.
 
 ## 13. False-positive controls
 
@@ -343,13 +351,15 @@ A conforming design requires:
 1. no automatic sanction, value mutation or gameplay effect from detector output;
 2. exact detector/rule/model/config revision retained with every signal;
 3. input evidence/checkpoint references retained within policy;
-4. every material reviewer action, lifecycle transition and false-positive disposition is preserved in immutable ordered case audit history;
-5. detector threshold/model changes create new versioned semantics rather than rewriting historical signals;
-6. suppression/allow-list policy, if later authorized, is versioned, scoped and auditable and cannot become a hidden enforcement bypass;
-7. false positives are measurable as detector-quality evidence where ground truth/reviewer disposition is suitable;
-8. missing required authoritative/durable evidence may constrain the conclusion to inconclusive/data-quality; missing or opted-out optional client diagnostics are non-adverse and cannot increase score, confidence, severity, review/enforcement priority or guilt inference;
-9. a data-pipeline defect is classified separately from subject behavior;
-10. a reviewed false positive remains available according to its retention policy for detector evaluation; it is not silently deleted to improve reported accuracy.
+4. every material reviewer action, lifecycle transition and false-positive disposition is preserved in immutable ordered signal/case audit history;
+5. every no-case triage records a substantive terminal signal disposition rather than disappearing from case statistics;
+6. referral is an auditable routing action attached to a substantive evidentiary disposition and can never replace that disposition;
+7. detector threshold/model changes create new versioned semantics rather than rewriting historical signals;
+8. suppression/allow-list policy, if later authorized, is versioned, scoped and auditable and cannot become a hidden enforcement bypass;
+9. false positives are measurable as detector-quality evidence where ground truth/reviewer disposition is suitable;
+10. missing required authoritative/durable evidence may constrain the conclusion to inconclusive/data-quality; missing or opted-out optional client diagnostics are non-adverse and cannot increase score, confidence, severity, review/enforcement priority or guilt inference;
+11. a data-pipeline defect is classified separately from subject behavior;
+12. a reviewed false positive remains available according to its retention policy for detector evaluation; it is not silently deleted to improve reported accuracy.
 
 Exact detector quality thresholds are not frozen here.
 
@@ -401,12 +411,13 @@ At minimum, separate finite profiles are required for:
 - raw event/audit evidence;
 - detector features/projections;
 - signals;
+- signal dispositions and routing records;
 - case evidence/annotations;
-- immutable case lifecycle/reviewer audit history;
+- immutable signal/case lifecycle/reviewer audit history;
 - privileged identity-resolution access logs;
 - exported evidence packages.
 
-Legal hold is an explicit authorized exception, never default unlimited retention. Case-history immutability means recorded audit events cannot be rewritten into a latest-only narrative; it does not override an applicable authorized privacy deletion/anonymization requirement for referenced personal evidence.
+Legal hold is an explicit authorized exception, never default unlimited retention. Lifecycle-history immutability means recorded audit events cannot be rewritten into a latest-only narrative; it does not override an applicable authorized privacy deletion/anonymization requirement for referenced personal evidence.
 
 ## 16. Access/credential boundary
 
@@ -418,7 +429,7 @@ A future ANL-03 detector/investigation service must operate with read-only privi
 - deployment authority;
 - rollback/confiscation authority.
 
-If a downstream workflow needs enforcement, ANL-03 emits a referral/evidence reference to the foreign owner. The foreign owner revalidates current authority/evidence under its own contract.
+If a downstream workflow needs enforcement or remediation, ANL-03 first records its substantive evidentiary disposition and then may emit a separate referral/evidence reference to the foreign owner. The foreign owner revalidates current authority/evidence under its own contract; referral does not imply acceptance or authority transfer.
 
 ANL-04 retains the explicit AI/read-only investigation boundary from ADR-0006.
 
@@ -434,6 +445,7 @@ Before implementation acceptance, every externally controlled/high-growth detect
 - graph traversal vertices/edges/depth/fan-out;
 - join expansion;
 - signals emitted per run/window/subject;
+- signal lifecycle/audit actions per retained signal;
 - case evidence references/attachments;
 - concurrent detector/backfill jobs;
 - model/rule artifact size;
@@ -460,6 +472,8 @@ A detector may lag, pause, quarantine or fail. It may not block authoritative ga
 | Investigator identity mapping unavailable | no fallback to unauthorized raw mapping |
 | Privacy/retention/access policy missing | no collection/projection/disclosure for that class |
 | Evidence package exceeds bound | paginate/partition/redact; never bypass bound by privileged role |
+| Triaged signal with no case | record substantive signal disposition and close/review-generation action; no silent disappearance |
+| Referral requested without substantive disposition | reject/defer routing until a truthful substantive evidentiary disposition exists for the same review generation |
 | Suspected violation with incomplete evidence | `INCONCLUSIVE_INSUFFICIENT_EVIDENCE`, not automatic sanction |
 
 ## 19. Failure-scenario mapping
@@ -469,7 +483,7 @@ A detector may lag, pause, quarantine or fail. It may not block authoritative ga
 - `FS-EVENT-OUT-OF-ORDER`: **PASS** — bounded reconcile/defer, no fabricated provenance.
 - `FS-AUDIT-MUTATION-MISMATCH`: **PASS at analytical semantic level** — mismatch becomes named integrity/data-quality evidence and never silent repair; physical prevention remains DUR-02/03.
 - `FS-ANALYTICS-PRIVACY-POLICY`: **PASS** — missing purpose/privacy/retention/access blocks collection/projection/disclosure; optional diagnostic opt-out/absence remains non-adverse.
-- `FS-DETECTOR-FALSE-POSITIVE`: **PASS at candidate semantic level** — no auto-sanction/mutation; detector version, evidence, immutable case-transition/reviewer history and disposition remain auditable.
+- `FS-DETECTOR-FALSE-POSITIVE`: **PASS at candidate semantic level** — no auto-sanction/mutation; detector version, evidence, immutable signal/case transition/reviewer history, substantive no-case disposition and referral-as-routing semantics remain auditable.
 - `FS-INVESTIGATION-MUTATION-ATTEMPT`: **DEFERRED_BY_ACCEPTED_GATE** for runtime proof to ANL-04/implementation; ANL-03 preserves read-only credential requirements.
 
 Architecture PASS does not claim runtime evidence.
@@ -492,12 +506,12 @@ Architecture PASS does not claim runtime evidence.
 - Resource/security implication: version/digest metadata must be retained within bounded policy; historical outputs cannot silently drift.
 - Supersession evidence: implementation may refine identity representation, not historical semantic immutability.
 
-### ANL03-D3 — Case lifecycle ends at human evidence disposition/referral, not enforcement
+### ANL03-D3 — Evidence disposition precedes optional referral; enforcement remains foreign
 
 - Must decide now: **YES**.
 - Blocks: safe security tooling and future ANL-04 AI composition.
-- Owner: ANL-03 for evidence workflow; sanction/GM/product action foreign.
-- Failure/security implication: false positive cannot directly become punitive mutation, and every material lifecycle/reviewer action remains reconstructible from immutable audit history.
+- Owner: ANL-03 for evidence workflow and routing record; sanction/GM/product action foreign.
+- Failure/security implication: false positive, inconclusive or data-quality outcomes cannot disappear into a naked referral, and a supported finding cannot directly become punitive mutation; every material lifecycle/reviewer/routing action remains reconstructible from immutable audit history.
 - Supersession evidence: any automated enforcement would require a separately accepted higher-authority security/product contract and explicit override of ADR-0006; not an ANL-03 local change.
 
 ### ANL03-D4 — Absence is proof only under proven durable completeness
@@ -560,8 +574,8 @@ cross_domain_finding:
   target_owner: security/GM/product-policy owner to be assigned by coordinator
   severity: P2
   evidence: ADR-0006 human review/authorization boundary; issue #264 forbids sanctions and requires downstream GM/security dependencies
-  conflict_or_gap: ANL-03 can close evidence and referral semantics, but no accepted contract in this worker scope defines how a confirmed security case authorizes account/player sanctions, confiscation or remediation.
-  required_before: any production workflow performs enforcement/remediation from an ANL-03 case
+  conflict_or_gap: ANL-03 can close evidence and separate referral routing semantics, but no accepted contract in this worker scope defines how a supported security/integrity finding authorizes account/player sanctions, confiscation or remediation.
+  required_before: any production workflow performs enforcement/remediation from an ANL-03 signal/case referral
   worker_action: REPORT_ONLY
 ```
 
@@ -595,6 +609,6 @@ cross_domain_finding:
 
 ## 23. Candidate conclusion
 
-`RECOMMENDATION` — ANL-03 is mature enough for a bounded candidate contract because detector reproducibility, evidence quality, false-positive safety, case/referral lifecycle and read-only authority can be frozen independently of concrete algorithms/storage/producer payload IDs.
+`RECOMMENDATION` — ANL-03 is mature enough for a bounded candidate contract because detector reproducibility, evidence quality, false-positive safety, substantive signal/case disposition, separate referral routing and read-only authority can be frozen independently of concrete algorithms/storage/producer payload IDs.
 
 Concrete integrity/security coverage remains fail-closed on producer event registration and foreign enforcement/business-domain contracts. This worker draft is nonbinding until Architecture Coordinator acceptance; implementation remains `NOT_STARTED`.
