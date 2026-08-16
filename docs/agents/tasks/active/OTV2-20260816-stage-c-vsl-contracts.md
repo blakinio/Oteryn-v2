@@ -13,7 +13,7 @@ pr: 311
 base_sha: bf2a2ae279516f62626a5d8f4dc1aeb587535c62
 owner: Architecture Coordinator
 created_at: 2026-08-16T21:16:12+02:00
-updated_at: 2026-08-16T21:23:32+02:00
+updated_at: 2026-08-16T21:25:08+02:00
 execution_budget_minutes: 120
 owned_paths:
   - docs/agents/tasks/active/OTV2-20260816-stage-c-vsl-contracts.md
@@ -26,19 +26,6 @@ public_contracts:
   - docs/architecture/VSL-COMBAT-01_MINIMAL_COMBAT_DEATH_LOOT_CONTRACT_CANDIDATE.md
   - docs/architecture/VSL-CONTENT-01_MINIMAL_NATIVE_CONTENT_SLICE_CONTRACT_CANDIDATE.md
   - docs/architecture/OTERYN_V2_STAGE_C_VSL_OWNER_DECISION_PACKAGE_20260816.md
-depends_on:
-  - docs/architecture/FND-02_PROTOCOL_OTERYN_V1_CONTRACT.md
-  - docs/architecture/FND-03_RUNTIME_EXECUTION_CONTRACT.md
-  - docs/architecture/FND-04_IDENTITY_GAME_SESSION_ADMISSION_CHARACTER_LEASE_CONTRACT.md
-  - docs/architecture/DUR-03_ITEM_TRANSACTION_AND_ANTI_DUPLICATION_CONTRACT.md
-  - docs/architecture/DUR-04_CONTENT_WORLD_AND_SCRIPTING_CONTRACT.md
-  - docs/architecture/SIM-DETERMINISM-01_AUTHORITATIVE_SIMULATION_CONTRACT.md
-  - docs/architecture/GAME-CHANNEL-01_CHANNEL_PRODUCT_POLICY_CONTRACT.md
-  - docs/architecture/GAME-CHAR-01_STAGE_B_OWNER_BASELINE.md
-  - docs/architecture/GAME-ABILITY-01_WHOLE_GATE_OWNER_ACCEPTANCE_BASELINE.md
-  - docs/architecture/OTERYN_V2_REMAINING_FIRST_WAVE_OWNER_ACCEPTANCE_BASELINE_20260816.md
-  - docs/architecture/ADR-0005-native-world-format-and-oteryn-studio.md
-  - docs/architecture/ADR-0007-native-end-to-end-test-platform.md
 blocks:
   - explicit owner dispositions for VSL-MOVE-01, VSL-COMBAT-01, VSL-CONTENT-01
   - final lifecycle/current-status reconciliation
@@ -55,36 +42,36 @@ Close only the minimum Stage-C architecture needed so implementation agents can 
 
 - `PROVEN` — `main@bf2a2ae279516f62626a5d8f4dc1aeb587535c62` contains owner-accepted GAME-ABILITY, GAME-INTERACTION, ALPHA-CLIENT, GAME-AI and ANL-02/03 architecture.
 - `PROVEN` — FND-03 already makes current `ChannelRuntime` / `InstanceRuntime` the owner of local position, visibility, creatures, combat, transient effects and ground/corpse runtime state.
-- `PROVEN` — FND-02 already owns CommandRef, connection-generation fencing, server sequencing, state-domain revisions and snapshot/delta/resync semantics.
+- `PROVEN` — FND-02 owns CommandRef, connection-generation fencing, server sequencing, state-domain revisions and snapshot/delta/resync semantics.
 - `PROVEN` — DUR-03 owns durable item/value creation/location/transfer/idempotency; a runtime ground/corpse projection is never a second durable value authority.
 - `PROVEN` — DUR-04 forbids selecting the final World Project/World Bundle physical encoding before its bounded format spike/benchmark evidence.
 - `PROVEN` — Reference ABILITY_COMBAT evidence remains 0/4 promoted and fail closed; exact Global formulas/mechanics cannot be invented for the slice.
 - `PROVEN` — current status/register identify `VSL-MOVE-01`, `VSL-COMBAT-01` and `VSL-CONTENT-01` as unaccepted gates that block their corresponding executors.
 
-## Architecture strategy
-
-```text
-freeze authority / identity / commit / recovery / evidence boundaries
-use explicit non-shipping fixtures where target values are unknown
-measure reversible physical technology
-then refine
-```
-
-The slice contracts do not reopen accepted foundation/gameplay architecture or absorb later alpha/expansion systems.
-
-## Candidate results
+## Candidate result
 
 ### VSL-MOVE-01
 
-Candidate names the current ChannelRuntime/InstanceRuntime as the sole local movement/relocation authority; distinguishes local step/local relocation from scope handoff; uses source-derived revision-bound occurrence identity; composes post-movement/stateful triggers with GAME-INTERACTION; derives bounded visibility/interest as server state under FND-02 reconciliation; and leaves exact Reference movement/LOS/timing evidence-gated.
+Current ChannelRuntime/InstanceRuntime remains the sole local movement/relocation authority; local step/local relocation is distinct from scope handoff; occurrence identity is source-derived and revision-bound; post-movement/stateful triggers compose with GAME-INTERACTION; visibility/interest is bounded server state under FND-02 reconciliation; exact Reference movement/LOS/timing stays evidence-gated.
 
 ### VSL-COMBAT-01
 
-Candidate keeps GAME-ABILITY as the only combat effect pipeline; defines stable creature death identity; treats corpse as runtime projection while durable loot materializes through DUR-03; gives single-principal XP settlement to GAME-CHAR progression authority; uses GAME-INTERACTION + DUR-03 for retry-safe pickup; and permits only explicit non-shipping structural fixture profiles while Reference values remain unknown.
+GAME-ABILITY remains the only effect pipeline; one stable creature-death descendant feeds separate idempotent DUR-03 loot and GAME-CHAR XP workflows; pickup uses GAME-INTERACTION + DUR-03; no distributed death/loot/XP transaction is invented; explicit non-shipping fixture profiles allow structural proof without guessing Reference formulas/rates.
 
 ### VSL-CONTENT-01
 
-Candidate freezes the minimum semantic content/compiler/projection/loader/activation seam needed by movement/combat and permits a bounded noncanonical VSL fixture/evidence artifact profile. It explicitly preserves DUR-04's mandatory format spike and later owner format-selection decision before permanent physical encoding.
+The slice freezes the minimum canonical semantic graph/compiler/projection/loader/activation seam and permits a bounded noncanonical VSL fixture/evidence artifact profile. DUR-04's required final-format spike and later owner format decision remain mandatory before permanent physical encoding.
+
+## Review/repair history
+
+- Initial draft exact head `54cfa3325027825b6b792409b013809208ff33e6`:
+  - Architecture semantic audit `31967471644`: **PASS**;
+  - Merge authority audit `31967471656`: **PASS**;
+  - Agent governance `31967471554`: **FAIL — metadata only**.
+- Exact governance finding from job `95214731885`: PR title exceeded the repository 72-character limit.
+- Repair: PR #311 title changed from `docs(architecture): define Stage-C movement combat content slice contracts` to `docs(architecture): define Stage-C VSL contracts`.
+- No Stage-C semantic file changed for that metadata finding.
+- This task-truth checkpoint intentionally creates the next exact-head generation so fresh governance/merge checks consume the repaired metadata; it is not a no-op CI trigger.
 
 ## Acceptance criteria
 
@@ -96,8 +83,8 @@ Candidate freezes the minimum semantic content/compiler/projection/loader/activa
 - [x] VSL-CONTENT preserves DUR-04 physical-format spike requirement.
 - [x] Real-boundary Tier 1/Tier 2 proof requirements are explicit and do not allow mocks to count as terminal evidence.
 - [x] One owner-decision package presents `ACCEPT | REWORK | DEFER` for all three gates and recommends `ACCEPT` without inferring acceptance.
-- [ ] Exact-head five-path full-diff self-review is clean.
-- [ ] Agent governance / Architecture semantic audit / Merge authority audit / `Merge gate / validate` pass on one unchanged final head.
+- [ ] Exact-head five-path full-diff self-review is clean on the post-metadata-repair generation.
+- [ ] Fresh Agent governance / Architecture semantic audit / Merge authority audit / `Merge gate / validate` pass on one unchanged final head.
 - [ ] Zero unresolved review threads/requested changes and `behind_by=0` before owner handoff.
 
 ## Hard exclusions
@@ -114,15 +101,14 @@ IMPLEMENTATION_AUTHORITY: NONE
 ## Context checkpoint
 
 ```yaml
-last_progress: three Stage-C candidates plus bundled owner-decision package persisted; draft PR #311 opened
+last_progress: Stage-C semantic audit passed; metadata-only title-length failure repaired; this checkpoint starts fresh exact-head validation generation
 status: validating
 branch: docs/stage-c-vsl-contracts-20260816
 issue: 310
 pr: 311
-base_sha: bf2a2ae279516f62626a5d8f4dc1aeb587535c62
-owner_action_required: null until exact-head validation is complete
+owner_action_required: null until fresh exact-head validation is complete
 blocker: null
-next_action: inspect full five-path diff, repair any material finding, freeze exact head, obtain required draft CI, then ask for one bundled owner disposition
+next_action: run fresh exact-head governance/semantic/merge checks, complete full-diff self-review/thread/drift check, then request one bundled owner disposition
 executor_prompts: HOLD
 ```
 
