@@ -47,6 +47,12 @@ Before executable acceptance, concrete finite limits must exist for applicable r
 
 Exact Global formulas, geometry, values and mechanic edge cases remain governed by promoted evidence. Use explicit non-shipping fixture definitions for structural proof where necessary. Never label fixture output as Reference parity.
 
+## Lifecycle / budget / durable handover
+
+Before the first write, create or resume the coordinator-allocated task with exact base SHA, branch/PR, owned paths/public contracts, dependencies/blockers and execution budget. Default foreground budget is **60 minutes**; **120 minutes** requires explicit declaration and justification.
+
+Maintain exactly one compact `## Context checkpoint` with one `next_action`. Persist exact head, validation/review state, blocker, active semantic/profile revisions and ownership state before any genuine stop/rotation. Terminal completion includes post-merge verification, task archive and ownership release.
+
 ## Validation
 
 - deterministic occurrence/revision lineage tests;
