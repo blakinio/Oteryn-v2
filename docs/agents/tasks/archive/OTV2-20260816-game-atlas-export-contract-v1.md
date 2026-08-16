@@ -20,7 +20,7 @@ delivery_merge_sha: f19f543144693960c66e4ebff384d323ccdcbb56
 owner: SENIOR OTERYN ECOSYSTEM ARCHITECT / MIGRATION COORDINATOR
 owner_state: released_after_closeout
 created_at: 2026-08-16T09:30:43+02:00
-updated_at: 2026-08-16T09:42:00+02:00
+updated_at: 2026-08-16T09:44:00+02:00
 execution_budget_minutes: 60
 owned_paths: []
 historical_owned_paths:
@@ -67,7 +67,7 @@ The contract freezes semantic requirements required before producer/consumer imp
 - [x] Issue #286 closed as completed.
 - [x] Delivery source branch was auto-deleted and verified absent.
 - [x] Runtime/component/browser E2E is `NOT_APPLICABLE` because the delivery changed documentation/semantic contract only.
-- [ ] Closeout PR #289 passes exact-head governance/merge-gate checks and merges, removing the active task path from protected `main`.
+- [ ] Closeout PR #289 passes a fresh exact-head governance/merge-gate generation and merges, removing the active task path from protected `main`.
 
 ## Delivery validation
 
@@ -80,6 +80,13 @@ Final delivery head: `36075da1698df0be6e1c89edc2cce9e08f3e21e6`.
 - Self-review PR review `4945689816`: PASS; 0 material findings; 0 unresolved review threads.
 - Runtime/component/E2E: `NOT_APPLICABLE` — no executable producer/consumer/browser/deployment behavior changed.
 - Independent different-agent review: `NOT_REQUIRED` for this documentation-only formalization of already accepted architecture; no runtime protocol, auth/session, durable-data, production, repository-authority or governance-gate behavior changed.
+
+## Closeout validation
+
+- Initial closeout Agent governance run `31934553639`, job `95134345744`: FAIL at PR metadata preflight only; exact log findings were missing `## Scope` and `## Validation` headings.
+- The PR body was repaired without changing the then-current head. This archive update records the repair and intentionally creates a new exact head so a fresh pull-request CI generation evaluates the corrected metadata.
+- No repository validation step was reached in the failed generation; it is not counted as successful closeout evidence.
+- Fresh exact-head CI: pending on the head containing this record.
 
 ## Excluded scope
 
@@ -107,7 +114,7 @@ Final delivery head: `36075da1698df0be6e1c89edc2cce9e08f3e21e6`.
 ## Context checkpoint
 
 ```yaml
-last_progress: PR #287 merged; issue #286 closed; delivery branch absent; closeout PR #289 created
+last_progress: closeout PR metadata repaired after explicit governance finding; new exact-head CI generation required
 status: completed
 pr: 287
 closeout_pr: 289
@@ -117,11 +124,11 @@ ci_run_ids:
   - 31934241122
   - 31934241126
   - 31934241117
-ci_job_ids:
-  - 95133750537
+failed_closeout_ci_run_ids:
+  - 31934553639
 owner_action_required: null
 blocker: null
-next_action: merge lifecycle-only PR #289 after its exact-head governance/merge-gate generation passes; then claim the next migration-readiness task separately rather than changing this accepted contract or transferring repositories
+next_action: require fresh exact-head closeout governance/merge-gate PASS, merge PR #289, verify closeout branch deletion and active-task absence, then claim the next migration-readiness task separately
 ```
 
 ## Post-merge closeout
