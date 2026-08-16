@@ -25,6 +25,7 @@ Every lane MUST preserve:
 - DUR-01/02/03 durability, idempotency, anti-duplication and crash-recovery semantics;
 - DUR-04 content/compiler/bundle/script authority and final-format evidence gate;
 - SIM deterministic numeric/RNG/order/replay requirements;
+- accepted GAME-CHANNEL / GAME-CHAR / GAME-ITEM semantics;
 - accepted GAME-ABILITY / GAME-INTERACTION / GAME-AI / ALPHA-CLIENT / ANL contracts;
 - accepted Stage-C movement/combat/content contracts once merged;
 - QA-E2E real-boundary proof rules;
@@ -54,33 +55,48 @@ Therefore the first implementation PR MUST be an atomic, reviewed transition fro
 OTV2-IMPL-COORD
   |
   v
-OTV2-IMPL-BOOTSTRAP                         SERIAL GATE
+OTV2-IMPL-BOOTSTRAP                                    SERIAL GATE
   |
-  +--> OTV2-IMPL-FOUNDATION                 protocol/runtime/admission
-  +--> OTV2-IMPL-DURABILITY                 persistence substrate
-  +--> OTV2-IMPL-CONTENT                    minimum VSL compiler/loader
-  +--> OTV2-IMPL-CLIENT                     native gameplay integration seam
-  +--> OTV2-IMPL-QA                         real-boundary test platform
-          |
-          v
-      OTV2-IMPL-MOVE                        first authoritative movement slice
-          |
-          v
-      OTV2-IMPL-COMBAT                      death/loot/XP/pickup slice
+  +--> OTV2-IMPL-FOUNDATION                            protocol/runtime/admission
+  +--> OTV2-IMPL-SIM                                   deterministic numeric/RNG/time/replay core
+  +--> OTV2-IMPL-DOMAIN                                Character/Item semantic core
+  +--> OTV2-IMPL-CONTENT                               minimum VSL compiler/loader
+  +--> OTV2-IMPL-QA                                    evidence platform shell as seams appear
 
-OTV2-CONTENT-FORMAT-SPIKE                   evidence-only after content seam
-OTV2-IMPL-ANALYTICS                         later, after producer event families exist
+FOUNDATION + DOMAIN
+  +--> OTV2-IMPL-DURABILITY                            persistence/idempotency/value substrate
+
+FOUNDATION + SIM + DOMAIN + CONTENT
+  +--> OTV2-IMPL-ABILITY                               one typed effect engine
+  +--> OTV2-IMPL-INTERACTION                           retry-safe trigger/workflow engine
+  +--> OTV2-IMPL-AI                                    bounded proposal-only AI/spawn/path engine
+
+FOUNDATION + compatible client protocol seam
+  +--> OTV2-IMPL-CLIENT                                native gameplay client integration
+
+FOUNDATION + SIM + DOMAIN + CONTENT + INTERACTION + CLIENT + QA
+  +--> OTV2-IMPL-MOVE                                  first authoritative movement slice
+
+FOUNDATION + SIM + DOMAIN + CONTENT + ABILITY + INTERACTION + DURABILITY + CLIENT + QA
+  +--> OTV2-IMPL-COMBAT                                death/loot/XP/pickup slice
+
+FOUNDATION + DOMAIN + DURABILITY
+  +--> OTV2-IMPL-CHANNEL                               later channel switching/product-policy lane
+
+CONTENT semantic/compiler seam
+  +--> OTV2-CONTENT-FORMAT-SPIKE                       evidence-only
+
+concrete producer event registrations exist
+  +--> OTV2-IMPL-ANALYTICS                             later read-only analytics lane
 ```
 
-The coordinator MAY overlap Foundation, Durability, Content, Client and QA only after bootstrap has merged and an exact path/allocation record proves their owned paths do not overlap. Movement and Combat remain serial integration gates unless the coordinator proves a narrower non-overlapping decomposition.
+The coordinator MAY overlap lanes only after bootstrap has merged and an exact path/allocation record proves their owned paths do not overlap. Public registry/workspace-policy/stable-ID mutations are serialized even when code workers otherwise run in parallel.
 
-## 5. Lane contract — `OTV2-IMPL-BOOTSTRAP`
+Movement and Combat are integration gates. Their worker must consume already-merged generic engines rather than implementing SIM/Ability/Interaction/AI/Domain/DUR architecture incidentally inside the VSL.
 
-### Goal
+## 5. `OTV2-IMPL-BOOTSTRAP`
 
-Create the first real server-side implementation shape and update repository policy/tooling atomically so accepted FND implementation has immediate consumers and CI can validate it.
-
-### Must own
+Create the first real server-side implementation shape and update repository policy/tooling atomically so accepted implementation has immediate consumers and CI can validate it.
 
 The coordinator allocates exact paths. The lane normally includes the minimum necessary set from:
 
@@ -88,76 +104,137 @@ The coordinator allocates exact paths. The lane normally includes the minimum ne
 - `workspace-boundaries.toml`;
 - `tools/architecture-check` policy model/tests;
 - Rust/merge CI assumptions affected by moving beyond pre-native state;
-- minimum real server application/composition root and immediate-consumer crates required by accepted FND contracts;
+- minimum real server application/composition root and immediate-consumer seams required by accepted FND contracts;
 - nearest `AGENTS.md` files for newly high-risk ownership areas;
 - focused bootstrap tests and migration/readiness documentation.
 
-### Must not do
+No gameplay mechanics, PostgreSQL production schema, broad client gameplay enablement, final content format, fake protocol adapter or placeholder crate with no real consumer.
 
-No gameplay movement/combat/content semantics, no PostgreSQL production schema, no broad client gameplay enablement, no final content format, no fake protocol adapter, no placeholder crate with no real consumer.
+Completion requires code and machine policy to agree on one exact merged workspace shape with build/test/Clippy/supply-chain CI green and Canary still absent.
 
-### Completion
-
-A merged bootstrap head must make the new workspace shape truthful and machine-enforced, with build/test/Clippy/supply-chain CI green. Pre-native guards removed or narrowed only where superseded by real accepted implementation; Canary remains absent.
-
-## 6. Lane contract — `OTV2-IMPL-FOUNDATION`
+## 6. `OTV2-IMPL-FOUNDATION`
 
 Implement the minimum FND-ID/FND-02/FND-03/FND-04 stack necessary for a real local game-server endpoint and native client/server test path:
 
 - typed identifiers;
-- FND-02 foundation schema/codegen/codec/framing/TLS profile and resource limits;
+- FND-02 foundation schema/codegen/codec/framing/TLS profile and accepted resource limits;
 - CommandRef, connection generation, server sequence, state revision, snapshot/delta/resync foundation;
 - authoritative runtime owner/lane/lifecycle scaffolding;
 - admission/GameSession/CharacterLease/reconnect fencing;
 - typed foundation errors and failure scenarios;
-- no gameplay command/state IDs invented by this lane unless an owning domain contract is integrated in the same coordinator-approved boundary.
+- no gameplay command/state IDs invented by this lane.
 
 Protocol/admission/session changes are high risk and require genuinely independent final review plus negative/replay/fencing evidence.
 
-## 7. Lane contract — `OTV2-IMPL-DURABILITY`
+## 7. `OTV2-IMPL-SIM`
 
-Implement only accepted profile-neutral durability needed by the first slice:
+Implement protocol/persistence/UI-neutral deterministic simulation machinery consumed by gameplay lanes:
+
+- simulation profile revision;
+- checked exact/fixed-scale numeric helpers and named rounding semantics;
+- purpose-isolated retry-stable gameplay RNG;
+- semantic time normalization;
+- stable deterministic ordering/comparators;
+- canonical state/hash/replay-support seams.
+
+SIM does not own gameplay formulas or product values.
+
+## 8. `OTV2-IMPL-DOMAIN`
+
+Implement protocol/persistence-neutral semantic domain core required by the first slice:
+
+- Character identity/lifecycle/build/progression primitives needed by VSL;
+- Item definition/instance legality and typed semantic location/custody vocabulary;
+- exact revision/profile/content interpretation seams;
+- typed errors/transitions;
+- explicit VSL fixtures where Reference facts remain unknown.
+
+GAME-CHAR/ITEM semantics remain distinct from physical DB mechanics, wire representation and UI.
+
+## 9. `OTV2-IMPL-DURABILITY`
+
+Implement accepted profile-neutral durability needed by first native runtime/VSL work:
 
 - durable ID representation;
-- PostgreSQL migration/test substrate where explicitly implementation-authorized;
-- Character/session/value transaction abstractions required by FND and VSL;
-- DUR-03 stable transaction/idempotency/reconciliation/anti-dup semantics;
+- migration/test substrate where explicitly implementation-authorized;
+- Character/session persistence adapters required by current consumers;
+- DUR-03 stable TransactionId/OperationId/idempotency/reconciliation/anti-dup semantics;
+- typed item/value durability and runtime↔durable prepare/commit/reconcile seam;
 - outbox/audit coupling where mandatory;
-- isolated migration, rollback, concurrency and crash-recovery tests.
+- crash/restart/concurrency/rollback evidence.
 
-No market/bank/depot/entitlement breadth. Physical schemas must not encode unresolved Reference formulas or generic misc-state escape hatches. High-risk persistence/value changes require genuinely independent review.
+No market/bank/depot/entitlement breadth. High-risk persistence/value changes require genuinely independent review.
 
-## 8. Lane contract — `OTV2-IMPL-CONTENT`
+## 10. `OTV2-IMPL-CONTENT`
 
 Implement the minimum typed canonical semantic graph and deterministic compiler/loader seam required by Stage-C:
 
 - stable content keys/revisions/provenance;
 - bounded synthetic/VSL content fixture builder/source;
 - deterministic server-authoritative and allowlisted client-safe projections;
-- `VSL_BUNDLE_EVIDENCE_PROFILE` or equivalent explicitly non-production evidence artifact;
+- non-production `VSL_BUNDLE_EVIDENCE_PROFILE` or equivalent;
 - corruption/oversize/incompatibility rejection;
 - staged all-or-nothing activation;
-- movement collision/local-relocation, one creature/spawn, one ability, one loot table, one XP fixture, one materializable item and required presentation data.
+- fixture world/collision/relocation/creature/spawn/ability/loot/XP/item/presentation data required by VSL.
 
-The lane MUST NOT select permanent World Project/Bundle encoding. That remains the content-format spike + owner format decision.
+The lane MUST NOT select permanent World Project/Bundle encoding.
 
-## 9. Lane contract — `OTV2-IMPL-CLIENT`
+## 11. `OTV2-IMPL-ABILITY`
 
-Implement native gameplay integration only after the production FND seam is real:
+Implement the owner-accepted one typed authoritative ability/effect engine:
 
-- client protocol transport/codec consumer;
-- admission/session/reconnect integration;
+- revision-bound occurrence lineage;
+- legality/target/cast/channel/commit semantics;
+- owner-scoped commit groups;
+- cooldown/charge/condition state;
+- typed damage/heal/effect composition;
+- bounded future/repeated work and continuation/recovery;
+- deterministic reaction/proc descendants;
+- proposal-only client/content/script/AI adapters.
+
+Exact Reference formulas remain evidence-gated.
+
+## 12. `OTV2-IMPL-INTERACTION`
+
+Implement bounded successor-child/trigger/retry/reconciliation workflows:
+
+- stable recursive child identity;
+- deterministic ordering/RNG;
+- truthful pending/committed/rejected outcomes;
+- bounded recursion/work;
+- typed trigger dispatch;
+- explicit adapters to Movement/Ability/Item/DUR owners;
+- no generic distributed transaction or foreign-state direct mutation.
+
+## 13. `OTV2-IMPL-AI`
+
+Implement deterministic bounded AI/spawn/path proposals:
+
+- finite versioned AI state;
+- bounded deterministic perception/decision;
+- proposal-only pathfinding with stale-result rejection;
+- spawn lifecycle/retry/provenance;
+- typed intents routed through Movement/Ability;
+- no direct value/position/effect authority.
+
+## 14. `OTV2-IMPL-CLIENT`
+
+Implement native gameplay integration only against real merged Foundation/domain seams:
+
+- production protocol consumer;
+- admission/session/reconnect;
 - semantic input to typed command intent;
-- authoritative state-domain projection/reconciliation;
-- bounded settings/diagnostics/privacy behavior;
-- no client-authoritative movement/combat/item/value;
-- fail-closed gameplay capability until compatible server/content/runtime requirements are present.
+- authoritative result/state reconciliation;
+- client-safe content revisions;
+- settings/privacy/diagnostics;
+- no client-authoritative gameplay;
+- fail-closed capability until all requirements are compatible.
 
-Tier-2 evidence is mandatory for supported native-client journeys; production-binary claims require Tier 3 where the milestone requires it.
+Tier 2 evidence is mandatory for supported client journeys.
 
-## 10. Lane contract — `OTV2-IMPL-QA`
+## 15. `OTV2-IMPL-QA`
 
-Implement the smallest real-boundary QA-E2E platform required to prove foundation and VSL work:
+Implement the smallest real-boundary QA-E2E platform required to prove Foundation and VSL work:
 
 - deterministic scenario/evidence model;
 - exact artifact/revision/seed/topology/fault evidence;
@@ -167,59 +244,72 @@ Implement the smallest real-boundary QA-E2E platform required to prove foundatio
 - no mock success accepted as terminal proof;
 - no test adapter in production artifacts.
 
-QA may start after real production wire/runtime seams exist and should provide harness primitives before Movement/Combat terminal acceptance.
+QA may evolve incrementally as real production seams merge.
 
-## 11. Lane contract — `OTV2-IMPL-MOVE`
+## 16. `OTV2-IMPL-MOVE`
 
-Implement the accepted Stage-C movement slice:
+Implement the accepted Stage-C movement slice by consuming Foundation/SIM/Domain/Content/Interaction/Client/QA:
 
 - owner-local authoritative step and same-scope relocation;
 - static exact-revision collision/spatial legality;
-- current-runtime dynamic legality;
-- stable movement occurrence lineage;
-- post-movement GAME-INTERACTION children;
+- dynamic current-runtime legality;
+- stable occurrence lineage;
+- post-movement Interaction children;
 - bounded deterministic visibility/interest state domain;
-- typed FND-02 command/result/state registration owned jointly with this domain;
-- client intent/reconciliation only;
+- owning FND-02 command/result/state registration;
+- client intent/reconciliation;
 - deterministic component tests plus real Tier 1/Tier 2 evidence.
 
-Cross-Channel/Instance handoff remains outside the local movement slice unless separately allocated under accepted FND/Channel authority.
+Cross-scope handoff remains separate.
 
-## 12. Lane contract — `OTV2-IMPL-COMBAT`
+## 17. `OTV2-IMPL-COMBAT`
 
-Implement the accepted first creature combat/death/value slice:
+Implement the accepted first creature combat/death/value slice by consuming merged generic engines:
 
-- GAME-ABILITY as the only combat effect pipeline;
-- one stable creature death occurrence per lifecycle generation;
-- deterministic loot selection using purpose-isolated SIM RNG and exact content revisions;
-- DUR-03 stable durable loot materialization and ambiguity reconciliation;
-- separate idempotent single-principal GAME-CHAR XP settlement;
-- GAME-INTERACTION + GAME-ITEM + DUR-03 pickup;
-- authoritative client results/state projection;
-- typed protocol registrations owned with the domain;
+- GAME-ABILITY as the only effect pipeline;
+- one stable death occurrence per creature lifecycle generation;
+- deterministic SIM loot selection with exact content revisions;
+- DUR-03 durable loot materialization/reconciliation;
+- separate idempotent single-principal Character XP settlement;
+- Interaction + Item + DUR pickup;
+- owning protocol registrations and authoritative client projection;
 - crash/lost-response/retry/no-dup tests plus Tier 1/Tier 2 evidence.
 
-Use only explicit non-shipping fixture formula/rate values until Reference evidence is promoted. No PvP/party/boss/market breadth.
+Fixture formula/rate values remain non-shipping until Reference evidence is promoted. Independent review is mandatory for exercised durable loot/value invariants.
 
-## 13. Evidence lane — `OTV2-CONTENT-FORMAT-SPIKE`
+## 18. `OTV2-IMPL-CHANNEL`
 
-This is an evidence-producing implementation experiment, not a permanent-format implementation authorization.
+Later, after Foundation/Domain/Durability, implement accepted game-domain Channel product semantics:
 
-Compare bounded candidate physical representations against accepted DUR-04/ADR-0005 criteria: deterministic output, source-control diffability, partial/atomic authoring, bounded parsing/decompression, streaming locality, patchability, compatibility, corruption recovery and tooling ergonomics. Keep benchmark fixtures legally safe. Produce a decision dossier; do not silently ship the winning prototype as canonical format before owner acceptance.
+- typed ChannelRef/product identity;
+- recommendation/explicit-target semantics;
+- optional bounded pre-admission queue semantics where allocated;
+- reconnect vs voluntary switch classification;
+- hard switch locks;
+- durable Character+World anti-hopping guard transitions;
+- destination admission/guard consistency.
 
-## 14. Later lane — `OTV2-IMPL-ANALYTICS`
+PERF owns numeric capacity; OPS owns production orchestration/hysteresis. Exact switch cooldown stays blocked until accepted numeric product evidence exists. High-risk session/channel semantics require independent review.
 
-Do not start as a full analytics implementation while `GAME_EVENT_FOUNDATION_REGISTRY.json` has no concrete domain producer families.
+## 19. Evidence lane — `OTV2-CONTENT-FORMAT-SPIKE`
 
-After Foundation/Move/Combat/DUR lanes register typed producer events, implement read-only ANL-02/03 ingestion/quality/invariant/reporting slices. Analytics must never mutate gameplay, sanction players or invent producer authority. Missing/partial evidence remains fail-closed for regression/integrity conclusions.
+Compare bounded physical representation candidates against accepted DUR-04/ADR-0005 criteria: deterministic output, diffability, partial/atomic authoring, bounded parsing/decompression, streaming locality, patchability, compatibility, corruption recovery and tooling ergonomics.
 
-## 15. Coordinator responsibilities
+Keep fixtures legally safe and produce a decision dossier. The spike MUST NOT silently make its winner the permanent format.
+
+## 20. Later lane — `OTV2-IMPL-ANALYTICS`
+
+Do not start full analytics while concrete domain producer event families are absent.
+
+After producers register typed events, implement read-only ANL-02/03 ingestion/quality/invariant/reporting. Analytics may not mutate gameplay, sanction players or invent producer schemas. Missing/partial evidence remains fail-closed.
+
+## 21. Coordinator responsibilities
 
 `OTV2-IMPL-COORD` MUST:
 
 1. read live main and this programme before every allocation wave;
 2. maintain one canonical implementation allocation/status record with exact branches, PRs, owned paths, dependencies and merge order;
-3. serialize public-contract/registry/workspace-policy mutations;
+3. serialize public-contract/registry/workspace-policy/stable-ID mutations;
 4. prevent two workers from owning the same path or stable ID range concurrently;
 5. merge only exact-head validated PRs under repository policy;
 6. require high-risk independent reviews where root `AGENTS.md` requires them;
@@ -228,22 +318,31 @@ After Foundation/Move/Combat/DUR lanes register typed producer events, implement
 9. keep `PROD-ENTITLEMENTS-01` excluded until separately accepted;
 10. stop on a genuinely unresolved owner/authority decision rather than letting a worker improvise.
 
-## 16. Suggested invocation order
+## 22. Suggested invocation order
 
-After this programme is released by a merged prompt-package delivery:
+After this programme is released by a merged prompt-package delivery, the user should normally start only:
 
 ```text
-1. Oteryn: implementation coordinator
-2. Coordinator runs OTV2-IMPL-BOOTSTRAP serially
-3. Coordinator releases Foundation / Durability / Content / Client / QA as dependencies permit
-4. Coordinator releases Movement
-5. Coordinator releases Combat
-6. Coordinator may release Content Format Spike and later Analytics when prerequisites exist
+Oteryn: implementation coordinator
 ```
 
-The user should normally start only the coordinator. Direct worker aliases exist for recovery/manual allocation but MUST verify an active coordinator allocation naming their exact lane and paths before writing.
+Coordinator sequence:
 
-## 17. Completion truth
+```text
+1. Bootstrap serially.
+2. Allocate Foundation + SIM + Domain + Content + QA where paths permit.
+3. Allocate Durability after Foundation/Domain seams are stable enough.
+4. Allocate Ability + Interaction + AI after Foundation/SIM/Domain/Content.
+5. Allocate Client after compatible production Foundation seam exists.
+6. Allocate Movement after its prerequisites are integration-ready.
+7. Allocate Combat after Ability/Interaction/Durability and other prerequisites are integration-ready.
+8. Allocate Channel later when multichannel product implementation is needed and numeric prerequisites permit.
+9. Run Content Format Spike as evidence; run Analytics only after producer events exist.
+```
+
+Direct worker aliases exist for recovery/manual allocation but MUST verify an active coordinator allocation naming their exact lane and paths before writing.
+
+## 23. Completion truth
 
 `architecture accepted` != `implementation complete` != `Reference parity` != `production ready`.
 
