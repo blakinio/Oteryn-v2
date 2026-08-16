@@ -46,6 +46,12 @@ Event/encounter durable multi-actor ownership and controlled-actor reward/contri
 
 Exact target aggro, path, spawn timing/geometry and behavior remain evidence-gated. Structural VSL may use explicit deterministic non-shipping AI fixtures.
 
+## Lifecycle / budget / durable handover
+
+Before the first write, create or resume the coordinator-allocated task with exact base SHA, branch/PR, owned paths/public contracts, dependencies/blockers and execution budget. Default foreground budget is **60 minutes**; **120 minutes** requires explicit declaration and justification.
+
+Maintain exactly one compact `## Context checkpoint` with one `next_action`. Persist exact head, validation/review state, blocker, pending/stale auxiliary work evidence and ownership state before any genuine stop/rotation. Terminal completion includes post-merge verification, task archive and ownership release.
+
 ## Validation
 
 - deterministic same-state/same-input decision tests;
