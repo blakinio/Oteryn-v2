@@ -322,16 +322,77 @@ Gameplay-relevant hot reload is not authorized by this candidate.
 
 Physical bundle encoding, patch/delta format, CDN and signing implementation remain with their owning programmes.
 
+### 14.1 Oteryn Studio low-level sharing boundary
+
+Oteryn Studio and the native game client MAY share **low-level, representation-neutral, non-authoritative components** when doing so removes duplicate interpretation without turning either product composition root into the other's API surface.
+
+A shared low-level component MAY contain only responsibilities that remain valid without a live player session or Studio authoring UI, for example:
+
+- stable content identifiers, revisions and client-safe schema/value types;
+- deterministic content decoding/validation and read-only package/index primitives;
+- math/geometry/color/image/asset primitives with no gameplay authority;
+- renderer-backend-neutral resource/format descriptors and bounded utility algorithms;
+- platform-neutral input normalization primitives that do not choose gameplay actions or product keybind policy;
+- generic bounded serialization, validation and compatibility utilities.
+
+The following MUST remain product-specific and MUST NOT become a shared Studio contract merely for reuse convenience:
+
+- `apps/client` or Studio composition/application roots;
+- Platform Identity, Game Login Ticket, Game Gateway, gameplay transport, admission, `GameSessionId`, `CharacterLease` or reconnect/session authority;
+- the live client's protocol reconciliation reducer and non-authoritative world projection lifecycle;
+- player navigation/screens, gameplay intent mapping, product accessibility/UX policy and player-specific settings resolution;
+- live scene/camera/animation/effects lifetime tied to an active gameplay projection;
+- diagnostic/privacy upload policy, updater/install authority or production release activation;
+- Studio authoring commands, draft/editor state, undo/redo/history, validation UX or authoring-only metadata.
+
+Dependency direction MUST remain acyclic: the game client and Studio MAY both depend on explicitly shared low-level crates/packages, but shared low-level components MUST NOT depend on `apps/client`, a Studio application root, live-session state or product UI. The client MUST NOT depend on the Studio application to interpret a shipped client-safe bundle, and Studio MUST NOT import client-only composition/session types as its durable authoring model.
+
+Where Studio authors content that is later consumed by the client, authoring-only state MUST be projected/exported through an accepted revisioned content schema; the shipping client consumes only the client-safe projection. Shared parsing/validation code MAY be used on both sides, but the exported bytes/schema and compatibility rules remain the independent product boundary and MUST be testable without either UI application.
+
+If Studio is later hosted in another repository/process/package boundary, cross-repository publication/versioning is a separate owner/coordinator decision; this candidate grants no cross-repository write or release authority.
+
+Conformance evidence MUST include dependency-graph/layer checks preventing client↔Studio application coupling, compile/test coverage of shared low-level components without either product composition root, client-safe content compatibility fixtures across Studio export/client ingest where applicable, and negative tests proving authoring-only/server-only fields cannot enter the runtime client-safe projection.
+
+Decision timing: the **sharing boundary** MUST be decided now because accidental sharing of client session/UI types would turn implementation convenience into a long-lived Studio API, while duplicated content interpretation would create drift. Exact shared crate/package names and concrete renderer/input libraries remain implementation decisions.
+
 ## 15. Configuration and filesystem contract
 
 The client filesystem model MUST distinguish at least:
 
 ```text
 installed immutable release payload
-durable per-user configuration/privacy state
+account-scoped portable preference state when an accepted account-profile owner exists
+OS-user-scoped durable privacy/local-user preference state
+installation-scoped updater/install state
+device-scoped hardware/presentation state
 rebuildable cache/staging state
 bounded diagnostic/crash spool
 ```
+
+Every durable setting MUST declare a semantic scope in its schema. A setting MUST NOT silently migrate between `ACCOUNT`, `OS_USER`, `INSTALLATION` and `DEVICE` scopes merely because its physical storage path changes.
+
+Minimum scope model:
+
+- `ACCOUNT` — portable, non-secret preferences intentionally designed to follow the authenticated account across devices, such as semantic action bindings or accessibility preferences when product policy marks them portable. Account persistence/synchronization requires an accepted Platform/profile owner and contract; until that exists, the client MUST treat the account layer as absent rather than inventing local account authority.
+- `OS_USER` — preferences/privacy choices that belong to the local operating-system user across accounts on that OS profile. The durable diagnostics automatic-upload opt-out belongs here by default so switching game accounts cannot silently re-enable uploads. Local language/accessibility choices MAY also live here when not declared portable-account settings.
+- `INSTALLATION` — install/update/release-channel and installation-wide state that describes the installed product instance, not a player identity. Installation state MUST NOT override a more restrictive privacy choice or impersonate account/device preferences.
+- `DEVICE` — hardware/presentation choices tied to the current machine/device identity or capability, including selected audio output, monitor/window placement, renderer/GPU preference and device-specific input identifiers. A missing device-scoped value falls back without being uploaded as account identity.
+
+For user-preference keys that are explicitly allowed at more than one scope, deterministic resolution MUST be schema-declared. The default precedence is:
+
+```text
+ephemeral session override
+  > DEVICE
+  > OS_USER
+  > ACCOUNT
+  > product default
+```
+
+`INSTALLATION` is not a generic higher-precedence user-settings overlay; it applies only to keys explicitly declared installation-scoped and to compatibility/update constraints owned by the release mechanism.
+
+Privacy/security fail-closed rules override ordinary preference precedence. In particular, when multiple applicable scopes can express permission versus opt-out, the **most restrictive valid privacy choice wins**; an account or device preference MUST NOT re-enable diagnostics disabled at OS-user/installation policy scope. Mandatory release/protocol/content compatibility constraints also win over convenience settings and MUST NOT be bypassed by a local override.
+
+A semantic key that changes scope or precedence requires an explicit versioned migration. Migration MUST define source scope, destination scope, conflict resolution and rollback/recovery; it MUST NOT silently copy device identifiers, secrets or privacy consent into an account-portable profile.
 
 OS-specific paths MUST be resolved by the platform/filesystem boundary, not hard-coded throughout application/UI logic.
 
@@ -341,7 +402,7 @@ A normal update/restart/settings migration MUST NOT silently re-enable diagnosti
 
 Reusable credentials, gameplay admission material and reconnect secrets MUST NOT be written to general configuration, logs, content cache or crash spool.
 
-Exact directories, registry behavior, install scope and credential-vault technology are deferred.
+Exact directories, registry behavior, install scope, physical account-profile synchronization mechanism and credential-vault technology are deferred.
 
 ## 16. Logging and crash diagnostics contract
 
@@ -540,21 +601,23 @@ Implementation claiming conformance to this candidate should prove at minimum:
 12. semantic input routing prevents UI/text events from unintended gameplay egress;
 13. projection-to-scene derivation, camera/animation/lighting/particles/effects and renderer/device/resource recreation remain non-authoritative, revision-safe, reconstructable and bounded;
 14. incompatible client-safe content fails closed before world activation and scene/audio assets cannot escape active release/revision compatibility;
-15. audio provider/device lifecycle, bounded-resource behavior, compatible client-safe audio assets, non-authoritative cue mapping, degradation/recovery and settings/accessibility behavior are proven when audio is implemented;
-16. config migration is recoverable and preserves diagnostic opt-out;
-17. logs/crash packages reject/redact prohibited secret/private data before upload;
-18. update activation cannot launch an accepted mixed partial release and rollback remains compatibility-checked;
-19. Tier 1 headless, Tier 2 native and Tier 3 release evidence are classified distinctly with exact build/Platform/protocol/content revisions retained;
-20. no hidden retry converts failed physical E2E attempts into pass evidence;
-21. exact-head implementation review and CI prove the claimed build, not a parent commit.
+15. shared low-level client/Studio components remain representation-neutral and non-authoritative, dependency direction prevents application-root coupling, and Studio export/client ingest fixtures prove one revisioned client-safe content interpretation without leaking authoring-only/server-only fields;
+16. settings schema assigns account/OS-user/installation/device scope, deterministic precedence and versioned scope migration; selected audio output remains device-scoped; diagnostics opt-out cannot be re-enabled by a less restrictive account/device setting;
+17. audio provider/device lifecycle, bounded-resource behavior, compatible client-safe audio assets, non-authoritative cue mapping, degradation/recovery and settings/accessibility behavior are proven when audio is implemented;
+18. config migration is recoverable and preserves diagnostic opt-out;
+19. logs/crash packages reject/redact prohibited secret/private data before upload;
+20. update activation cannot launch an accepted mixed partial release and rollback remains compatibility-checked;
+21. Tier 1 headless, Tier 2 native and Tier 3 release evidence are classified distinctly with exact build/Platform/protocol/content revisions retained;
+22. no hidden retry converts failed physical E2E attempts into pass evidence;
+23. exact-head implementation review and CI prove the claimed build, not a parent commit.
 
 ## 24. Decision timing
 
 ### Must these boundaries be decided now?
 
-**YES** for composition/authority/projection/scene-presentation/content/filesystem/update/test/audio-ownership boundaries. Client implementation would otherwise hard-code cross-domain ownership or allow presentation systems to become a parallel client-state model before the missing gameplay runtime exists.
+**YES** for composition/authority/projection/scene-presentation/content/filesystem/settings-scope/Studio-sharing/update/test/audio-ownership boundaries. Client implementation would otherwise hard-code cross-domain ownership, create ambiguous account/device persistence or allow product-specific types to become an accidental Studio API before the missing gameplay runtime exists.
 
-**NO** for the concrete GUI/scene/render/network/updater/installer/content-packaging/audio libraries or algorithms. Those choices remain safely reversible and require implementation evidence.
+**NO** for the concrete GUI/scene/render/network/updater/installer/content-packaging/audio libraries, exact shared crate names or account-profile synchronization mechanism. Those choices remain safely reversible and require implementation evidence.
 
 ### Downstream work blocked without this contract
 
@@ -562,6 +625,8 @@ Implementation claiming conformance to this candidate should prove at minimum:
 - stable UI/navigation/provider composition;
 - scene/camera/animation/lighting/particles/effects implementation without authority leakage or duplicate world state;
 - client content loader/update packaging work;
+- Oteryn Studio/client low-level reuse without circular product coupling or duplicated runtime content interpretation;
+- settings persistence/account-device synchronization design with deterministic ownership and conflict resolution;
 - client audio provider/content/settings implementation without authority leakage;
 - Tier 1 production-codec system E2E and Tier 2 native-client automation design;
 - honest external-alpha client readiness gate.
@@ -571,6 +636,9 @@ Implementation claiming conformance to this candidate should prove at minimum:
 - direct screen-to-network coupling;
 - UI/scene state accidentally becoming gameplay state authority;
 - a second unreviewed scene/world model diverging from protocol reconciliation;
+- client-specific session/UI types becoming a de facto Studio API;
+- duplicate Studio/client content parsers drifting in schema interpretation;
+- account/device settings overwriting each other nondeterministically or privacy opt-out being re-enabled by a weaker scope;
 - direct screen/reducer ownership of audio devices and unbounded playback queues;
 - irreversible loose-content/file layouts;
 - updater/install mutation mixed into the gameplay process;
@@ -584,6 +652,8 @@ A future change may supersede these boundaries only with explicit accepted evide
 - server/gameplay authority separation;
 - protocol revision/reconciliation safety;
 - one-way, reconstructable scene/presentation derivation without parallel authority;
+- client/Studio dependency direction and single revisioned client-safe content interpretation;
+- deterministic settings scope/precedence and privacy fail-closed behavior;
 - content allowlisting/compatibility;
 - credential/privacy isolation;
 - release atomicity/rollback;
@@ -599,6 +669,8 @@ This candidate intentionally does not select:
 
 - exact UI toolkit or renderer replacement;
 - scene graph/entity presentation framework, camera implementation, animation runtime, lighting model, particle/effects engine or shader architecture;
+- exact shared client/Studio crate/package names, publication mechanism or cross-repository release model;
+- exact account-profile synchronization transport/backend or physical settings file/registry layout;
 - exact Rust trait/module/crate layout for proposed ports;
 - promotion/replacement of synthetic client-domain/simulation crates;
 - gameplay prediction/interpolation/rollback semantics;
