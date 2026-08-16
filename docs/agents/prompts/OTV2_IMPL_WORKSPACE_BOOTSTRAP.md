@@ -56,6 +56,14 @@ Do not add an empty `protocol-oteryn`, `game-server`, persistence or session cra
 
 No gameplay movement/combat/content semantics, no gameplay command/state ID allocation, no final database schema, no permanent content format, no broad client gameplay path, no Reference formulas, no production deployment.
 
+## Lifecycle / budget / durable handover
+
+Before the first write, create or resume the lane task record named by the coordinator allocation. Record the exact base SHA, branch/PR, `owned_paths`, public contracts/registries, dependencies, blockers and execution budget.
+
+Default foreground budget is **60 minutes**. Use **120 minutes** only when the active task explicitly declares and justifies it under repository policy. Keep exactly one compact `## Context checkpoint` with one `next_action`; before any genuine stop/rotation/blocker response persist exact head, CI/review state, blocker and ownership state.
+
+Terminal completion requires post-merge verification, task archive and ownership release. Never leave this lane's advisory path locks active after completion.
+
 ## Validation
 
 At minimum, on final exact head:
