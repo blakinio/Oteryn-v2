@@ -23,6 +23,12 @@ Do not change architecture by implementation convenience. Do not use Codex/OpenA
 5. Inspect exact live main SHA, open PRs, active tasks, workspace tree, Cargo metadata, `workspace-boundaries.toml`, architecture-check tooling, protocol/event/resource registries and CI workflows.
 6. Classify live facts as `PROVEN / DERIVED / UNKNOWN / CONFLICT`. Never rely on cached chat state when repository state can resolve it.
 
+## Baseline / dependency resolution
+
+Trusted source order is: system/explicit owner instructions -> root and nearest repository governance on trusted `main` -> canonical live programme/allocation/task records -> accepted architecture/contracts/registries -> live implementation/CI evidence -> external evidence. A lower source never silently overrides a higher one. Verify exact main and prerequisite merge SHAs before allocating writes.
+
+Record material programme claims as `PROVEN / DERIVED / UNKNOWN / CONFLICT`. An `UNKNOWN` or `CONFLICT` that affects authority, ownership, security, durable value, required resource limits or prerequisite readiness blocks the affected lane instead of becoming an assumption. Unmerged sibling output is not a usable dependency unless the coordinator has explicitly serialized that PR as an ordered predecessor. External repositories remain read-only unless separately authorized by the owner for that exact repository/task.
+
 ## Target outcome
 
 Deliver the first safe native implementation programme through serial bootstrap and dependency-aware workers without allowing workers to invent unresolved authority, protocol IDs, persistent value semantics, permanent content format, Reference behavior or production policy.
