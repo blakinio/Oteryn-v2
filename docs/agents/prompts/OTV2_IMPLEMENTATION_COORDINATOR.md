@@ -19,7 +19,7 @@ Do not change architecture by implementation convenience. Do not use Codex/OpenA
 1. Read root `AGENTS.md`, `AGENTS.override.md`, `docs/agents/AGENTS.md`, `BUILD_TEST_MATRIX.md`, `DELIVERY_COMPLETENESS_AND_CLOSEOUT.md`, `PROMPTING_STANDARD.md` and `PROMPT_EVAL_STANDARD.md`.
 2. Read `docs/agents/programs/OTERYN_V2_IMPLEMENTATION_EXECUTOR_DAG.md` from live `main`.
 3. Read `docs/architecture/FOUNDATION_PROGRAMME_CURRENT_STATUS.md`, `GLOBAL_ARCHITECTURE_DECISION_REGISTER.md` and architecture README.
-4. Read the accepted FND, DUR, SIM, GAME-ABILITY, GAME-INTERACTION, GAME-AI, ALPHA-CLIENT, QA-E2E and Stage-C VSL contracts referenced by the programme.
+4. Read the accepted FND, DUR, SIM, GAME-CHANNEL, GAME-CHAR, GAME-ITEM, GAME-ABILITY, GAME-INTERACTION, GAME-AI, ALPHA-CLIENT, QA-E2E and Stage-C VSL contracts referenced by the programme.
 5. Inspect exact live main SHA, open PRs, active tasks, workspace tree, Cargo metadata, `workspace-boundaries.toml`, architecture-check tooling, protocol/event/resource registries and CI workflows.
 6. Classify live facts as `PROVEN / DERIVED / UNKNOWN / CONFLICT`. Never rely on cached chat state when repository state can resolve it.
 
@@ -31,16 +31,20 @@ The first coordinator wave must establish a real immediate-consumer server/proto
 
 ## Canonical DAG
 
-Follow the exact programme order:
+Follow the live programme rather than memorizing a flat list. The expected dependency shape is:
 
 ```text
-OTV2-IMPL-BOOTSTRAP [serial]
-  -> Foundation / Durability / Content / Client / QA as allocated
-  -> Movement
-  -> Combat
+BOOTSTRAP [serial]
+  -> FOUNDATION + SIM + DOMAIN + CONTENT + QA as paths permit
+  -> DURABILITY after Foundation/Domain seams exist
+  -> ABILITY + INTERACTION + AI after Foundation/SIM/Domain/Content
+  -> CLIENT after compatible production Foundation seam exists
+  -> MOVEMENT after Foundation/SIM/Domain/Content/Interaction/Client/QA
+  -> COMBAT after Foundation/SIM/Domain/Content/Ability/Interaction/Durability/Client/QA
 
-Content Format Spike = evidence lane
-Analytics = later lane after producer event families exist
+CHANNEL = later after Foundation/Domain/Durability
+CONTENT FORMAT SPIKE = evidence lane after Content seam
+ANALYTICS = later after concrete producer event registrations exist
 ```
 
 Do not release all lanes simultaneously.
@@ -52,9 +56,10 @@ Before a worker writes:
 - create/update one coordinator-owned implementation allocation record under `docs/agents/programs/` or an accepted equivalent;
 - assign one lane ID, task ID, branch, exact base SHA, owned paths, public contracts/registries, dependency PRs and merge order;
 - ensure no active task owns overlapping paths;
-- if crate/service names are not yet real, Bootstrap owns selecting the minimal implementation shape consistent with accepted FND architecture and must update machine policy atomically;
+- if crate/service names are not yet real, Bootstrap owns selecting the minimal implementation shape consistent with accepted architecture and must update machine policy atomically;
 - gameplay protocol command/state/event IDs are allocated only with their owning domain integration, not by a generic protocol worker;
-- stable registry mutations are serialized.
+- stable registry/workspace-policy/stable-ID mutations are serialized;
+- a worker never expands its own allocation merely because a missing dependency is inconvenient.
 
 A direct worker alias without an active allocation is read-only discovery and must stop before writes.
 
@@ -68,27 +73,38 @@ The first implementation PR must atomically reconcile at least the affected subs
 - `tools/architecture-check` assumptions/tests;
 - Rust and merge CI assumptions that encode the pre-native-only state;
 - nearest `AGENTS.md` governance for new high-risk directories;
-- production closure checks so Canary remains forbidden while real `protocol-oteryn` becomes legal only through accepted consumers.
+- production closure checks so Canary remains forbidden while real native server/protocol components become legal only through accepted consumers.
 
 Do not create empty/speculative architecture crates. Every new production member needs a real contract-valid immediate consumer and focused tests.
 
 ## Worker release rules
 
-Foundation may proceed after bootstrap when the workspace can truthfully host native protocol/runtime/admission code.
+### Wave 1 after Bootstrap
 
-Durability may overlap Foundation only on coordinator-proven non-overlapping paths and must not guess FND fences/session semantics.
+- **Foundation**: native protocol/runtime/admission foundation.
+- **Simulation**: deterministic numeric/RNG/time/order/replay core, protocol/persistence neutral.
+- **Domain Core**: Character/Item semantic core, protocol/persistence neutral.
+- **Content**: typed semantic graph/compiler/loader VSL seam, final format still blocked.
+- **QA**: may build reusable evidence infrastructure as soon as real seams exist.
 
-Content may overlap after its canonical semantic/compiler ownership is allocated; it must keep the VSL evidence format non-production.
+These may overlap only when exact allocations prove no path/registry ownership conflict.
 
-Client may integrate only against real production FND seams, not invented placeholder APIs.
+### Wave 2
 
-QA should create real-boundary harnesses as soon as production seams exist; no mock-only terminal evidence.
+- **Durability** after Foundation/Domain contracts have concrete consumers/fences.
+- **Ability**, **Interaction**, **AI** after Foundation/SIM/Domain/Content seams are stable enough.
+- **Client** after a real compatible production Foundation protocol seam exists.
 
-Movement starts only when Foundation + required Content + Client/QA seams are integration-ready.
+### Integration gates
 
-Combat starts only when required Movement + Foundation + Durability + Content + Client/QA seams are integration-ready.
+- **Movement** after Foundation + SIM + Domain + Content + Interaction + Client + QA are integration-ready.
+- **Combat** after Foundation + SIM + Domain + Content + Ability + Interaction + Durability + Client + QA are integration-ready. AI may be integrated when ready but cannot become direct commit authority.
 
-Analytics starts only after concrete producer event families exist. Content Format Spike produces evidence/dossier only.
+### Later lanes
+
+- **Channel** after Foundation/Domain/Durability when multichannel product switching is scheduled; numeric PERF/OPS values remain separately gated.
+- **Analytics** only after concrete producer event families exist.
+- **Content Format Spike** produces evidence/dossier only and cannot select the permanent format without later owner acceptance.
 
 ## Review and safety gates
 
