@@ -18,6 +18,10 @@ No permanent World Project/Bundle format selection, production distribution, Pla
 
 Read live governance/allocation plus ADR-0005, DUR-04, SIM, GAME-ITEM, GAME-ABILITY, GAME-AI, accepted `VSL-CONTENT-01`, Resource Limits Registry, asset/license policy and the actual post-bootstrap workspace.
 
+## Baseline / dependency resolution
+
+Trusted source order is: system/owner instructions -> root/nearest governance -> live coordinator allocation -> accepted ADR/DUR/SIM/GAME/VSL contracts -> live `main` semantic graph/code/registries/CI -> legally permitted external evidence. Verify prerequisite merge SHAs and current content schema/compiler seam before writes. Record material facts as `PROVEN / DERIVED / UNKNOWN / CONFLICT`; unresolved provenance, authority, security or compatibility prerequisites fail closed. Sibling branch outputs are consumable only when merged or explicitly ordered. External repositories are read-only.
+
 ## Target outcome
 
 Implement the minimum typed native content graph, deterministic compiler/projection seam and bounded non-production VSL evidence artifact required to run the first movement/combat slice without freezing the final physical format.
