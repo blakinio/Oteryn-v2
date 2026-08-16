@@ -9,14 +9,14 @@ repository: blakinio/Oteryn-v2
 base_branch: main
 branch: docs/remaining-first-wave-owner-decisions-20260816
 issue: 308
-pr: null
+pr: 309
 base_sha: dfc75d1332f710d6ac85009653579f7bc51ccc59
 head_sha: null
 final_head_sha: null
 final_head_frozen_at: null
 owner: Architecture Coordinator
 created_at: 2026-08-16T20:53:49+02:00
-updated_at: 2026-08-16T20:53:49+02:00
+updated_at: 2026-08-16T20:57:25+02:00
 execution_budget_minutes: 120
 large_budget_reason: Cross-domain paper-only re-evaluation of four remaining first-wave decision packages plus final owner-decision handoff; no executable implementation authority.
 owned_paths:
@@ -157,15 +157,15 @@ Independent review for this preparation package is not automatically required be
 ## Context checkpoint
 
 ```yaml
-last_progress: remaining first-wave packages re-read against accepted GAME-ABILITY and bundled owner-decision recommendation prepared
+last_progress: decision package persisted and draft PR #309 opened on the exact two-path scope
 status: validating
 branch: docs/remaining-first-wave-owner-decisions-20260816
 issue: 308
-pr: null
+pr: 309
 base_sha: dfc75d1332f710d6ac85009653579f7bc51ccc59
 owner_action_required: null until exact-head package validation and merge
 blocker: null
-next_action: create decision artifact, open draft PR, freeze exact head, validate, merge preparation package, then request one bundled owner disposition
+next_action: freeze exact head, perform full-diff self-review/CI/thread/drift validation, merge preparation package, then request one bundled owner disposition
 executor_prompts: HOLD
 ```
 
