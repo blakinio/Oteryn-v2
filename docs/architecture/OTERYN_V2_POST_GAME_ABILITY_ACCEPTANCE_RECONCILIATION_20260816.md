@@ -1,15 +1,15 @@
 # Oteryn v2 — Post GAME-ABILITY-01 Acceptance Reconciliation
 
-- Status: closeout reconciliation overlay
+- Status: closeout reconciliation record
 - Date: 2026-08-16
-- Applies to: GAME-ABILITY-01 owner-decision completion and the next first-wave owner-decision selection
+- Applies to: GAME-ABILITY-01 owner-decision completion and bounded coordinator follow-up
 - Acceptance delivery: PR #306 / merge `e2bb284f56f39d8fa01a843d098bcb21d17d77ac`
 - Accepted baseline: `GAME-ABILITY-01_WHOLE_GATE_OWNER_ACCEPTANCE_BASELINE.md`
 - Runtime/client/server/protocol/content/DDL/Platform/production authority: **NONE**
 
 ## Reconciled GAME-ABILITY state
 
-The explicit owner decision is complete. Current truth is:
+The explicit owner decision is complete. Current semantic truth is:
 
 ```yaml
 GAME-ABILITY-01:
@@ -18,7 +18,7 @@ GAME-ABILITY-01:
   ImplementationStatus: NOT_STARTED
 ```
 
-This overlay does not rewrite the historical whole-gate candidate. The later owner-acceptance baseline is the semantic authority for the accepted decision.
+This record does not rewrite the historical whole-gate candidate. The later owner-acceptance baseline is the semantic authority for the accepted `DecisionStatus`.
 
 The following remain unchanged and fail closed:
 
@@ -45,31 +45,31 @@ Architecture acceptance is not Reference parity and is not executable authority.
 
 No sibling status changes because GAME-ABILITY was accepted.
 
-## Superseded execution wording
+## Maintained-status follow-up
 
-For current execution planning only, this closeout supersedes older wording that still says the selected next action is to prepare or obtain the GAME-ABILITY owner decision. That action is complete.
+This closeout record **does not supersede** `FOUNDATION_PROGRAMME_CURRENT_STATUS.md` or other higher-priority maintained coordination surfaces. Their older wording that still selects the GAME-ABILITY owner decision as future work is now a known coordinator-bookkeeping gap because that decision has already merged.
 
-It does not supersede semantic content of the older A-F reconciliation, candidate packages, backlog or horizon documents.
+The accepted owner baseline has higher semantic authority than stale `CANDIDATE` wording for the GAME-ABILITY decision axis. A bounded coordinator reconciliation must still update the maintained current-status/register/index surfaces before they are treated as fresh execution-order guidance.
+
+This is a status/bookkeeping follow-up only. It does not reopen GAME-ABILITY semantics and does not authorize implementation.
 
 ## Next bounded paper-only programme action
 
-The next action is **not** to guess which remaining proposal/candidate should be accepted next.
+Perform one bounded coordinator reconciliation against live `main` that:
 
-Perform one bounded coordinator re-evaluation against live `main` of:
-
-- `GAME-AI-01`;
-- `GAME-INTERACTION-01`;
-- `ALPHA-CLIENT-01`;
-- `ANL-02` / `ANL-03`.
-
-The re-evaluation must:
-
-1. consume accepted `GAME-ABILITY-01` as a new canonical dependency;
-2. verify whether any remaining package now conflicts with or is clarified by the accepted ability boundary;
-3. preserve current `PROPOSED` / `CANDIDATE` statuses unless the owner explicitly decides otherwise;
-4. apply the architecture decision-timing test and dependency/risk ordering;
-5. select exactly one next owner-decision package or record a concrete reason to defer;
-6. perform no runtime/client/server/protocol/content/DDL/Platform/production implementation.
+1. updates maintained programme status/register/index wording to record `GAME-ABILITY-01 = ACCEPTED / LIFECYCLE_CLOSED / NOT_STARTED` after this closeout;
+2. removes the completed GAME-ABILITY owner-decision action from current next-work wording;
+3. re-evaluates the remaining merged first-wave packages:
+   - `GAME-AI-01`;
+   - `GAME-INTERACTION-01`;
+   - `ALPHA-CLIENT-01`;
+   - `ANL-02` / `ANL-03`;
+4. consumes accepted `GAME-ABILITY-01` as a canonical dependency;
+5. verifies whether any remaining package conflicts with or is clarified by the accepted ability boundary;
+6. preserves current `PROPOSED` / `CANDIDATE` statuses unless the owner explicitly decides otherwise;
+7. applies the architecture decision-timing test and dependency/risk ordering;
+8. selects exactly one next owner-decision package or records a concrete reason to defer;
+9. performs no runtime/client/server/protocol/content/DDL/Platform/production implementation.
 
 ## Implementation boundary
 
