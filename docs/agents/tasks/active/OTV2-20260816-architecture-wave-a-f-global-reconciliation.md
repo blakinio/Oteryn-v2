@@ -11,12 +11,12 @@ branch: docs/architecture-wave-a-f-global-reconciliation-20260816
 issue: 302
 pr: 303
 base_sha: c197ba12cc1b2ebbc4b27eab5d6054037720c48a
-head_sha: f7f1ffa7c1a3121be813a65cd6a4750751d6c3f7
+head_sha: cb540e7ed6c3d5a19a5c6418cd9e343b63652a60
 final_head_sha: null
 final_head_frozen_at: null
 owner: architecture-coordinator
 created_at: 2026-08-16T16:00:00+02:00
-updated_at: 2026-08-16T16:09:00+02:00
+updated_at: 2026-08-16T16:13:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -63,7 +63,7 @@ Make coordinator-owned programme truth match the completed first A-F architectur
 - C predecessor #272 and D predecessor #269 are closed without merge as superseded historical evidence;
 - Agent A preserves 0/4 promoted `ABILITY_COMBAT` cases, with target `UNKNOWN`, provenance/legal `PENDING`, implementation `NOT_STARTED`, parity `PARITY_PENDING_EVIDENCE`;
 - B/E/F candidate headers remain `CANDIDATE`; C/D successor packages remain `PROPOSED` architecture rather than owner-accepted architecture; implementation remains `NOT_STARTED`;
-- issue #218 describes creation of the Reference evidence/parity manifest, but the manifest and later owner acceptance were already delivered by merged PRs #220 and #252.
+- issue #218 described creation of the Reference evidence/parity manifest; PR #220 delivered it and PR #252 later owner-accepted/pinned it, so #218 is now closed `completed` as stale tracking state.
 
 ### DERIVED
 
@@ -80,7 +80,7 @@ The first-wave delivery programme is complete under the allocation completion co
 - [x] a narrow reconciliation overlay supersedes only stale status/coverage/next-action wording in the broad gameplay horizon and gap register while preserving their detailed historical inventory.
 - [x] architecture index points readers to the post-wave reconciliation and delivered first-wave packages with truthful status wording.
 - [x] non-owning foundation checkpoint uses live post-wave state and exactly one next action.
-- [ ] stale issue #218 is closed as completed with exact merged evidence; issue #115 remains open and unchanged.
+- [x] stale issue #218 is closed as completed with exact merged evidence; issue #115 remains open and unchanged.
 - [x] no accepted ADR/contract semantics, runtime/client/server/protocol/DDL/Platform/production behavior or external repository is changed.
 - [ ] full final diff self-review has zero material findings.
 - [ ] exact-head required repository checks pass and review threads are zero.
@@ -140,7 +140,7 @@ The selected next paper-only action is a bounded `GAME-ABILITY-01` owner-decisio
 
 - changed-file review: pending
 - unresolved review threads: pending
-- related/superseded PRs: first-wave A-F terminal; stale issue #218 to reconcile
+- related/superseded PRs: first-wave A-F terminal; stale issue #218 closed completed
 - protected auto-merge: pending
 - merge commit/result: pending
 - ownership release: pending
@@ -148,10 +148,10 @@ The selected next paper-only action is a bounded `GAME-ABILITY-01` owner-decisio
 ## Context checkpoint
 
 ```yaml
-last_progress: current-status/register/index/non-owning checkpoint reconciled; narrow post-wave overlay preserves historical horizon/gap inventories while superseding only stale execution wording
+last_progress: current-status/register/index/non-owning checkpoint reconciled; narrow post-wave overlay preserves historical horizon/gap inventories while superseding only stale execution wording; stale issue #218 closed completed; issue #115 verified open/unchanged
 status: validating
 branch: docs/architecture-wave-a-f-global-reconciliation-20260816
-head_sha: f7f1ffa7c1a3121be813a65cd6a4750751d6c3f7
+head_sha: cb540e7ed6c3d5a19a5c6418cd9e343b63652a60
 pr: 303
 final_head_sha: null
 final_head_frozen_at: null
@@ -170,7 +170,7 @@ ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: false
 blocker: null
-next_action: CLOSE_STALE_ISSUE_218_THEN_FINAL_DIFF_SELF_REVIEW_AND_EXACT_HEAD_CI
+next_action: FINAL_DIFF_SELF_REVIEW_THEN_EXACT_HEAD_CI
 ```
 
 `MERGE_AUTHORITY: ARCHITECTURE_COORDINATOR_ONLY`
