@@ -2,6 +2,7 @@
 
 - Status: **OWNER-ACCEPTED WHOLE-GATE ARCHITECTURE**
 - DecisionStatus: `ACCEPTED`
+- DeliveryStatus: `IN_REVIEW`
 - ImplementationStatus: `NOT_STARTED`
 - Date: 2026-08-16
 - Gate: `GAME-ABILITY-01`
@@ -24,15 +25,16 @@ for the bounded `GAME-ABILITY-01` whole-gate owner decision presented in `GAME-A
 
 This later baseline preserves the historical decision package and candidate unchanged. It supersedes only their unresolved/candidate **decision status** for the declared whole-gate scope.
 
-The canonical status after this acceptance is:
+The current three-axis status during this acceptance delivery is:
 
 ```yaml
 GAME-ABILITY-01:
   DecisionStatus: ACCEPTED
+  DeliveryStatus: IN_REVIEW
   ImplementationStatus: NOT_STARTED
 ```
 
-Delivery/lifecycle bookkeeping for this acceptance PR remains a separate axis and is completed through normal repository closeout governance.
+Delivery/lifecycle bookkeeping remains a separate axis and will advance through normal repository merge/closeout governance without changing the accepted semantic scope.
 
 ## Accepted scope
 
@@ -143,6 +145,6 @@ Any supersession must explicitly preserve or replace server authority, determini
 
 Until the coordinator-owned global status/register surfaces are reconciled after this acceptance delivery, this later owner-acceptance baseline is the authoritative source for the `GAME-ABILITY-01` **DecisionStatus** and supersedes older `CANDIDATE` wording for that axis only.
 
-It does not rewrite historical candidate/delivery status and does not change `ImplementationStatus=NOT_STARTED`.
+It does not rewrite historical candidate delivery status and does not change `ImplementationStatus=NOT_STARTED`.
 
 `IMPLEMENTATION_AUTHORITY: NONE`
