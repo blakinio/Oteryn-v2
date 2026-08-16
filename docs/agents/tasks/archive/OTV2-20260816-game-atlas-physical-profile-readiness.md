@@ -11,7 +11,7 @@ delivery_branch: research/game-atlas-physical-profile-readiness
 closeout_branch: docs/game-atlas-physical-profile-readiness-closeout
 issue: 291
 delivery_pr: 292
-closeout_pr: null
+closeout_pr: 294
 base_sha: 8722e565c6a0556934209820e3c14ee4f2dc6093
 delivery_final_head_sha: d9afb8f44ad046b0325d8363b217e652f919c785
 delivery_merge_sha: 0ed830be7391f1526a209438d820fda96d0f8a3f
@@ -157,7 +157,7 @@ Independent different-agent review: **not required for this completed evidence-o
 - delivery merge: `0ed830be7391f1526a209438d820fda96d0f8a3f`;
 - issue #291: CLOSED / completed;
 - delivery branch: auto-deleted; verified absent;
-- closeout PR: pending assignment in this archive until the lifecycle PR is opened;
+- closeout PR: #294 — lifecycle-only active-task removal + terminal archive;
 - closeout changes only task lifecycle state; it must not modify spike code, workflow or evidence;
 - ownership release becomes durable when this archive is present on protected `main` and the matching active task path is absent.
 
