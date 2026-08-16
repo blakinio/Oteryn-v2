@@ -10,12 +10,12 @@ base_branch: main
 branch: docs/arch-e-alpha-client
 pr: 273
 base_sha: 088b46638ac014cd7928d6b0b75cee44902fe22c
-head_sha: c3eeb3e736cb9459c658534c1c2eca0123e662bf
+head_sha: aba4f9ed3d64f42d605d9ea63243e160651aa0f0
 final_head_sha: null
 final_head_frozen_at: null
 owner: DOMAIN ARCHITECTURE DESIGN AGENT / worker E
 created_at: 2026-08-15T00:19:00+02:00
-updated_at: 2026-08-15T22:25:00+02:00
+updated_at: 2026-08-16T09:21:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -40,33 +40,39 @@ depends_on:
 blocks: []
 cross_repository_coordination_id: null
 external_repositories: []
+repair_cycles_for_current_gate: 4
+repair_cycle_4_owner_override: explicit owner instruction on 2026-08-16 authorizing C/D/E/F continuation beyond the three-cycle stop
+owner_review_constraint: no Codex for this continuation
 ```
 
 `head_sha` is the immediately preceding repaired candidate revision. The exact final self-referential SHA is recorded externally on the PR/check/review evidence after this task commit exists.
 
 ## Outcome
 
-Delivered the bounded `ALPHA-CLIENT-01` architecture package and completed the **third and final ordinary repair cycle for the stable gate**. Earlier repairs remain preserved, and this final bounded repair closes the two findings from the owner-authorized review of `b660a4e05c48bf6ac96d783573b81b3f227515ae`:
+Delivered the bounded `ALPHA-CLIENT-01` architecture package and completed **owner-authorized repair cycle 4** for the stable gate. The owner explicitly overrode the repository's ordinary three-cycle stop for C, D, E and F and instructed continuation to clean review/merge **without Codex**.
 
-1. Tier 1 headless E2E now **must** exercise the same production transport, protocol schemas, production codecs, sequencing and admission contracts as the native client; the independent byte/adversarial/property/fuzz/cross-version evidence remains an additional oracle rather than a replacement codec path.
-2. The normative candidate now defines a technology-neutral visual scene/presentation boundary for scene state, camera, animation, lighting, particles and effects, keeping all of it derived, reconstructable, revision-compatible, resource-bounded and non-authoritative.
+This repair closes the two material findings from the final review of `e2eb37e1d099d25dd87ebc02a68c111dd8dd91ac`:
 
-Runtime/client/Platform implementation remains `NOT_STARTED`; no executable code, DDL or production state was modified.
+1. settings persistence now has an explicit minimum `ACCOUNT` / `OS_USER` / `INSTALLATION` / `DEVICE` semantic scope model, deterministic precedence, privacy fail-closed behavior and versioned cross-scope migration rules;
+2. the candidate now defines the reusable low-level Oteryn Studio sharing boundary, dependency direction, product-specific exclusions, content export/runtime projection seam and required conformance evidence.
+
+All earlier repaired admission, wire-oracle, audio, directory-precision, production-codec and visual-scene boundaries remain preserved. Runtime/client/Platform implementation remains `NOT_STARTED`; no executable code, DDL or production state was modified.
 
 PR: `#273`.
 
 ## Architecture and source of truth
 
 - `PROVEN` — issue #263 and the parallel-work allocation assign worker E and exactly the three paths listed above.
-- `PROVEN` — live canonical Agent-A result has merged on `main` and does not change ALPHA-CLIENT authority; this branch was reconciled with that main before the final repair.
+- `PROVEN` — root `AGENTS.override.md` ordinarily stops after three repair cycles for one gate.
+- `PROVEN` — the owner explicitly authorized exceeding that ceiling for C/D/E/F on 2026-08-16; the historical count remains preserved rather than reset.
 - `PROVEN` — ADR-0003 requires Platform Identity -> one-time Game Login Ticket -> Platform-owned Game Gateway -> selected endpoint/channel/revisions + short-lived pre-admission material -> `protocol-oteryn` -> final game-owned FND-04 admission/CharacterLease/GameSession authority.
 - `PROVEN` — ADR-0011/ADR-0016 preserve current fail-closed `pre-native-protocol` behavior and runtime-unavailable gameplay transports.
 - `PROVEN` — current `crates/platform-client/src/lib.rs` recursively rejects only the 12 literal keys `host`, `port`, `endpoint`, `endpoint_uri`, `protocol`, `protocol_profile`, `ticket`, `credential`, `game_session`, `admission`, `route`, `address`; complete-schema/unknown-field rejection is not currently proven.
 - `PROVEN` — FND-02 requires generation/sequence/revision/snapshot reconciliation and independent wire evidence against common-mode codec defects.
 - `PROVEN` — ADR-0007 Tier 1 must speak the production transport and use the same production schemas, codecs, sequencing and admission contracts as the native client.
-- `PROVEN` — `ARCHITECTURE_ANALYSIS_GAP_REGISTER.md` registers renderer/scene boundaries and camera/animation/lighting/particles/effects as part of `ALPHA-CLIENT-01`.
-- `PROVEN` — DUR-04 client-safe content/revision discipline applies to visual and audio presentation assets.
-- `UNKNOWN` — exact gameplay transport implementation APIs, scene graph/animation/lighting/particle technology, renderer/UI/audio libraries, updater/signing, installer, secure credential storage and numeric resource maxima remain deliberately unfrozen.
+- `PROVEN` — `ARCHITECTURE_ANALYSIS_GAP_REGISTER.md` registers renderer/scene, settings/account-device scope and reusable Studio/client low-level component boundaries as part of `ALPHA-CLIENT-01`.
+- `PROVEN` — DUR-04 client-safe content/revision discipline applies to visual/audio presentation assets and the Studio-export/client-ingest runtime projection boundary.
+- `UNKNOWN` — exact gameplay transport implementation APIs, scene graph/animation/lighting/particle technology, renderer/UI/audio libraries, updater/signing, installer, secure credential storage, account-profile synchronization backend, exact shared crate/package names and numeric resource maxima remain deliberately unfrozen.
 
 ## Acceptance criteria
 
@@ -74,20 +80,23 @@ PR: `#273`.
 - [x] Current `pre-native-protocol` behavior remains fail closed and no unavailable transport is exposed as runtime-ready.
 - [x] ADR-0003 ticket/Gateway/pre-admission/final-game-authority chain remains explicit with no directory shortcut.
 - [x] Independent FND-02 wire evidence remains required in addition to product-path E2E.
-- [x] Tier 1 now explicitly exercises the supported **production transport and production schemas/codecs/sequencing/admission path**; test-only codecs cannot substitute for shipping-codec coverage.
+- [x] Tier 1 explicitly exercises the supported production transport and production schemas/codecs/sequencing/admission path; test-only codecs cannot substitute for shipping-codec coverage.
 - [x] Audio remains application-owned, client-safe/revision-compatible, bounded and presentation-only without a selected library/vendor.
 - [x] Platform-directory current-state claim remains narrowed to the exact 12-key recursive denylist.
-- [x] Visual scene/presentation ownership is explicit: scene/camera/animation/lighting/particles/effects derive from non-authoritative projection/content/presentation state, do not become a second world model, remain reconstructable and bounded, and cannot confer gameplay authority.
-- [x] Scene/presentation implementation technology remains reversible; required evidence and decision timing are explicit.
-- [x] `DECISIONS_NOT_TAKEN` continues to record deferred implementation choices.
+- [x] Visual scene/presentation ownership is explicit and remains non-authoritative/reconstructable/bounded.
+- [x] Durable settings declare semantic account/OS-user/installation/device scope and deterministic precedence; privacy opt-out cannot be weakened by a less restrictive layer.
+- [x] Selected audio output and other hardware-specific choices are device-scoped; portable account preferences require an accepted account-profile owner rather than invented local authority.
+- [x] Oteryn Studio may share only representation-neutral/non-authoritative low-level components; product composition/session/UI/authoring boundaries remain separate and dependency direction is acyclic.
+- [x] Studio authoring state reaches the client only through a revisioned client-safe export/projection boundary; authoring-only/server-only state cannot become runtime client content by shared-type convenience.
+- [x] `DECISIONS_NOT_TAKEN` records deferred concrete libraries, shared-package naming/publication and settings synchronization implementation.
 - [x] Foreign-domain findings remain report-only; no runtime/client/server/protocol/DDL/Platform/production or coordinator-overlay path is intentionally modified.
 - [x] Changed paths remain within worker-E ownership.
-- [ ] Exact-final-head full-diff self-review and exact-head CI are recorded externally after this commit.
-- [ ] Final independent review on the unchanged exact head is clean.
+- [ ] Exact-final-head full-diff self-review and exact-head CI are recorded externally after this task commit.
+- [ ] Required genuinely independent non-Codex review on the unchanged exact head is clean.
 
 ## Excluded scope
 
-No executable client, scene, renderer, audio, networking, protocol, server or Platform implementation; no gameplay authority rewrite; no DDL/migration; no production activation; no credential/token representation; no concrete scene graph, camera, animation, lighting, particle/effects, audio, UI or renderer library selection; no coordinator-only global overlay edit; no lifecycle archive/ownership release before lawful merge.
+No executable client, Studio, scene, renderer, audio, networking, protocol, server or Platform implementation; no gameplay authority rewrite; no DDL/migration; no production activation; no credential/token representation; no concrete shared crate/package publication; no cross-repository write; no concrete account-profile backend; no concrete scene graph, camera, animation, lighting, particle/effects, audio, UI or renderer library selection; no coordinator-only global overlay edit; no lifecycle archive/ownership release before lawful merge.
 
 ## Implemented architecture repairs
 
@@ -107,21 +116,29 @@ Preserved application-owned audio provider/device lifecycle, client-safe/revisio
 
 Preserved exact current 12-key denylist truth and future-only complete-schema/reject-unknown-field requirement.
 
-### Current P1 — production codec path in Tier 1
+### Earlier P1 — production codec path in Tier 1
 
-Repaired. The candidate now states that Tier 1 must traverse the supported production gameplay transport and use the same production schemas, **production codecs**, sequencing and admission contracts as the native client. Independent wire evidence supplements rather than replaces that product code path.
+Preserved mandatory production transport plus the same production schemas/codecs/sequencing/admission contracts. Independent wire evidence supplements rather than replaces that product code path.
 
-### Current P2 — visual scene/presentation boundary
+### Earlier P2 — visual scene/presentation boundary
 
-Repaired. The candidate now gives `apps/client` composition ownership of scene/presentation lifetime; camera/animation/lighting/particles/effects consume one-way non-authoritative projection/content/presentation inputs; renderer/scene caches cannot become a second authoritative world; revision replacement invalidates/rebuilds presentation state as required; visual failures degrade presentation only; resources must be bounded; concrete scene/render technology remains deferred; implementation/test evidence ownership is explicit.
+Preserved `apps/client` composition ownership of scene/presentation lifetime and the non-authoritative, reconstructable, revision-compatible, bounded scene/camera/animation/lighting/particles/effects boundary.
+
+### Repair-cycle-4 P2 — settings account/device ownership
+
+Repaired. The candidate now defines semantic `ACCOUNT`, `OS_USER`, `INSTALLATION` and `DEVICE` scopes, requires each durable setting to declare scope, defines deterministic default precedence for multi-scope user preferences, makes installation state non-generic, makes privacy/security restrictions dominate convenience precedence, scopes hardware selections such as audio output to `DEVICE`, and requires explicit versioned conflict/rollback rules for scope migration.
+
+### Repair-cycle-4 P2 — Oteryn Studio sharing boundary
+
+Repaired. The candidate permits only low-level representation-neutral/non-authoritative sharing, prohibits product composition/session/UI/authoring state from becoming shared contracts, requires acyclic dependency direction, keeps Studio authoring data behind revisioned export/client-safe projection, and names dependency/content-compatibility/negative evidence required before implementation acceptance.
 
 ## DECISIONS_NOT_TAKEN
 
-No exact UI toolkit; scene graph/entity-presentation framework; camera algorithm; animation runtime; lighting model; particle/effects engine; shader architecture; renderer backend; audio library/vendor; promotion/replacement of synthetic client crates; prediction/rollback algorithm; gameplay transport implementation or QUIC activation; Gateway/admission/reconnect token/API shape; protocol/TLS/protobuf library; content bundle/patch/CDN format; installer/updater/signing provider; exact Windows paths; credential vault; crash backend/retention; release-channel/version-skew policy; Linux/macOS commitment; numeric scene/effect/audio/network/cache limits; server/gameplay/persistence/balance authority.
+No exact UI toolkit; scene graph/entity-presentation framework; camera algorithm; animation runtime; lighting model; particle/effects engine; shader architecture; renderer backend; audio library/vendor; exact shared client/Studio crate/package names or publication mechanism; account-profile synchronization backend; promotion/replacement of synthetic client crates; prediction/rollback algorithm; gameplay transport implementation or QUIC activation; Gateway/admission/reconnect token/API shape; protocol/TLS/protobuf library; content bundle/patch/CDN format; installer/updater/signing provider; exact Windows paths; credential vault; crash backend/retention; release-channel/version-skew policy; Linux/macOS commitment; numeric scene/effect/audio/network/cache limits; server/gameplay/persistence/balance authority.
 
 ## CROSS_DOMAIN_FINDINGS
 
-The companion analysis retains the existing report-only findings for protocol runtime, admission/session integration, content/release tooling, security/release/SRE, QA/E2E and diagnostics/privacy. The final candidate repairs do not grant authority to mutate those owners.
+The companion analysis retains the existing report-only findings for protocol runtime, admission/session integration, content/release tooling, security/release/SRE, QA/E2E and diagnostics/privacy. The cycle-4 repairs do not grant authority to mutate those owners. Any future account-profile synchronization or cross-repository Studio package publication requires the appropriate owning contract/owner authorization; this candidate only fixes the client-side scope/dependency boundary.
 
 ## Repair review findings
 
@@ -159,7 +176,6 @@ review_finding:
   severity: P1
   repaired: true
   source: owner-funded review of b660a4e05c48bf6ac96d783573b81b3f227515ae
-  repair: Tier 1 now must execute production transport plus the same production schemas/codecs/sequencing/admission contracts; independent oracle remains additional evidence
 ```
 
 ```yaml
@@ -168,15 +184,33 @@ review_finding:
   severity: P2
   repaired: true
   source: owner-funded review of b660a4e05c48bf6ac96d783573b81b3f227515ae
-  repair: added application-owned, non-authoritative, reconstructable, client-safe/revision-compatible and resource-bounded scene/camera/animation/lighting/particles/effects boundary with explicit evidence and decision timing
+```
+
+```yaml
+review_finding:
+  id: PR273-P2-SETTINGS-SCOPE-PRECEDENCE
+  severity: P2
+  repaired: true
+  source: final independent review of e2eb37e1d099d25dd87ebc02a68c111dd8dd91ac
+  repair: added account/OS-user/installation/device ownership, deterministic precedence, privacy fail-closed and versioned scope migration
+```
+
+```yaml
+review_finding:
+  id: PR273-P2-STUDIO-SHARING-BOUNDARY
+  severity: P2
+  repaired: true
+  source: final independent review of e2eb37e1d099d25dd87ebc02a68c111dd8dd91ac
+  repair: added low-level shared-component allowlist, product-specific exclusions, dependency direction, revisioned export/runtime projection and required evidence
 ```
 
 ## Validation
 
 ### Focused
 
-- final changed-file/full-diff review: pending exact-final-head inspection after this commit
-- parent-source reconciliation: ADR-0007 and native-client gap register independently verified before repair
+- final changed-file/full-diff review: pending exact-final-head inspection after current-main reconciliation
+- settings-scope review: candidate contains explicit ACCOUNT/OS_USER/INSTALLATION/DEVICE rules, default precedence, privacy restrictive-wins and migration requirements
+- Studio-boundary review: candidate contains explicit shared/non-shared responsibilities, dependency direction and content projection/evidence rules
 
 ### Component/integration
 
@@ -188,43 +222,43 @@ review_finding:
 
 ### Exact-head CI
 
-- current final head: recorded externally on PR #273 after this commit exists
-- required Agent governance / Merge authority / Merge gate: pending current exact head
+- current final head: recorded externally on PR #273 after current-main reconciliation
+- required Agent governance / Merge authority / Merge gate: pending exact final head
 
 ## Self-review
 
 - required: YES
-- exact head: external PR evidence after this commit
-- method: full changed-file, full-diff, authority/dependency, regression and stable-gate-budget review
+- exact head: external PR evidence after current-main reconciliation
+- method: full changed-file, full-diff, authority/dependency, regression and owner-override review
 - verdict: pending exact-final-head pass
 
 ## Independent review
 
 - required: YES
 - exact head: must be the unchanged final repair head
-- method: owner-authorized Codex/OpenAI review or another genuinely independent reviewer
-- prior review authorization: user has now granted continuing Codex review use; invocation still must target the exact current head
+- allowed method: genuinely independent fresh separate agent/session, qualified human reviewer or dedicated audit mechanism that actually evaluates the architecture diff
+- Codex: **NOT TO BE USED** for this continuation per explicit owner instruction
 - verdict: pending
 
 ## PR and closeout
 
 - PR #273 remains open and unmerged during repair validation.
-- Prior review threads remain historical; current P1/P2 threads may be resolved only after exact-head repair proof.
+- Prior historical review threads remain resolved; the two current P2 threads may be resolved only after exact-head repair proof.
 - No archive or ownership release before merge.
-- **Stable-gate repair budget:** `repair_cycles_for_current_gate: 3`. This is the third ordinary material repair cycle. Any further material repair after this generation is `BLOCKED` absent an explicit owner override of the gate-level repair stop.
+- **Stable-gate repair budget:** historical ordinary ceiling was 3; current count is `repair_cycles_for_current_gate: 4` under the explicit 2026-08-16 owner override. The override permits continued bounded repair; it does not reset history or weaken any other gate.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: third/final ordinary ALPHA-CLIENT-01 repair applied for Tier-1 production-codec coverage and visual scene/presentation ownership after reconciling canonical main
+last_progress: owner-authorized ALPHA-CLIENT-01 repair cycle 4 defined settings scope/precedence and Oteryn Studio low-level sharing boundaries
 status: validating
 branch: docs/arch-e-alpha-client
-head_sha: c3eeb3e736cb9459c658534c1c2eca0123e662bf
+head_sha: aba4f9ed3d64f42d605d9ea63243e160651aa0f0
 pr: 273
 final_head_sha: null
 final_head_frozen_at: null
 ci_trigger_source: push/pull_request
-ci_check_generation: final-repair-head-pending
+ci_check_generation: cycle-4-current-main-reconcile-pending
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -233,12 +267,12 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 3
+repair_cycles_for_current_gate: 4
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: EXACT_HEAD_FULL_DIFF_SELF_REVIEW_AND_CI_THEN_OWNER_AUTHORIZED_INDEPENDENT_REVIEW
+next_action: RECONCILE_CURRENT_MAIN_THEN_EXACT_HEAD_SELF_REVIEW_CI_AND_INDEPENDENT_NON_CODEX_REVIEW
 ```
 
 `MERGE_AUTHORITY: ARCHITECTURE_COORDINATOR_ONLY`
