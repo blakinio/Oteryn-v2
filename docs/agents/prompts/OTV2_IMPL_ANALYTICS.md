@@ -18,6 +18,10 @@ No gameplay mutation, sanction/enforcement, Platform/external-repository write, 
 
 Read live governance/allocation plus ANL-01, accepted ANL-02/03, ADR-0006, `GAME_EVENT_FOUNDATION_REGISTRY.json`, Resource Limits Registry, privacy/retention policies and the concrete domain producer registrations merged by Foundation/Movement/Combat/DUR lanes.
 
+## Baseline / dependency resolution
+
+Trusted source order is: system/owner instructions -> root/nearest governance -> live coordinator allocation -> accepted ANL/ADR/privacy contracts and event registry -> live `main` producer schemas/data-quality code/CI -> external evidence. Verify every required producer event family/revision is merged and registered before writes. Record material facts as `PROVEN / DERIVED / UNKNOWN / CONFLICT`; missing completeness, provenance, privacy, finality or producer-schema evidence fails closed. Sibling output is not consumable until merged or explicitly ordered. External repositories remain read-only.
+
 ## Target outcome
 
 Implement bounded, read-only analytics/integrity evidence over real typed gameplay/value events without creating a feedback authority path into gameplay or inventing event schemas owned by producers.
