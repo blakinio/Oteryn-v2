@@ -18,6 +18,10 @@ No production/protected environment, Platform write, external-repository write, 
 
 Read live governance and allocation plus FND-ID-01, FND-02, NET-TRANSPORT-01, FND-03, FND-04, ADR-0001/0003/0009/0014/0016, `PROTOCOL_OTERYN_V1_REGISTRY.json`, foundation proto, transport policy, Resource Limits Registry, failure/error contracts, SIM determinism, BUILD_TEST_MATRIX and current workspace/bootstrap result.
 
+## Baseline / dependency resolution
+
+Trusted source order is: system/owner instructions -> root/nearest repository governance -> live coordinator allocation -> accepted architecture/contracts/registries -> live `main` code and CI -> external evidence. Verify prerequisite merge SHAs and the Bootstrap workspace shape before planning writes. Record material facts as `PROVEN / DERIVED / UNKNOWN / CONFLICT`; authority, security or wire prerequisites that remain `UNKNOWN/CONFLICT` fail closed. Sibling work is consumable only when merged or explicitly ordered in the allocation. External repositories are read-only.
+
 ## Target outcome
 
 Implement the smallest real `protocol-oteryn` + authoritative runtime + admission/reconnect foundation that can support later typed gameplay-domain command/state registrations without embedding gameplay semantics into the foundation layer.
