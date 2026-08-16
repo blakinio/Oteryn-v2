@@ -18,6 +18,10 @@ No production/protected environment, Platform/external-repository write, Referen
 
 Read live governance/allocation plus FND-02/03/04, SIM, GAME-INTERACTION acceptance, GAME-AI boundary, ALPHA-CLIENT, accepted `VSL-MOVE-01`, accepted `VSL-CONTENT-01`, QA-E2E and current merged Foundation/Content/Client/QA implementation seams.
 
+## Baseline / dependency resolution
+
+Trusted source order is: system/owner instructions -> root/nearest governance -> live coordinator allocation -> accepted FND/SIM/GAME/ALPHA/VSL/QA contracts -> live `main` implementation/registries/CI -> external evidence. Verify exact merged Foundation/SIM/Domain/Content/Interaction/Client/QA prerequisite SHAs before writes. Record material facts as `PROVEN / DERIVED / UNKNOWN / CONFLICT`; unresolved authority, spatial revision, resource or protocol prerequisites fail closed. Sibling output is not consumable until merged or explicitly ordered. External repositories remain read-only.
+
 ## Target outcome
 
 Deliver the first real authoritative local movement/collision/visibility journey end-to-end without creating a second position authority or disguising cross-scope handoff as teleport.
