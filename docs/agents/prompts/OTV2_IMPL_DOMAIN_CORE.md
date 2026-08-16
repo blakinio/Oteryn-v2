@@ -18,6 +18,10 @@ No persistence implementation, protocol wire layout, client UI, production/prote
 
 Read live governance/allocation plus GAME-CHAR Stage A/B owner baselines, GAME-ITEM-01, GAME-CHANNEL accepted semantics relevant to domain-neutral types, FND-ID, SIM, DUR-03 boundaries and current workspace architecture.
 
+## Baseline / dependency resolution
+
+Trusted source order is: system/owner instructions -> root/nearest governance -> live coordinator allocation -> accepted GAME-CHAR/GAME-ITEM/FND/SIM/DUR contracts -> live `main` code/registries/CI -> external evidence. Verify all prerequisite merge SHAs before planning writes. Record material facts as `PROVEN / DERIVED / UNKNOWN / CONFLICT`; unresolved ownership, identity or semantic prerequisites fail closed. Sibling branch output is not consumable until merged or explicitly ordered. External repositories remain read-only.
+
 ## Target outcome
 
 Implement protocol-neutral and persistence-neutral semantic domain types/legality/transitions required by first native gameplay without collapsing unrelated owners into one aggregate.
