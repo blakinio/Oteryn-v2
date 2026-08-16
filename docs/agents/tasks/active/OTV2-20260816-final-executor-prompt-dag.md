@@ -13,7 +13,7 @@ pr: 314
 base_sha: bf2a2ae279516f62626a5d8f4dc1aeb587535c62
 owner: Architecture Coordinator
 created_at: 2026-08-16T21:35:59+02:00
-updated_at: 2026-08-16T22:45:00+02:00
+updated_at: 2026-08-16T22:47:00+02:00
 execution_budget_minutes: 120
 owned_paths:
   - docs/agents/tasks/active/OTV2-20260816-final-executor-prompt-dag.md
@@ -90,16 +90,16 @@ Canonical evidence:
 
 `docs/agents/evidence/OTV2-20260816-final-executor-prompt-evaluation.md`
 
-Prompt-content head evaluated: `80e09b83c4215ff4378e8cc8e25f85dff7db4b2d` plus the subsequent repair-only commits described in that evidence before the evidence file itself was committed.
+Prompt-content head evaluated: `80e09b83c4215ff4378e8cc8e25f85dff7db4b2d`.
 
-Material findings repaired:
+Material findings repaired before that freeze:
 
 1. hidden accepted-but-unimplemented SIM/Domain/Ability/Interaction/AI dependencies;
 2. missing hard `Movement -> Combat` integration order;
 3. implicit worker lifecycle/budget/handover requirements;
 4. implicit trusted-source order/evidence classification/unmerged-sibling rules.
 
-Final package-content verdict after repairs:
+Final package-content verdict:
 
 ```text
 17/17 execution prompts: PASS
@@ -119,8 +119,8 @@ EXECUTOR_PROMPTS: HOLD
 - [x] full prompt evaluation completed;
 - [x] four material evaluation findings repaired;
 - [x] prompt evaluation evidence persisted;
-- [ ] stale PR #305 terminally superseded;
-- [ ] final #314 full-diff self-review and exact-head CI completed on the post-evaluation checkpoint;
+- [x] stale PR #305 terminally superseded and closed without merge;
+- [ ] final #314 full-diff self-review and exact-head CI completed on the frozen package;
 - [ ] Stage-C #311 independently reviewed/merged/lifecycle-closed;
 - [ ] #314 reconciled against exact post-Stage-C main;
 - [ ] #314 merged/closed out and executor release state flipped from HOLD only if all release gates still pass.
@@ -133,21 +133,20 @@ The prompt package remains `HOLD` until:
 2. current status/register/index no longer list Stage-C architecture as an executor blocker;
 3. #314 is reconciled to that exact main;
 4. any post-reconciliation prompt-content delta is re-evaluated;
-5. stale #305 is terminally superseded;
-6. final exact-head #314 governance/merge gates and self-review pass;
-7. no prompt grants entitlement, production, external-repository or Reference-parity authority.
+5. final exact-head #314 governance/merge gates and self-review pass;
+6. no prompt grants entitlement, production, external-repository or Reference-parity authority.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: 17-prompt package passes formal 10-gate evaluation after four material repairs; evaluation evidence committed on #314
+last_progress: prompt content frozen after 17/17 PASS evaluation; stale PR #305 closed as superseded
 status: validating
 branch: docs/final-executor-prompt-dag-20260816
 issue: 313
 pr: 314
-owner_action_required: false for remaining nonblocked prompt-package work
+owner_action_required: false for remaining nonblocked prompt-package validation
 blocker: Stage-C #311 required independent exact-head review remains unavailable; Codex returned usage-limit and existing deterministic semantic workflow is NOT_APPLICABLE
-next_action: terminally supersede stale #305, then perform final #314 full-diff self-review/thread/drift/exact-head CI while keeping executor release HOLD
+next_action: perform final #314 full-diff self-review, thread/drift check and exact-head CI while keeping executor release HOLD
 executor_prompts: HOLD
 ```
 
