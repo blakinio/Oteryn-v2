@@ -18,6 +18,10 @@ No production/protected environment, Platform/external-repository write, Referen
 
 Read live governance/allocation plus GAME-ABILITY owner acceptance, SIM, GAME-INTERACTION, GAME-ITEM, GAME-CHAR, DUR-03, FND-02/03/04, accepted `VSL-COMBAT-01`, accepted `VSL-CONTENT-01`, accepted `VSL-MOVE-01`, QA-E2E and all merged prerequisite implementation seams.
 
+## Baseline / dependency resolution
+
+Trusted source order is: system/owner instructions -> root/nearest governance -> live coordinator allocation -> accepted FND/SIM/GAME/DUR/VSL/QA contracts -> live `main` implementation/registries/CI -> external evidence. Verify exact merged Movement plus Foundation/SIM/Domain/Content/Ability/Interaction/Durability/Client/QA prerequisite SHAs before writes. Record material facts as `PROVEN / DERIVED / UNKNOWN / CONFLICT`; unresolved authority, durable-value, Reference, revision, resource or evidence prerequisites fail closed. Sibling output is not consumable until merged or explicitly ordered. External repositories remain read-only.
+
 Before the first write, verify the coordinator allocation names the exact **merged Movement VSL prerequisite SHA/PR** and that its integration evidence is not stale against current main. If Movement is not merged/integration-ready, remain read-only and report that dependency; do not implement movement semantics inside Combat.
 
 ## Target outcome
