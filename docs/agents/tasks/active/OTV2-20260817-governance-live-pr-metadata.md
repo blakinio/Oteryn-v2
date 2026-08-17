@@ -10,18 +10,22 @@ base_branch: main
 branch: fix/governance-live-pr-metadata
 pr: 320
 base_sha: 65b5711fc56f80c0407ce462e83cdc973535636f
-head_sha: 0848f6baaaa6985d9435b912425bf967e4703586
+head_sha: 3c91bdce08fcbfab2d749b5352c38a1171d6aa49
 final_head_sha: null
 final_head_frozen_at: null
 owner: governance repair agent
 created_at: 2026-08-17T09:22:00+02:00
-updated_at: 2026-08-17T09:26:30+02:00
+updated_at: 2026-08-17T09:34:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
   - .github/workflows/agent-governance.yml
+  - .github/workflows/merge-gate.yml
+  - tools/repository/validate_repository_policy.py
+  - docs/repository/GITHUB_GOVERNANCE.md
   - docs/agents/tasks/active/OTV2-20260817-governance-live-pr-metadata.md
-public_contracts: []
+public_contracts:
+  - docs/repository/GITHUB_GOVERNANCE.md
 depends_on:
   - main@65b5711fc56f80c0407ce462e83cdc973535636f
 blocks:
@@ -35,63 +39,76 @@ external_repositories:
 
 ## Outcome
 
-Make `Agent governance` validate the current live pull-request state instead of a stale event-body snapshot, and automatically revalidate metadata edits so `workflow_dispatch` remains only a break-glass exact-head recovery path.
+Make PR-governance metadata validation self-healing for ordinary metadata edits without weakening exact-head controls: live PR title/body/state are resolved from GitHub, `edited` re-runs governance and the protected aggregate merge gate, and `workflow_dispatch` remains only a break-glass exact-head path where it is already appropriate.
 
 ## Proven problem
 
 - `PROVEN`: PR #239 produced a fresh `synchronize` Agent-governance run whose event payload contained the old Dependabot body even though the PR body was repaired immediately afterwards.
-- `PROVEN`: the failed run reported only missing `## Summary`, `## Scope`, and `## Validation`, while the current live PR body already contained those headings and the exact-head Merge-gate governance check passed.
-- `PROVEN`: trusted-base `.github/workflows/agent-governance.yml` read title/body directly from `github.event.pull_request.*` for normal pull-request events and only fetched live PR metadata for `workflow_dispatch`.
-- `PROVEN`: the active GitHub connector exposes workflow rerun operations but no workflow-dispatch operation, so repository automation should not depend on manual dispatch for recoverable PR metadata edits.
+- `PROVEN`: that run reported only missing `## Summary`, `## Scope`, and `## Validation`; the repaired live PR contained the headings and the exact-head Merge-gate governance job passed.
+- `PROVEN`: trusted-base `Agent governance` read title/body from frozen `github.event.pull_request.*` fields on normal PR events and fetched live PR metadata only for `workflow_dispatch`.
+- `PROVEN`: the active GitHub connector has rerun operations but no workflow-dispatch operation, so ordinary metadata repair must not depend on manual dispatch.
+- `PROVEN`: `Merge gate / validate` is the single protected required status, and trusted-base `merge-gate.yml` did not handle `pull_request: edited`; therefore a metadata-only change could otherwise leave an older green required status covering later invalid metadata.
 
 ## Implementation
 
-PR #320 changes `Agent governance` so that:
+PR #320 now makes the following bounded changes:
 
-- PR activity is explicit: `opened`, `reopened`, `synchronize`, `edited`;
-- normal PR events provide only the PR number and expected event head SHA;
-- the workflow fetches live title/body/head repository/base/state/head SHA from the GitHub REST API;
-- live head mismatch fails closed instead of validating a moved PR;
-- `workflow_dispatch` keeps branch-to-expected-SHA verification and feeds the same live metadata path;
-- successful validation exports the verified live head SHA for exact checkout;
-- the existing same-repository, `main` base, conventional-title, required-heading, governance and repository-policy checks remain enforced.
+1. `Agent governance`
+   - explicitly handles `opened`, `reopened`, `synchronize`, and `edited`;
+   - uses the PR event only for PR number plus expected head SHA;
+   - fetches live title/body/head repository/base/state/head SHA from the GitHub REST API on both PR and dispatch paths;
+   - fails closed when the live head differs from the triggering/dispatch head;
+   - checks out only the verified live head;
+   - retains same-repository, `main` base, conventional-title and required-heading checks.
+2. `Merge gate`
+   - preserves the trusted-base workflow byte-for-byte outside the trigger block;
+   - adds the same explicit PR activity set including `edited`, so the protected aggregate status is recomputed after metadata changes without changing the head.
+3. Repository validator/documentation
+   - pins the new always-on trigger as the canonical merge-gate contract while preserving existing scope/aggregate job hashes;
+   - documents metadata-edit revalidation and keeps `reopened` as recovery for genuinely suppressed initial PR events;
+   - does not add `workflow_dispatch` to the merge gate or execute PR code in a privileged context.
 
-Because concurrency remains keyed by PR number with `cancel-in-progress: true`, a metadata `edited` event can supersede a still-running stale `synchronize` validation for the same PR.
+PR concurrency remains keyed by PR number with `cancel-in-progress: true`, so a metadata `edited` event can supersede an older in-progress run for the same PR.
+
+## Validation evidence so far
+
+- Head `04643dfb5b4cdc92a57e41899c73cb953acdc13e`: `Agent governance / validate`, Merge Authority Audit and Architecture Semantic Audit passed before merge-gate trigger hardening was added.
+- A first merge-gate edit accidentally replaced more trusted-base content than intended; CI correctly rejected it via canonical trigger/job hashes. It was repaired by restoring the trusted-base merge gate and retaining only the five-line trigger addition.
+- Current diff against task base confirms `.github/workflows/merge-gate.yml` is now only `+5/-0`.
+- Head `3c91bdce08fcbfab2d749b5352c38a1171d6aa49`: fresh Agent Governance, Merge Authority Audit and Architecture Semantic Audit passed; aggregate Merge Gate is still running/queued at this checkpoint.
 
 ## Acceptance criteria
 
-- [x] `pull_request` explicitly handles `opened`, `reopened`, `synchronize`, and `edited`.
-- [x] Pull-request validation resolves the PR number/head from the event but fetches title/body/base/head repository/state from the live GitHub API.
+- [x] `Agent governance` explicitly handles `opened`, `reopened`, `synchronize`, and `edited`.
+- [x] Pull-request validation uses event identity but fetches title/body/base/head repository/state from the live GitHub API.
 - [x] A stale event whose recorded head no longer matches the live PR head fails closed.
-- [x] `workflow_dispatch` retains exact branch/SHA/PR identity verification and uses the same live-metadata validation path.
-- [x] Push-to-main validation behavior remains unchanged.
+- [x] `workflow_dispatch` retains exact branch/SHA/PR identity verification and uses the same live-metadata path.
+- [x] Push-to-main Agent-governance validation behavior remains unchanged.
 - [x] Existing title/body/base/same-repository checks remain at least as strict as before.
-- [ ] Governance/repository-policy validation passes on the exact final head.
+- [x] The protected aggregate `Merge gate / validate` is configured to re-run on `edited` without adding manual PR-code dispatch.
+- [x] Repository-policy canonical trigger updated without changing scope/aggregate job hashes.
+- [ ] Full current-head Merge Gate passes.
+- [ ] Metadata-only `edited` regression on an unchanged final head produces fresh successful Agent Governance and Merge Gate runs.
 - [ ] Full changed-file self-review finds no safety reduction or authority expansion.
+- [ ] Current-main ancestry and zero unresolved review threads/requested changes are reconfirmed.
 
 ## Excluded scope
 
-- weakening any required check, branch protection, merge authority, or repository allowlist;
+- weakening any required check, branch protection, merge authority, repository allowlist or Code Owner boundary;
 - adding `pull_request_target` or executing PR-controlled code with elevated permissions;
 - changing production/deployment workflows;
 - owner-funded Codex/OpenAI review;
-- cross-repository writes unless separately authorized by the owner and each repository's trusted-base policy.
+- converting operational/manual workflows that legitimately use `workflow_dispatch` and do not exhibit the stale PR-metadata failure mode.
 
 ## Cross-repository audit
 
-Read-only audit targets under coordination ID `OTERYN-GOV-LIVE-PR-METADATA-20260817`:
+Read-only audit under `OTERYN-GOV-LIVE-PR-METADATA-20260817` covered:
 
-- `blakinio/Oteryn-Platform`;
-- `blakinio/Otheryn`;
-- `blakinio/otclient`.
+- `blakinio/Oteryn-Platform`: its `agent-governance.yml` does not validate PR title/body and therefore does not have the #239 stale-body failure mode; its main CI resolves PR SHAs for checkout/classification rather than PR-message policy.
+- `blakinio/Otheryn`: no `.github/workflows/agent-governance.yml` exists on `main`; repository workflow/code searches found no `EVENT_PR_BODY`, `pull_request.title`, or `pull_request.body` equivalent requiring this repair.
+- `blakinio/otclient`: no `.github/workflows/agent-governance.yml` exists on `main`; repository workflow/code searches found no `EVENT_PR_BODY`, `pull_request.title`, or `pull_request.body` equivalent requiring this repair.
 
-Current findings:
-
-- `Oteryn-Platform`: `.github/workflows/agent-governance.yml` does not inspect PR title/body and therefore does not have the #239 stale-body failure mode in that workflow.
-- `Otheryn`: no `.github/workflows/agent-governance.yml` exists on `main`.
-- `otclient`: no `.github/workflows/agent-governance.yml` exists on `main`.
-
-A broader workflow audit remains in progress for other exact-head/manual-recovery implementations before deciding whether any cross-repository write is justified.
+Result: no cross-repository write is justified by current evidence. Existing `workflow_dispatch` uses in those repositories are not being removed merely because they are manual; only the proven stale-metadata dependency is being repaired.
 
 ## Context checkpoint
 
@@ -100,10 +117,11 @@ checkpoint_status: validating
 last_verified_base_sha: 65b5711fc56f80c0407ce462e83cdc973535636f
 current_branch: fix/governance-live-pr-metadata
 current_pr: 320
-current_head_sha: 0848f6baaaa6985d9435b912425bf967e4703586
+current_head_sha: 3c91bdce08fcbfab2d749b5352c38a1171d6aa49
 findings:
-  - Oteryn-v2 Agent governance implementation now uses live PR metadata and handles edited events.
-  - Oteryn-Platform agent-governance is not affected by the stale-title/body race.
-  - Otheryn and otclient have no agent-governance workflow under that name; broader workflow audit is read-only and still active.
-next_action: Validate PR #320 on its new exact head, finish the cross-repository workflow audit, and repair only proven equivalent stale-metadata dependencies.
+  - Agent governance live-metadata path passes exact-head validation.
+  - Merge gate now differs from trusted base only by the explicit edited-capable trigger.
+  - Canonical repository validator and independent merge-authority audit accept the new trigger contract.
+  - No equivalent stale title/body dependency was found in the audited Oteryn-Platform, Otheryn or otclient workflows.
+next_action: Let exact-head Merge Gate finish, freeze the final task head, then perform a metadata-only PR edit and require fresh Agent-governance plus aggregate Merge-gate success on that unchanged head.
 ```
