@@ -6,7 +6,9 @@
 - Current execution status: `docs/architecture/FOUNDATION_PROGRAMME_CURRENT_STATUS.md`
 - Detailed gameplay/product horizon: `docs/architecture/GAMEPLAY_AND_PRODUCT_ARCHITECTURE_HORIZON.md`
 - Stable foundation backlog: `docs/architecture/FOUNDATION_DECISION_BACKLOG.md`
-- Coordinator prompt: `docs/agents/prompts/OTV2_GLOBAL_ARCHITECTURE_DECISION_COORDINATOR.md`
+- Architecture coordinator prompt: `docs/agents/prompts/OTV2_GLOBAL_ARCHITECTURE_DECISION_COORDINATOR.md`
+- Released implementation programme: `docs/agents/programs/OTERYN_V2_IMPLEMENTATION_EXECUTOR_DAG.md`
+- Released implementation coordinator: `docs/agents/prompts/OTV2_IMPLEMENTATION_COORDINATOR.md`
 
 ## 1. Purpose and precedence
 
@@ -19,6 +21,8 @@ DecisionStatus != DeliveryStatus != ImplementationStatus
 ```
 
 Accepted ADRs/contracts/owner baselines are semantic authority. `FOUNDATION_PROGRAMME_CURRENT_STATUS.md` is current execution-status authority. Historical proposal/candidate and backlog prose remains evidence/history when superseded by a later owner acceptance.
+
+Release of the implementation coordinator programme does not change any gate's `ImplementationStatus` and does not authorize production.
 
 ## 2. Accepted platform/foundation direction
 
@@ -65,17 +69,17 @@ The following architecture is accepted for its named scope:
 | `GAME-CHANNEL-01` | `ACCEPTED` | `LIFECYCLE_CLOSED` | `NOT_STARTED` | player-visible Channel policy/lifecycle/multiplicity |
 | `SIM-DETERMINISM-01` | `ACCEPTED` | `LIFECYCLE_CLOSED` | `NOT_STARTED` | deterministic numeric/RNG/order/replay/state-hash boundary |
 | `GAME-ABILITY-01` | `ACCEPTED` | `LIFECYCLE_CLOSED` | `NOT_STARTED` | owner acceptance PR #306; no Reference parity implied |
-| `GAME-INTERACTION-01` | `ACCEPTED` | `IN_REVIEW` closeout on #314 | `NOT_STARTED` | owner acceptance delivery merged via #309; lifecycle bookkeeping consolidated into #314 |
-| `ALPHA-CLIENT-01` | `ACCEPTED` | `IN_REVIEW` closeout on #314 | `NOT_STARTED` | owner acceptance delivery merged via #309; lifecycle bookkeeping consolidated into #314 |
-| `GAME-AI-01` | `ACCEPTED` | `IN_REVIEW` closeout on #314 | `NOT_STARTED` | owner acceptance delivery merged via #309; lifecycle bookkeeping consolidated into #314 |
-| `ANL-02` | `ACCEPTED` | `IN_REVIEW` closeout on #314 | `NOT_STARTED` | read-only gameplay/balance/world analytics; lifecycle bookkeeping consolidated into #314 |
-| `ANL-03` | `ACCEPTED` | `IN_REVIEW` closeout on #314 | `NOT_STARTED` | read-only economy/integrity/security analytics; lifecycle bookkeeping consolidated into #314 |
+| `GAME-INTERACTION-01` | `ACCEPTED` | `LIFECYCLE_CLOSED` | `NOT_STARTED` | owner acceptance #309; lifecycle bookkeeping consolidated by #314 |
+| `ALPHA-CLIENT-01` | `ACCEPTED` | `LIFECYCLE_CLOSED` | `NOT_STARTED` | owner acceptance #309; lifecycle bookkeeping consolidated by #314 |
+| `GAME-AI-01` | `ACCEPTED` | `LIFECYCLE_CLOSED` | `NOT_STARTED` | owner acceptance #309; lifecycle bookkeeping consolidated by #314 |
+| `ANL-02` | `ACCEPTED` | `LIFECYCLE_CLOSED` | `NOT_STARTED` | read-only gameplay/balance/world analytics; lifecycle bookkeeping consolidated by #314 |
+| `ANL-03` | `ACCEPTED` | `LIFECYCLE_CLOSED` | `NOT_STARTED` | read-only economy/integrity/security analytics; lifecycle bookkeeping consolidated by #314 |
 | `QA-E2E-01` | `ACCEPTED` | `LIFECYCLE_CLOSED` | `NOT_STARTED / EVIDENCE_REQUIRED` | Tier 1/2/3 product evidence contract |
-| `VSL-MOVE-01` | `ACCEPTED` | `LIFECYCLE_CLOSED` | `NOT_STARTED` | Stage-C local movement/collision/visibility/reconciliation architecture; PR #311 / closeout #318 |
-| `VSL-COMBAT-01` | `ACCEPTED` | `LIFECYCLE_CLOSED` | `NOT_STARTED` | Stage-C combat/death/loot/XP/pickup architecture; durable value review passed on #311 |
+| `VSL-MOVE-01` | `ACCEPTED` | `LIFECYCLE_CLOSED` | `NOT_STARTED` | Stage-C local movement/collision/visibility/reconciliation architecture; #311/#318 |
+| `VSL-COMBAT-01` | `ACCEPTED` | `LIFECYCLE_CLOSED` | `NOT_STARTED` | Stage-C combat/death/loot/XP/pickup architecture; durable-value review passed on #311 |
 | `VSL-CONTENT-01` | `ACCEPTED` | `LIFECYCLE_CLOSED` | `NOT_STARTED` | Stage-C semantic/compiler/loader evidence slice; permanent physical format remains undecided |
 
-The five first-wave `IN_REVIEW` rows are waiting only on the separately consolidated bookkeeping closeout on PR #314; their owner acceptance already merged through #309. Stage-C architecture lifecycle closes through #318 without changing implementation state.
+The remaining first-wave and Stage-C architecture delivery lifecycles are closed. PR #314 merged the evaluated implementation coordinator/DAG package as `88f4fb754b5ae11243afd38a9e0b6a8e3b0a5815`; this changed programme availability, not implementation status.
 
 ## 4. Reference evidence/parity registry
 
@@ -98,7 +102,7 @@ No architecture acceptance or implementation similarity may silently promote par
 
 ## 5. Stage-C vertical-slice architecture
 
-The three former Stage-C architecture blockers are now owner-accepted and lifecycle-closed. `VSL-01` remains the proof programme and is not itself an implementation-completeness claim.
+The three former Stage-C architecture blockers are owner-accepted and lifecycle-closed. `VSL-01` remains the proof programme and is not itself an implementation-completeness claim.
 
 | Gate | Current role | DecisionStatus | DeliveryStatus | Remaining boundary |
 |---|---|---|---|---|
@@ -107,13 +111,13 @@ The three former Stage-C architecture blockers are now owner-accepted and lifecy
 | `VSL-COMBAT-01` | combat/value slice architecture | `ACCEPTED` | `LIFECYCLE_CLOSED` | implementation, exact Reference formulas/values and broader reward models remain separately gated |
 | `VSL-CONTENT-01` | native content slice architecture | `ACCEPTED` | `LIFECYCLE_CLOSED` | implementation and permanent World Project/Bundle physical-format selection remain separately gated |
 
-Canonical acceptance is `OTERYN_V2_STAGE_C_VSL_OWNER_ACCEPTANCE_20260816.md`; candidate contracts define the exact accepted bounded scope. PR #311 merged that acceptance as `e0ea9ef87c01dec720a22e8df6d54bfd669cb62c`. Lifecycle/status reconciliation is PR #318.
+Canonical acceptance is `OTERYN_V2_STAGE_C_VSL_OWNER_ACCEPTANCE_20260816.md`; candidate contracts define the exact accepted bounded scope. PR #311 merged that acceptance as `e0ea9ef87c01dec720a22e8df6d54bfd669cb62c`. The genuine independent exact-head review is `4949049662`. Lifecycle/status reconciliation is PR #318 / `a6a5180d98cf7791e40d9e1d08b25a5c8b4eff96`.
 
 `QA-E2E-01` architecture is accepted, but executable E2E implementation/evidence remains required before any terminal `VSL-01 complete` claim.
 
 ## 6. Alpha/product gates still registered
 
-The following stable gates remain in the horizon and are **not silently accepted by Stage-C decisions**:
+The following stable gates remain in the horizon and are **not silently accepted by Stage-C or executor-programme release**:
 
 | Gate | Role / current disposition |
 |---|---|
@@ -174,23 +178,32 @@ Registration prevents omission; it does not authorize implementation.
 5. Resource values belong to accepted registries/PERF/OPS evidence, not arbitrary executor constants.
 6. Cross-repository authority pins immutable merged revisions, never mutable PR heads.
 7. Reference parity remains an evidence claim, never an architecture-status side effect.
-8. Any runtime/DDL/production work requires a separate explicit implementation task/authority.
+8. Any runtime/DDL/production work requires a separate explicit implementation allocation/authority.
 9. Stage-C implementation must consume the accepted `VSL-MOVE-01`, `VSL-COMBAT-01` and `VSL-CONTENT-01` contracts and preserve their remaining evidence/resource/foreign-owner gates.
 10. Entitlement implementation remains excluded until `PROD-ENTITLEMENTS-01` is separately accepted.
+11. A released worker prompt does not grant write authority without a current coordinator allocation.
 
 ## 10. Current next architecture/execution action
 
-There is no remaining owner decision required to accept the bounded Stage-C movement/combat/content architecture.
+No owner decision remains to accept the bounded first-wave or Stage-C architecture, and no prompt-release blocker remains.
 
-Before implementation workers are released, the separately owned final executor-prompt package on PR #314 must be reconciled against the exact post-Stage-C-closeout `main`, re-evaluated for any prompt-content delta, pass its exact-head governance/self-review/merge gates, and be released under its own authority.
+The evaluated coordinator-led implementation programme merged via PR #314 / `88f4fb754b5ae11243afd38a9e0b6a8e3b0a5815`.
 
-That handoff must preserve accepted foundation, DUR, SIM, GAME-ABILITY, GAME-INTERACTION, GAME-AI, ALPHA-CLIENT, QA-E2E and Stage-C boundaries. It must not infer Reference values, permanent content format, production authority or entitlement authority.
-
-## 11. Executor state
+When implementation should begin, the explicit entry point is:
 
 ```text
-EXECUTOR_PROMPTS: HOLD
-IMPLEMENTATION_AUTHORITY: NONE
+Oteryn: implementation coordinator
 ```
 
-The hold is now an executor-package release gate, not an unresolved Stage-C architecture-decision gate.
+The coordinator must re-read live `main`, current governance and the released DAG before creating the serial Bootstrap allocation. No direct worker may self-start.
+
+## 11. Executor programme state
+
+```text
+EXECUTOR_PROGRAMME: RELEASED
+DEFAULT_ENTRYPOINT: Oteryn: implementation coordinator
+DIRECT_WORKERS: ALLOCATION_GATED
+IMPLEMENTATION_WORKERS_STARTED: NO
+IMPLEMENTATION_AUTHORITY_OUTSIDE_LIVE_COORDINATOR_ALLOCATION: NONE
+PRODUCTION_AUTHORITY: NONE
+```
