@@ -25,13 +25,9 @@ cross_repository_coordination_id: OTV2-NATIVE-FOUNDATION
 
 ## Outcome
 
-Maintain a truthful **non-owning** programme checkpoint. This record owns no architecture or implementation path. Every material implementation lane requires its own bounded task/branch/PR/evidence lifecycle and a live coordinator allocation.
+Maintain a truthful **non-owning** programme checkpoint. This record owns no architecture or implementation path. Material future work uses bounded tasks/branches/PRs and live coordinator allocations.
 
-## Current accepted architecture
-
-Consume, do not restart, the owner-accepted foundation/gameplay/client/analytics architecture recorded in `FOUNDATION_PROGRAMME_CURRENT_STATUS.md` and `GLOBAL_ARCHITECTURE_DECISION_REGISTER.md`.
-
-Current bounded first-wave and Stage-C state:
+## Accepted architecture state
 
 ```yaml
 GAME-ABILITY-01: ACCEPTED / LIFECYCLE_CLOSED / NOT_STARTED
@@ -45,15 +41,13 @@ VSL-COMBAT-01: ACCEPTED / LIFECYCLE_CLOSED / NOT_STARTED
 VSL-CONTENT-01: ACCEPTED / LIFECYCLE_CLOSED / NOT_STARTED
 ```
 
-Stage-C owner acceptance merged through PR #311 / `e0ea9ef87c01dec720a22e8df6d54bfd669cb62c`. Its genuine independent exact-head review is `4949049662` with zero material findings. Lifecycle/status closeout merged through PR #318 / `a6a5180d98cf7791e40d9e1d08b25a5c8b4eff96`.
+Stage-C acceptance merged through PR #311 / `e0ea9ef87c01dec720a22e8df6d54bfd669cb62c`; a fresh separate-session independent review found zero material findings on exact head `c5d9f839abd8998d42f4f37b203882f03bb51ce0`; lifecycle/status closeout merged through PR #318 / `a6a5180d98cf7791e40d9e1d08b25a5c8b4eff96`.
 
 Reference evidence remains 0/4 promoted and fail closed. Architecture acceptance does not imply parity.
 
-## Released implementation handoff
+## Final implementation handoff
 
-The evaluated implementation prompt package merged through PR #314 / `88f4fb754b5ae11243afd38a9e0b6a8e3b0a5815`.
-
-Formal prompt-package result:
+PR #314 delivers the formally evaluated implementation coordinator/worker DAG:
 
 ```text
 17/17 execution prompts: PASS
@@ -61,17 +55,15 @@ Formal prompt-package result:
 open material prompt findings: 0
 ```
 
-Release semantics:
+When PR #314 merges, executor prompts are released for **explicit owner invocation**. The merge itself does not start implementation.
+
+Normal owner entry point:
 
 ```text
-EXECUTOR_PROGRAMME: RELEASED
-DEFAULT_ENTRYPOINT: Oteryn: implementation coordinator
-DIRECT_WORKERS: ALLOCATION_GATED
-IMPLEMENTATION_WORKERS_STARTED: NO
-IMPLEMENTATION_AUTHORITY_OUTSIDE_LIVE_COORDINATOR_ALLOCATION: NONE
+Oteryn: implementation coordinator
 ```
 
-PR #314 merge did not create a Bootstrap allocation and did not start any implementation worker.
+Direct worker aliases remain read-only without a live coordinator allocation.
 
 ## Canonical implementation order
 
@@ -93,38 +85,32 @@ Stable workspace/registry/stable-ID mutations remain serialized.
 
 ## Lane-specific holds preserved
 
-- `PROD-ENTITLEMENTS-01` remains unaccepted on the Oteryn-v2 consumer/enforcement side; Premium/VIP/game-consumed entitlement implementation/activation remains blocked.
+- `PROD-ENTITLEMENTS-01` remains unaccepted on the Oteryn-v2 consumer/enforcement side; entitlement implementation/activation stays blocked.
 - Exact Reference formulas/mechanics/values remain evidence-gated; test fixtures cannot establish parity.
-- Permanent World Project/Bundle physical encoding remains blocked on the DUR-04 format spike plus later owner decision.
+- Permanent World Project/Bundle physical encoding remains behind the DUR-04 format spike plus later owner decision.
 - Missing required resource ceilings fail closed.
 - High-risk protocol/session/admission/persistence/item/loot/value/multichannel/fencing implementation changes require genuinely independent exact-head review.
 - QA-E2E real-boundary evidence remains required for terminal vertical-slice proof.
 - Production/protected-environment/live data/session/account, Platform/external-repository and owner-funded AI authority remain separately governed.
 
-## Current execution boundary
-
-There is no remaining Stage-C or prompt-package blocker to starting the bounded implementation coordinator programme.
-
-Implementation does **not** begin automatically. When the owner explicitly wants implementation to start, invoke:
+## Executor state after #314 delivery
 
 ```text
-Oteryn: implementation coordinator
+EXECUTOR_PROMPTS: RELEASED
+DEFAULT_ENTRYPOINT: Oteryn: implementation coordinator
+DIRECT_WORKERS: ALLOCATION_GATED
+IMPLEMENTATION_STARTED: NO
+IMPLEMENTATION_AUTHORITY: NONE_UNTIL_OWNER_INVOCATION
 ```
-
-The coordinator must first verify live `main`, current governance and the released DAG, then create the serial Bootstrap allocation. Direct worker aliases remain read-only until allocated.
 
 ## Context checkpoint
 
 ```yaml
-last_progress: first-wave and Stage-C architecture lifecycle closed; evaluated executor DAG merged via #314 and programme released
+last_progress: first-wave and Stage-C architecture accepted/lifecycle-closed; final 17-prompt executor DAG evaluated and released on PR #314 merge
 status: ready_for_owner_initiated_implementation
-owner_action_required: explicit invocation of `Oteryn: implementation coordinator` only when implementation should start
-blocker: null for starting the bounded coordinator programme; lane-specific evidence/authority/resource holds remain binding
+owner_action_required: explicit invocation of `Oteryn: implementation coordinator` when implementation should start
+blocker: none for starting the bounded coordinator programme after #314 reaches main; lane-specific evidence/authority/resource holds remain binding
 authorized_implementation_started: false
-next_action: owner invokes `Oteryn: implementation coordinator`; coordinator then verifies live main and creates the serial Bootstrap allocation
-executor_programme: RELEASED
+next_action: owner invokes `Oteryn: implementation coordinator`; coordinator verifies live main and creates the serial Bootstrap allocation
+executor_prompts: RELEASED_ON_314_MERGE
 ```
-
-`IMPLEMENTATION_WORKERS_STARTED: NO`
-`IMPLEMENTATION_AUTHORITY_OUTSIDE_LIVE_COORDINATOR_ALLOCATION: NONE`
-`PRODUCTION_AUTHORITY: NONE`
