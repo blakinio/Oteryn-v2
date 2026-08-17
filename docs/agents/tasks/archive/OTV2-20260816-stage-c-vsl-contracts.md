@@ -53,7 +53,7 @@ Verified terminal delivery evidence for that exact head:
 
 - Agent governance: PASS;
 - Merge authority audit: PASS;
-- Architecture semantic audit: PASS;
+- Architecture semantic audit workflow: SUCCESS, with the Stage-C semantic profile `NOT_APPLICABLE`; this was not counted as independent review evidence;
 - dependency review: PASS;
 - CodeQL Python/Actions: PASS;
 - `Merge gate / validate`: PASS;
