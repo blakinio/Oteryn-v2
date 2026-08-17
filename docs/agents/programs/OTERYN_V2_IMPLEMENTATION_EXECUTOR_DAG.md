@@ -1,17 +1,21 @@
 # Oteryn v2 — Implementation Executor DAG
 
 - Programme ID: `OTV2-NATIVE-IMPLEMENTATION`
-- Status: `PREPARED / HOLD` until Stage-C acceptance delivery is merged and lifecycle/status reconciliation is complete.
+- Status: `RELEASE_CANDIDATE`; becomes canonical/released only when PR #314 lawfully merges to `main`.
 - Canonical repository: `blakinio/Oteryn-v2`.
+- Reconciled architecture base: `main@3ed4ca602f389d5a8549e0fc19dcc688a7b7a78c`.
 - External repositories: read-only unless separately owner-authorized.
 - Production/protected-environment/live-data authority: **NONE**.
 - Reference parity authority: **NONE**.
+- Direct worker write authority without a live coordinator allocation: **NONE**.
 
 ## 1. Purpose
 
 This programme converts the accepted Oteryn-v2 architecture into a bounded implementation sequence without allowing workers to make unresolved architecture decisions inside code.
 
 The implementation is coordinator-led and dependency-driven. Workers do not choose final crate/service topology before the bootstrap cutover establishes real repository paths and machine-enforced ownership.
+
+Merging this document releases a **coordination programme**, not implementation work by itself. No worker starts, writes or receives an allocation merely because this DAG exists on `main`.
 
 ## 2. Global invariants
 
@@ -27,27 +31,30 @@ Every lane MUST preserve:
 - SIM deterministic numeric/RNG/order/replay requirements;
 - accepted GAME-CHANNEL / GAME-CHAR / GAME-ITEM semantics;
 - accepted GAME-ABILITY / GAME-INTERACTION / GAME-AI / ALPHA-CLIENT / ANL contracts;
-- accepted Stage-C movement/combat/content contracts once merged;
+- accepted/lifecycle-closed Stage-C movement/combat/content architecture;
 - QA-E2E real-boundary proof rules;
 - `PROVEN / DERIVED / UNKNOWN / CONFLICT` evidence discipline;
-- no Codex/owner-funded AI without exact authorization for that use;
+- current root governance, including its AI/review authorization boundaries;
+- no direct Codex/owner-funded AI invocation by a repository agent without exact authorization for that use;
 - no production, Platform write, protected secrets, live account/session/data or external-repository mutation without separate explicit authority.
 
 Reference-unknown behavior MUST remain fail-closed or use an explicitly test-only non-shipping fixture profile. A fixture is never Reference parity evidence.
 
 ## 3. Why bootstrap is serial
 
-Current `main` is intentionally `pre-native-protocol`:
+At reconciliation, `main` remains intentionally `pre-native-protocol`:
 
 - only `apps/client` exists as an application;
 - `workspace-boundaries.toml` enumerates exactly 19 current members;
-- `tools/architecture-check` requires exactly that pre-native shape;
+- `tools/architecture-check` enforces the current pre-native shape;
 - current policy forbids package-name fragments including `protocol-oteryn`, `transport`, `game-session`, `game-server`, `persistence`;
 - Rust CI contains client-only negative closure checks;
 - FND-02 registry intentionally has empty gameplay `command_types`, `state_domains` and capabilities;
 - game-event registry intentionally has no domain event types.
 
 Therefore the first implementation PR MUST be an atomic, reviewed transition from the pre-native policy to a real immediate-consumer implementation shape. Creating speculative empty crates first is forbidden.
+
+These are verified live facts at the #314 reconciliation base, not a promise that they remain forever. The implementation coordinator must re-read live `main` before allocation and adapt only through accepted architecture/governance.
 
 ## 4. Canonical DAG
 
@@ -343,7 +350,24 @@ Coordinator sequence:
 
 Direct worker aliases exist for recovery/manual allocation but MUST verify an active coordinator allocation naming their exact lane and paths before writing.
 
-## 23. Completion truth
+## 23. Release semantics
+
+A lawful merge of PR #314 changes programme availability from prepared to released. It authorizes only reuse of the coordinator prompt/programme under the repository's normal task/allocation governance.
+
+It does **not**:
+
+- create an implementation allocation;
+- start Bootstrap or any worker;
+- authorize direct worker writes;
+- authorize production, protected-environment, live-data, Platform or external-repository mutation;
+- authorize owner-funded AI use;
+- select the permanent content format;
+- establish Reference parity;
+- accept `PROD-ENTITLEMENTS-01`.
+
+After merge, the safe normal entry remains an explicit user invocation of `Oteryn: implementation coordinator` (or an equivalent explicit request to start that programme). Direct worker aliases remain allocation-gated.
+
+## 24. Completion truth
 
 `architecture accepted` != `implementation complete` != `Reference parity` != `production ready`.
 
