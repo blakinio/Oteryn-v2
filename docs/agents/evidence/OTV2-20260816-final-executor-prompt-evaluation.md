@@ -3,13 +3,15 @@
 - Repository: `blakinio/Oteryn-v2`
 - PR: #314
 - Prompt-content head evaluated: `80e09b83c4215ff4378e8cc8e25f85dff7db4b2d`
-- Base: `main@bf2a2ae279516f62626a5d8f4dc1aeb587535c62`
+- Historical evaluation base: `main@bf2a2ae279516f62626a5d8f4dc1aeb587535c62`
+- Live reconciliation base: `main@3ed4ca602f389d5a8549e0fc19dcc688a7b7a78c`
+- Reconciliation merge commit on PR branch: `73230ac57583869ff26776b2dce3345428b67f30`
 - Standards:
   - `docs/agents/PROMPTING_STANDARD.md`
   - `docs/agents/PROMPT_EVAL_STANDARD.md`
-- Evaluation mode: full package self-audit; **not independent review**.
+- Evaluation mode: full package self-audit plus live-main reconciliation; **not independent review**.
 - Runtime/implementation authority from this evaluation: **NONE**.
-- Executor release state: **HOLD**.
+- Executor release state: **RELEASE_CANDIDATE — canonical only after lawful PR #314 merge**.
 
 ## 1. Evaluation scope
 
@@ -37,12 +39,14 @@ Supporting package surfaces also reviewed:
 
 - `docs/agents/programs/OTERYN_V2_IMPLEMENTATION_EXECUTOR_DAG.md`;
 - `docs/agents/prompts/README.md`;
-- active task #313 checkpoint;
-- live pre-native workspace/policy/registry facts used by the prompts.
+- task/lifecycle bookkeeping for issue #313;
+- live pre-native workspace/policy/registry facts used by the prompts;
+- live Stage-C acceptance/lifecycle state;
+- current root governance including the central Spark pre-review documentation merged by #323.
 
 ## 2. Required prompt gates
 
-The following ten gates come directly from `PROMPT_EVAL_STANDARD.md`:
+The following ten gates come directly from the current `PROMPT_EVAL_STANDARD.md`:
 
 ```text
 Authority
@@ -57,7 +61,7 @@ Handover
 Safety
 ```
 
-A `PASS` below means the prompt contains enough bounded instruction to execute safely when its declared live coordinator allocation and prerequisites exist. It does **not** mean those prerequisites currently exist or that implementation is authorized now.
+A `PASS` below means the prompt contains enough bounded instruction to execute safely when its declared live coordinator allocation and prerequisites exist. It does **not** mean an implementation lane is already allocated, that a worker may self-start, or that production authority exists.
 
 ## 3. Material findings and repairs
 
@@ -147,19 +151,25 @@ No unresolved material prompt defect remains from this evaluation pass.
 
 `PROVEN` — no prompt authorizes production deployment, protected-environment action, production PostgreSQL migration, live account/session/data mutation, secrets use or owner-funded AI by itself.
 
+`PROVEN` — current root governance documents a separately operated central Spark pre-review path, but repository agents still do not directly invoke Codex/OpenAI/hosted review without the required authority. The prompt package does not weaken or redefine that governance.
+
 ### Workspace bootstrap
 
-`PROVEN` — Bootstrap explicitly owns the atomic transition from the current 19-member pre-native machine policy to the first real immediate-consumer server/runtime shape. It must update Cargo/workspace policy, architecture-check assumptions and affected CI together.
+`PROVEN` — live `main@3ed4ca602f389d5a8549e0fc19dcc688a7b7a78c` still has the 19-member pre-native workspace and `workspace-boundaries.toml` still forbids pre-bootstrap production fragments including `protocol-oteryn`, `transport`, `game-session`, `game-server` and `persistence`.
+
+`PROVEN` — Bootstrap explicitly owns the atomic transition from that machine policy to the first real immediate-consumer server/runtime shape. It must update Cargo/workspace policy, architecture-check assumptions and affected CI together.
 
 `PROVEN` — speculative empty crates remain forbidden; Canary remains forbidden.
 
 ### Protocol and stable registries
 
+`PROVEN` — current `PROTOCOL_OTERYN_V1_REGISTRY.json` still has empty gameplay `capabilities`, `command_types` and `state_domains`.
+
 `PROVEN` — generic Foundation does not allocate gameplay `command_type`/`state_domain_id` values.
 
 `PROVEN` — owning gameplay integration lanes register their own typed protocol payloads under coordinator serialization.
 
-`PROVEN` — Analytics cannot invent producer event schemas; it waits for concrete registered producers.
+`PROVEN` — current `GAME_EVENT_FOUNDATION_REGISTRY.json` still has `event_types: []`; Analytics cannot invent producer event schemas and waits for concrete registered producers.
 
 ### Durability / value
 
@@ -185,44 +195,61 @@ No unresolved material prompt defect remains from this evaluation pass.
 
 `PROVEN` — Movement is the first gameplay integration gate and is a hard predecessor to Combat.
 
-## 6. Current release blocker versus prompt quality
+## 6. Live-main reconciliation and release prerequisite
 
-The prompt files themselves pass evaluation, but the package is **not yet releasable**.
+The historical external Stage-C blocker is now resolved.
 
-Current external programme prerequisite:
+Verified canonical chain:
 
 ```text
-Stage-C PR #311
-DecisionStatus: ACCEPTED on branch
-DeliveryStatus: IN_REVIEW
-ImplementationStatus: NOT_STARTED
-merge blocker: mandatory genuinely independent exact-head review not yet satisfied
-Codex attempt: usage-limit notice only
-existing deterministic architecture semantic workflow: NOT_APPLICABLE for Stage-C
+PR #311 final reviewed head c5d9f839abd8998d42f4f37b203882f03bb51ce0
+-> genuinely independent review 4949049662: 0 material findings
+-> #311 squash merge e0ea9ef87c01dec720a22e8df6d54bfd669cb62c
+-> Stage-C lifecycle/status closeout #318
+-> #318 squash merge a6a5180d98cf7791e40d9e1d08b25a5c8b4eff96
+-> issue #310 closed completed
+-> later governance-only main commits
+-> reconciliation base main@3ed4ca602f389d5a8549e0fc19dcc688a7b7a78c
 ```
+
+On the reconciliation base, `VSL-MOVE-01`, `VSL-COMBAT-01` and `VSL-CONTENT-01` are `ACCEPTED / LIFECYCLE_CLOSED / NOT_STARTED`. Stage-C architecture is therefore no longer a release blocker for the executor prompt package.
+
+The reconciliation merge commit `73230ac57583869ff26776b2dce3345428b67f30` uses live `main` as a parent and preserves all later governance. It overlays only the #314 package paths.
+
+### Prompt-content delta classification
+
+`PROVEN` — the 17 execution prompt bodies were not changed by live-main reconciliation. Their historical evaluated content remains byte-identical to the prepared package.
+
+`PROVEN` — current `PROMPTING_STANDARD.md` and `PROMPT_EVAL_STANDARD.md` retain the same required prompt structure and ten evaluation gates used by this package.
 
 Therefore:
 
 ```text
+PROMPT_CONTENT_DELTA_AFTER_RECONCILIATION: NONE
+FULL_PROMPT_RE-EVALUATION_REQUIRED: NO
+LIVE_PREREQUISITE_RECONCILIATION: PASS
 PROMPT_QUALITY: PASS
-EXECUTOR_PROMPTS: HOLD
-IMPLEMENTATION_AUTHORITY: NONE
+OPEN MATERIAL PROMPT FINDINGS: 0
 ```
 
-After #311 is independently reviewed, merged and lifecycle/status-reconciled, #314 must be rebased/reconciled against the exact new main and revalidated. Any prompt-content change after that reconciliation invalidates this prompt-content-head evaluation and requires a delta/full re-evaluation as appropriate.
+Only package-state/evidence/DAG/lifecycle wording is updated after reconciliation. Those edits still require ordinary full-diff self-review and exact-head CI before merge.
 
 ## 7. Independent review classification for #314
 
 This evaluation is self-review, not independent review.
 
-For the prompt-package delivery itself, independent review is **not automatically required** by root risk triggers because #314 changes prompt/programme documentation only, does not alter runtime/protocol/persistence/value semantics, does not weaken governance, and grants no production/cross-repository/owner-funded-AI authority. All future high-risk implementation prompts explicitly preserve the independent-review requirement for the PRs they govern.
+For the prompt-package delivery itself, independent review is **not required by the current root risk triggers** because #314 changes prompt/programme/lifecycle documentation only, does not alter runtime/protocol/persistence/value semantics, does not weaken governance, and grants no production/cross-repository/owner-funded-AI authority. All future high-risk implementation prompts explicitly preserve the independent-review requirement for the PRs they govern.
 
-If later #314 edits weaken safety gates or expand repository/production/cross-repository authority, reclassify independent review as required.
+If a later #314 edit weakens safety gates or expands repository/production/cross-repository authority, this classification must be revisited before merge.
 
 ## 8. Verdict
 
 ```text
 PROMPT PACKAGE CONTENT: PASS
+LIVE-MAIN RECONCILIATION: PASS
 OPEN MATERIAL PROMPT FINDINGS: 0
-EXECUTOR RELEASE: HOLD
+EXECUTOR PACKAGE: RELEASE_CANDIDATE
+CANONICAL RELEASE POINT: lawful merge of PR #314 to main
+IMPLEMENTATION WORKERS STARTED BY THIS PACKAGE: NO
+IMPLEMENTATION_AUTHORITY OUTSIDE A LIVE COORDINATOR ALLOCATION: NONE
 ```
