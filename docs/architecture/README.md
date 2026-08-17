@@ -15,12 +15,14 @@ When documents overlap, use this order:
 
 A newer date alone never supersedes semantic authority. Supersession applies only to the scope explicitly named.
 
-Architecture acceptance is not runtime implementation or Reference parity. See `ARCHITECTURE_STATUS_MODEL.md`.
+Architecture acceptance or executor-programme release is not runtime implementation or Reference parity. See `ARCHITECTURE_STATUS_MODEL.md`.
 
 ## Current entry points
 
-- [Foundation programme current status](FOUNDATION_PROGRAMME_CURRENT_STATUS.md) — current three-axis status and next safe gate.
+- [Foundation programme current status](FOUNDATION_PROGRAMME_CURRENT_STATUS.md) — current three-axis status and next safe execution gate.
 - [Global architecture decision register](GLOBAL_ARCHITECTURE_DECISION_REGISTER.md) — stable gate IDs, accepted state and remaining horizon.
+- [Implementation executor DAG](../agents/programs/OTERYN_V2_IMPLEMENTATION_EXECUTOR_DAG.md) — released coordinator-led implementation dependency programme; no direct worker authority without allocation.
+- [Implementation coordinator prompt](../agents/prompts/OTV2_IMPLEMENTATION_COORDINATOR.md) — normal explicit entry point: `Oteryn: implementation coordinator`.
 - [Stage-C VSL owner acceptance](OTERYN_V2_STAGE_C_VSL_OWNER_ACCEPTANCE_20260816.md) — owner acceptance of `VSL-MOVE-01`, `VSL-COMBAT-01` and `VSL-CONTENT-01`.
 - [Remaining first-wave owner acceptance baseline](OTERYN_V2_REMAINING_FIRST_WAVE_OWNER_ACCEPTANCE_BASELINE_20260816.md) — owner acceptance of GAME-INTERACTION, ALPHA-CLIENT, GAME-AI and ANL-02/03.
 - [GAME-ABILITY whole-gate owner acceptance baseline](GAME-ABILITY-01_WHOLE_GATE_OWNER_ACCEPTANCE_BASELINE.md).
@@ -96,11 +98,11 @@ Do not rewrite those files merely to change their historical proposal/candidate 
 - Agent A #271 promoted **0/4**.
 - Target evidence remains `UNKNOWN`, provenance/legal `PENDING`, implementation `NOT_STARTED`, parity `PARITY_PENDING_EVIDENCE`.
 
-Architecture acceptance does not change those facts.
+Architecture acceptance and executor release do not change those facts.
 
-## Stage-C architecture is accepted; implementation remains gated
+## Stage-C architecture is accepted; implementation remains not started
 
-The former Stage-C architecture blockers are now accepted/lifecycle-closed:
+The former Stage-C architecture blockers are accepted/lifecycle-closed:
 
 - `VSL-MOVE-01` — bounded local movement/collision/relocation/visibility/reconciliation architecture;
 - `VSL-COMBAT-01` — bounded combat/death/loot/XP/retry-safe pickup integration architecture;
@@ -128,14 +130,20 @@ Machine-readable runtime availability wins over architecture target vocabulary. 
 accepted first-wave + Stage-C architecture
 != implemented gameplay runtime
 
-before implementation workers:
-  reconcile and release the final implementation executor package on PR #314
-  verify every lane consumes accepted contracts and live main
-  grant only coordinator-allocated, lane-specific implementation authority
-  preserve all resource/evidence/foreign-owner/Reference/final-format blockers
+executor programme:
+  RELEASED by PR #314 / 88f4fb754b5ae11243afd38a9e0b6a8e3b0a5815
+  normal explicit entrypoint = Oteryn: implementation coordinator
+  direct workers = allocation-gated
+  implementation workers started = NO
 
-Stage-C acceptance does not grant implementation authority by itself.
+when implementation is explicitly requested:
+  coordinator re-reads live main + governance + DAG
+  coordinator creates serial Bootstrap allocation first
+  only allocated workers may write
+  all resource/evidence/foreign-owner/Reference/final-format blockers remain binding
 ```
 
-`EXECUTOR_PROMPTS: HOLD`
-`IMPLEMENTATION_AUTHORITY: NONE`
+`EXECUTOR_PROGRAMME: RELEASED`
+`IMPLEMENTATION_WORKERS_STARTED: NO`
+`IMPLEMENTATION_AUTHORITY_OUTSIDE_LIVE_COORDINATOR_ALLOCATION: NONE`
+`PRODUCTION_AUTHORITY: NONE`
