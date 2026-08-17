@@ -4,18 +4,18 @@
 task_id: OTV2-20260817-governance-live-pr-metadata
 title: Eliminate stale PR metadata dependence from Agent governance
 mode: FIX
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: fix/governance-live-pr-metadata
-pr: null
+pr: 320
 base_sha: 65b5711fc56f80c0407ce462e83cdc973535636f
-head_sha: null
+head_sha: 0848f6baaaa6985d9435b912425bf967e4703586
 final_head_sha: null
 final_head_frozen_at: null
 owner: governance repair agent
 created_at: 2026-08-17T09:22:00+02:00
-updated_at: 2026-08-17T09:22:00+02:00
+updated_at: 2026-08-17T09:26:30+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -41,17 +41,31 @@ Make `Agent governance` validate the current live pull-request state instead of 
 
 - `PROVEN`: PR #239 produced a fresh `synchronize` Agent-governance run whose event payload contained the old Dependabot body even though the PR body was repaired immediately afterwards.
 - `PROVEN`: the failed run reported only missing `## Summary`, `## Scope`, and `## Validation`, while the current live PR body already contained those headings and the exact-head Merge-gate governance check passed.
-- `PROVEN`: current `.github/workflows/agent-governance.yml` reads title/body directly from `github.event.pull_request.*` for normal pull-request events and only fetches live PR metadata for `workflow_dispatch`.
+- `PROVEN`: trusted-base `.github/workflows/agent-governance.yml` read title/body directly from `github.event.pull_request.*` for normal pull-request events and only fetched live PR metadata for `workflow_dispatch`.
 - `PROVEN`: the active GitHub connector exposes workflow rerun operations but no workflow-dispatch operation, so repository automation should not depend on manual dispatch for recoverable PR metadata edits.
+
+## Implementation
+
+PR #320 changes `Agent governance` so that:
+
+- PR activity is explicit: `opened`, `reopened`, `synchronize`, `edited`;
+- normal PR events provide only the PR number and expected event head SHA;
+- the workflow fetches live title/body/head repository/base/state/head SHA from the GitHub REST API;
+- live head mismatch fails closed instead of validating a moved PR;
+- `workflow_dispatch` keeps branch-to-expected-SHA verification and feeds the same live metadata path;
+- successful validation exports the verified live head SHA for exact checkout;
+- the existing same-repository, `main` base, conventional-title, required-heading, governance and repository-policy checks remain enforced.
+
+Because concurrency remains keyed by PR number with `cancel-in-progress: true`, a metadata `edited` event can supersede a still-running stale `synchronize` validation for the same PR.
 
 ## Acceptance criteria
 
-- [ ] `pull_request` explicitly handles `opened`, `reopened`, `synchronize`, and `edited`.
-- [ ] Pull-request validation resolves the PR number/head from the event but fetches title/body/base/head repository/state from the live GitHub API.
-- [ ] A stale event whose recorded head no longer matches the live PR head fails closed.
-- [ ] `workflow_dispatch` retains exact branch/SHA/PR identity verification and uses the same live-metadata validation path.
-- [ ] Push-to-main validation behavior remains unchanged.
-- [ ] Existing title/body/base/same-repository checks remain at least as strict as before.
+- [x] `pull_request` explicitly handles `opened`, `reopened`, `synchronize`, and `edited`.
+- [x] Pull-request validation resolves the PR number/head from the event but fetches title/body/base/head repository/state from the live GitHub API.
+- [x] A stale event whose recorded head no longer matches the live PR head fails closed.
+- [x] `workflow_dispatch` retains exact branch/SHA/PR identity verification and uses the same live-metadata validation path.
+- [x] Push-to-main validation behavior remains unchanged.
+- [x] Existing title/body/base/same-repository checks remain at least as strict as before.
 - [ ] Governance/repository-policy validation passes on the exact final head.
 - [ ] Full changed-file self-review finds no safety reduction or authority expansion.
 
@@ -71,19 +85,25 @@ Read-only audit targets under coordination ID `OTERYN-GOV-LIVE-PR-METADATA-20260
 - `blakinio/Otheryn`;
 - `blakinio/otclient`.
 
-Only repositories with the same stale-event-metadata dependency should receive an equivalent dedicated task/branch/PR.
+Current findings:
+
+- `Oteryn-Platform`: `.github/workflows/agent-governance.yml` does not inspect PR title/body and therefore does not have the #239 stale-body failure mode in that workflow.
+- `Otheryn`: no `.github/workflows/agent-governance.yml` exists on `main`.
+- `otclient`: no `.github/workflows/agent-governance.yml` exists on `main`.
+
+A broader workflow audit remains in progress for other exact-head/manual-recovery implementations before deciding whether any cross-repository write is justified.
 
 ## Context checkpoint
 
 ```yaml
-checkpoint_status: implementing
+checkpoint_status: validating
 last_verified_base_sha: 65b5711fc56f80c0407ce462e83cdc973535636f
 current_branch: fix/governance-live-pr-metadata
-current_pr: null
-current_head_sha: null
+current_pr: 320
+current_head_sha: 0848f6baaaa6985d9435b912425bf967e4703586
 findings:
-  - Oteryn-v2 Agent governance uses stale event title/body on normal PR events.
-  - Oteryn-Platform agent-governance does not validate PR body/title and is not affected by the #239 race in that workflow.
-  - Otheryn and otclient have no .github/workflows/agent-governance.yml at main; broader workflow audit remains read-only.
-next_action: Update Oteryn-v2 Agent governance to trigger on edited and resolve live PR metadata for every PR validation path.
+  - Oteryn-v2 Agent governance implementation now uses live PR metadata and handles edited events.
+  - Oteryn-Platform agent-governance is not affected by the stale-title/body race.
+  - Otheryn and otclient have no agent-governance workflow under that name; broader workflow audit is read-only and still active.
+next_action: Validate PR #320 on its new exact head, finish the cross-repository workflow audit, and repair only proven equivalent stale-metadata dependencies.
 ```
