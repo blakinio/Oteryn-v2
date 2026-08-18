@@ -4,18 +4,18 @@
 task_id: OTV2-20260818-world-spatial-coordinate-profile-v1
 title: Freeze canonical World spatial / coordinate profile v1
 mode: CONTRACT
-status: implementing
+status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: architecture/OTV2-20260818-world-spatial-coordinate-profile-v1
 pr: 327
 base_sha: 5577f6fc7c1f7ddef482f0f7b08039047704e36b
-head_sha: cef45e577ccf82543b79198fd87a8652a37c2fcb
+head_sha: 6192f37aa58e724fbd5be88facd7a277dedf3820
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT autonomous execution
 created_at: 2026-08-18T06:39:00+02:00
-updated_at: 2026-08-18T06:50:00+02:00
+updated_at: 2026-08-18T06:53:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -52,16 +52,16 @@ Merge one bounded Game-owned semantic spatial profile that gives native World/Co
 
 ## Acceptance criteria
 
-- [ ] One Game-owned profile defines horizontal axes/orientation and discrete coordinate numeric domain.
-- [ ] Per-world bounds and point/rectangle inclusion are explicit and unambiguous.
-- [ ] Floor identity/domain/order are explicit without copying legacy `z` semantics.
-- [ ] Same-position presentation ordering is explicit and fail-closed for duplicates.
-- [ ] Anchor/footprint/displacement meaning is explicit and renderer-resolution independent.
-- [ ] Legacy import requires an explicit versioned mapping and cannot directly promote OTBM/Tibia conventions.
-- [ ] Real alternatives/trade-offs/risks and supersession evidence are recorded under repository architecture-decision discipline.
-- [ ] Serializer, compression, permanent chunk size/floor packing and production resource ceilings remain deferred.
-- [ ] DYN-ATLAS readiness evidence truthfully distinguishes the closed coordinate-semantic gate from remaining Atlas-repository/fixture/assets/physical-profile gates.
-- [ ] Full changed-file self-review finds no authority expansion outside this bounded Game contract.
+- [x] One Game-owned profile defines horizontal axes/orientation and discrete coordinate numeric domain.
+- [x] Per-world bounds and point/rectangle inclusion are explicit and unambiguous.
+- [x] Floor identity/domain/order are explicit without copying legacy `z` semantics.
+- [x] Same-position presentation ordering is explicit and fail-closed for duplicates.
+- [x] Anchor/footprint/displacement meaning is explicit and renderer-resolution independent.
+- [x] Legacy import requires an explicit versioned mapping and cannot directly promote OTBM/Tibia conventions.
+- [x] Real alternatives/trade-offs/risks and supersession evidence are recorded under repository architecture-decision discipline.
+- [x] Serializer, compression, permanent chunk size/floor packing and production resource ceilings remain deferred.
+- [x] DYN-ATLAS readiness evidence truthfully distinguishes the closed coordinate-semantic gate from remaining Atlas-repository/fixture/assets/physical-profile gates.
+- [x] Full changed-file self-review finds no unresolved material finding or authority expansion outside this bounded Game contract.
 - [ ] Exact-head documentation/governance merge gate passes.
 
 ## Excluded scope
@@ -94,23 +94,25 @@ Material design choices:
 
 The profile does not assign concrete world extents or a legacy source-floor mapping.
 
-### Self-review repairs before final-head freeze
+### Self-review repairs before final-head validation
 
-Initial PR head `2d8a4ee4e46578849db27d9248adee83fb3634de` exposed two material design defects during semantic review:
+Initial PR head `2d8a4ee4e46578849db27d9248adee83fb3634de` exposed two material design defects:
 
 1. half-open bounds encoded with the same `i32` type as positions could not represent an exclusive upper edge after `i32::MAX`;
 2. hard-coding `1/256 tile` displacement precision unnecessarily froze an asset/render detail without evidence.
 
 Head `cef45e577ccf82543b79198fd87a8652a37c2fcb` repaired those by widening only the bounds envelope, removing universal meaning from floor zero, widening presentation order fields and moving displacement precision into a required versioned appearance/asset unit profile.
 
-The next full review found one governance/architecture-quality omission rather than a semantic contradiction: the contract did not explicitly compare realistic alternatives/trade-offs as required by `ARCHITECTURE_DECISION_DISCIPLINE.md`. The final pre-freeze repair adds a bounded decision-analysis section selecting the native explicit profile over legacy-canonical and consumer-defined alternatives, with risks, mitigations and future impact.
+The next full review found one architecture-quality omission: the contract did not explicitly compare realistic alternatives/trade-offs as required by `ARCHITECTURE_DECISION_DISCIPLINE.md`. Head `6192f37aa58e724fbd5be88facd7a277dedf3820` adds that decision analysis and leaves the selected semantic profile unchanged.
+
+Full review of the three owned paths at `6192f37aa58e724fbd5be88facd7a277dedf3820` found no further material semantic, authority, safety or scope finding.
 
 ## Validation
 
 ### Focused
 
-- command/run: GitHub exact changed-path/diff inspection plus repository governance validation selected by PR merge gate
-- result: semantic/architecture self-review repairs complete; final exact-head pass pending
+- command/run: GitHub compare from base `5577f6fc7c1f7ddef482f0f7b08039047704e36b` through semantic head `6192f37aa58e724fbd5be88facd7a277dedf3820`, exact file reads and PR changed-path inspection
+- result: `PASS` — exactly 3 owned documentation paths; no unrelated changes; semantic findings repaired before final validation
 
 ### Component/integration
 
@@ -124,7 +126,7 @@ The next full review found one governance/architecture-quality omission rather t
 
 ### Exact-head CI
 
-- final head: pending
+- final head: pending after this pre-CI checkpoint commit
 - trigger source: pull request to `main`
 - workflow/run/job: pending
 - runner assignment: pending
@@ -133,10 +135,10 @@ The next full review found one governance/architecture-quality omission rather t
 
 ## Self-review
 
-- exact head: pending
-- method/reviewer: implementing/coordinating agent
-- material findings: three pre-freeze findings repaired; final pass pending
-- verdict: pending
+- exact semantic head: `6192f37aa58e724fbd5be88facd7a277dedf3820`
+- method/reviewer: implementing/coordinating agent, full owned-path semantic and scope review
+- material findings: three pre-freeze findings repaired; zero unresolved findings
+- verdict: `PASS`
 
 ## Independent review
 
@@ -148,8 +150,10 @@ The next full review found one governance/architecture-quality omission rather t
 
 ## PR and closeout
 
-- changed-file review: 3 owned paths; final post-repair inspection pending
-- unresolved review threads: pending
+- changed-file review: exactly 3 declared owned paths
+- unresolved review threads: 0 at latest inspection
+- review submissions: 0 at latest inspection
+- PR conversation comments: 0 at latest inspection
 - related/superseded PRs: none found at preflight
 - protected auto-merge: pending
 - merge commit/result: pending
@@ -158,15 +162,15 @@ The next full review found one governance/architecture-quality omission rather t
 ## Context checkpoint
 
 ```yaml
-last_progress: PR #327 semantic repairs complete; decision-analysis repair prepared before final freeze
-status: implementing
+last_progress: semantic profile and readiness delta passed full self-review; PR metadata repaired; exact-head CI remains
+status: validating
 branch: architecture/OTV2-20260818-world-spatial-coordinate-profile-v1
-head_sha: cef45e577ccf82543b79198fd87a8652a37c2fcb
+head_sha: 6192f37aa58e724fbd5be88facd7a277dedf3820
 pr: 327
 final_head_sha: null
 final_head_frozen_at: null
 ci_trigger_source: pull_request
-ci_check_generation: second
+ci_check_generation: final-pending
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -176,9 +180,9 @@ terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
 repair_cycles_for_current_gate: 2
-ci_recovery_actions_for_current_head: 0
+ci_recovery_actions_for_current_head: 1
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: commit the decision-analysis repair and run final exact-head full-diff self-review
+next_action: observe required checks on the resulting exact PR head; if all required gates pass, mark PR ready and squash-merge
 ```
