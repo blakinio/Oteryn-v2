@@ -10,7 +10,7 @@ pr: 331
 base_sha: ade3005cdf9ad6daeb87dc20a6546d5c29ee61da
 final_head_sha: 819f14306c9dc26fd5b25da56f460f4cf7c92a8d
 merge_sha: f90b99bee9567800a430ca1a703843d647dc01b8
-closed_at: 2026-08-18T10:04:00+02:00
+closed_at: 2026-08-18T10:20:00+02:00
 cross_repository_coordination_id: OTERYN-GAME-ATLAS-V1-APPEARANCE
 public_contracts:
   - oteryn-tibia-15-25-appearance-spatial-v1
@@ -18,75 +18,50 @@ public_contracts:
 
 ## Terminal result
 
-PR #331 merged the bounded Game-owned appearance presentation profile for the exact owner-authorized Tibia client asset archive.
+PR #331 merged the bounded Game-owned appearance presentation profile for the exact owner-authorized Tibia client archive SHA-256 `01c45146e2fcec3f4087844e0cbc1817fb1d60b310a35ac5d88c07aab6f73d1a`.
 
-Direct source verification established the fixture as **15.25.bd5a04**, not 15.32, with archive SHA-256 `01c45146e2fcec3f4087844e0cbc1817fb1d60b310a35ac5d88c07aab6f73d1a`.
+That archive directly identified itself as `15.25.bd5a04` and decoded to 42,107 object appearances, 4,927 sprite sheets and 75,623 unique object-referenced sprite IDs.
 
-The accepted profile defines:
+The accepted profile defines bounded presentation semantics for **that exact digest only**:
 
 - `units_per_tile = 32`;
-- owning tile as the south-east/bottom-right **visual anchor cell** for the bounded legacy presentation mapping;
-- decoded sprite visual coverage extending west/north by integral tile units;
-- effective 2D presentation displacement `(-(shift_x + height), -(shift_y + height))`;
-- explicit producer ownership of concrete frame/phase/layer/sprite resolution;
-- a hard boundary that pixel-derived visual coverage is **not** gameplay occupancy, collision, movement blocking, item ownership or interaction area;
-- source appearance/sprite IDs as provenance identifiers, not canonical Game entity identity.
-
-## Evidence
-
-Direct deterministic archive inspection recorded:
-
-- package version `15.25.bd5a04`;
-- package SHA-256 `01c405e8f72bc4bbf2009052cdccc10510a5664ab8b81713b78c804422c3db3b`;
-- catalog SHA-256 `93ea5888174ef44b352d7c2b1f8061573a4a260bfaba4b7ec32ea836b9e411ab`;
-- appearance SHA-256 `aa44a154f30c7ed59acc25f246286396e4043851ef0b54ef3cf3951e46d1ce50`;
-- 42,107 object appearances;
-- 4,927 sprite sheets;
-- 75,623 unique object-referenced sprite IDs.
-
-These counts reconcile with the pinned Otheryn 15.25 legacy Atlas evidence.
-
-Owner rights evidence is intentionally classified as `OWNER_ATTESTED / PROJECT_AUTHORIZED` for the exact archive digest, not independently verified third-party copyright ownership.
-
-## Self-review
-
-The first contract draft used `footprint` for pixel-derived sprite coverage. Self-review found that terminology could leak presentation geometry into gameplay occupancy authority. The final head repairs this by using **visual coverage** and explicitly forbidding gameplay inference from pixel dimensions.
-
-Final self-review result: **PASS**, zero unresolved material findings.
+- south-east/bottom-right visual anchor cell;
+- west/north visual coverage for multi-tile decoded sprites;
+- effective 2D displacement `(-(shift_x + height), -(shift_y + height))`;
+- producer-owned concrete frame/phase/layer/sprite resolution;
+- pixel visual coverage explicitly not treated as gameplay occupancy/collision authority.
 
 ## Exact-head validation
 
-```yaml
-final_head: 819f14306c9dc26fd5b25da56f460f4cf7c92a8d
-changed_files: 3
-changed_path_scope: PASS
-agent_governance:
-  run_number: 1620
-  result: SUCCESS
-architecture_semantic_audit:
-  run_number: 210
-  result: SUCCESS
-merge_authority_audit:
-  run_number: 430
-  result: SUCCESS
-merge_gate:
-  run_number: 472
-  validate_job: SUCCESS
-review_threads: 0
-review_submissions: 0
-runtime_component_e2e: NOT_APPLICABLE_DOCS_ONLY
-```
+Final head `819f14306c9dc26fd5b25da56f460f4cf7c92a8d` passed Agent Governance #1620, Architecture Semantic Audit #210, Merge Authority Audit #430 and Merge Gate #472 before squash merge `f90b99bee9567800a430ca1a703843d647dc01b8`.
 
-## Merge evidence
+## Post-merge source correction
 
-```yaml
-pr: 331
-merge_method: squash
-merge_sha: f90b99bee9567800a430ca1a703843d647dc01b8
-```
+After PR #331 merged, the project owner correctly identified that the repository's **latest Atlas build path** does not use the separately uploaded 15.25 archive. `blakinio/Otheryn@e417c5e7c22986bf4acef0495eb47f7b72c97cce` pins a distinct Google Drive bundle under project label `15.32`:
 
-## DYN-ATLAS effect
+- Drive file id `1Dlo3bS4K1nS3mw4BhPZdlHT7lX5zRAvv`;
+- expected ZIP SHA-256 `1a6bad8b7598cd874f534cd4aae2d249fb3d9b4458b3ccfa75754f91bb27870f`.
 
-The appearance anchor/visual-coverage/displacement authority gate is closed for the exact 15.25.bd5a04 fixture.
+A one-shot verification in `Oteryn/Oteryn-Atlas` downloaded that exact bundle and proved:
 
-The next Game-owned dependency for DYN-ATLAS-001 is the bounded deterministic Thais semantic export fixture/artifact under the accepted Game -> Atlas, spatial, legacy-import and appearance profiles.
+- verification run `32115353176`, job `95643523890`, artifact `9316452985`;
+- top-level archive content is `assets/` only; there is no `package.json`, so `15.32` is the repository-pinned project label rather than an internal package-version field;
+- catalog SHA-256 `35639e000c4c108665a091cfbdf699d549d995b37670bc08de575ab6cd380d85`;
+- appearance SHA-256 `dc4f4c01e3701c77877c67895168e4399837046122d6d17e3e608a12a2fed075`;
+- 5,090 catalog entries;
+- 43,514 object appearances / frame records;
+- 5,084 sprite sheets;
+- 111,957 total object sprite refs;
+- 79,269 unique object sprite IDs;
+- 567 appearances with shift metadata;
+- 2,192 appearances with height metadata;
+- sprite layouts `32x32`, `32x64`, `64x32`, `64x64`;
+- sprite id domain `0..301200`.
+
+The metadata-only durable evidence was merged to `Oteryn/Oteryn-Atlas` as commit `0b56d9a95279f1ec02fddd0dfcf8bd6ffd16b539` at `docs/evidence/DYN-ATLAS-001-15-32-drive-asset-profile.json`.
+
+## DYN-ATLAS routing
+
+The 15.25 contract remains valid as a bounded source-conversion profile for its exact archive. It is **not** the active appearance source for `DYN-ATLAS-001`.
+
+DYN-ATLAS-001 must use a separate Game-owned appearance profile pinned to the verified 15.32 Drive bundle. No field, count, digest or authorization from the 15.25 contract may be silently generalized to the 15.32 source.
