@@ -34,11 +34,11 @@ unique sprite ids referenced by object appearances = 75623
 
 The package is therefore **15.25.bd5a04**, not 15.32.
 
-The object-appearance, sprite-sheet and referenced-sprite counts reconcile exactly with the previously pinned Otheryn 15.25 legacy Atlas evidence.
+The object-appearance, sprite-sheet and referenced-sprite counts reconcile with the pinned Otheryn 15.25 legacy Atlas evidence.
 
 ## Appearance metadata findings
 
-Bounded deterministic decoding of the appearance protobuf using the pinned Otheryn decoder semantics found:
+Bounded deterministic decoding using the pinned Otheryn decoder semantics found:
 
 - 42,107 object appearances;
 - 42,107 object frame records in the bounded object category;
@@ -48,20 +48,22 @@ Bounded deterministic decoding of the appearance protobuf using the pinned Other
 - 75,623 unique referenced sprite ids;
 - maximum 160 sprite references in one object frame under the source pattern/layer representation.
 
-Catalog sprite cell layouts are the four integral tile-multiple sizes 32x32, 32x64, 64x32 and 64x64.
+Catalog sprite cell layouts are 32x32, 32x64, 64x32 and 64x64.
 
 ## Pinned renderer semantics
 
-The legacy renderer in `blakinio/Otheryn@e417c5e7c22986bf4acef0495eb47f7b72c97cce` uses a 32-pixel map-tile scale and positions sprites by subtracting `(sprite_width - 32)`, `(sprite_height - 32)`, source shift, and source height from the tile draw origin.
+The legacy renderer in `blakinio/Otheryn@e417c5e7c22986bf4acef0495eb47f7b72c97cce` uses a 32-pixel map-tile scale and positions sprites by subtracting `(sprite_width - 32)`, `(sprite_height - 32)`, source shift and source height from the tile draw origin.
 
 This supports the bounded source-profile mapping selected by the proposed contract:
 
 - `units_per_tile = 32`;
-- owning tile as the south-east/bottom-right anchor cell for a multi-tile decoded sprite;
-- footprint extending west/north according to decoded sprite dimensions;
+- owning tile as the south-east/bottom-right **visual anchor cell**;
+- decoded visual coverage extending west/north according to sprite dimensions;
 - native effective displacement `(-(shift_x + height), -(shift_y + height))`.
 
-The mapping preserves pinned visual-reference behavior while converting it into explicit native semantics. Atlas does not inherit the legacy renderer implementation as authority.
+Self-review identified and repaired one important terminology risk: decoded sprite dimensions prove a **presentation visual-coverage rectangle**, not gameplay occupancy/collision footprint. The proposed contract now states that collision, movement blocking, item ownership and interaction area MUST NOT be inferred from pixel dimensions.
+
+The mapping preserves pinned visual-reference behavior while converting it into explicit native presentation semantics. Atlas does not inherit the legacy renderer implementation as authority.
 
 ## Pattern/layer/animation boundary
 
@@ -83,8 +85,9 @@ After merge:
 
 - asset package version and identity are pinned;
 - asset-rights gate is project-authorized for the exact digest;
-- appearance spatial unit/anchor/footprint/displacement semantics are explicit and Game-owned;
-- Atlas no longer needs to infer legacy asset-space rules.
+- appearance spatial unit/visual anchor/visual coverage/displacement semantics are explicit and Game-owned;
+- Atlas no longer needs to infer legacy asset-space rules;
+- no gameplay occupancy semantics are invented from sprite pixels.
 
 The remaining upstream implementation requirement is a bounded Game-owned Thais semantic export fixture/artifact with a deterministic digest under the accepted export + spatial + legacy-import + appearance profiles.
 
@@ -94,6 +97,7 @@ The remaining upstream implementation requirement is a bounded Game-owned Thais 
 - package/archive/catalog/appearance digests: **PROVEN** by direct hashing
 - object/sprite counts: **PROVEN** by deterministic decoding
 - 32-pixel tile scale and draw displacement behavior: **PROVEN** by pinned renderer evidence
-- selected native anchor/footprint/displacement conversion: **DERIVED DESIGN CHOICE**, proposed as Game-owned source-profile authority
+- selected native visual-anchor/coverage/displacement conversion: **DERIVED DESIGN CHOICE**, proposed as Game-owned source-profile authority
+- gameplay occupancy/collision footprint from pixel size: **NOT AUTHORIZED / NOT INFERRED**
 - project permission for exact asset digest: **OWNER_ATTESTED / PROJECT_AUTHORIZED**
 - bounded Game Thais semantic export artifact: **NOT YET IMPLEMENTED**
