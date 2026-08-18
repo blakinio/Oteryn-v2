@@ -24,7 +24,8 @@ The profile is limited to the following evidence family unless explicitly supers
 - canonical legacy content revision recorded there: `zimbadev/crystalserver@5e89bf8329ea406cb4ea8f4a18f32954f13e5418`;
 - canonical `world.otbm` SHA-256: `3bd40d14fefec41f24c4b3ae879e420be1a831ef55b95dcbec721e587a09b034`;
 - semantic parser evidence: `tools/otbm_atlas/semantic.py` at Otheryn blob `a11343a472145aee4d9cf65c6ce28b3e4a71a2b3`;
-- legacy renderer evidence: `tools/otbm_atlas/render.py` at Otheryn blob `9d66d9ff2128663eda9eb07943c60ee4ef79c9e3`.
+- legacy renderer evidence: `tools/otbm_atlas/render.py` at Otheryn blob `9d66d9ff2128663eda9eb07943c60ee4ef79c9e3`;
+- independent legacy floor-direction evidence: `opentibiabr/otclient@dd5641492a71e966b96b8a91398b44bb3df67d88`, `modules/game_cyclopedia/tab/map/map.lua` at blob `15cc5423d2fece71159c6395c54cd94b098760c4`, which defines `SEA_FLOOR = 7`, classifies floors `0..7` as surface/above and `8..15` as underground, and explicitly treats `z < 7` as floors above Z7.
 
 The historical mandatory Thais regression selection recorded by Otheryn is:
 
@@ -60,7 +61,8 @@ native.floor = checked_i16(-legacy.z)
 Rationale:
 
 - the native profile requires larger `FloorId` values to mean geometrically higher/above;
-- legacy Tibia/CrystalServer Z values decrease as geometry moves upward;
+- pinned OTClient map semantics independently confirm that legacy floors above Z7 have lower legacy Z (`z < 7`) while underground floors use larger values (`8..15`);
+- therefore legacy Tibia/CrystalServer Z numerical direction is opposite the native vertical-order direction;
 - negation preserves vertical order without assigning any universal semantic meaning to native floor zero;
 - this avoids special-casing legacy `Z=7` as a canonical surface identity.
 
