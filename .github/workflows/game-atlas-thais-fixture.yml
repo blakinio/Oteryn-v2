@@ -1,8 +1,11 @@
 name: Game Atlas Thais Z7 fixture
 
+run-name: Game Atlas Thais Z7 fixture • pull_request • ${{ github.event.pull_request.number }}
+
 on:
   pull_request:
-    branches: [main]
+    branches:
+      - main
     paths:
       - 'tools/game-atlas-thais-fixture/**'
       - '.github/workflows/game-atlas-thais-fixture.yml'
@@ -18,19 +21,22 @@ concurrency:
 
 jobs:
   fixture:
-    runs-on: ubuntu-latest
+    name: Game Atlas Thais Z7 fixture / validate
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - name: Check out exact Game PR head
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 1
+          persist-credentials: false
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v6.0.0
         with:
           python-version: '3.12'
+          check-latest: false
 
       - name: Verify exact Game head
         shell: bash
@@ -41,12 +47,13 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
 
       - name: Check out pinned migration source
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: blakinio/Otheryn
           ref: e417c5e7c22986bf4acef0495eb47f7b72c97cce
           path: legacy
           fetch-depth: 1
+          persist-credentials: false
 
       - name: Verify migration map source
         shell: bash
@@ -160,7 +167,7 @@ jobs:
           PY
 
       - name: Upload exact semantic fixture artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: dyn-atlas-001-thais-z7-semantic-export-${{ github.event.pull_request.head.sha }}
           path: |
