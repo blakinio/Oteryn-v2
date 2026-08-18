@@ -51,6 +51,42 @@ This profile is semantic authority. A physical schema may encode it differently 
 
 The profile chooses native Oteryn semantics directly. Legacy formats may be mapped into these semantics only by explicit importer profiles with provenance.
 
+## 3A. Decision analysis
+
+### Problem
+
+Game, Studio, the Game-owned Atlas exporter and Atlas consumers need one stable semantic interpretation of position/floor/order before any physical profile or browser proof can be called compatible. The current accepted architecture deliberately does not supply that precision.
+
+### Realistic options
+
+**Option A — explicit native Oteryn integer tile/floor profile with versioned legacy conversion adapters.**  
+Define native axes, finite bounds, floor ordering, explicit presentation order and anchor/displacement meaning now; require every legacy source to map through a pinned conversion profile.
+
+**Option B — adopt Tibia/OTBM `x/y/z/stackpos` conventions as the canonical profile.**  
+This is operationally convenient for migration but violates ADR-0005 by making a legacy representation the native semantic authority and would couple future Studio/Game/Atlas evolution to source-format behavior.
+
+**Option C — keep axes/floors/order opaque and let each serializer/consumer define them.**  
+This preserves short-term flexibility but fails the accepted Game -> Atlas contract: two valid physical encodings could disagree semantically while each claimed compatibility, and DYN-ATLAS would be forced to infer missing truth.
+
+### Trade-offs
+
+Option A adds one deliberate native mapping step during migration and requires explicit conversion evidence, but it keeps serializer/chunk experiments representation-only and gives every consumer one fail-closed semantic contract. Option B minimizes importer translation at the cost of permanent legacy coupling. Option C minimizes decisions now but creates cross-product ambiguity and makes later migration substantially more expensive.
+
+### Risks and mitigations
+
+- **Risk:** chosen integer domains are wider than current content requires. **Mitigation:** concrete world extents and resource ceilings remain per-world/implementation data; type domain is not a production allocation limit.
+- **Risk:** +Y south / larger floor means higher could later conflict with a renderer or imported source. **Mitigation:** renderer transforms and legacy mappings are adapters; native semantic orientation stays stable, and supersession requires named evidence rather than silent reinterpretation.
+- **Risk:** presentation ordering becomes mistaken for gameplay interaction authority. **Mitigation:** the contract explicitly separates presentation order from collision, targeting, movement and mutation semantics.
+- **Risk:** sub-tile displacement precision is frozen prematurely. **Mitigation:** only direction/meaning are canonical here; precision is bound by a versioned appearance/asset `units_per_tile` profile.
+
+### Recommendation
+
+Select **Option A**. It is the smallest decision that closes the named evidence gap while preserving the architecture rule that legacy formats and physical encodings remain adapters rather than canonical World authority.
+
+### Future impact
+
+Native World/Studio/runtime types can implement this profile directly. Legacy imports must carry mapping provenance. Atlas can reject unknown/incompatible coordinate profiles without parsing legacy formats. Serializer, chunking and asset-pixel changes can evolve without renumbering world positions or redefining stack order.
+
 ## 4. Horizontal tile coordinate system
 
 Canonical static world positions use a discrete tile grid.

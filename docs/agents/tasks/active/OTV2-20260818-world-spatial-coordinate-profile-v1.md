@@ -10,12 +10,12 @@ base_branch: main
 branch: architecture/OTV2-20260818-world-spatial-coordinate-profile-v1
 pr: 327
 base_sha: 5577f6fc7c1f7ddef482f0f7b08039047704e36b
-head_sha: 2d8a4ee4e46578849db27d9248adee83fb3634de
+head_sha: cef45e577ccf82543b79198fd87a8652a37c2fcb
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT autonomous execution
 created_at: 2026-08-18T06:39:00+02:00
-updated_at: 2026-08-18T06:47:00+02:00
+updated_at: 2026-08-18T06:50:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -58,6 +58,7 @@ Merge one bounded Game-owned semantic spatial profile that gives native World/Co
 - [ ] Same-position presentation ordering is explicit and fail-closed for duplicates.
 - [ ] Anchor/footprint/displacement meaning is explicit and renderer-resolution independent.
 - [ ] Legacy import requires an explicit versioned mapping and cannot directly promote OTBM/Tibia conventions.
+- [ ] Real alternatives/trade-offs/risks and supersession evidence are recorded under repository architecture-decision discipline.
 - [ ] Serializer, compression, permanent chunk size/floor packing and production resource ceilings remain deferred.
 - [ ] DYN-ATLAS readiness evidence truthfully distinguishes the closed coordinate-semantic gate from remaining Atlas-repository/fixture/assets/physical-profile gates.
 - [ ] Full changed-file self-review finds no authority expansion outside this bounded Game contract.
@@ -93,21 +94,23 @@ Material design choices:
 
 The profile does not assign concrete world extents or a legacy source-floor mapping.
 
-### Self-review repair before final-head freeze
+### Self-review repairs before final-head freeze
 
-Initial PR head `2d8a4ee4e46578849db27d9248adee83fb3634de` exposed two material design defects during full semantic review:
+Initial PR head `2d8a4ee4e46578849db27d9248adee83fb3634de` exposed two material design defects during semantic review:
 
 1. half-open bounds encoded with the same `i32` type as positions could not represent an exclusive upper edge after `i32::MAX`;
 2. hard-coding `1/256 tile` displacement precision unnecessarily froze an asset/render detail without evidence.
 
-The repair widens only the semantic bounds envelope to `i64` while retaining `i32` positions, removes any universal special meaning from floor zero, widens presentation order fields to avoid a premature tight semantic ceiling, and moves displacement precision into a required versioned appearance/asset `units_per_tile` profile. These changes preserve the required direction/anchor semantics while keeping physical/render precision evidence-gated.
+Head `cef45e577ccf82543b79198fd87a8652a37c2fcb` repaired those by widening only the bounds envelope, removing universal meaning from floor zero, widening presentation order fields and moving displacement precision into a required versioned appearance/asset unit profile.
+
+The next full review found one governance/architecture-quality omission rather than a semantic contradiction: the contract did not explicitly compare realistic alternatives/trade-offs as required by `ARCHITECTURE_DECISION_DISCIPLINE.md`. The final pre-freeze repair adds a bounded decision-analysis section selecting the native explicit profile over legacy-canonical and consumer-defined alternatives, with risks, mitigations and future impact.
 
 ## Validation
 
 ### Focused
 
 - command/run: GitHub exact changed-path/diff inspection plus repository governance validation selected by PR merge gate
-- result: in progress; initial semantic self-review produced the repair above
+- result: semantic/architecture self-review repairs complete; final exact-head pass pending
 
 ### Component/integration
 
@@ -132,7 +135,7 @@ The repair widens only the semantic bounds envelope to `i64` while retaining `i3
 
 - exact head: pending
 - method/reviewer: implementing/coordinating agent
-- material findings: two pre-freeze design findings repaired; final pass pending
+- material findings: three pre-freeze findings repaired; final pass pending
 - verdict: pending
 
 ## Independent review
@@ -155,15 +158,15 @@ The repair widens only the semantic bounds envelope to `i64` while retaining `i3
 ## Context checkpoint
 
 ```yaml
-last_progress: PR #327 opened; semantic self-review found and prepared bounds/displacement/floor/order repair
+last_progress: PR #327 semantic repairs complete; decision-analysis repair prepared before final freeze
 status: implementing
 branch: architecture/OTV2-20260818-world-spatial-coordinate-profile-v1
-head_sha: 2d8a4ee4e46578849db27d9248adee83fb3634de
+head_sha: cef45e577ccf82543b79198fd87a8652a37c2fcb
 pr: 327
 final_head_sha: null
 final_head_frozen_at: null
 ci_trigger_source: pull_request
-ci_check_generation: initial
+ci_check_generation: second
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -172,10 +175,10 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 1
+repair_cycles_for_current_gate: 2
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: commit the bounded semantic repair, then perform exact changed-path/full-diff self-review
+next_action: commit the decision-analysis repair and run final exact-head full-diff self-review
 ```
