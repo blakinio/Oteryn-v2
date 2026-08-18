@@ -8,6 +8,8 @@ from pathlib import Path
 from types import SimpleNamespace
 import unittest
 
+from public_policy import PublicPolicyError, validate_tile_shape
+
 
 HERE = Path(__file__).resolve().parent
 SPEC = importlib.util.spec_from_file_location("dyn_atlas_thais_export", HERE / "export.py")
@@ -75,6 +77,19 @@ class ExportHelperTests(unittest.TestCase):
         frame = SimpleNamespace(pattern_width=4, pattern_height=3, pattern_depth=1)
         item = SimpleNamespace(subtype=10)
         self.assertEqual(EXPORT._item_patterns(appearance, frame, item, 0, 0, 0, False, False), (3, 1, 0))
+
+    def test_default_deny_public_policy_rejects_unallowlisted_field(self) -> None:
+        tile = {
+            "position": {"floor": -7, "x": 32280, "y": 32155},
+            "presentation": [],
+            "record_type": "tile",
+            "source_position": {"legacy_x": 32280, "legacy_y": 32155, "legacy_z": 7},
+            "tile_record_id": "tile:test",
+        }
+        validate_tile_shape(tile)
+        tile["text"] = "must never leak"
+        with self.assertRaises(PublicPolicyError):
+            validate_tile_shape(tile)
 
 
 if __name__ == "__main__":
