@@ -11,6 +11,8 @@ import re
 import sys
 from typing import Any, Iterator
 
+from public_policy import validate_manifest_shape, validate_tile_shape
+
 CONTRACT_ID = "oteryn-game-atlas-export-v1"
 PHYSICAL_PROFILE = "dyn-atlas-thais-z7-jsonl-v0"
 FIXTURE_ID = "dyn-atlas-001-semantic-thais-z7-v0"
@@ -103,6 +105,10 @@ def verify(root: Path) -> dict[str, Any]:
     if diagnostics != {"diagnostics": []}:
         raise VerifyError("proof fixture must contain zero diagnostics")
 
+    # The proof projection is default-deny: any extra canonical field is a policy
+    # violation, even if it is otherwise valid JSON or ignored by the consumer.
+    validate_manifest_shape(manifest)
+
     expected_manifest = {
         "contract_id": CONTRACT_ID,
         "physical_profile": PHYSICAL_PROFILE,
@@ -189,6 +195,7 @@ def verify(root: Path) -> dict[str, Any]:
     line_count = 0
     for (expected_x, expected_y), (line_number, _line, tile) in zip(expected_positions, _iter_jsonl(tiles_path), strict=True):
         line_count += 1
+        validate_tile_shape(tile, path=f"tiles.jsonl line {line_number}")
         if not isinstance(tile, dict) or tile.get("record_type") != "tile":
             raise VerifyError(f"line {line_number}: expected tile record")
         if tile.get("position") != {"floor": FLOOR, "x": expected_x, "y": expected_y}:
