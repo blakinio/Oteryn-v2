@@ -8,10 +8,12 @@ status: validating
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: architecture/OTV2-20260818-atlas-15-32-appearance-profile-v1
-pr: pending
+pr: 333
 base_sha: 2c77f0c373157312b9979dc01806acd56f4949a4
+reviewed_content_head: c7d805941d2c9e2953f25fa95fe35a8880323301
 owner: ChatGPT autonomous execution
 created_at: 2026-08-18T10:23:00+02:00
+updated_at: 2026-08-18T10:28:00+02:00
 execution_budget_minutes: 60
 owned_paths:
   - docs/contracts/OTERYN_ATLAS_15_32_APPEARANCE_SPATIAL_PROFILE_V1.md
@@ -35,14 +37,15 @@ external_repositories:
 
 ## Goal
 
-Define the smallest Game-owned appearance presentation profile for the exact repository-selected Google Drive asset bundle labelled `15.32`, replacing the incorrect DYN routing through the separate 15.25 fixture without rewriting or invalidating the bounded 15.25 contract.
+Define the smallest Game-owned appearance presentation profile for the exact repository-selected Google Drive asset bundle `15.32.zip`, replacing the incorrect DYN routing through the separate 15.25 fixture without rewriting or invalidating the bounded 15.25 contract.
 
 ## Acceptance criteria
 
 - [x] Current Game main and active-task state refreshed after 15.25 closeout.
 - [x] Exact Otheryn latest-build selection pins label `15.32`, Drive file ID and expected ZIP SHA.
+- [x] Google Drive metadata for the exact file ID independently identifies the object as `15.32.zip`, size `246811594` bytes.
 - [x] Exact Drive ZIP digest independently verified by one-shot Atlas CI.
-- [x] Missing internal `package.json` is recorded; no fabricated internal version field is claimed.
+- [x] Missing internal `package.json` is recorded; no fabricated internal package-version field is claimed.
 - [x] Catalog/appearance digests and deterministic source counts recorded from the exact Drive bytes.
 - [x] Difference from the separate 15.25 fixture is explicit.
 - [x] `units_per_tile`, visual anchor/coverage and displacement conversion are explicit.
@@ -51,13 +54,15 @@ Define the smallest Game-owned appearance presentation profile for the exact rep
 - [x] Atlas is forbidden from reconstructing legacy source heuristics as authority.
 - [x] Public pixel rights for the distinct 15.32 digest remain fail-closed until explicitly attested; prior 15.25 digest attestation is not generalized.
 - [x] Permanent serializer, chunk dimensions, CDN and GPU packing remain deferred.
-- [ ] Exact-head repository governance/architecture/merge checks pass.
+- [x] Full three-file semantic/scope self-review finds no unresolved material finding after Drive metadata incorporation.
+- [ ] Exact-head repository governance/architecture/merge checks pass on the final checkpoint head.
 
 ## Evidence classification
 
 ### PROVEN
 
 - `blakinio/Otheryn@e417c5e7c22986bf4acef0495eb47f7b72c97cce` latest-build script selects project label `15.32`, Drive file `1Dlo3bS4K1nS3mw4BhPZdlHT7lX5zRAvv`, ZIP SHA `1a6bad8b7598cd874f534cd4aae2d249fb3d9b4458b3ccfa75754f91bb27870f`.
+- Direct Google Drive metadata for that exact file ID reports name `15.32.zip`, MIME `application/x-zip-compressed`, size `246811594` bytes, created `2026-08-17T18:16:59.210Z`, modified `2026-08-17T18:18:00.781Z`.
 - `Oteryn/Oteryn-Atlas` run `32115353176` downloaded and verified that exact SHA before decoding.
 - The bundle contains `assets/` only; no `package.json` exists.
 - Durable Atlas metadata evidence is `Oteryn/Oteryn-Atlas@0b56d9a95279f1ec02fddd0dfcf8bd6ffd16b539`.
@@ -67,7 +72,7 @@ Define the smallest Game-owned appearance presentation profile for the exact rep
 
 ### DERIVED
 
-- The exact Drive ID + ZIP/catalog/appearance digests are the compatibility identity; `15.32` is a stable project/source label rather than stronger internal package metadata.
+- `15.32` is a proven source identity label because both repository selection and Drive filename agree; immutable ZIP/catalog/appearance digests remain the byte-compatibility identity.
 - Bounded source presentation uses `units_per_tile=32`, south-east/bottom-right visual anchor, west/north visual coverage and explicit `(-(shift_x + height), -(shift_y + height))` displacement.
 - Game must resolve source-specific frame/phase/pattern/layer/sprite selection before Atlas receives the fixture/export.
 
@@ -89,20 +94,22 @@ Define the smallest Game-owned appearance presentation profile for the exact rep
 
 ## Validation
 
-Focused source verification is already proven by the exact Atlas run and durable metadata record.
+- exact Google Drive object metadata lookup: **PASS**;
+- exact Drive ZIP verification + deterministic decode in Atlas run `32115353176`: **PASS**;
+- durable metadata-only Atlas evidence: **PASS**;
+- full three-file semantic/scope self-review after incorporating Drive metadata: **PASS**;
+- runtime/component/E2E: **NOT_APPLICABLE** — documentation-only Game semantic profile; downstream fixture/export and Atlas renderer tasks own executable evidence.
 
-This PR is a documentation-only Game semantic profile. Runtime/component/E2E are `NOT_APPLICABLE`; downstream bounded fixture/export and Atlas renderer tasks own executable evidence.
-
-Full three-file semantic/scope self-review: **PASS**, no unresolved material finding before exact-head CI. The primary prior error — using the separate 15.25 fixture as DYN's latest asset authority — is explicitly corrected rather than hidden.
+The primary prior error — using the separate 15.25 fixture as DYN's latest asset authority — is explicitly corrected rather than hidden.
 
 ## Context checkpoint
 
 ```yaml
 checkpoint_version: 1
-updated_at: 2026-08-18T10:23:00+02:00
-head: pending
+updated_at: 2026-08-18T10:28:00+02:00
+reviewed_content_head: c7d805941d2c9e2953f25fa95fe35a8880323301
 branch: architecture/OTV2-20260818-atlas-15-32-appearance-profile-v1
-pr: pending
+pr: 333
 status: validating
 context_routes:
   - architecture
@@ -113,7 +120,7 @@ owned_paths:
   - docs/agents/evidence/OTV2-20260818-atlas-15-32-appearance-readiness.md
   - docs/agents/tasks/active/OTV2-20260818-atlas-15-32-appearance-profile-v1.md
 proven:
-  - exact repo-selected 15.32 Drive bytes and metadata profile are pinned by immutable digests
+  - exact repo-selected / Drive-named 15.32 source and bytes are pinned by file ID plus immutable digests
   - 15.32 source is materially distinct from the separate 15.25 fixture
 derived:
   - bounded source presentation conversion is explicit under Game authority
@@ -122,7 +129,7 @@ unknown:
 conflicts: []
 first_failure:
   marker: wrong-dyn-appearance-source-selection
-  evidence: local uploaded 15.25 fixture had been mistaken for repository latest source; repo build script and exact Drive probe prove latest source is distinct 15.32-labelled bundle
+  evidence: local uploaded 15.25 fixture had been mistaken for latest source; repo build script, Drive metadata and exact Drive probe prove latest source is distinct 15.32.zip
 rejected_hypotheses:
   - rewrite 15.25 contract to pretend it describes 15.32
   - claim internal package version 15.32 without package.json
@@ -133,6 +140,9 @@ changed_paths:
   - docs/agents/evidence/OTV2-20260818-atlas-15-32-appearance-readiness.md
   - docs/agents/tasks/active/OTV2-20260818-atlas-15-32-appearance-profile-v1.md
 validation:
+  - command: Google Drive files.get exact object metadata
+    result: PASS
+    evidence: file name 15.32.zip and byte size/timestamps for exact pinned file ID
   - command: Oteryn-Atlas exact Drive verification run 32115353176
     result: PASS
     evidence: exact ZIP SHA, decoded catalog/appearance digests and counts persisted on Atlas main
@@ -143,7 +153,7 @@ validation:
     result: NOT_APPLICABLE
     evidence: documentation-only source profile
 blockers: []
-next_action: open draft PR and require exact-head Agent Governance, Architecture Semantic Audit, Merge Authority Audit and Merge Gate; merge only if green with no review findings
+next_action: require exact-head Agent Governance, Architecture Semantic Audit, Merge Authority Audit and Merge Gate; merge only if green with no review findings
 ```
 
 ## Source branch closeout
