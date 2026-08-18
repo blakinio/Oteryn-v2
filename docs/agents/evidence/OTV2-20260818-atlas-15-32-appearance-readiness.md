@@ -14,6 +14,7 @@ The technical source identity and presentation conversion are evidence-backed. P
 - CrystalServer legacy spatial importer: `oteryn-crystalserver-legacy-spatial-import-v1`
 - repository latest-build selection: `blakinio/Otheryn@e417c5e7c22986bf4acef0495eb47f7b72c97cce`, `tools/otbm_atlas/build_latest_local.sh`
 - metadata-only 15.32 verification: `Oteryn/Oteryn-Atlas@0b56d9a95279f1ec02fddd0dfcf8bd6ffd16b539`
+- Google Drive object metadata: file ID `1Dlo3bS4K1nS3mw4BhPZdlHT7lX5zRAvv`
 
 ## Source identity proof
 
@@ -24,6 +25,19 @@ ATLAS_ASSET_LABEL = 15.32
 Google Drive file id = 1Dlo3bS4K1nS3mw4BhPZdlHT7lX5zRAvv
 expected ZIP SHA-256 = 1a6bad8b7598cd874f534cd4aae2d249fb3d9b4458b3ccfa75754f91bb27870f
 ```
+
+Direct Google Drive `files.get` metadata for that exact file ID additionally proves:
+
+```text
+name = 15.32.zip
+mime type = application/x-zip-compressed
+size = 246811594 bytes
+created = 2026-08-17T18:16:59.210Z
+modified = 2026-08-17T18:18:00.781Z
+shared = true
+```
+
+Therefore `15.32` is corroborated both by the repository's selected source label and by the exact Drive object's own filename. It is not merely an inferred local label.
 
 One-shot Atlas verification downloaded that exact public Drive object and proved the expected SHA before extraction/decoding.
 
@@ -36,7 +50,7 @@ artifact = 9316452985
 result = PASS
 ```
 
-The ZIP contains `assets/` as its only top-level entry and no `package.json`. Consequently `15.32` is treated as the repository-pinned source label, while byte compatibility is owned by the exact immutable digests below.
+The ZIP contains `assets/` as its only top-level entry and no `package.json`. Consequently `15.32` is proven as the repository-selected / Drive-object source identity, while this work still does **not** claim an internal package metadata field independently reports `15.32`. Byte compatibility is owned by the exact immutable digests below.
 
 ## Decoded source facts
 
@@ -91,6 +105,7 @@ These are bounded source-profile semantics, not a universal Oteryn appearance or
 ### PROVEN
 
 - exact repository-selected Drive ID and ZIP digest;
+- exact Drive object name `15.32.zip`, MIME type, byte size and timestamps;
 - exact decoded catalog/appearance digests and counts;
 - technical provenance to the latest Atlas build path.
 
@@ -122,9 +137,10 @@ The fixture/export must resolve concrete presentation primitives before Atlas co
 
 ## Classification
 
-- latest source label `15.32`: **PROVEN as repository selection label**
+- latest source label `15.32`: **PROVEN by repository selection and exact Drive object filename `15.32.zip`**
 - 15.32 internal package metadata version: **NOT PRESENT / NOT CLAIMED**
 - Drive ZIP/catalog/appearance identities: **PROVEN**
+- Drive object size/timestamps: **PROVEN by Drive metadata**
 - appearance/sprite counts: **PROVEN**
 - 32-unit source projection and bounded conversion: **PROVEN + DERIVED GAME-OWNED PROFILE CHOICE**
 - public redistribution authority for exact 15.32 ZIP: **EXPLICIT_DIGEST_ATTESTATION_REQUIRED**
