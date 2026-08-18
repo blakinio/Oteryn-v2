@@ -16,6 +16,7 @@ This evidence does not authorize asset redistribution, Game exporter runtime, At
 - legacy world SHA-256: `3bd40d14fefec41f24c4b3ae879e420be1a831ef55b95dcbec721e587a09b034`
 - Otheryn semantic parser blob: `a11343a472145aee4d9cf65c6ce28b3e4a71a2b3`
 - Otheryn renderer blob: `9d66d9ff2128663eda9eb07943c60ee4ef79c9e3`
+- independent OTClient floor-direction evidence: `opentibiabr/otclient@dd5641492a71e966b96b8a91398b44bb3df67d88`, `modules/game_cyclopedia/tab/map/map.lua`, blob `15cc5423d2fece71159c6395c54cd94b098760c4`
 
 ## Evidence findings
 
@@ -27,13 +28,15 @@ The pinned legacy renderer places `(x - min_x) * 32` on the horizontal image axi
 
 ### Vertical order
 
-The accepted native profile requires larger `FloorId` values to be geometrically higher/above. The legacy source uses the opposite numerical direction for Z. An affine negation mapping preserves ordering without promoting legacy surface conventions.
+The accepted native profile requires larger `FloorId` values to be geometrically higher/above. Independent OTClient map code defines `SEA_FLOOR = 7`, describes floors `0..7` as surface/above and `8..15` as underground, and explicitly describes `z < 7` as floors above Z7. This directly establishes that the legacy Z numerical direction is opposite the native vertical-order direction.
 
 Selected mapping:
 
 ```text
 FloorId = -legacy_z
 ```
+
+Negation is therefore a representation adapter that preserves vertical order without promoting legacy surface numbering or assigning universal meaning to native floor zero.
 
 For legacy populated `Z=0..15`, the native valid floor set is `[-15..0]` expressed strictly increasing.
 
@@ -96,9 +99,10 @@ It still must not:
 ## Classification
 
 - coordinate orientation: **PROVEN**
+- legacy Z numerical direction: **PROVEN** by independent OTClient floor semantics
 - Thais legacy bounds: **PROVEN**
 - parser-visible top-level sequence: **PROVEN**
-- `FloorId=-legacy_z`: **DERIVED DESIGN CHOICE preserving accepted native order**, now proposed as Game-owned importer authority
+- `FloorId=-legacy_z`: **DERIVED DESIGN CHOICE preserving proven legacy/native order**, now proposed as Game-owned importer authority
 - presentation plane `0` + order index: **DERIVED DESIGN CHOICE preserving pinned legacy draw order**, now proposed as Game-owned importer authority
 - asset redistribution: **UNKNOWN / NOT AUTHORIZED**
 - appearance spatial profile: **UNKNOWN**
