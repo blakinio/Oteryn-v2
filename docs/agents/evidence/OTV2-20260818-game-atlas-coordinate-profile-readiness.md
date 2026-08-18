@@ -25,7 +25,7 @@ Trusted base for this task:
 
 - The accepted Game -> Atlas contract requires an explicit versioned coordinate profile before executable producer/consumer compatibility may be claimed.
 - The historical readiness task named the missing evidence as axes/orientation, coordinate domain/bounds, floor identity/order, point/bounds validity, same-position ordering/stack-layer semantics and anchor/displacement semantics.
-- No open PR or Issue matching Atlas/spatial/coordinate ownership was found at task preflight, and the active-task inventory exposed no task owning these paths/contracts.
+- Targeted preflight searches returned no open Atlas/spatial/coordinate PR or Issue, and the inspected active-task inventory exposed no task owning the new profile/evidence paths.
 - The new `docs/contracts/OTERYN_WORLD_SPATIAL_COORDINATE_PROFILE_V1.md` defines those missing semantics without promoting OTBM, legacy `z`, client `Position`, serializer order or browser behavior into canonical authority.
 
 ## Profile semantics established
@@ -34,12 +34,12 @@ The profile establishes:
 
 - discrete `i32` horizontal tile coordinates;
 - canonical north-up orientation with +X east and +Y south;
-- mandatory finite per-world half-open horizontal bounds;
-- signed `i16` canonical floor identity with larger values meaning higher/above and an explicit finite declared floor set;
+- mandatory finite per-world half-open horizontal bounds represented with a wider semantic bounds envelope to avoid positive-edge overflow;
+- signed `i16` canonical floor identity with larger values meaning higher/above and an explicit finite declared floor set, without assigning universal meaning to floor zero;
 - half-open rectangular inclusion;
 - explicit same-position `PresentationOrderKey { plane, order }` with fail-closed duplicate rejection;
 - explicit placement anchors and footprint offsets;
-- resolution-independent visual displacement in 1/256-tile fixed-point units;
+- resolution-independent displacement semantics with precision bound by an explicit versioned appearance/asset `units_per_tile` profile rather than frozen by the world coordinate profile;
 - deterministic spatial canonicalization order independent from render order;
 - mandatory explicit legacy conversion profiles rather than direct `z`/stack assumptions.
 

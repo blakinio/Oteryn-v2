@@ -8,14 +8,14 @@ status: implementing
 repository: blakinio/Oteryn-v2
 base_branch: main
 branch: architecture/OTV2-20260818-world-spatial-coordinate-profile-v1
-pr: null
+pr: 327
 base_sha: 5577f6fc7c1f7ddef482f0f7b08039047704e36b
-head_sha: null
+head_sha: 2d8a4ee4e46578849db27d9248adee83fb3634de
 final_head_sha: null
 final_head_frozen_at: null
 owner: ChatGPT autonomous execution
 created_at: 2026-08-18T06:39:00+02:00
-updated_at: 2026-08-18T06:39:00+02:00
+updated_at: 2026-08-18T06:47:00+02:00
 execution_budget_minutes: 60
 large_budget_reason: null
 owned_paths:
@@ -46,7 +46,7 @@ Merge one bounded Game-owned semantic spatial profile that gives native World/Co
 - **PROVEN:** ADR-0005 owns the native World/Content model and keeps OTBM behind bounded importer/Legacy IR boundaries.
 - **PROVEN:** `OTERYN_GAME_ATLAS_EXPORT_CONTRACT_V1.md` requires an explicit `coordinate_profile` before executable producer/consumer compatibility.
 - **PROVEN:** `OTV2-20260816-game-atlas-physical-profile-readiness.md` records `EVIDENCE_GAP` and names the exact missing spatial semantics.
-- **PROVEN:** preflight found no open PR/Issue matching Atlas/spatial/coordinate ownership and no active task owning the target paths.
+- **PROVEN:** targeted preflight searches returned no open Atlas/spatial/coordinate PR or Issue, and the inspected active-task inventory exposed no task owning the target paths.
 - **DERIVED:** a semantic profile can close this authority gap while leaving serializer/chunk/resource-limit decisions evidence-gated.
 - **UNKNOWN:** the physical `Oteryn-Atlas` implementation repository remains unavailable/unproven and is not created or assumed by this task.
 
@@ -84,21 +84,30 @@ Material design choices:
 
 - signed `i32` horizontal tile coordinates;
 - +X east/right and +Y south/down in canonical north-up projection;
-- finite per-world half-open bounds;
-- signed `i16` canonical `FloorId`, with larger values higher/above and explicit valid floor set;
+- finite per-world half-open bounds with `i64` semantic bounds values so the full `i32` position domain can be represented without positive-edge overflow;
+- signed `i16` canonical `FloorId`, with larger values higher/above, no universal meaning for floor zero and an explicit valid floor set;
 - half-open rectangular inclusion;
-- unique `(plane, order)` same-position presentation keys;
+- unique `(i32 plane, u32 order)` same-position presentation keys;
 - explicit anchor-relative footprint offsets;
-- `1/256 tile` fixed-point presentation displacement independent from sprite pixel resolution.
+- presentation displacement direction/meaning fixed by the world profile while precision is bound by an explicit versioned appearance/asset `units_per_tile` profile rather than frozen here.
 
 The profile does not assign concrete world extents or a legacy source-floor mapping.
+
+### Self-review repair before final-head freeze
+
+Initial PR head `2d8a4ee4e46578849db27d9248adee83fb3634de` exposed two material design defects during full semantic review:
+
+1. half-open bounds encoded with the same `i32` type as positions could not represent an exclusive upper edge after `i32::MAX`;
+2. hard-coding `1/256 tile` displacement precision unnecessarily froze an asset/render detail without evidence.
+
+The repair widens only the semantic bounds envelope to `i64` while retaining `i32` positions, removes any universal special meaning from floor zero, widens presentation order fields to avoid a premature tight semantic ceiling, and moves displacement precision into a required versioned appearance/asset `units_per_tile` profile. These changes preserve the required direction/anchor semantics while keeping physical/render precision evidence-gated.
 
 ## Validation
 
 ### Focused
 
 - command/run: GitHub exact changed-path/diff inspection plus repository governance validation selected by PR merge gate
-- result: pending
+- result: in progress; initial semantic self-review produced the repair above
 
 ### Component/integration
 
@@ -123,7 +132,7 @@ The profile does not assign concrete world extents or a legacy source-floor mapp
 
 - exact head: pending
 - method/reviewer: implementing/coordinating agent
-- material findings: pending
+- material findings: two pre-freeze design findings repaired; final pass pending
 - verdict: pending
 
 ## Independent review
@@ -136,7 +145,7 @@ The profile does not assign concrete world extents or a legacy source-floor mapp
 
 ## PR and closeout
 
-- changed-file review: pending
+- changed-file review: 3 owned paths; final post-repair inspection pending
 - unresolved review threads: pending
 - related/superseded PRs: none found at preflight
 - protected auto-merge: pending
@@ -146,15 +155,15 @@ The profile does not assign concrete world extents or a legacy source-floor mapp
 ## Context checkpoint
 
 ```yaml
-last_progress: drafted canonical spatial profile, readiness delta and task record on dedicated branch
+last_progress: PR #327 opened; semantic self-review found and prepared bounds/displacement/floor/order repair
 status: implementing
 branch: architecture/OTV2-20260818-world-spatial-coordinate-profile-v1
-head_sha: null
-pr: null
+head_sha: 2d8a4ee4e46578849db27d9248adee83fb3634de
+pr: 327
 final_head_sha: null
 final_head_frozen_at: null
-ci_trigger_source: null
-ci_check_generation: null
+ci_trigger_source: pull_request
+ci_check_generation: initial
 ci_checks_for_current_head: 0
 ci_run_ids: []
 ci_job_ids: []
@@ -163,10 +172,10 @@ terminal_ci_wait_started_at: null
 terminal_ci_checks_for_current_generation: 0
 unchanged_state_checks: 0
 identical_failure_retries: 0
-repair_cycles_for_current_gate: 0
+repair_cycles_for_current_gate: 1
 ci_recovery_actions_for_current_head: 0
 stall_warnings: 0
 owner_action_required: null
 blocker: null
-next_action: create one coherent branch commit and open a draft PR
+next_action: commit the bounded semantic repair, then perform exact changed-path/full-diff self-review
 ```

@@ -78,24 +78,28 @@ Floating-point world tile coordinates are not canonical tile identity.
 
 `x` and `y` use the signed 32-bit integer semantic domain. Implementations must use checked arithmetic when translating, expanding bounds, indexing or calculating chunk-local coordinates.
 
-Every canonical world revision MUST declare one finite horizontal world envelope:
+Every canonical world revision MUST declare one finite horizontal world envelope. Bounds are represented semantically with a wider integer envelope so half-open maxima can represent the full `i32` position domain without overflow:
 
 ```text
 WorldBounds2D {
-  min_x: i32,
-  min_y: i32,
-  max_x_exclusive: i32,
-  max_y_exclusive: i32
+  min_x: i64,
+  min_y: i64,
+  max_x_exclusive: i64,
+  max_y_exclusive: i64
 }
 ```
 
 Validity requires:
 
 ```text
+i32::MIN <= min_x
+max_x_exclusive <= i32::MAX + 1
+i32::MIN <= min_y
+max_y_exclusive <= i32::MAX + 1
 min_x < max_x_exclusive
 min_y < max_y_exclusive
-min_x <= x < max_x_exclusive
-min_y <= y < max_y_exclusive
+min_x <= i64(x) < max_x_exclusive
+min_y <= i64(y) < max_y_exclusive
 ```
 
 Bounds are therefore **half-open** on the positive edge. This rule applies to rectangular selections, chunk coverage, Atlas viewport/bounding-box selection and compiler validation unless a more specific geometry contract explicitly defines another shape.
@@ -108,11 +112,10 @@ Canonical floor identity is a signed 16-bit semantic integer `FloorId`.
 
 Rules:
 
-- `floor = 0` is the canonical datum/reference level chosen by the native World Project for that world revision;
+- no universal semantic meaning is assigned to `floor = 0`;
 - larger `FloorId` values are geometrically **higher / above** smaller values;
 - smaller values are geometrically **lower / below** larger values;
-- `floor + 1` means one canonical discrete level above when that floor exists;
-- `floor - 1` means one canonical discrete level below when that floor exists.
+- a world may designate one floor as a display/reference/surface label, but that label does not redefine numeric floor identity.
 
 Every world revision MUST declare a finite, strictly increasing set of valid floor IDs:
 
@@ -122,7 +125,7 @@ floors: [i16, ...]
 
 The set may be sparse; consumers must not invent an undeclared intermediate floor. A `WorldTilePosition` is valid only when its `floor` is a member of the declared set.
 
-The numeric floor value is the canonical vertical identity for this profile. Display labels such as `surface`, `level 2`, `underground`, or migration labels such as `Z7` are presentation/provenance metadata and are not alternate floor authority.
+Display labels such as `surface`, `level 2`, `underground`, or migration labels such as `Z7` are presentation/provenance metadata and are not alternate floor authority.
 
 ## 7. Rectangles, points and inclusion
 
@@ -132,19 +135,19 @@ Rectangular spatial bounds use half-open horizontal coordinates:
 
 ```text
 RectBounds {
-  min_x,
-  min_y,
-  max_x_exclusive,
-  max_y_exclusive,
-  floor
+  min_x: i64,
+  min_y: i64,
+  max_x_exclusive: i64,
+  max_y_exclusive: i64,
+  floor: i16
 }
 ```
 
 A tile belongs to a rectangle exactly when:
 
 ```text
-min_x <= x < max_x_exclusive
-min_y <= y < max_y_exclusive
+min_x <= i64(x) < max_x_exclusive
+min_y <= i64(y) < max_y_exclusive
 position.floor == bounds.floor
 ```
 
@@ -160,8 +163,8 @@ Every static presentation record that can coexist with another record at the sam
 
 ```text
 PresentationOrderKey {
-  plane: i16,
-  order: u16
+  plane: i32,
+  order: u32
 }
 ```
 
@@ -205,25 +208,28 @@ with:
 
 The owning appearance/profile must therefore say which footprint tile is the anchor; a consumer must not assume north-west, south-east or any Tibia-specific origin.
 
-Sub-tile visual displacement is a presentation-only vector in fixed-point tile units:
+Sub-tile visual displacement is presentation-only data. The owning appearance/asset profile MUST declare a positive integer `units_per_tile` and signed displacement values:
 
 ```text
 PresentationDisplacement {
-  dx_256: i32,
-  dy_256: i32
+  dx_units: i32,
+  dy_units: i32
+}
+
+AppearanceSpatialUnitProfile {
+  units_per_tile: u32  // MUST be > 0
 }
 ```
 
-where `256` units equal one tile.
-
 Semantics:
 
-- positive `dx_256` moves the visual draw origin east/right;
-- positive `dy_256` moves the visual draw origin south/down;
+- positive `dx_units` moves the visual draw origin east/right;
+- positive `dy_units` moves the visual draw origin south/down;
+- one tile equals exactly `units_per_tile` displacement units for the bound appearance profile revision;
 - displacement affects rendering only;
 - displacement MUST NOT change canonical world position, footprint membership, collision, navigation or gameplay authority.
 
-The fixed-point tile unit is independent from sprite pixel resolution. An asset/render profile may convert it to pixels deterministically for a selected asset revision.
+The coordinate profile therefore freezes direction and meaning but not sprite pixel resolution or one permanent sub-tile precision. A Game export/asset catalog must bind the exact appearance profile revision and `units_per_tile` needed for deterministic rendering.
 
 ## 11. Canonical ordering outside one tile
 
@@ -272,6 +278,7 @@ The Atlas consumer must validate at minimum:
 - half-open rectangle validity;
 - unique same-position presentation order keys;
 - footprint offsets and displacement values without unchecked arithmetic;
+- a bound appearance/asset spatial unit profile wherever sub-tile displacement is present;
 - stable identity/reference integrity required by the selected export capability.
 
 An unknown required coordinate profile is a fail-closed incompatibility.
@@ -299,7 +306,7 @@ Required negative behavior includes rejection of:
 - invalid/empty bounds;
 - duplicate same-position presentation order keys;
 - arithmetic overflow while translating/indexing bounds or offsets;
-- malformed footprint/displacement fields;
+- malformed footprint/displacement fields or `units_per_tile = 0`;
 - unsupported required coordinate-profile revision.
 
 ## 16. Consequences for DYN-ATLAS-001
@@ -325,7 +332,7 @@ This profile does not decide:
 - permanent chunk dimensions or vertical packing;
 - pathfinding/collision representation;
 - isometric/perspective camera projection;
-- sprite pixel dimensions or GPU texture layout;
+- sprite pixel dimensions, displacement precision or GPU texture layout;
 - asset licensing/distribution;
 - live-state coordinates/privacy transport;
 - editor/runtime implementation language beyond already accepted repository architecture.
